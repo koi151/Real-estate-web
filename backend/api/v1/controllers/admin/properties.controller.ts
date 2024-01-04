@@ -29,15 +29,25 @@ export const index = async (req: Request, res: Response) => {
     let objectPagination = paginationHelper(
       {
         currentPage: 1,
-        limitItems: 2,
+        limitItems: 4,
       },
       req.query,
       countRecords
     );
+
+    // Sort
+    const sort: { [key: string]: any } = {};
+
+    if (req.query.sortKey && req.query.sortValue) {
+      const sortKey = req.query.sortKey.toString();
+      sort[sortKey] = req.query.sortValue;
+    }
     
     const properties = await Property.find(find)
+      .sort(sort || '')
       .limit(objectPagination.limitItems || 0)
       .skip(objectPagination.skip || 0);
+
 
     if (properties.length > 0) {
       res.status(200).json({
