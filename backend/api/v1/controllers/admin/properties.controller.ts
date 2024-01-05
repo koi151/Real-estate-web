@@ -71,16 +71,127 @@ export const index = async (req: Request, res: Response) => {
   }
 }
 
+// [GET] /admin/properties
+export const detail = async (req: Request, res: Response) => {
+  try {
+    const id : string = req.params.propertyId;
+    const property = await Property.findOne(
+      { _id: id }, 
+      { deleted: false }
+    )
+
+    if (property) {
+      res.status(200).json({
+        code: 200,
+        message: "Success",
+        property: property
+      })
+    } else {
+      res.status(400).json({
+        code: 400,
+        message: "Property not found"
+      })
+    }
+
+  } catch (error) {
+    console.log('Error occurred while fetching properties data:', error);
+    res.status(400).json({
+      code: 400,
+      message: "Error occurred while fetching properties data"
+    })
+  }
+}
+
+// [GET] /admin/properties/delete/:propertyId
+export const singleDelete = async (req: Request, res: Response) => {
+  try {
+    const id: string = req.params.propertyId;
+
+    await Property.updateOne(
+      { _id: id },
+      { deleted: true }
+    )
+
+    res.status(200).json({
+      code: 200,
+      message: "Property deleted successfully"
+    })
+
+  } catch (error) {
+    console.log('Error occurred while deleting property:', error);
+    res.status(400).json({
+      code: 400,
+      message: "Error occurred while deleting property"
+    })
+  }
+}
+
+interface PropertyData {
+  title: string;
+  price: number;
+  status: string;
+  listingType?: string;
+  description?: string;
+  area?: {
+    length: number;
+    width: number;
+  };
+  images?: string[];
+  location?: {
+    city: string;
+    district: string;
+  };
+  propertyDetails?: {
+    type: string;
+    subType: string;
+    features: string[];
+  };
+  deleted?: Boolean;
+}
+
 // [POST] /admin/properties/create
 export const createPost = async (req: Request, res: Response) => {
   try {    
-    const newProperty = new Property(req.body);
+    const property: PropertyData = {
+      title: req.body.title,
+      listingType: req.body.listingType,
+      description: req.body.description,
+      price: req.body.price,
+      area: req.body.area,
+      images: req.body.images,
+      status: req.body.status,
+      location: req.body.location,
+      propertyDetails: req.body.propertyDetails,
+      deleted: req.body.deleted
+    };
+
+    const newProperty = new Property(property);
     await newProperty.save();
     
     res.json({
       code: 200,
-      message: "Created new property succesfully !"
+      message: "Created new property successfully"
     })
+
+  } catch (error) {
+    console.log('Error occurred while creating property:', error);
+    res.status(400).json({
+      code: 400,
+      message: "Error occurred while creating property"
+    })
+  }
+}
+
+// [PATCH] /admin/properties/edit/:propertyId
+export const editPatch = async (req: Request, res: Response) => {
+  try {    
+    const id: string = req.params.propertyId
+
+
+    await Property.updateOne({
+      _id: id,
+    })
+
 
   } catch (error) {
     console.log('Error occurred:', error);
