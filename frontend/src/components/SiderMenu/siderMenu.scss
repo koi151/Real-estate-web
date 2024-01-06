@@ -1,0 +1,24 @@
+@import '../../App.scss';
+
+.sider-menu .ant-menu-item-selected {
+  background-color: $main-content-bg;
+  color: $color-highlight;
+  font-weight: 600;
+  border-radius: 20px;
+  // padding-left: 1rem;
+
+  .ant-menu-title-content {
+  }
+
+}
+
+.sider-menu {
+  font-size: 1.3rem;
+  color: rgb(106, 94, 109);
+  font-family: $open-sans;
+  margin-top: 2rem;
+}
+
+.sider-icon svg {
+  font-size: 2rem;
+}

@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Open+Sans:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+$color-dark: #001529;
+$color-highlight: #6259ca;
+
+$main-content-title: #170c6b;
+$main-content-bg:#eaedf7;
+
+$roboto: 'Roboto', sans-serif;
+$open-sans: 'Open Sans', sans-serif;
+$montserrat: 'Montserrat', sans-serif;
+
+html {
+  font-size: 10px;
+}
+
+body {
+  font-size: 1.6rem;
+}
+
+.main-content-title {
+  color: $main-content-title;
+  font-size: 2.2rem;
+  font-weight: 500;
+}
+
+// Overide antd css code of checkbox in row 
+.ant-table-wrapper .ant-table-tbody .ant-table-row.ant-table-row-selected >.ant-table-cell {
+  background-color: #fff;
+}
+
+.ant-checkbox-checked .ant-checkbox-inner {
+  background-color: $color-highlight;
+  border-color: $color-highlight;
+
+  &:hover {
+    background-color: $color-highlight !important;
+    border-color: $color-highlight !important;
+  }
+}

@@ -186,18 +186,34 @@ export const createPost = async (req: Request, res: Response) => {
 export const editPatch = async (req: Request, res: Response) => {
   try {    
     const id: string = req.params.propertyId
+    const property: PropertyData = {
+      title: req.body.title,
+      listingType: req.body.listingType,
+      description: req.body.description,
+      price: req.body.price,
+      area: req.body.area,
+      images: req.body.images,
+      status: req.body.status,
+      location: req.body.location,
+      propertyDetails: req.body.propertyDetails,
+      deleted: req.body.deleted
+    };
 
+    await Property.updateOne(
+      { _id: id },
+      property
+    )
 
-    await Property.updateOne({
-      _id: id,
+    res.status(200).json({
+      code: 200,
+      message: 'Edited property successful'
     })
 
-
   } catch (error) {
-    console.log('Error occurred:', error);
+    console.log('Error occurred while editing property:', error);
     res.status(400).json({
       code: 400,
-      message: "Error occurred"
+      message: "Error occurred while editing property"
     })
   }
 }
