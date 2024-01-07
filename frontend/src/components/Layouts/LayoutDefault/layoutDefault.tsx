@@ -1,3 +1,4 @@
+import React from 'react';
 import { memo, useState } from "react";
 import { Layout } from 'antd';
 import { Content } from "antd/es/layout/layout";
@@ -11,7 +12,7 @@ import logo from '../../../assets/images/logo.png';
 import logoFold from '../../../assets/images/logo-fold.png';
 import './layoutDefault.scss';
 
-function LayOutDefault() {
+const LayOutDefault: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
