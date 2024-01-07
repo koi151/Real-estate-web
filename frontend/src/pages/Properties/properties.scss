@@ -1,1 +1,48 @@
 @import '../../App.scss'; 
+
+.item-wrapper {
+  position: relative;
+  display: flex;
+  background-color: #fff;
+  align-items: center;
+  margin-bottom: 3rem;
+  padding: 1.5rem;
+  border-radius: .8rem;
+
+  &__image {
+    width: 16rem;
+    height: 12rem;
+    object-fit: cover;
+    vertical-align: middle;
+    border-radius: .5rem;
+  }
+
+  &__info {
+    height: 100%;
+    margin-left: 1.5rem;
+    display: flex;
+    flex-direction: column;
+
+    &--title {
+      max-width: 25rem;
+      font-size: 1.9rem;
+      font-family: $roboto;
+      margin: .75rem 0;
+    }
+
+    &--price {
+      
+    }
+
+    &--location {
+      
+    }
+
+    &--listing-type {
+      .listing-type-tag {
+        bottom: -1rem; // !!!
+        left: 0;
+      }
+    }
+  }
+}

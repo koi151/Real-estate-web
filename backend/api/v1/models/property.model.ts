@@ -20,7 +20,7 @@ const propertySchema = new mongoose.Schema(
       district: String
     },
     propertyDetails: {
-      type: String,
+      propertyType: String,
       subType: String,
       features: Array,
     },
