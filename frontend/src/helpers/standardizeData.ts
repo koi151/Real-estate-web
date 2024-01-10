@@ -1,12 +1,11 @@
+import { RoomType } from "../commonTypes";
+
 // forSale => For Sale.  house => House
 export const listingType = (word: string): string => {
   return word ? word.toLowerCase().startsWith('for') ? 
     `For ${word.slice(3)}` 
     : word.charAt(0).toUpperCase() + word.slice(1) : word;
 };
-
-
-type RoomType = "bedrooms" | "bathrooms" | "kitchens" | "livingRooms";
 
 export const getRoomCount = (roomList: string[], type: RoomType) => {
   try {

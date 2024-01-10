@@ -6,34 +6,8 @@ import getPriceUnit from '../../helpers/getPriceUnit';
 
 import { getProperties } from '../../services/admin/properties.service';
 import RoomCountTooltip from '../../components/RoomCount/roomCount';
+import { Property } from '../../commonTypes';
 import './properties.scss';
-
-interface Location {
-  city: string;
-  district: string;
-}
-
-interface PropertyDetails {
-  subType: string;
-  features: string[];
-  propertyType: string;
-}
-
-interface Property {
-  title: string;
-  area?: {
-    width: number;
-    length: number;
-  },
-  status?: string;
-  price?: string;
-  images?: string[];
-  location?: Location;
-  listingType?: string;
-  propertyDetails?: PropertyDetails;
-  createdAt?: Date;
-  expireAt?: Date;
-}
 
 const Properties: React.FC = () => {
   const [propertyList, setPropertyList] = useState<Property[]>([]);

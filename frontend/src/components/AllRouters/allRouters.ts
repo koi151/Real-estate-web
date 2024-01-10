@@ -1,7 +1,7 @@
 import { useRoutes } from 'react-router'
 import { routes } from '../../routes';
 
-function AllRouter() {
+const AllRouter = () => {
   const elements = useRoutes(routes)
   return elements;
 }
