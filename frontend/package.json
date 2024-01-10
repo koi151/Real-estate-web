@@ -12,6 +12,7 @@
     "@types/react-dom": "^18.2.18",
     "antd": "^5.12.7",
     "axios": "^1.6.3",
+    "bootstrap": "^5.0.1",
     "cloudinary": "^1.41.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -22,6 +23,9 @@
     "sass": "^1.69.7",
     "tinymce": "^6.8.2",
     "web-vitals": "^2.1.4"
+  },
+  "overrides": {
+    "typescript": "^5.3.3"
   },
   "scripts": {
     "start": "set PORT=3001 && react-scripts start",

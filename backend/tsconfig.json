@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "target": "ES6", // allow compile Typescript code to ES6
+    "module": "commonjs", // Commonjs is the standard that used in Node,js to work with module
+    "removeComments": true, // Delete comment when compiling to js file.
+    "esModuleInterop": true, // Allow using keyword import instead of require
+    "outDir": "dist", // Compile to dist directory
+  }
+}

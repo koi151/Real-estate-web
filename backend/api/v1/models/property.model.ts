@@ -3,10 +3,22 @@ const slug = require('mongoose-slug-updater');
 
 mongoose.plugin(slug);
 
+const listingTypeValues = ["forSale", "forRent"];
+const postTypeValues = ["default", "preminum", "featured"];
+const statusValues = ["active", "inactive"];
+
 const propertySchema = new mongoose.Schema(
   {
     title: String,
-    listingType: String,
+    listingType: {
+      type: String, 
+      enum: listingTypeValues
+    },
+    postType: {
+      type: String,
+      default: "default",
+      enum: postTypeValues,
+    },
     description: String,
     price: Number,
     area: {
@@ -14,10 +26,14 @@ const propertySchema = new mongoose.Schema(
       width: Number
     },
     images: Array,
-    status: String,
+    status: {
+      type: String,
+      enum: statusValues
+    },
     location: {
       city: String,
-      district: String
+      district: String,
+      address: String
     },
     propertyDetails: {
       propertyType: String,
@@ -32,7 +48,8 @@ const propertySchema = new mongoose.Schema(
     deleted: {
       type: Boolean,
       default: false
-    }
+    },
+    expireAt: Date
   },
   {
     timestamps: true,

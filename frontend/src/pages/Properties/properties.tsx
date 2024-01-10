@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Breadcrumb, Space, Tag } from 'antd';
+import { Breadcrumb, Button, Col, Row, Space, Tag } from 'antd';
+
+import * as standardizeData from '../../helpers/standardizeData'
+import getPriceUnit from '../../helpers/getPriceUnit';
+
 import { getProperties } from '../../services/admin/properties.service';
+import RoomCountTooltip from '../../components/RoomCount/roomCount';
 import './properties.scss';
 
 interface Location {
@@ -9,15 +14,25 @@ interface Location {
 }
 
 interface PropertyDetails {
+  subType: string;
+  features: string[];
   propertyType: string;
 }
 
 interface Property {
   title: string;
+  area?: {
+    width: number;
+    length: number;
+  },
+  status?: string;
+  price?: string;
   images?: string[];
   location?: Location;
   listingType?: string;
   propertyDetails?: PropertyDetails;
+  createdAt?: Date;
+  expireAt?: Date;
 }
 
 const Properties: React.FC = () => {
@@ -35,15 +50,11 @@ const Properties: React.FC = () => {
       }
     };
     fetchData();
-  }, []);
-
-  const standardizeDefaultText = (word: string): string => {
-    return word ? word.toLowerCase().startsWith('for') ? `For ${word.slice(3)}` : word.charAt(0).toUpperCase() + word.slice(1) : word;
-  };
+  }, []);  
 
   const renderTag = (value: string, colorMap: Record<string, string>) => (
     <Tag className="listing-type-tag" color={colorMap[value]}>
-      {standardizeDefaultText(value)}
+      {standardizeData.listingType(value)}
     </Tag>
   );
 
@@ -59,24 +70,126 @@ const Properties: React.FC = () => {
         <div>{error}</div>
       ) : propertyList.length > 0 ? (
         propertyList.map((property, index) => (
-          <div className='item-wrapper' key={index}>
-            <img src={property.images?.[0] ?? ""} className='item-wrapper__image' alt='property img' />
-            <div className='item-wrapper__info'>
-              <h3 className='item-wrapper__info--title'>{property.title}</h3>
-              <div className='item-wrapper__info--location'>
-                {property.location ? (
-                  <span>{property.location.city}, {property.location.district}</span>
-                ) : "No information"}
+          <div className='item-wrapper'>  
+            <Row className='item-wrapper__custom-row'>
+              <div
+                className='item-wrapper__upper-content' 
+                key={index}>
+                <Col xxl={4} xl={4} lg={4} md={4} sm={4}>
+                  <img 
+                    src={property.images?.[0] ?? ""} 
+                    className='item-wrapper__upper-content--image' 
+                    alt='property img' 
+                  />
+                </Col>
+                <Col 
+                  xxl={7} xl={7} lg={7} md={7} sm={7}
+                  className='item-wrapper__custom-col' 
+                >
+                  <div>
+                    <h3 className='item-wrapper__upper-content--title'>
+                      {property.title}
+                    </h3>
+                    <div className='item-wrapper__upper-content--location'>
+                      {property.location ? (
+                        <span>{property.location.city}, {property.location.district}</span>
+                      ) : "No information"}
+                    </div>
+                  </div>
+                  <div>
+                    {property.price && 
+                      <span className='item-wrapper__upper-content--price'>
+                        <span className='price-number'>
+                          {parseFloat(property.price) > 1000
+                            ? parseFloat(property.price) / 1000
+                            : parseFloat(property.price)
+                          }
+                        </span>
+                        <span className='price-unit'>{getPriceUnit(property.price)}
+                          <span style={{ margin: '0 .85rem' }}>/</span>
+                        </span>
+                      </span>
+                    }
+                    {property.area?.width && property.area?.length && 
+                      <span className='item-wrapper__upper-content--area'>
+                        <span className='area-number'>
+                          {property.area.width * property.area.length}
+                        </span>
+                        <span className='area-unit'>m²</span>
+                      </span>
+                    }
+                  </div>
+                </Col>
+                <Col xxl={2} xl={2} lg={2} md={2} sm={2}>
+                  <div className='item-wrapper__upper-content--rooms'>
+                    {property.propertyDetails?.features ? (
+                      <div className='d-flex flex-column justify-content-center'>
+                        <RoomCountTooltip roomList={property.propertyDetails?.features} type="bedrooms" />
+                        <RoomCountTooltip roomList={property.propertyDetails?.features} type="bathrooms" />
+                      </div>
+                    ) : (
+                      <>
+                        <RoomCountTooltip roomList={null} type="bedrooms" />
+                        <RoomCountTooltip roomList={null} type="bathrooms" />
+                      </>
+                    )}
+                  </div>
+                </Col>
+                <Col
+                  className='item-wrapper__custom-col-two'  
+                  xxl={8} xl={8} lg={8} md={8} sm={8}
+                >
+                  <div style={{marginLeft: "2rem"}}>
+                    <div className='item-wrapper__upper-content--status'>
+                      <p className='status-text'>Status: </p>
+                        {property.status &&
+                          <>
+                            <Button 
+                              type='primary'
+                              className={`${property.status}-btn small-btn`} 
+                            >
+                              {property.status}
+                            </Button>
+                          </> 
+                        }
+                    </div>
+                    <div className='item-wrapper__upper-content--listing-type'>
+                      <p className='tag-text'>Tags: </p>
+                      <Space size={[0, 8]} wrap>
+                        {property.listingType === 'forSale' 
+                          && renderTag(property.listingType, { forSale: 'green', forRent: 'orange' })}
+                        {property.propertyDetails?.propertyType === 'house' 
+                        && renderTag(property.propertyDetails.propertyType, { house: 'purple', apartment: 'blue' })}
+                      </Space>
+                    </div>
+                  </div>
+                </Col>
+                <Col
+                  className='item-wrapper__custom-col-two'  
+                  xxl={2} xl={2} lg={2} md={2} sm={2}
+                >
+                  <div className='button-wrapper'>
+                    <Button className='detail-btn'>Detail</Button>
+                    <Button className='edit-btn'>Edit</Button>
+                    <Button type="primary" danger>Delete</Button>
+                  </div>
+                </Col>
               </div>
-              <div className='item-wrapper__info--listing-type'>
-                <Space size={[0, 8]} wrap>
-                  {property.listingType === 'forSale' 
-                    && renderTag(property.listingType, { forSale: 'green', forRent: 'orange' })}
-                  {property.propertyDetails?.propertyType === 'house' 
-                    && renderTag(property.propertyDetails.propertyType, { house: 'purple', apartment: 'blue' })}
-                </Space>
-              </div>
-            </div>
+             
+            </Row>
+            <div className='line'></div>
+            <Row>
+              <Col span={24}>
+                <div className='item-wrapper__lower-content'>
+                  <div className='item-wrapper__lower-content--date-created'>
+                    Created: {property.createdAt ? new Date(property.createdAt).toLocaleString() : ''}
+                  </div>
+                  <div className='item-wrapper__lower-content--date-created'>
+                    Expire: {property.expireAt ? new Date(property.expireAt).toLocaleString() : ''}
+                  </div>
+                </div>
+              </Col>
+            </Row>
           </div>
         ))
       ) : (
@@ -87,4 +200,3 @@ const Properties: React.FC = () => {
 };
 
 export default Properties;
-

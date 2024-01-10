@@ -8,6 +8,8 @@
 
 $color-dark: #001529;
 $color-highlight: #6259ca;
+$color-highlight-two: #6259ca;
+$color-error: #ff4d4f;
 
 $main-content-title: #170c6b;
 $main-content-bg:#eaedf7;
@@ -24,23 +26,59 @@ body {
   font-size: 1.6rem;
 }
 
+// short hand
+.h-100 {
+  height: 100%;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.flex-row {
+  flex-direction: row;
+}
+
+.justify-content-center {
+  justify-content: center;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
 .main-content-title {
   color: $main-content-title;
   font-size: 2.2rem;
   font-weight: 500;
 }
 
-// Overide antd css code of checkbox in row 
-.ant-table-wrapper .ant-table-tbody .ant-table-row.ant-table-row-selected >.ant-table-cell {
-  background-color: #fff;
+// status button
+.active-btn {
+  background-color: #58c965;
+  // :hover {
+  //   background-color: #6cd178;
+  // }
 }
 
-.ant-checkbox-checked .ant-checkbox-inner {
-  background-color: $color-highlight;
-  border-color: $color-highlight;
+.inactive-btn {
+  background-color: $color-error;
+}
 
+.small-btn {
+  padding: .2rem .75rem;
+  font-size: 1.3rem;
+}
+
+.detail-btn, .edit-btn {
+  background-color: #F5F7FC;
+  border: 1px solid $main-content-bg;
   &:hover {
-    background-color: $color-highlight !important;
-    border-color: $color-highlight !important;
+    color: $color-highlight !important;
+    border: 1px solid $color-highlight !important;
   }
 }

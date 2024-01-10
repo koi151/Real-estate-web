@@ -1,48 +1,119 @@
 @import '../../App.scss'; 
 
 .item-wrapper {
-  position: relative;
-  display: flex;
   background-color: #fff;
-  align-items: center;
-  margin-bottom: 3rem;
-  padding: 1.5rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
   border-radius: .8rem;
+  margin: 1.5rem 0;
 
-  &__image {
-    width: 16rem;
-    height: 12rem;
-    object-fit: cover;
-    vertical-align: middle;
-    border-radius: .5rem;
+  &__custom-row {
+    display: flex;
+    flex-direction: column;
   }
 
-  &__info {
-    height: 100%;
+  &__custom-col {
     margin-left: 1.5rem;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
+    border-right: 1px solid #e3dfdfca;
+  }
 
-    &--title {
-      max-width: 25rem;
-      font-size: 1.9rem;
-      font-family: $roboto;
-      margin: .75rem 0;
+  &__custom-col-two {
+    margin-left: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__upper-content {
+    display: flex;
+    padding: 2rem;
+    
+    &--image {
+      height: 12rem;
+      width: 100%;
+      object-fit: cover;
+      vertical-align: middle;
+      border-radius: .8rem;
     }
 
-    &--price {
-      
+    &--title {
+      max-width: 100%;
+      font-size: 1.8rem;
+      font-family: $roboto;
     }
 
     &--location {
-      
+      margin-top: .75rem;
+    }
+    
+    &--price .price-number, &--area .area-number {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-right: .4rem;
+      color: $color-highlight-two;
+    }
+
+    &--rooms {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center; 
+      align-items: center;
+      color: #999;     
+      font-size: 1.6rem;   
+      border-right: 1px solid #e3dfdfca;
+
+      svg {
+        margin-right: .3rem;
+        font-size: 2rem;
+      }
+    }
+
+    &--status {
+      font-weight: 600;
+      .small-btn {
+        margin: .75rem 0;
+      }
     }
 
     &--listing-type {
+      margin-top: 1rem;
+      font-weight: 500;
       .listing-type-tag {
-        bottom: -1rem; // !!!
-        left: 0;
+        margin-top: .75rem;
       }
+    }
+
+    .button-wrapper {
+      display: flex;
+      justify-content: space-around;
+      flex-direction: column;
+      width: 7rem;
+    }
+  }
+
+  .line {
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    height: 1px;
+    background-color: #e3dfdfca;
+  }
+
+  &__lower-content {
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+
+    &--date-created {
+      font-size: 1.2rem;
+      color: #999;
+      font-weight: 600;
+      font-family: $open-sans;
+      margin-right: 4rem;
     }
   }
 }
