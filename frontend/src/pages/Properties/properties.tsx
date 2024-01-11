@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Breadcrumb, Button, Col, Row, Space, Tag } from 'antd';
-import { useNavigate } from 'react-router-dom';
+import { Breadcrumb, Button, Col, Row, Space, Tag,  message } from 'antd';
 
 import * as standardizeData from '../../helpers/standardizeData'
 import getPriceUnit from '../../helpers/getPriceUnit';
@@ -10,19 +9,13 @@ import RoomCountTooltip from '../../components/RoomCount/roomCount';
 import { Property } from '../../commonTypes';
 import { Link } from 'react-router-dom';
 import './properties.scss';
-import Search, { SearchProps } from 'antd/es/input/Search';
+import FilterBox from '../../components/FilterBox/filterBox';
 
 const Properties: React.FC = () => {
-  const navigate = useNavigate();
 
   const [propertyList, setPropertyList] = useState<Property[]>([]);
   const [error, setError] = useState<string | null>(null); 
   const [keyword, setKeyword] = useState<string | null>(null); 
-
-  const onSearch: SearchProps['onSearch'] = (value, _e, info) => {
-    setKeyword(value);
-    navigate(`/admin/properties?keyword=${value}`);
-  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,12 +26,17 @@ const Properties: React.FC = () => {
         setPropertyList(response.properties);
 
       } catch (error) {
+        message.error('An error occurred while fetching properties.', 2);
         setError('An error occurred while fetching properties.');
         console.log('Error occurred:', error);
       }
     };
     fetchData();
   }, [keyword]);  
+
+  const handleKeywordChange = (newKeyword: string | null) => {
+    setKeyword(newKeyword);
+  };
 
   const renderTag = (value: string, colorMap: Record<string, string>) => (
     <Tag className="listing-type-tag" color={colorMap[value]}>
@@ -54,12 +52,7 @@ const Properties: React.FC = () => {
         {breadcrumbName: 'Properties'}
       ]} />
 
-      <div style={{width: "100%"}} className='d-flex justify-content-end'>
-        <Search placeholder="input search text" 
-        onSearch={onSearch} 
-        style={{ width: 200 }} />
-      </div>
-
+      <FilterBox onKeywordChange={handleKeywordChange}/>
 
       {error ? (
         <div>{error}</div>

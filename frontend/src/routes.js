@@ -13,7 +13,6 @@ export const routes = [
         element: <Home />
       },
       {
-        exact: true,
         path: "properties",
         element: <Properties />,
       },

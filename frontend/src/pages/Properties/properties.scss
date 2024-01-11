@@ -73,6 +73,9 @@
     }
 
     &--status {
+      .status-text {
+        margin: 0;
+      }
       font-weight: 600;
       .small-btn {
         margin: .75rem 0;
@@ -80,7 +83,9 @@
     }
 
     &--listing-type {
-      margin-top: 1rem;
+      .tag-text {
+        margin: 0;
+      }
       font-weight: 500;
       .listing-type-tag {
         margin-top: .75rem;
@@ -117,3 +122,4 @@
     }
   }
 }
+
