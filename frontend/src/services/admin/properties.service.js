@@ -1,13 +1,17 @@
-import createApi from '../api.service'
+import createApi from '../api.service';
 
-const baseUrl = 'http://localhost:3000/api/v1/admin';
+class PropertiesServiceAdmin {
 
-export const getProperties = async (options = {}) => {
-  try {
-    const response = await createApi(baseUrl).get('/properties', options);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching data:', error);
-    throw error;
+  constructor(baseUrl = "http://localhost:3000/api/v1/admin") {
+    this.api = createApi(baseUrl);
   }
-};
+
+  async getProperties(option = {}) {
+    return (await this.api.get("/properties", option)).data;
+  }
+
+}
+
+const propertiesService = new PropertiesServiceAdmin();
+
+export default propertiesService;

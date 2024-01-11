@@ -1,30 +1,44 @@
 import React, { useEffect, useState } from 'react';
 import { Breadcrumb, Button, Col, Row, Space, Tag } from 'antd';
+import { useNavigate } from 'react-router-dom';
 
 import * as standardizeData from '../../helpers/standardizeData'
 import getPriceUnit from '../../helpers/getPriceUnit';
 
-import { getProperties } from '../../services/admin/properties.service';
+import propertiesService from '../../services/admin/properties.service';
 import RoomCountTooltip from '../../components/RoomCount/roomCount';
 import { Property } from '../../commonTypes';
+import { Link } from 'react-router-dom';
 import './properties.scss';
+import Search, { SearchProps } from 'antd/es/input/Search';
 
 const Properties: React.FC = () => {
+  const navigate = useNavigate();
+
   const [propertyList, setPropertyList] = useState<Property[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null); 
+  const [keyword, setKeyword] = useState<string | null>(null); 
+
+  const onSearch: SearchProps['onSearch'] = (value, _e, info) => {
+    setKeyword(value);
+    navigate(`/admin/properties?keyword=${value}`);
+  }
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getProperties('/properties');
+        const response = await propertiesService.getProperties({
+          params: keyword ? { keyword: keyword } : {}
+        });
         setPropertyList(response.properties);
+
       } catch (error) {
         setError('An error occurred while fetching properties.');
         console.log('Error occurred:', error);
       }
     };
     fetchData();
-  }, []);  
+  }, [keyword]);  
 
   const renderTag = (value: string, colorMap: Record<string, string>) => (
     <Tag className="listing-type-tag" color={colorMap[value]}>
@@ -40,11 +54,18 @@ const Properties: React.FC = () => {
         {breadcrumbName: 'Properties'}
       ]} />
 
+      <div style={{width: "100%"}} className='d-flex justify-content-end'>
+        <Search placeholder="input search text" 
+        onSearch={onSearch} 
+        style={{ width: 200 }} />
+      </div>
+
+
       {error ? (
         <div>{error}</div>
       ) : propertyList.length > 0 ? (
         propertyList.map((property, index) => (
-          <div className='item-wrapper'>  
+          <div className='item-wrapper' key={index}>  
             <Row className='item-wrapper__custom-row'>
               <div
                 className='item-wrapper__upper-content' 
@@ -143,13 +164,18 @@ const Properties: React.FC = () => {
                   xxl={2} xl={2} lg={2} md={2} sm={2}
                 >
                   <div className='button-wrapper'>
-                    <Button className='detail-btn'>Detail</Button>
-                    <Button className='edit-btn'>Edit</Button>
-                    <Button type="primary" danger>Delete</Button>
+                    <Link to={`/admin/properties/detail/${property._id}`}> 
+                      <Button className='detail-btn'>Detail</Button> 
+                    </Link>
+                    <Link to={`/admin/properties/edit/${property._id}`}> 
+                      <Button className='edit-btn'>Edit</Button> 
+                    </Link>
+                    <Link to={`/admin/properties/delete/${property._id}`}> 
+                      <Button type="primary" danger>Delete</Button> 
+                    </Link>
                   </div>
                 </Col>
               </div>
-             
             </Row>
             <div className='line'></div>
             <Row>

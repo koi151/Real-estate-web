@@ -13,7 +13,6 @@ interface MenuItem {
 
 const SiderMenu: React.FC = () => {
   const location = useLocation();
-
   const items: MenuItem[] = [
     { key: 'Dashboard', label: <Link to={'/admin/dashboard'}>Dashboard</Link>, icon: <DashboardOutlined className="sider-icon" /> },
     { key: 'properties', label: <Link to={'/admin/properties'}>Properties</Link>, icon: <SettingOutlined className="sider-icon" /> },
@@ -22,25 +21,20 @@ const SiderMenu: React.FC = () => {
     { key: 'Authentication', label: 'Authentication', icon: <LockOutlined className="sider-icon" />, children: [] },
   ];
 
+  const menuItems = items.map(item => ({
+    ...item,
+    children: item.children && item.children.map(child => ({ ...child })),
+  }));
+
   return (
-    <Menu 
-      className="sider-menu" 
-      theme='dark' 
-      mode="inline" 
-      defaultSelectedKeys={[location.pathname]} 
-      style={{ overflowY: 'auto' }} 
-    >
-      {items.map(item => (
-        <Menu.Item key={item.key} icon={item.icon}>
-          {item.label}
-          {item.children && item.children.map(child => (
-            <Menu.Item key={child.key} icon={child.icon}>
-              {child.label}
-            </Menu.Item>
-          ))}
-        </Menu.Item>
-      ))}
-    </Menu>
+    <Menu
+      className="sider-menu"
+      theme='dark'
+      mode="inline"
+      defaultSelectedKeys={[location.pathname]}
+      style={{ overflowY: 'auto' }}
+      items={menuItems}
+    />
   );
 }
 

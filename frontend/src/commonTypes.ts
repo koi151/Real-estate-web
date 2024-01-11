@@ -12,6 +12,7 @@ export interface PropertyDetails {
 }
 
 export interface Property {
+  _id: string;
   title: string;
   area?: {
     width: number;

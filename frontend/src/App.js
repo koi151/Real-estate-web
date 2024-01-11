@@ -1,7 +1,7 @@
 import AllRoute from './components/AllRouters/allRouters';
 import './App.scss';
 
-function App() {
+const App = () => {
   return (
     <AllRoute/>
   )

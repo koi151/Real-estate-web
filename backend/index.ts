@@ -2,26 +2,26 @@ import express, { Express } from 'express';
 import * as database from './configs/database';
 import { systemConfig } from './configs/system';
 
+import bodyParser from 'body-parser';
+import methodOverride from 'method-override';
 import cors from "cors";
 import dotenv from "dotenv"; 
 import path from 'path';
 import moment from 'moment';
 
-import v1AdminRoutes from "./api/v1/routes/admin/index.route";
-
 dotenv.config();
-
 database.connect();
+
+import v1AdminRoutes from "./api/v1/routes/admin/index.route";
 
 const app: Express = express();
 const port: number | string = process.env.PORT || 3000;
 
+app.use(methodOverride('_method'));
 app.use(cors());
 
+app.use(bodyParser.urlencoded({ extended: true }))
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }))
-
-app.use(express.static(`${__dirname}/public`));
 
 // TinyMCE
 app.use(

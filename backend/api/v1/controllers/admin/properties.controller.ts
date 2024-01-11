@@ -8,6 +8,10 @@ import { paginationHelper } from '../../../../helpers/pagination';
 // [GET] /admin/properties
 export const index = async (req: Request, res: Response) => {
   try {
+    console.log("req.url:", req.url)
+    console.log("req.query:", req.query)
+    console.log("req.params:", req.params)
+
     interface Find {
       deleted: boolean,
       status?: string,

@@ -1,5 +1,6 @@
 import LayoutDefault from "./components/Layouts/LayoutDefault/layoutDefault";
 import Home from "./pages/Home/home";
+import PropertyDetail from "./pages/Properties/detail";
 import Properties from "./pages/Properties/properties";
 
 export const routes = [
@@ -12,10 +13,14 @@ export const routes = [
         element: <Home />
       },
       {
+        exact: true,
         path: "properties",
-        element: <Properties />
+        element: <Properties />,
+      },
+      {
+        path: 'properties/detail/:id',
+        element: <PropertyDetail />
       }
     ]
-
   }
 ]
