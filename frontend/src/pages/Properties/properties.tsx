@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Breadcrumb, Button, Col, Row, Space, Tag,  message } from 'antd';
+import { Breadcrumb, Button, Checkbox, Col, Row, Space, Tag,  message } from 'antd';
 
 import * as standardizeData from '../../helpers/standardizeData'
 import getPriceUnit from '../../helpers/getPriceUnit';
@@ -16,26 +16,39 @@ const Properties: React.FC = () => {
   const [propertyList, setPropertyList] = useState<Property[]>([]);
   const [error, setError] = useState<string | null>(null); 
   const [keyword, setKeyword] = useState<string | null>(null); 
+  const [status, setStatus] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await propertiesService.getProperties({
-          params: keyword ? { keyword: keyword } : {}
+          params: {
+            ...(keyword && { keyword }),
+            ...(status && { status }),
+          },
         });
-        setPropertyList(response.properties);
+
+        if(response?.code === 200) {
+          setPropertyList(response.properties);
+        } else {
+          message.error(response.message, 2);
+        }
 
       } catch (error) {
         message.error('An error occurred while fetching properties.', 2);
-        setError('An error occurred while fetching properties.');
+        setError('No property found.');
         console.log('Error occurred:', error);
       }
     };
     fetchData();
-  }, [keyword]);  
+  }, [keyword, status]);  
 
   const handleKeywordChange = (newKeyword: string | null) => {
     setKeyword(newKeyword);
+  };
+
+  const handleStatusChange = (newStatus: string | null) => {
+    setStatus(newStatus);
   };
 
   const renderTag = (value: string, colorMap: Record<string, string>) => (
@@ -52,7 +65,10 @@ const Properties: React.FC = () => {
         {breadcrumbName: 'Properties'}
       ]} />
 
-      <FilterBox onKeywordChange={handleKeywordChange}/>
+      <FilterBox 
+        onKeywordChange={handleKeywordChange}
+        onStatusChange={handleStatusChange}
+      />
 
       {error ? (
         <div>{error}</div>
@@ -63,6 +79,15 @@ const Properties: React.FC = () => {
               <div
                 className='item-wrapper__upper-content' 
                 key={index}>
+                  <Col
+                    className='item-wrapper__upper-content--check-box d-flex align-items-center'  
+                    span={1}
+                  >
+                    <Checkbox
+                      // onChange={(e) => setComponentDisabled(e.target.checked)}
+                    ></Checkbox>
+                  </Col>
+
                 <Col xxl={4} xl={4} lg={4} md={4} sm={4}>
                   <img 
                     src={property.images?.[0] ?? ""} 
@@ -125,7 +150,7 @@ const Properties: React.FC = () => {
                 </Col>
                 <Col
                   className='item-wrapper__custom-col-two'  
-                  xxl={8} xl={8} lg={8} md={8} sm={8}
+                  xxl={7} xl={7} lg={7} md={7} sm={7}
                 >
                   <div style={{marginLeft: "2rem"}}>
                     <div className='item-wrapper__upper-content--status'>
@@ -175,10 +200,10 @@ const Properties: React.FC = () => {
               <Col span={24}>
                 <div className='item-wrapper__lower-content'>
                   <div className='item-wrapper__lower-content--date-created'>
-                    Created: {property.createdAt ? new Date(property.createdAt).toLocaleString() : ''}
+                    Created: {property.createdAt ? new Date(property.createdAt).toLocaleString() : 'No data'}
                   </div>
                   <div className='item-wrapper__lower-content--date-created'>
-                    Expire: {property.expireAt ? new Date(property.expireAt).toLocaleString() : ''}
+                    Expire: {property.expireAt ? new Date(property.expireAt).toLocaleString() : 'No data'}
                   </div>
                 </div>
               </Col>

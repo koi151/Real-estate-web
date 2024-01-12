@@ -2,20 +2,30 @@ import React, { useState } from 'react';
 import { Button } from 'antd';
 import Search, { SearchProps } from 'antd/es/input/Search';
 import { IoFilter } from 'react-icons/io5';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
+import './filterBox.scss'
 
 interface FilterBoxProps {
   onKeywordChange: (newKeyword: string | null) => void;
+  onStatusChange: (newStatus: string | null) => void;
 }
 
-const FilterBox: React.FC<FilterBoxProps> = ({ onKeywordChange }) => {
+const FilterBox: React.FC<FilterBoxProps> = ({ onKeywordChange, onStatusChange }) => {
   const navigate = useNavigate();
   const [keyword, setKeyword] = useState<string | null>(null);
+  const [status, setStatus] = useState<string | null>(null);
 
   const onSearch: SearchProps['onSearch'] = (value) => {
     setKeyword(value);
     onKeywordChange(value); // notify the parent about the keyword change
     navigate(`/admin/properties?keyword=${value}`);
+  };
+
+  const handleStatusChange = (value: string) => {
+    setStatus(value);
+    onStatusChange(value);
+    navigate(`/admin/properties?status=${value}`);
   };
 
   return (
@@ -35,15 +45,9 @@ const FilterBox: React.FC<FilterBoxProps> = ({ onKeywordChange }) => {
         <div className='status-filter'>
           <span>Filter by status:</span>
           <span className='status-filter__status-wrap mr-2'>
-            <Link to={`/`} className='ml-1'> 
-              <Button>All</Button>
-            </Link>
-            <Link to={`/`} className='ml-1'> 
-              <Button>Active</Button>
-            </Link>
-            <Link to={`/`} className='ml-1'> 
-              <Button>Inactive</Button>
-            </Link>
+            <Button onClick={() => handleStatusChange('')} className='ml-1'>All</Button>
+            <Button onClick={() => handleStatusChange('active')} className='ml-1'>Active</Button>
+            <Button onClick={() => handleStatusChange('inactive')} className='ml-1'>Inactive</Button>
           </span>
         </div>
       </div>

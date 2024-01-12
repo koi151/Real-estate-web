@@ -8,9 +8,7 @@ import { paginationHelper } from '../../../../helpers/pagination';
 // [GET] /admin/properties
 export const index = async (req: Request, res: Response) => {
   try {
-    console.log("req.url:", req.url)
     console.log("req.query:", req.query)
-    console.log("req.params:", req.params)
 
     interface Find {
       deleted: boolean,
@@ -18,8 +16,11 @@ export const index = async (req: Request, res: Response) => {
       title?: RegExp
     }
 
+    let status: string | undefined = req.query.status?.toString();
+
     const find: Find = {
       deleted: false,
+      ...(status && { status }),
     };
 
     // Searching
@@ -62,7 +63,8 @@ export const index = async (req: Request, res: Response) => {
     } else {
       res.status(404).json({
         code: 404,
-        message: 'No properties found'
+        message: 'No properties found',
+        properties: properties
       });
     }
 

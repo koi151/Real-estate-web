@@ -69,42 +69,6 @@ body {
   }
 }
 
-.filter-box {
-  display: flex;
-  flex-direction: column;
-
-  &__button-wrapper {
-    display: flex;
-    justify-content: flex-end;
-
-    .search-box {
-      width: 30rem;
-    }
-
-    .filter-button {
-      margin: 0 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      svg {
-        margin-left: 1rem;
-      }
-    }
-  } 
-
-  &__detail {
-    height: 10rem;
-    width: 100%;
-    background-color: #fff;
-    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-    margin: .5rem 0;
-    margin-top: 1rem;
-    padding: 2rem;
-    border-radius: .8rem;
-  }
-}
-
 // margin 
 .ml-2 {
   margin-left: 2rem;
