@@ -1,14 +1,15 @@
 export type RoomType = "bedrooms" | "bathrooms" | "kitchens" | "livingRooms";
 
 export interface Location {
-  city: string;
-  district: string;
+  city?: string;
+  district?: string;
+  address?: string;
 }
 
 export interface PropertyDetails {
-  subType: string;
-  features: string[];
-  propertyType: string;
+  subType?: string;
+  features?: string[];
+  propertyType?: string;
 }
 
 export interface Property {
@@ -19,6 +20,7 @@ export interface Property {
     length: number;
   },
   status?: string;
+  view?: number;
   price?: string;
   images?: string[];
   location?: Location;

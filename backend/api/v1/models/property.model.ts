@@ -26,6 +26,7 @@ const propertySchema = new mongoose.Schema(
       width: Number
     },
     images: Array,
+    view: Number,
     status: {
       type: String,
       enum: statusValues

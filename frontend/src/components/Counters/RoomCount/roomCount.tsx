@@ -2,8 +2,8 @@ import React from 'react';
 import { Tooltip } from 'antd';
 import { IoBedOutline } from 'react-icons/io5';
 import { LuBath } from 'react-icons/lu';
-import { getRoomCount } from '../../helpers/standardizeData';
-import { RoomType } from '../../commonTypes';
+import { getRoomCount } from '../../../helpers/standardizeData';
+import { RoomType } from '../../../commonTypes';
 
 interface RoomCountTooltipProps {
   roomList: string[] | null;

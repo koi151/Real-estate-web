@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Breadcrumb, Button, Checkbox, Col, Row, Space, Tag,  message } from 'antd';
 
 import * as standardizeData from '../../helpers/standardizeData'
 import getPriceUnit from '../../helpers/getPriceUnit';
 
 import propertiesService from '../../services/admin/properties.service';
-import RoomCountTooltip from '../../components/RoomCount/roomCount';
+import RoomCountTooltip from '../../components/Counters/RoomCount/roomCount';
+import ViewCount from '../../components/Counters/ViewCount/viewCount';
 import { Property } from '../../commonTypes';
-import { Link } from 'react-router-dom';
-import './properties.scss';
 import FilterBox from '../../components/FilterBox/filterBox';
+import './properties.scss';
 
 const Properties: React.FC = () => {
 
@@ -17,6 +18,10 @@ const Properties: React.FC = () => {
   const [error, setError] = useState<string | null>(null); 
   const [keyword, setKeyword] = useState<string | null>(null); 
   const [status, setStatus] = useState<string | null>(null);
+  const [sorting, setSorting] = useState<{ sortKey: string | null, sortValue: string | null }>({
+    sortKey: '',
+    sortValue: '',
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,6 +30,8 @@ const Properties: React.FC = () => {
           params: {
             ...(keyword && { keyword }),
             ...(status && { status }),
+            ...(sorting?.sortKey && { sortKey: sorting.sortKey }),
+            ...(sorting?.sortValue && { sortValue: sorting.sortValue })
           },
         });
 
@@ -41,7 +48,7 @@ const Properties: React.FC = () => {
       }
     };
     fetchData();
-  }, [keyword, status]);  
+  }, [keyword, status, sorting]);  
 
   const handleKeywordChange = (newKeyword: string | null) => {
     setKeyword(newKeyword);
@@ -50,6 +57,10 @@ const Properties: React.FC = () => {
   const handleStatusChange = (newStatus: string | null) => {
     setStatus(newStatus);
   };
+
+  const handleSortingChange = (newSorting: any) => {
+    setSorting(newSorting);
+  }
 
   const renderTag = (value: string, colorMap: Record<string, string>) => (
     <Tag className="listing-type-tag" color={colorMap[value]}>
@@ -68,6 +79,7 @@ const Properties: React.FC = () => {
       <FilterBox 
         onKeywordChange={handleKeywordChange}
         onStatusChange={handleStatusChange}
+        onSortingChange={handleSortingChange}
       />
 
       {error ? (
@@ -76,9 +88,7 @@ const Properties: React.FC = () => {
         propertyList.map((property, index) => (
           <div className='item-wrapper' key={index}>  
             <Row className='item-wrapper__custom-row'>
-              <div
-                className='item-wrapper__upper-content' 
-                key={index}>
+              <div className='item-wrapper__upper-content' key={index}>
                   <Col
                     className='item-wrapper__upper-content--check-box d-flex align-items-center'  
                     span={1}
@@ -133,24 +143,26 @@ const Properties: React.FC = () => {
                     }
                   </div>
                 </Col>
-                <Col xxl={2} xl={2} lg={2} md={2} sm={2}>
+                <Col xxl={3} xl={3} lg={3} md={3} sm={3}>
                   <div className='item-wrapper__upper-content--rooms'>
                     {property.propertyDetails?.features ? (
                       <div className='d-flex flex-column justify-content-center'>
                         <RoomCountTooltip roomList={property.propertyDetails?.features} type="bedrooms" />
                         <RoomCountTooltip roomList={property.propertyDetails?.features} type="bathrooms" />
+                        <ViewCount propertyView={property.view} />
                       </div>
                     ) : (
                       <>
                         <RoomCountTooltip roomList={null} type="bedrooms" />
                         <RoomCountTooltip roomList={null} type="bathrooms" />
+                        <ViewCount propertyView={property.view} />
                       </>
                     )}
                   </div>
                 </Col>
                 <Col
                   className='item-wrapper__custom-col-two'  
-                  xxl={7} xl={7} lg={7} md={7} sm={7}
+                  xxl={6} xl={6} lg={6} md={6} sm={6}
                 >
                   <div style={{marginLeft: "2rem"}}>
                     <div className='item-wrapper__upper-content--status'>

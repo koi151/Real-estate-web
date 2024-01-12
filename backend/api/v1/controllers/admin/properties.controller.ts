@@ -41,18 +41,21 @@ export const index = async (req: Request, res: Response) => {
     );
 
     // Sort
-    const sort: { [key: string]: any } = {};
 
-    if (req.query.sortKey && req.query.sortValue) {
-      const sortKey = req.query.sortKey.toString();
-      sort[sortKey] = req.query.sortValue;
-    }
+    interface SortingQuery {
+      [key: string]: 'asc' | 'desc';
+    } 
     
+    const sortingQuery: SortingQuery = {};
+    
+    if (req.query.sortKey && req.query.sortValue) {
+      sortingQuery[req.query.sortKey.toString()] = req.query.sortValue.toString() as 'asc' | 'desc';
+    }
+
     const properties = await Property.find(find)
-      .sort(sort || '')
+      .sort(sortingQuery || '')
       .limit(objectPagination.limitItems || 0)
       .skip(objectPagination.skip || 0);
-
 
     if (properties.length > 0) {
       res.status(200).json({
