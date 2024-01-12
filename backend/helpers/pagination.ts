@@ -1,15 +1,10 @@
-interface ObjectPagination {
-  currentPage: number;
-  limitItems: number;
-  skip?: number;
-  totalPage?: number;
-}
+import { PaginationObject } from '../commonTypes'
 
 export const paginationHelper = (
-  objectPagination: ObjectPagination,
+  objectPagination: PaginationObject,
   query: any,
   countRecords: number
-): ObjectPagination => {
+): PaginationObject => {
   if (query.page) {
     objectPagination.currentPage = parseInt(query.page);
   }

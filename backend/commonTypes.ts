@@ -1,5 +1,6 @@
 export type RoomType = "bedrooms" | "bathrooms" | "kitchens" | "livingRooms";
 
+// PROPERTY INFO
 export interface Location {
   city?: string;
   district?: string;
@@ -35,6 +36,7 @@ export interface SortingQuery {
   sortValue: string;
 }
 
+// PAGINATION 
 export interface PaginationObject {
   currentPage: number | null; 
   limitItems: number | null; 

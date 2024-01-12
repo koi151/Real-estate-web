@@ -1,4 +1,4 @@
-import { RoomType } from "../commonTypes";
+import { RoomType } from "../../../backend/commonTypes";
 
 // forSale => For Sale.  house => House
 export const listingType = (word: string): string => {

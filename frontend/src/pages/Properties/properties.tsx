@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Breadcrumb, Button, Checkbox, Col, Pagination, PaginationProps, Row, Space, Tag,  message } from 'antd';
+import { Breadcrumb, Button, Checkbox, Col, Pagination, 
+         PaginationProps, Row, Space, Tag,  message } from 'antd';
 
 import * as standardizeData from '../../helpers/standardizeData'
 import getPriceUnit from '../../helpers/getPriceUnit';
@@ -8,7 +9,7 @@ import getPriceUnit from '../../helpers/getPriceUnit';
 import propertiesService from '../../services/admin/properties.service';
 import RoomCountTooltip from '../../components/Counters/RoomCount/roomCount';
 import ViewCount from '../../components/Counters/ViewCount/viewCount';
-import { Property, PaginationObject, SortingQuery } from '../../commonTypes';
+import { Property, PaginationObject, SortingQuery } from '../../../../backend/commonTypes';
 import FilterBox from '../../components/FilterBox/filterBox';
 import './properties.scss';
 
@@ -16,9 +17,11 @@ const Properties: React.FC = () => {
 
   const [propertyList, setPropertyList] = useState<Property[]>([]);
   const [error, setError] = useState<string | null>(null); 
-  const [status, setStatus] = useState<string | null>(null);
   const [propertyCount, setPropertyCount] = useState<number>(0);
 
+  // Searching and filtering
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [status, setStatus] = useState<string | null>(null);
   const [keyword, setKeyword] = useState<string | null>(null); 
   const [sorting, setSorting] = useState<SortingQuery>(
     { sortKey: '', sortValue: '' }
@@ -29,24 +32,23 @@ const Properties: React.FC = () => {
     skip: null,
     totalPage: null,
   })
+  // 
 
-  const onShowSizeChange: PaginationProps['onShowSizeChange'] = (current, pageSize) => {
-    console.log(current, pageSize);
+  const onPageChange: PaginationProps['onChange'] = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await propertiesService.getProperties({
-          params: {
-            ...(keyword && { keyword }),
-            ...(status && { status }),
-            ...(sorting?.sortKey && { sortKey: sorting.sortKey }),
-            ...(sorting?.sortValue && { sortValue: sorting.sortValue })
-          },
-          pageSize: 4,
-          currentPage: 1
-        });
+        const response = await propertiesService.getProperties({ 
+          ...(keyword && { keyword }), 
+          ...(status && { status }), 
+          ...(sorting?.sortKey && { sortKey: sorting.sortKey }), 
+          ...(sorting?.sortValue && { sortValue: sorting.sortValue }), 
+          currentPage: currentPage,
+          pageSize: 2
+      });
 
         if(response?.code === 200) {
           setPropertyList(response.properties);
@@ -63,7 +65,7 @@ const Properties: React.FC = () => {
       }
     };
     fetchData();
-  }, [keyword, status, sorting]);  
+  }, [keyword, status, sorting, currentPage]);  
 
   const handleKeywordChange = (newKeyword: string | null) => {
     setKeyword(newKeyword);
@@ -247,7 +249,7 @@ const Properties: React.FC = () => {
         // showSizeChanger
         showQuickJumper
         pageSize={paginationObj.limitItems || 4}
-        onShowSizeChange={onShowSizeChange}
+        onChange={onPageChange}
         defaultCurrent={paginationObj.currentPage || 1}
         total={propertyCount}
       />

@@ -9,7 +9,6 @@ import { paginationHelper } from '../../../../helpers/pagination';
 export const index = async (req: Request, res: Response) => {
   try {
     console.log("req.query:", req.query)
-    console.log("req.body", req.body)
 
     interface Find {
       deleted: boolean,
@@ -34,8 +33,10 @@ export const index = async (req: Request, res: Response) => {
     const countRecords = await Property.countDocuments(find);
     let paginationObject = paginationHelper(
       {
-        currentPage: 1,
+        currentPage: typeof(req.query.currentPage) == "string" ? parseInt(req.query.currentPage) : 1,
         limitItems: 2,
+        skip: null, // helper return skip, totalPage value, do not change
+        totalPage: null,
       },
       req.query,
       countRecords
