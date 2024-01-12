@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Breadcrumb, Button, Checkbox, Col, Row, Space, Tag,  message } from 'antd';
+import { Breadcrumb, Button, Checkbox, Col, Pagination, PaginationProps, Row, Space, Tag,  message } from 'antd';
 
 import * as standardizeData from '../../helpers/standardizeData'
 import getPriceUnit from '../../helpers/getPriceUnit';
@@ -8,7 +8,7 @@ import getPriceUnit from '../../helpers/getPriceUnit';
 import propertiesService from '../../services/admin/properties.service';
 import RoomCountTooltip from '../../components/Counters/RoomCount/roomCount';
 import ViewCount from '../../components/Counters/ViewCount/viewCount';
-import { Property } from '../../commonTypes';
+import { Property, PaginationObject, SortingQuery } from '../../commonTypes';
 import FilterBox from '../../components/FilterBox/filterBox';
 import './properties.scss';
 
@@ -16,12 +16,23 @@ const Properties: React.FC = () => {
 
   const [propertyList, setPropertyList] = useState<Property[]>([]);
   const [error, setError] = useState<string | null>(null); 
-  const [keyword, setKeyword] = useState<string | null>(null); 
   const [status, setStatus] = useState<string | null>(null);
-  const [sorting, setSorting] = useState<{ sortKey: string | null, sortValue: string | null }>({
-    sortKey: '',
-    sortValue: '',
-  });
+  const [propertyCount, setPropertyCount] = useState<number>(0);
+
+  const [keyword, setKeyword] = useState<string | null>(null); 
+  const [sorting, setSorting] = useState<SortingQuery>(
+    { sortKey: '', sortValue: '' }
+  )
+  const [paginationObj, setPaginationObj] = useState<PaginationObject>({
+    currentPage: null,
+    limitItems: null,
+    skip: null,
+    totalPage: null,
+  })
+
+  const onShowSizeChange: PaginationProps['onShowSizeChange'] = (current, pageSize) => {
+    console.log(current, pageSize);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,10 +44,14 @@ const Properties: React.FC = () => {
             ...(sorting?.sortKey && { sortKey: sorting.sortKey }),
             ...(sorting?.sortValue && { sortValue: sorting.sortValue })
           },
+          pageSize: 4,
+          currentPage: 1
         });
 
         if(response?.code === 200) {
           setPropertyList(response.properties);
+          setPaginationObj(response.paginationObject);
+          setPropertyCount(response.propertyCount);
         } else {
           message.error(response.message, 2);
         }
@@ -99,11 +114,14 @@ const Properties: React.FC = () => {
                   </Col>
 
                 <Col xxl={4} xl={4} lg={4} md={4} sm={4}>
-                  <img 
-                    src={property.images?.[0] ?? ""} 
-                    className='item-wrapper__upper-content--image' 
-                    alt='property img' 
-                  />
+                  {property.images?.length ? 
+                    <img 
+                      src={property.images?.[0] ?? ""} 
+                      className='item-wrapper__upper-content--image' 
+                      alt='property img' 
+                    />
+                  : <span className='d-flex justify-content-center align-items-center' style={{height: "100%"}}> No image </span>
+                  }
                 </Col>
                 <Col 
                   xxl={7} xl={7} lg={7} md={7} sm={7}
@@ -225,6 +243,14 @@ const Properties: React.FC = () => {
       ) : (
         <>Loading...</>
       )}
+      <Pagination
+        // showSizeChanger
+        showQuickJumper
+        pageSize={paginationObj.limitItems || 4}
+        onShowSizeChange={onShowSizeChange}
+        defaultCurrent={paginationObj.currentPage || 1}
+        total={propertyCount}
+      />
     </>
   );
 };

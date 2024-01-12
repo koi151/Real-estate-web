@@ -29,3 +29,22 @@ export interface Property {
   createdAt?: Date;
   expireAt?: Date;
 }
+
+export interface SortingQuery {
+  sortKey: string;
+  sortValue: string;
+}
+
+export interface PaginationObject {
+  currentPage: number | null; 
+  limitItems: number | null; 
+  skip: number | null;
+  totalPage: number | null;
+}
+
+// ADMIN SERVICE
+export interface GetPropertiesOptions {
+  params?: Record<string, any>;
+  pageSize?: number;
+  currentPage?: number;
+}

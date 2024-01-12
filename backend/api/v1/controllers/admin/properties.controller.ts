@@ -9,6 +9,7 @@ import { paginationHelper } from '../../../../helpers/pagination';
 export const index = async (req: Request, res: Response) => {
   try {
     console.log("req.query:", req.query)
+    console.log("req.body", req.body)
 
     interface Find {
       deleted: boolean,
@@ -31,17 +32,16 @@ export const index = async (req: Request, res: Response) => {
 
     // Pagination
     const countRecords = await Property.countDocuments(find);
-    let objectPagination = paginationHelper(
+    let paginationObject = paginationHelper(
       {
         currentPage: 1,
-        limitItems: 4,
+        limitItems: 2,
       },
       req.query,
       countRecords
     );
 
-    // Sort
-
+    // Sorting 
     interface SortingQuery {
       [key: string]: 'asc' | 'desc';
     } 
@@ -54,20 +54,23 @@ export const index = async (req: Request, res: Response) => {
 
     const properties = await Property.find(find)
       .sort(sortingQuery || '')
-      .limit(objectPagination.limitItems || 0)
-      .skip(objectPagination.skip || 0);
+      .limit(paginationObject.limitItems || 0)
+      .skip(paginationObject.skip || 0);
+
+    const propertyCount = await Property.countDocuments(find);
 
     if (properties.length > 0) {
       res.status(200).json({
         code: 200,
         message: 'Success',
-        properties: properties
+        properties: properties,
+        paginationObject: paginationObject,
+        propertyCount: propertyCount
       });
     } else {
       res.status(404).json({
         code: 404,
         message: 'No properties found',
-        properties: properties
       });
     }
 
