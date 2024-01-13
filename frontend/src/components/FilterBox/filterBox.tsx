@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Select, SelectProps } from 'antd';
 import Search, { SearchProps } from 'antd/es/input/Search';
 import { IoFilter } from 'react-icons/io5';
@@ -16,31 +16,50 @@ interface FilterBoxProps {
 }
 
 const FilterBox: React.FC<FilterBoxProps> = ({ onKeywordChange, onStatusChange, onSortingChange}) => {
+  
   const navigate = useNavigate();
   const [keyword, setKeyword] = useState<string | null>(null);
-  const [status, setStatus] = useState<string | null>(null);
-
-  const [sorting, setSorting] = useState<{ sortKey: string | null, sortValue: string | null }>({
+  const [status, setStatus] = useState<string>('');
+  const [sorting, setSorting] = useState<{
+    sortKey: string | null;
+    sortValue: string | null;
+  }>({
     sortKey: '',
     sortValue: '',
   });
 
+  const buildURL = () => {
+    const params: { [key: string]: string } = {};
+    if (keyword) params['keyword'] = keyword;
+    if (status) params['status'] = status;
+    if (sorting.sortKey && sorting.sortValue) {
+      params['sortKey'] = sorting.sortKey;
+      params['sortValue'] = sorting.sortValue;
+    }
+    console.log("status, params:", status,  params)
+
+    return `/admin/properties${Object.keys(params).length > 0 ? `?${new URLSearchParams(params)}` : ''}`;
+  };
+  
   const onSearch: SearchProps['onSearch'] = (value) => {
     setKeyword(value);
-    onKeywordChange(value);
-    navigate(`/admin/properties?keyword=${value}`);
   };
+
+  useEffect(() => {
+    onStatusChange(status);
+    onSortingChange(sorting);
+    onKeywordChange(keyword)
+    navigate(buildURL());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status, sorting, keyword]);  
 
   const handleStatusChange = (value: string) => {
     setStatus(value);
-    onStatusChange(value);
-    navigate(`/admin/properties?status=${value}`);
   };
 
   const handleSortingChange = (value: string) => {
     const [sortKey, sortValue] = value.split('-');
     setSorting({ sortKey, sortValue });
-    onSortingChange({sortKey, sortValue});
   }
 
   const options: SelectProps['options'] = [
@@ -106,3 +125,5 @@ const FilterBox: React.FC<FilterBoxProps> = ({ onKeywordChange, onStatusChange, 
 };
 
 export default FilterBox;
+
+
