@@ -4,12 +4,13 @@ import Property from "../../models/property.model";
 
 import { searchHelper } from "../../../../helpers/search";
 import { paginationHelper } from '../../../../helpers/pagination';
+import { isValidStatus } from "../../../../helpers/dataTypeCheck";
+
+import { PropertyType, ValidStatus } from "../../../../commonTypes";
 
 // [GET] /admin/properties
 export const index = async (req: Request, res: Response) => {
   try {
-    console.log("req.query:", req.query)
-
     interface Find {
       deleted: boolean,
       status?: string,
@@ -84,7 +85,7 @@ export const index = async (req: Request, res: Response) => {
   }
 }
 
-// [GET] /admin/properties
+// [GET] /admin/properties/:propertyId
 export const detail = async (req: Request, res: Response) => {
   try {
     const id : string = req.params.propertyId;
@@ -139,33 +140,10 @@ export const singleDelete = async (req: Request, res: Response) => {
   }
 }
 
-interface PropertyData {
-  title: string;
-  price: number;
-  status: string;
-  listingType?: string;
-  description?: string;
-  area?: {
-    length: number;
-    width: number;
-  };
-  images?: string[];
-  location?: {
-    city: string;
-    district: string;
-  };
-  propertyDetails?: {
-    type: string;
-    subType: string;
-    features: string[];
-  };
-  deleted?: Boolean;
-}
-
 // [POST] /admin/properties/create
 export const createPost = async (req: Request, res: Response) => {
   try {    
-    const property: PropertyData = {
+    const property: PropertyType = {
       title: req.body.title,
       listingType: req.body.listingType,
       description: req.body.description,
@@ -199,7 +177,7 @@ export const createPost = async (req: Request, res: Response) => {
 export const editPatch = async (req: Request, res: Response) => {
   try {    
     const id: string = req.params.propertyId
-    const property: PropertyData = {
+    const property: PropertyType = {
       title: req.body.title,
       listingType: req.body.listingType,
       description: req.body.description,
@@ -219,7 +197,7 @@ export const editPatch = async (req: Request, res: Response) => {
 
     res.status(200).json({
       code: 200,
-      message: 'Edited property successful'
+      message: 'Property edited successfully'
     })
 
   } catch (error) {
@@ -230,3 +208,51 @@ export const editPatch = async (req: Request, res: Response) => {
     })
   }
 }
+
+// [PATCH] /admin/properties/change-status/:status/:id
+export const changeStatus = async (req: Request, res: Response) => {
+  try {
+    const status = req.params.status;
+
+    if (!isValidStatus(status)) {
+      return res.status(400).json({
+        code: 400,
+        message: 'Invalid status value',
+      });
+    }
+
+    await Property.updateOne(
+      { _id: req.params.propertyId.toString() }, 
+      { 
+        deleted: false,
+        status: req.params.status
+      }
+    )
+
+    res.status(200).json({
+      code: 200,
+      message: "Property status updated successfully"
+    })
+
+  } catch (error) {
+    console.log('Error occurred while multing changing property:', error);
+    res.status(400).json({
+      code: 400,
+      message: "Error occurred while multing changing property"
+    })
+  }
+} 
+
+// [PATCH] /admin/properties/multi-change
+export const multiChange = async (req: Request, res: Response) => {
+  try {
+    console.log(req.body);
+
+  } catch (error) {
+    console.log('Error occurred while multing changing property:', error);
+    res.status(400).json({
+      code: 400,
+      message: "Error occurred while multing changing property"
+    })
+  }
+} 

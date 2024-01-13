@@ -1,4 +1,5 @@
 export type RoomType = "bedrooms" | "bathrooms" | "kitchens" | "livingRooms";
+export type ValidStatus = 'active' | 'inactive';
 
 // PROPERTY INFO
 export interface Location {
@@ -13,14 +14,16 @@ export interface PropertyDetails {
   propertyType?: string;
 }
 
-export interface Property {
-  _id: string;
+export interface PropertyType {
+  _id?: string;
   title: string;
+  status?: ValidStatus;
+  position?: number;
+  description: string,
   area?: {
     width: number;
     length: number;
   },
-  status?: string;
   view?: number;
   price?: string;
   images?: string[];
@@ -29,6 +32,7 @@ export interface Property {
   propertyDetails?: PropertyDetails;
   createdAt?: Date;
   expireAt?: Date;
+  deleted?: boolean;
 }
 
 export interface SortingQuery {

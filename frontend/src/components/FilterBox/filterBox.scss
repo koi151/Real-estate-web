@@ -32,6 +32,23 @@
     margin-top: 1rem;
     padding: 2rem;
     border-radius: .8rem;
+
+    .sorting-items {
+      margin-left: 2rem;
+
+      &__select {
+        width: 20rem;
+        margin-left: .5rem;
+      }
+    }
+    
+    .multiple-change {
+      margin-left: 2rem;
+      &__select {
+        width: 20rem;
+        margin-left: .5rem;
+      }
+    }
   }
 }
 

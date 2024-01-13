@@ -36,6 +36,11 @@
   &__upper-content {
     display: flex;
     padding: 2rem;
+
+    &--position {
+      margin-bottom: 1rem;
+      color:#999;
+    }
     
     &--image {
       height: 12rem;

@@ -10,6 +10,7 @@ const statusValues = ["active", "inactive"];
 const propertySchema = new mongoose.Schema(
   {
     title: String,
+    position: Number,
     listingType: {
       type: String, 
       enum: listingTypeValues

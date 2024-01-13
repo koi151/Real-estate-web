@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { Link } from 'react-router-dom';
 import { Breadcrumb, Button, Checkbox, Col, Pagination, 
-         PaginationProps, Row, Space, Tag,  message } from 'antd';
+         PaginationProps, Row, Space, Tag,  Tooltip,  message } from 'antd';
 
 import * as standardizeData from '../../helpers/standardizeData'
 import getPriceUnit from '../../helpers/getPriceUnit';
@@ -9,23 +10,26 @@ import getPriceUnit from '../../helpers/getPriceUnit';
 import propertiesService from '../../services/admin/properties.service';
 import RoomCountTooltip from '../../components/Counters/RoomCount/roomCount';
 import ViewCount from '../../components/Counters/ViewCount/viewCount';
-import { Property, PaginationObject, SortingQuery } from '../../../../backend/commonTypes';
+import { PropertyType, PaginationObject, SortingQuery, ValidStatus } from '../../../../backend/commonTypes';
 import FilterBox from '../../components/FilterBox/filterBox';
 import './properties.scss';
+import StatusButton from '../../components/StatusButton/statusButton';
 
 const Properties: React.FC = () => {
 
-  const [propertyList, setPropertyList] = useState<Property[]>([]);
+  const [propertyList, setPropertyList] = useState<PropertyType[]>([]);
   const [error, setError] = useState<string | null>(null); 
   const [propertyCount, setPropertyCount] = useState<number>(0);
 
   // Searching and filtering
+  const [checkedList, setCheckedList] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [status, setStatus] = useState<string | null>(null);
   const [keyword, setKeyword] = useState<string | null>(null); 
   const [sorting, setSorting] = useState<SortingQuery>(
     { sortKey: '', sortValue: '' }
   )
+
   const [paginationObj, setPaginationObj] = useState<PaginationObject>({
     currentPage: null,
     limitItems: null,
@@ -78,6 +82,14 @@ const Properties: React.FC = () => {
   const handleSortingChange = (newSorting: any) => {
     setSorting(newSorting);
   }
+  
+  const handleCheckboxChange = (id: string) => (e: CheckboxChangeEvent) => {
+    if (e.target.checked) {
+      setCheckedList([...checkedList, id]);
+    } else {
+      setCheckedList(checkedList.filter((itemId) => itemId !== id));
+    }
+  };
 
   const renderTag = (value: string, colorMap: Record<string, string>) => (
     <Tag className="listing-type-tag" color={colorMap[value]}>
@@ -97,6 +109,7 @@ const Properties: React.FC = () => {
         onKeywordChange={handleKeywordChange}
         onStatusChange={handleStatusChange}
         onSortingChange={handleSortingChange}
+        checkedList={checkedList}
       />
 
       {error ? (
@@ -107,11 +120,26 @@ const Properties: React.FC = () => {
             <Row className='item-wrapper__custom-row'>
               <div className='item-wrapper__upper-content' key={index}>
                   <Col
-                    className='item-wrapper__upper-content--check-box d-flex align-items-center'  
+                    className='d-flex flex-column justify-content-center'  
                     span={1}
                   >
+                    {property.position ?
+                      <Tooltip title={
+                        <span>
+                          Property at <span style={{ color: 'orange' }}>#{property.position}</span> position
+                        </span>
+                      }>
+                        <div className='item-wrapper__upper-content--position'>
+                          #{property.position.toString()}
+                        </div>
+                      </Tooltip>
+                    : <Tooltip title='Please add the position of property'>No data</Tooltip>    
+                    }
+                    
                     <Checkbox
-                      // onChange={(e) => setComponentDisabled(e.target.checked)}
+                      onChange={handleCheckboxChange(property._id || '')}
+                      className='item-wrapper__upper-content--checkbox'
+                      id={property._id}
                     ></Checkbox>
                   </Col>
 
@@ -140,7 +168,7 @@ const Properties: React.FC = () => {
                     </div>
                   </div>
                   <div>
-                    {property.price && 
+                    {property.price ? 
                       <span className='item-wrapper__upper-content--price'>
                         <span className='price-number'>
                           {parseFloat(property.price) > 1000
@@ -152,14 +180,16 @@ const Properties: React.FC = () => {
                           <span style={{ margin: '0 .85rem' }}>/</span>
                         </span>
                       </span>
+                      : <Tooltip title='No data of price'>...</Tooltip>
                     }
-                    {property.area?.width && property.area?.length && 
+                    {property.area?.width && property.area?.length ? 
                       <span className='item-wrapper__upper-content--area'>
                         <span className='area-number'>
                           {property.area.width * property.area.length}
                         </span>
                         <span className='area-unit'>m²</span>
                       </span>
+                      : <Tooltip title='No data of area'>...</Tooltip>
                     }
                   </div>
                 </Col>
@@ -185,19 +215,11 @@ const Properties: React.FC = () => {
                   xxl={6} xl={6} lg={6} md={6} sm={6}
                 >
                   <div style={{marginLeft: "2rem"}}>
-                    <div className='item-wrapper__upper-content--status'>
-                      <p className='status-text'>Status: </p>
-                        {property.status &&
-                          <>
-                            <Button 
-                              type='primary'
-                              className={`${property.status}-btn small-btn`} 
-                            >
-                              {property.status}
-                            </Button>
-                          </> 
-                        }
-                    </div>
+                    {property.status && property._id ? (
+                      <StatusButton itemId={property._id} status={property.status} />
+                    ) : (
+                      <Tooltip title='Please add property status or id'>No data</Tooltip>
+                    )}
                     <div className='item-wrapper__upper-content--listing-type'>
                       <p className='tag-text'>Tags: </p>
                       <Space size={[0, 8]} wrap>

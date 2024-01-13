@@ -13,9 +13,10 @@ interface FilterBoxProps {
     sortKey: string | null,
     sortValue: string | null
   }) => void;
+  checkedList: string[]; 
 }
 
-const FilterBox: React.FC<FilterBoxProps> = ({ onKeywordChange, onStatusChange, onSortingChange}) => {
+const FilterBox: React.FC<FilterBoxProps> = ({ onKeywordChange, onStatusChange, onSortingChange, checkedList}) => {
   
   const navigate = useNavigate();
   const [keyword, setKeyword] = useState<string | null>(null);
@@ -62,13 +63,24 @@ const FilterBox: React.FC<FilterBoxProps> = ({ onKeywordChange, onStatusChange, 
     setSorting({ sortKey, sortValue });
   }
 
-  const options: SelectProps['options'] = [
+  const handleMultipleChange = (type: string) => {
+    navigate(`/multi-change/${type}/${checkedList}`)
+  }
+
+  const sortingOptions: SelectProps['options'] = [
     { label: 'Descending position', value: 'position-desc'},
     { label: 'Ascending position', value: 'position-asc'},
     { label: 'Descending price', value: 'price-desc'},
     { label: 'Ascending price', value: 'price-asc'},
     { label: 'Descending view', value: 'view-desc'},
     { label: 'Ascending view', value: 'view-asc'},
+  ];
+
+  const multipleChangeOptions: SelectProps['options'] = [
+    { label: 'Active status', value: 'active-all'},
+    { label: 'Inactive status', value: 'inactive-all'},
+    { label: 'Position change', value: 'position-change-all'},
+    { label: 'Delete items', value: 'delete-all'},
   ];
 
   return (
@@ -115,8 +127,19 @@ const FilterBox: React.FC<FilterBoxProps> = ({ onKeywordChange, onStatusChange, 
             placeholder="Choose sorting method"
             defaultValue={'position-desc'}
             onChange={handleSortingChange}
-            style={{ width: '25rem' }}
-            options={options}
+            options={sortingOptions}
+            className='sorting-items__select'
+          />
+        </div>
+        <div className='multiple-change'>
+          <span>Multiple change: </span>
+          <Select
+            placement='bottomLeft'
+            placeholder="Choose change to apply"
+            defaultValue={'None'}
+            onChange={handleMultipleChange}
+            options={multipleChangeOptions}
+            className='multiple-change__select'
           />
         </div>
       </div>
