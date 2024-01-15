@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { Link } from 'react-router-dom';
-import { Breadcrumb, Button, Checkbox, Col, Pagination, 
+import { Breadcrumb, Button, Checkbox, Col, InputNumber, Pagination, 
          PaginationProps, Row, Space, Tag,  Tooltip,  message } from 'antd';
 
 import * as standardizeData from '../../helpers/standardizeData'
@@ -10,7 +10,7 @@ import getPriceUnit from '../../helpers/getPriceUnit';
 import propertiesService from '../../services/admin/properties.service';
 import RoomCountTooltip from '../../components/Counters/RoomCount/roomCount';
 import ViewCount from '../../components/Counters/ViewCount/viewCount';
-import { PropertyType, PaginationObject, SortingQuery, ValidStatus } from '../../../../backend/commonTypes';
+import { PropertyType, PaginationObject, SortingQuery } from '../../../../backend/commonTypes';
 import FilterBox from '../../components/FilterBox/filterBox';
 import './properties.scss';
 import StatusButton from '../../components/StatusButton/statusButton';
@@ -83,13 +83,32 @@ const Properties: React.FC = () => {
     setSorting(newSorting);
   }
   
-  const handleCheckboxChange = (id: string) => (e: CheckboxChangeEvent) => {
+  const handleCheckboxChange = (id: string | undefined) => (e: CheckboxChangeEvent) => {
+    if (id === undefined) {
+      message.error('Error occurred', 3);
+      console.log('id parameter is undefined');
+      return;
+    }
     if (e.target.checked) {
-      setCheckedList([...checkedList, id]);
+      const position = document.querySelector(`.item-wrapper__upper-content--position input[data-id="${id}"]`) as HTMLInputElement;
+      setCheckedList([...checkedList, `${id}-${position.value}`]);
     } else {
       setCheckedList(checkedList.filter((itemId) => itemId !== id));
     }
   };
+
+  const onChangePosition = (id: string | undefined, position: number | null) => {
+    if (position === null || id === undefined){
+      message.error("Error occurred, can not change position of property");
+      console.log('id or value parameter is undefined')
+    }
+
+    const currentCheckBox = document.querySelector(`.item-wrapper__upper-content--checkbox span input[id="${id}"]`) as HTMLInputElement;
+    console.log(currentCheckBox.checked)
+    if (currentCheckBox?.checked) {
+      setCheckedList([...checkedList, `${id}-${position}`]);
+    }
+  }
 
   const renderTag = (value: string, colorMap: Record<string, string>) => (
     <Tag className="listing-type-tag" color={colorMap[value]}>
@@ -129,15 +148,19 @@ const Properties: React.FC = () => {
                           Property at <span style={{ color: 'orange' }}>#{property.position}</span> position
                         </span>
                       }>
-                        <div className='item-wrapper__upper-content--position'>
-                          #{property.position.toString()}
-                        </div>
+                        <InputNumber
+                          min={0}
+                          className='item-wrapper__upper-content--position' 
+                          defaultValue={property.position} 
+                          onChange={(value) => onChangePosition(property._id, value)}
+                          data-id={property._id}
+                        />
                       </Tooltip>
                     : <Tooltip title='Please add the position of property'>No data</Tooltip>    
                     }
                     
                     <Checkbox
-                      onChange={handleCheckboxChange(property._id || '')}
+                      onChange={handleCheckboxChange(property._id)}
                       className='item-wrapper__upper-content--checkbox'
                       id={property._id}
                     ></Checkbox>

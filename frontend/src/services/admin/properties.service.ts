@@ -1,5 +1,5 @@
 import createApi from '../api.service';
-import { GetPropertiesOptions, ValidStatus } from '../../../../backend/commonTypes';
+import { GetPropertiesOptions, ValidMultiChangeType, ValidStatus } from '../../../../backend/commonTypes';
 
 class PropertiesServiceAdmin {
   private api: any; 
@@ -16,8 +16,8 @@ class PropertiesServiceAdmin {
     return (await this.api.patch(`/change-status/${status}/${id}`)).data;
   }
 
-  async multiChangeProduct(ids: string[]) {
-    return (await this.api.patch(`/multi-change`, ids)).data;
+  async multiChangeProperties(ids: string[], type: ValidMultiChangeType) {
+    return (await this.api.patch(`/multi-change`, {ids, type})).data;
   }
 }
 

@@ -38,8 +38,14 @@
     padding: 2rem;
 
     &--position {
+      max-width: 3.5rem;
       margin-bottom: 1rem;
       color:#999;
+      border: none;
+
+      .ant-input-number-handler-wrap {
+        width: 1.2rem;
+      }
     }
     
     &--image {

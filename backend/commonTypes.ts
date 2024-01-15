@@ -1,5 +1,6 @@
 export type RoomType = "bedrooms" | "bathrooms" | "kitchens" | "livingRooms";
 export type ValidStatus = 'active' | 'inactive';
+export type ValidMultiChangeType = 'active' | "inactive" | "position" | "delete" 
 
 // PROPERTY INFO
 export interface Location {

@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Select, SelectProps } from 'antd';
+import { Button, Select, SelectProps, message } from 'antd';
+import { FaPlus } from "react-icons/fa6";
 import Search, { SearchProps } from 'antd/es/input/Search';
 import { IoFilter } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
+
+import propertiesService from '../../services/admin/properties.service';
+import { ValidMultiChangeType } from '../../../../backend/commonTypes';
 
 import './filterBox.scss';
 
@@ -63,8 +67,13 @@ const FilterBox: React.FC<FilterBoxProps> = ({ onKeywordChange, onStatusChange, 
     setSorting({ sortKey, sortValue });
   }
 
-  const handleMultipleChange = (type: string) => {
-    navigate(`/multi-change/${type}/${checkedList}`)
+  const handleMultipleChange = async (type: ValidMultiChangeType) => {
+    const response = await propertiesService.multiChangeProperties(checkedList, type);
+    if (response?.code === 200) {
+      message.success('Properties position updated successfully', 3)
+    } else {
+      message.error("Error occurred, can not update properties position", 3)
+    }
   }
 
   const sortingOptions: SelectProps['options'] = [
@@ -77,10 +86,10 @@ const FilterBox: React.FC<FilterBoxProps> = ({ onKeywordChange, onStatusChange, 
   ];
 
   const multipleChangeOptions: SelectProps['options'] = [
-    { label: 'Active status', value: 'active-all'},
-    { label: 'Inactive status', value: 'inactive-all'},
-    { label: 'Position change', value: 'position-change-all'},
-    { label: 'Delete items', value: 'delete-all'},
+    { label: 'Status to active', value: 'active' },
+    { label: 'Status to inactive', value: 'inactive' },
+    { label: 'Position change', value: 'position' },
+    { label: 'Delete items', value: 'delete' },
   ];
 
   return (
@@ -93,6 +102,9 @@ const FilterBox: React.FC<FilterBoxProps> = ({ onKeywordChange, onStatusChange, 
         />
         <Button className='filter-button'>
           Filters <IoFilter/>
+        </Button>
+        <Button className='add-new-button'>
+          Add new <FaPlus/>
         </Button>
       </div>
 
@@ -136,7 +148,7 @@ const FilterBox: React.FC<FilterBoxProps> = ({ onKeywordChange, onStatusChange, 
           <Select
             placement='bottomLeft'
             placeholder="Choose change to apply"
-            defaultValue={'None'}
+            // defaultValue='None'
             onChange={handleMultipleChange}
             options={multipleChangeOptions}
             className='multiple-change__select'

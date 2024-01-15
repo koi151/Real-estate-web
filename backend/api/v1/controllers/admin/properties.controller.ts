@@ -6,7 +6,7 @@ import { searchHelper } from "../../../../helpers/search";
 import { paginationHelper } from '../../../../helpers/pagination';
 import { isValidStatus } from "../../../../helpers/dataTypeCheck";
 
-import { PropertyType, ValidStatus } from "../../../../commonTypes";
+import { PropertyType, ValidMultiChangeType } from "../../../../commonTypes";
 
 // [GET] /admin/properties
 export const index = async (req: Request, res: Response) => {
@@ -246,7 +246,49 @@ export const changeStatus = async (req: Request, res: Response) => {
 // [PATCH] /admin/properties/multi-change
 export const multiChange = async (req: Request, res: Response) => {
   try {
-    console.log(req.body);
+
+    const idsAndPos: string[] = req.body.ids;
+    const type: ValidMultiChangeType = req.body.type;  
+
+    switch(type) {
+      case 'active':
+      case 'inactive':
+        const idOnlyList: string[] = idsAndPos.flatMap(item => {
+          const parts: string[] = item.split('-');
+          return parts[0];
+        });  
+
+        await Property.updateMany(
+          { _id: { $in: idOnlyList } }, 
+          { status: type }
+        )
+
+        res.status(200).json({
+          code: 200,
+          message: 'Update multiple status successful!'
+        });
+        break;
+
+        case 'position':
+          const updates = idsAndPos.map(item => {
+            const [id, position] = item.split('-');
+            console.log(id, position);
+
+            return {
+              updateOne: {
+                filter: { _id: id },
+                update: { position: position }
+              }
+            }
+          });
+
+          await Property.bulkWrite(updates as any);
+
+          res.status(200).json({
+            code: 200,
+            message: "Properties position updated successfully" 
+          })
+    }
 
   } catch (error) {
     console.log('Error occurred while multing changing property:', error);
