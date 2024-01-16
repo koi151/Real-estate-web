@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Breadcrumb, Button, Checkbox, Col, InputNumber, Pagination, 
          PaginationProps, Row, Space, Tag,  Tooltip,  message } from 'antd';
 
@@ -8,14 +9,15 @@ import * as standardizeData from '../../helpers/standardizeData'
 import getPriceUnit from '../../helpers/getPriceUnit';
 
 import propertiesService from '../../services/admin/properties.service';
-import RoomCountTooltip from '../../components/Counters/RoomCount/roomCount';
-import ViewCount from '../../components/Counters/ViewCount/viewCount';
 import { PropertyType, PaginationObject, SortingQuery } from '../../../../backend/commonTypes';
+import ViewCount from '../../components/Counters/ViewCount/viewCount';
+import RoomCountTooltip from '../../components/Counters/RoomCount/roomCount';
 import FilterBox from '../../components/FilterBox/filterBox';
-import './properties.scss';
 import StatusButton from '../../components/StatusButton/statusButton';
+import './properties.scss';
 
 const Properties: React.FC = () => {
+  const navigate = useNavigate();
 
   const [propertyList, setPropertyList] = useState<PropertyType[]>([]);
   const [error, setError] = useState<string | null>(null); 
@@ -63,7 +65,7 @@ const Properties: React.FC = () => {
         }
 
       } catch (error) {
-        message.error('An error occurred while fetching properties.', 2);
+        message.error('No property found', 2);
         setError('No property found.');
         console.log('Error occurred:', error);
       }
@@ -81,6 +83,13 @@ const Properties: React.FC = () => {
 
   const handleSortingChange = (newSorting: any) => {
     setSorting(newSorting);
+  }
+
+  const resetFilters = () => {
+    setKeyword(null);
+    setStatus(null);
+    setSorting({sortKey: '', sortValue: ''});
+    navigate('/admin/properties');
   }
   
   const handleCheckboxChange = (id: string | undefined) => (e: CheckboxChangeEvent) => {
@@ -129,13 +138,14 @@ const Properties: React.FC = () => {
         onStatusChange={handleStatusChange}
         onSortingChange={handleSortingChange}
         checkedList={checkedList}
+        resetFilters={resetFilters}
       />
 
       {error ? (
         <div>{error}</div>
       ) : propertyList.length > 0 ? (
         propertyList.map((property, index) => (
-          <div className='item-wrapper' key={index}>  
+          <div className='item-wrapper' key={index} data-id={property._id}>  
             <Row className='item-wrapper__custom-row'>
               <div className='item-wrapper__upper-content' key={index}>
                   <Col

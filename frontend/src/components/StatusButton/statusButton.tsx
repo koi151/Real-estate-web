@@ -17,6 +17,7 @@ const StatusButton: React.FC<StatusButtonProps> = ({ itemId, status }) => {
       const response = await propertiesService.changePropertyStatus(itemId, newStatus);
       if (response?.code === 200) {
         setCurrentStatus(newStatus);
+        message.success(`Property status updated to ${newStatus}`, 3)
       } else {
         message.error(response.message, 2);
       }
@@ -37,6 +38,7 @@ const StatusButton: React.FC<StatusButtonProps> = ({ itemId, status }) => {
         type='primary'
         className={`${currentStatus}-btn small-btn`}
         onClick={handleClickStatus}
+        data-id={itemId}
       >
         {currentStatus}
       </Button>

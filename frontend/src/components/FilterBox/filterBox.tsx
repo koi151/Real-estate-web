@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Select, SelectProps, message } from 'antd';
+import { Button, Col, Row, Select, SelectProps, message } from 'antd';
 import { FaPlus } from "react-icons/fa6";
 import Search, { SearchProps } from 'antd/es/input/Search';
 import { IoFilter } from 'react-icons/io5';
@@ -18,9 +18,10 @@ interface FilterBoxProps {
     sortValue: string | null
   }) => void;
   checkedList: string[]; 
+  resetFilters: () => void;
 }
 
-const FilterBox: React.FC<FilterBoxProps> = ({ onKeywordChange, onStatusChange, onSortingChange, checkedList}) => {
+const FilterBox: React.FC<FilterBoxProps> = ({ onKeywordChange, onStatusChange, onSortingChange, checkedList, resetFilters}) => {
   
   const navigate = useNavigate();
   const [keyword, setKeyword] = useState<string | null>(null);
@@ -41,7 +42,6 @@ const FilterBox: React.FC<FilterBoxProps> = ({ onKeywordChange, onStatusChange, 
       params['sortKey'] = sorting.sortKey;
       params['sortValue'] = sorting.sortValue;
     }
-    console.log("status, params:", status,  params)
 
     return `/admin/properties${Object.keys(params).length > 0 ? `?${new URLSearchParams(params)}` : ''}`;
   };
@@ -58,7 +58,7 @@ const FilterBox: React.FC<FilterBoxProps> = ({ onKeywordChange, onStatusChange, 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status, sorting, keyword]);  
 
-  const handleStatusChange = (value: string) => {
+  const handleStatusClick = (value: string) => {
     setStatus(value);
   };
 
@@ -67,12 +67,37 @@ const FilterBox: React.FC<FilterBoxProps> = ({ onKeywordChange, onStatusChange, 
     setSorting({ sortKey, sortValue });
   }
 
+  const handleResetFilters = () => {
+    onKeywordChange(null);
+    onStatusChange(null);
+    onSortingChange({ sortKey: null, sortValue: null });
+    resetFilters();
+  };
+
   const handleMultipleChange = async (type: ValidMultiChangeType) => {
     const response = await propertiesService.multiChangeProperties(checkedList, type);
     if (response?.code === 200) {
-      message.success('Properties position updated successfully', 3)
+      if (type === 'active' || type === 'inactive') {
+        response.idList?.forEach((id: string) => {
+          const statusButton = document.querySelector(`.item-wrapper__upper-content--status button[data-id="${id}"]`);
+          if (statusButton) {
+            const oppositeType = type === 'active' ? 'inactive' : 'active';
+            statusButton.classList.remove(`${oppositeType}-btn`);
+            statusButton.classList.add(`${type}-btn`);
+            statusButton.innerHTML = type;
+          }
+        })
+      } else if (type === 'delete') {
+        response.idList?.forEach((id: string) => {
+          const statusButton = document.querySelector(`.item-wrapper[data-id="${id}"]`);
+          if (statusButton) statusButton.remove();
+        })
+      }
+
+      message.success(response.message, 3);
+
     } else {
-      message.error("Error occurred, can not update properties position", 3)
+      message.error("Error occurred, can not do multiple update", 3)
     }
   }
 
@@ -86,8 +111,8 @@ const FilterBox: React.FC<FilterBoxProps> = ({ onKeywordChange, onStatusChange, 
   ];
 
   const multipleChangeOptions: SelectProps['options'] = [
-    { label: 'Status to active', value: 'active' },
-    { label: 'Status to inactive', value: 'inactive' },
+    { label: 'Active status', value: 'active' },
+    { label: 'Inactive status', value: 'inactive' },
     { label: 'Position change', value: 'position' },
     { label: 'Delete items', value: 'delete' },
   ];
@@ -109,51 +134,77 @@ const FilterBox: React.FC<FilterBoxProps> = ({ onKeywordChange, onStatusChange, 
       </div>
 
       <div className='filter-box__detail'>
-        <div className='status-filter'>
-          <span>Filter by status:</span>
-          <span className='status-filter__status-wrap mr-2'>
-            <Button 
-              onClick={() => handleStatusChange('')} 
-              className={`custom-btn ${!status ? 'active' : ''}`}
-            >
-              All
-            </Button>
-            <Button 
-              onClick={() => handleStatusChange('active')} 
-              className={`custom-btn ${status === 'active' ? 'active' : ''}`}
-            >
-              Active
-            </Button>
+        <Row className='custom-row'>
+          <Col
+            xxl={8} xl={8} lg={8}
+          >
+            <div className='status-filter'>
+              <span>Filter by status:</span>
+              <span className='status-filter__status-wrap mr-2'>
+                <br/>
+                <Button 
+                  onClick={() => handleStatusClick('')} 
+                  className={`custom-btn ${!status ? 'active' : ''}`}
+                >
+                  All
+                </Button>
+                <Button 
+                  onClick={() => handleStatusClick('active')} 
+                  className={`custom-btn ${status === 'active' ? 'active' : ''}`}
+                >
+                  Active
+                </Button>
+                <Button
+                  onClick={() => handleStatusClick('inactive')} 
+                  className={`custom-btn ${status === 'inactive' ? 'active' : ''}`}
+                >
+                  Inactive
+                </Button>
+              </span>
+            </div>
+          </Col>
+          <Col
+            xxl={8} xl={8} lg={8}
+          >
+            <div className='sorting-items'>
+              <span>Sorting by: </span>
+              <br/>
+              <Select
+                placement='bottomLeft'
+                placeholder="Choose sorting method"
+                defaultValue={'position-desc'}
+                onChange={handleSortingChange}
+                options={sortingOptions}
+                className='sorting-items__select'
+              />
+            </div>
+          </Col>
+          <Col
+            xxl={8} xl={8} lg={8}
+          >
+            <div className='multiple-change'>
+              <span>Multiple change: </span>
+              <Select
+                placement='bottomLeft'
+                placeholder="Choose change to apply"
+                // defaultValue='None'
+                onChange={handleMultipleChange}
+                options={multipleChangeOptions}
+                className='multiple-change__select'
+              />
+            </div>
+          </Col>
+          <Col
+            xxl={8} xl={8} lg={8}
+          >
             <Button
-              onClick={() => handleStatusChange('inactive')} 
-              className={`custom-btn ${status === 'inactive' ? 'active' : ''}`}
-            >
-              Inactive
+              onClick={handleResetFilters}  
+              className='clear-filters' 
+              danger type='primary'>
+              Clear filters
             </Button>
-          </span>
-        </div>
-        <div className='sorting-items'>
-          <span>Sorting by: </span>
-          <Select
-            placement='bottomLeft'
-            placeholder="Choose sorting method"
-            defaultValue={'position-desc'}
-            onChange={handleSortingChange}
-            options={sortingOptions}
-            className='sorting-items__select'
-          />
-        </div>
-        <div className='multiple-change'>
-          <span>Multiple change: </span>
-          <Select
-            placement='bottomLeft'
-            placeholder="Choose change to apply"
-            // defaultValue='None'
-            onChange={handleMultipleChange}
-            options={multipleChangeOptions}
-            className='multiple-change__select'
-          />
-        </div>
+          </Col>
+        </Row>
       </div>
     </div>
   )

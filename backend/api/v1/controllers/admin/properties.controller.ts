@@ -7,6 +7,7 @@ import { paginationHelper } from '../../../../helpers/pagination';
 import { isValidStatus } from "../../../../helpers/dataTypeCheck";
 
 import { PropertyType, ValidMultiChangeType } from "../../../../commonTypes";
+import { message } from "antd";
 
 // [GET] /admin/properties
 export const index = async (req: Request, res: Response) => {
@@ -250,13 +251,12 @@ export const multiChange = async (req: Request, res: Response) => {
     const idsAndPos: string[] = req.body.ids;
     const type: ValidMultiChangeType = req.body.type;  
 
+    let idOnlyList: string[] = [];
+
     switch(type) {
       case 'active':
       case 'inactive':
-        const idOnlyList: string[] = idsAndPos.flatMap(item => {
-          const parts: string[] = item.split('-');
-          return parts[0];
-        });  
+        idOnlyList = idsAndPos.map(item => item.split('-')[0]);  
 
         await Property.updateMany(
           { _id: { $in: idOnlyList } }, 
@@ -265,30 +265,54 @@ export const multiChange = async (req: Request, res: Response) => {
 
         res.status(200).json({
           code: 200,
-          message: 'Update multiple status successful!'
+          message: 'Update multiple status successful!',
+          idList: idOnlyList
         });
         break;
 
-        case 'position':
-          const updates = idsAndPos.map(item => {
-            const [id, position] = item.split('-');
-            console.log(id, position);
+      case 'position':
+        const updates = idsAndPos.map(item => {
+          const [id, position] = item.split('-');
 
-            return {
-              updateOne: {
-                filter: { _id: id },
-                update: { position: position }
-              }
+          return {
+            updateOne: {
+              filter: { _id: id },
+              update: { position: position }
             }
-          });
+          }
+        });
 
-          await Property.bulkWrite(updates as any);
+        await Property.bulkWrite(updates as any);
 
-          res.status(200).json({
-            code: 200,
-            message: "Properties position updated successfully" 
-          })
+        res.status(200).json({
+          code: 200,
+          message: "Properties position updated successfully" 
+        })
+        break;
+
+      case 'delete':
+        idOnlyList = idsAndPos.map(item => item.split('-')[0]);
+
+        await Property.updateMany(
+          { _id: { $in: idOnlyList }}, 
+          {deleted: true }
+        )
+
+        res.status(200).json({
+          code: 200,
+          message: "Properties deleted successfully",
+          idList: idOnlyList
+        })
+        break;
+
+      default: 
+        res.status(400).json({
+          code: 400,
+          message: 'Operation not found'
+        })
+        break;
     }
+
 
   } catch (error) {
     console.log('Error occurred while multing changing property:', error);
