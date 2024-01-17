@@ -1,0 +1,21 @@
+@import '../../App.scss';
+
+.custom-card {
+  width: 100%;
+}
+
+.required-txt {
+  color: $color-highlight;
+}
+
+.custom-number-input {
+  width: 100%;
+
+  &.position-input {
+    input {
+      &::placeholder {
+        color: #555; 
+      }
+    }
+  }
+}

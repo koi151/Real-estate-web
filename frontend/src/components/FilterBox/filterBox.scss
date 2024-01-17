@@ -16,14 +16,17 @@
       width: 30rem;
     }
 
-    .filter-button, .add-new-button {
-      margin: 0 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      svg {
+    .custom-link {
+      text-decoration: none;
+      .filter-button, .add-new-button {
         margin-left: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        svg {
+          margin-left: 1rem;
+        }
       }
     }
   } 
@@ -58,6 +61,10 @@
 
     .clear-filters {
       margin-top: 2rem;
+    }
+
+    .custom-slider {
+      max-width: 25rem;
     }
   }
 }

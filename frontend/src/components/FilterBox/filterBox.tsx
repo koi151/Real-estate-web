@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Col, Row, Select, SelectProps, message } from 'antd';
+import { Button, Col, Row, Select, SelectProps, Slider, message } from 'antd';
 import { FaPlus } from "react-icons/fa6";
 import Search, { SearchProps } from 'antd/es/input/Search';
 import { IoFilter } from 'react-icons/io5';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import propertiesService from '../../services/admin/properties.service';
 import { ValidMultiChangeType } from '../../../../backend/commonTypes';
@@ -128,9 +128,11 @@ const FilterBox: React.FC<FilterBoxProps> = ({ onKeywordChange, onStatusChange, 
         <Button className='filter-button'>
           Filters <IoFilter/>
         </Button>
-        <Button className='add-new-button'>
-          Add new <FaPlus/>
-        </Button>
+        <Link to={'/admin/properties/create'} className='custom-link'>
+          <Button className='add-new-button'>
+            Add new <FaPlus/>
+          </Button>
+        </Link>
       </div>
 
       <div className='filter-box__detail'>
@@ -193,6 +195,18 @@ const FilterBox: React.FC<FilterBoxProps> = ({ onKeywordChange, onStatusChange, 
                 className='multiple-change__select'
               />
             </div>
+          </Col>
+          <Col
+            xxl={8} xl={8} lg={8}
+          >
+            <Slider
+              className='custom-slider'
+              range
+              step={10}
+              defaultValue={[20, 50]}
+              // onChange={onChange}
+              // onChangeComplete={onChangeComplete}
+            />
           </Col>
           <Col
             xxl={8} xl={8} lg={8}
