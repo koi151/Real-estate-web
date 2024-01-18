@@ -1,5 +1,5 @@
 import createApi from '../api.service';
-import { GetPropertiesOptions, ValidMultiChangeType, ValidStatus } from '../../../../backend/commonTypes';
+import { GetPropertiesOptions, PropertyType, ValidMultiChangeType, ValidStatus } from '../../../../backend/commonTypes';
 
 class PropertiesServiceAdmin {
   private api: any; 
@@ -18,6 +18,16 @@ class PropertiesServiceAdmin {
 
   async multiChangeProperties(ids: string[], type: ValidMultiChangeType) {
     return (await this.api.patch(`/multi-change`, {ids, type})).data;
+  }
+
+  async createProperty(property: PropertyType) {
+    console.log('sv:', property)
+    // const config = {
+    //   headers: {
+    //     'Content-Type': 'multipart/form-data',
+    //   },
+    // };
+    return (await this.api.post('/create', property)).data;
   }
 }
 

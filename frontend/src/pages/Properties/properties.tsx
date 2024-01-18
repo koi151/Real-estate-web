@@ -204,10 +204,7 @@ const Properties: React.FC = () => {
                     {property.price ? 
                       <span className='item-wrapper__upper-content--price'>
                         <span className='price-number'>
-                          {parseFloat(property.price) > 1000
-                            ? parseFloat(property.price) / 1000
-                            : parseFloat(property.price)
-                          }
+                          { property.price > 1000 ? property.price / 1000 : property.price }
                         </span>
                         <span className='price-unit'>{getPriceUnit(property.price)}
                           <span style={{ margin: '0 .85rem' }}>/</span>

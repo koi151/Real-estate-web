@@ -1,11 +1,8 @@
 import mongoose from 'mongoose';
 const slug = require('mongoose-slug-updater');
+import { listingTypeValues, postTypeValues, statusValues } from '../../../commonTypes';
 
 mongoose.plugin(slug);
-
-const listingTypeValues = ["forSale", "forRent"];
-const postTypeValues = ["default", "preminum", "featured"];
-const statusValues = ["active", "inactive"];
 
 const propertySchema = new mongoose.Schema(
   {
@@ -13,7 +10,8 @@ const propertySchema = new mongoose.Schema(
     position: Number,
     listingType: {
       type: String, 
-      enum: listingTypeValues
+      enum: listingTypeValues,
+
     },
     postType: {
       type: String,

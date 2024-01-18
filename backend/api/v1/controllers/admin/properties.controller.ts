@@ -7,7 +7,23 @@ import { paginationHelper } from '../../../../helpers/pagination';
 import { isValidStatus } from "../../../../helpers/dataTypeCheck";
 
 import { PropertyType, ValidMultiChangeType } from "../../../../commonTypes";
-import { message } from "antd";
+
+const processPropertyData = (req: Request): PropertyType => {
+  return {
+    title: req.body.title,
+    status: req.body.status,
+    postType: req.body.postType,
+    position: req.body.position,
+    description: req.body.description,
+    area: req.body.area,
+    price: req.body.price,
+    images: req.body.images,
+    location: req.body.location,
+    listingType: req.body.listingType,
+    propertyDetails: req.body.propertyDetails,
+    deleted: req.body.deleted,
+  };
+};
 
 // [GET] /admin/properties
 export const index = async (req: Request, res: Response) => {
@@ -144,18 +160,9 @@ export const singleDelete = async (req: Request, res: Response) => {
 // [POST] /admin/properties/create
 export const createPost = async (req: Request, res: Response) => {
   try {    
-    const property: PropertyType = {
-      title: req.body.title,
-      listingType: req.body.listingType,
-      description: req.body.description,
-      price: req.body.price,
-      area: req.body.area,
-      images: req.body.images,
-      status: req.body.status,
-      location: req.body.location,
-      propertyDetails: req.body.propertyDetails,
-      deleted: req.body.deleted
-    };
+    console.log('req.body:', req.body)
+
+    const property: PropertyType = processPropertyData(req);
 
     const newProperty = new Property(property);
     await newProperty.save();
@@ -178,18 +185,7 @@ export const createPost = async (req: Request, res: Response) => {
 export const editPatch = async (req: Request, res: Response) => {
   try {    
     const id: string = req.params.propertyId
-    const property: PropertyType = {
-      title: req.body.title,
-      listingType: req.body.listingType,
-      description: req.body.description,
-      price: req.body.price,
-      area: req.body.area,
-      images: req.body.images,
-      status: req.body.status,
-      location: req.body.location,
-      propertyDetails: req.body.propertyDetails,
-      deleted: req.body.deleted
-    };
+    const property: PropertyType = processPropertyData(req);
 
     await Property.updateOne(
       { _id: id },

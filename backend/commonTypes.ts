@@ -2,6 +2,11 @@ export type RoomType = "bedrooms" | "bathrooms" | "kitchens" | "livingRooms";
 export type ValidStatus = 'active' | 'inactive';
 export type ValidMultiChangeType = 'active' | "inactive" | "position" | "delete" 
 
+export const postTypeValues = ["default", "preminum", "featured"];
+export const listingTypeValues = ["forSale", "forRent"];
+export const statusValues = ["active", "inactive"];
+
+
 // PROPERTY INFO
 export interface Location {
   city?: string;
@@ -19,14 +24,19 @@ export interface PropertyType {
   _id?: string;
   title: string;
   status?: ValidStatus;
+  postType?: {
+    type: String,
+    default: "default",
+    enum: typeof postTypeValues,
+  },
   position?: number;
-  description: string,
+  description: any,
   area?: {
     width: number;
     length: number;
   },
   view?: number;
-  price?: string;
+  price?: number;
   images?: string[];
   location?: Location;
   listingType?: string;
