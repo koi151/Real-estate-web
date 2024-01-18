@@ -1,7 +1,8 @@
 @import '../../App.scss';
 
 .custom-card {
-  width: 100%;
+  width: 80%;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 }
 
 .required-txt {
@@ -17,5 +18,39 @@
         color: #555; 
       }
     }
+  }
+}
+
+.custom-segmented {
+  height: 100%;
+
+  .ant-segmented-group {
+    height: 100%;
+
+    .ant-segmented-item-label {
+      height: 100%;
+      font-size: 1.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      p {
+        color: #e1e1e1;
+      }
+    }
+  
+    .ant-segmented-item {
+      height: 100%;
+      transition: background-color 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+    }
+    
+    .ant-segmented-item-selected {
+      background-color: $color-highlight;
+      color: #fff;
+    }
+  }
+  
+  .ant-segmented-thumb {
+    background-color: $color-highlight;
+    color: #fff;
   }
 }
