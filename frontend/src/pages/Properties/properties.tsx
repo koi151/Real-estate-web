@@ -212,10 +212,10 @@ const Properties: React.FC = () => {
                       </span>
                       : <Tooltip title='No data of price'>...</Tooltip>
                     }
-                    {property.area?.width && property.area?.length ? 
+                    {property.area?.propertyWidth && property.area?.propertyLength ? 
                       <span className='item-wrapper__upper-content--area'>
                         <span className='area-number'>
-                          {property.area.width * property.area.length}
+                          {property.area.propertyWidth * property.area.propertyLength}
                         </span>
                         <span className='area-unit'>m²</span>
                       </span>

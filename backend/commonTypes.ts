@@ -32,8 +32,8 @@ export interface PropertyType {
   position?: number;
   description: any,
   area?: {
-    width: number;
-    length: number;
+    propertyWidth: number;
+    propertyLength: number;
   },
   view?: number;
   price?: number;

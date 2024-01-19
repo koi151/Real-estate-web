@@ -21,8 +21,8 @@ const propertySchema = new mongoose.Schema(
     description: String,
     price: Number,
     area: {
-      length: Number,
-      width: Number
+      propertyLength: Number,
+      propertyWidth: Number
     },
     images: Array,
     view: Number,

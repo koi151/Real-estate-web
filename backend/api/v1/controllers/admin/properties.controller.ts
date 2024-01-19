@@ -160,9 +160,11 @@ export const singleDelete = async (req: Request, res: Response) => {
 // [POST] /admin/properties/create
 export const createPost = async (req: Request, res: Response) => {
   try {    
-    console.log('req.body:', req.body)
-
     const property: PropertyType = processPropertyData(req);
+    if (!property.position) {
+      const cntProperty = await Property.countDocuments();
+      property.position = cntProperty + 1;
+    }
 
     const newProperty = new Property(property);
     await newProperty.save();

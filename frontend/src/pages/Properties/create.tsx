@@ -1,5 +1,5 @@
 import { Button, Card, Col, Form, Input, InputNumber, Radio, Row, Segmented, Select, message } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Editor } from '@tinymce/tinymce-react';
 import { SegmentedValue } from "antd/es/segmented";
 
@@ -11,7 +11,8 @@ const CreateProperty: React.FC = () => {
   const [propertyWidth, setPropertyWidth] = useState<number | null>(null);
   const [propertyLength, setPropertyLength] = useState<number | null>(null);
   const [priceMultiplier, setPriceMultiplier] = useState<number>(1);
-
+  const [editorContent, setEditorContent] = useState<string>("");
+  
   const propertyCategoryOptions = [
     { value: 'townHouse', label: 'Town house' },
     { value: 'apartment', label: 'Apartment' },
@@ -42,6 +43,12 @@ const CreateProperty: React.FC = () => {
     setPostType(formatedValue)
   }
 
+  const handleEditorChange = (content: any, editor: any) => {
+    const contentString = typeof content === 'string' ? content : '';
+    console.log('content:', contentString);
+    setEditorContent(contentString);
+  };
+
   const onFinishForm = async (data: any) => {
     try {
       data["location"] = {
@@ -54,8 +61,8 @@ const CreateProperty: React.FC = () => {
       delete data.address;
 
       data["area"] = {
-        width: data.width,
-        length: data.length,
+        propertyWidth: data.propertyWidth,
+        propertyLength: data.propertyLength,
       }
       delete data.width;
       delete data.length;
@@ -65,6 +72,7 @@ const CreateProperty: React.FC = () => {
       }
       delete data.propertyType;
 
+      data['description'] = editorContent;
       data.price = priceMultiplier * data.price;
       
       // etc: For rent => forRent
@@ -76,9 +84,8 @@ const CreateProperty: React.FC = () => {
       if (response.code === 200) {
         message.success("Property created successfully !", 3);
       } else {
-        message.error("Error occurred while creating property", 3)
+        message.error(response.message, 3)
       }
-
 
     } catch (error) {
       message.error("Error occured while creating new property.")
@@ -135,7 +142,7 @@ const CreateProperty: React.FC = () => {
             </Col>
 
             <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
-              <Form.Item label='Property length' name='length'>
+              <Form.Item label='Property length' name='propertyLength'>
                 <InputNumber 
                   type="number" min={0} 
                   onChange={handlePropertyLengthChange}
@@ -145,7 +152,7 @@ const CreateProperty: React.FC = () => {
               </Form.Item>
             </Col>
             <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
-              <Form.Item label='Property width' name='width'>
+              <Form.Item label='Property width' name='propertyWidth'>
                 <InputNumber 
                   type="number" min={0} 
                   className="custom-number-input" 
@@ -185,15 +192,17 @@ const CreateProperty: React.FC = () => {
             </Col>
             
             <Col span={24}>
-              <Form.Item label={`Property ${postType}ing description:`} name='description'>
+              <Form.Item label={`Property ${postType}ing description:`}>
                 <Editor
                   id="description" 
+                  value={editorContent}
+                  onEditorChange={handleEditorChange}
                   apiKey='zabqr76pjlluyvwebi3mqiv72r4vyshj6g0u07spd34wk1t2' // hide
                   init={{
                     toolbar_mode: 'sliding', 
                     plugins: ' anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount', 
                     toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat', 
-                    // tinycomments_mode: 'embedded', tinycomments_author: 'Author name', mergetags_list: [ { value: 'First.Name', title: 'First Name' }, { value: 'Email', title: 'Email' }, ], 
+                    tinycomments_mode: 'embedded', tinycomments_author: 'Author name', mergetags_list: [ { value: 'First.Name', title: 'First Name' }, { value: 'Email', title: 'Email' }, ], 
                   }}
                 />
               </Form.Item>
