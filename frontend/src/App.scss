@@ -9,6 +9,7 @@
 
 $color-dark: #001529;
 $color-highlight: #6259ca;
+$color-highlight-lighter: #7e76d3;
 $color-highlight-two: #6259ca;
 $color-error: #ff4d4f;
 
@@ -40,6 +41,19 @@ body {
   font-weight: 500;
 }
 
+// custom button
+
+.custom-btn-main {
+  margin-top: .5rem;
+  background-color: $color-highlight;
+  color: #fff;
+
+  &:hover {
+    background-color: $color-highlight-lighter;
+    color: #fff !important;
+  }
+}
+
 // status button
 .active-btn {
   background-color: #58c965;
@@ -65,5 +79,30 @@ body {
   &:hover {
     color: $color-highlight !important;
     border: 1px solid $color-highlight !important;
+  }
+}
+
+// Label
+label {
+  font-weight: 600;
+}
+
+.label-light {
+  font-weight: 400;
+}
+
+// Radio
+.ant-radio-wrapper {
+  span {
+    transition: all .2s;
+    font-weight: 400;
+  }
+}
+
+.ant-radio-wrapper-checked {
+  span {
+    transition: all .2s;
+    font-weight: 600;
+    color: $color-highlight;
   }
 }

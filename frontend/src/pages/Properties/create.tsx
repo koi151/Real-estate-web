@@ -1,12 +1,15 @@
-import { Button, Card, Col, Form, Input, InputNumber, Radio, Row, Segmented, Select, message } from "antd";
+import { Button, Card, Col, Form, Input, InputNumber, 
+         Radio, Row, Segmented, Select, message } from "antd";
 import React, { useState } from "react";
 import { Editor } from '@tinymce/tinymce-react';
 import { SegmentedValue } from "antd/es/segmented";
+import { Link } from "react-router-dom";
 
 import propertiesService from "../../services/admin/properties.service";
-import { Link } from "react-router-dom";
-import './create.scss'
 import GetAddress from "../../components/getAddress/getAddress";
+import ExpireTimePicker from "../../components/ExpireTimePicker/expireTimePicker";
+import './create.scss'
+import { Dayjs } from "dayjs";
 
 const CreateProperty: React.FC = () => {
   const [postType, setPostType] = useState<string>('sell');
@@ -14,6 +17,9 @@ const CreateProperty: React.FC = () => {
   const [propertyLength, setPropertyLength] = useState<number | null>(null);
   const [priceMultiplier, setPriceMultiplier] = useState<number>(1);
   const [editorContent, setEditorContent] = useState<string>("");
+
+  // child component
+  const [expireDateTime, setExpireDateTime] = useState<Dayjs | null>(null);
   
   const propertyCategoryOptions = [
     { value: 'townHouse', label: 'Town house' },
@@ -21,71 +27,10 @@ const CreateProperty: React.FC = () => {
     { value: 'villa', label: 'Villa' },
   ]
 
-  // const cityOptions = [
-  //   { value: 'anGiang', label: 'An Giang' },
-  //   { value: 'bacGiang', label: 'Bac Giang' },
-  //   { value: 'bacKan', label: 'Bac Kan' },
-  //   { value: 'bacLieu', label: 'Bac Lieu' },
-  //   { value: 'bacNinh', label: 'Bac Ninh' },
-  //   { value: 'benThuy', label: 'Ben Thuy' },
-  //   { value: 'benTre', label: 'Ben Tre' },
-  //   { value: 'bienHoa', label: 'Bien Hoa' },
-  //   { value: 'buonMeThuot', label: 'Buon Me Thuot' },
-  //   { value: 'caMau', label: 'Ca Mau' },
-  //   { value: 'canTho', label: 'Can Tho' },
-  //   { value: 'caoBang', label: 'Cao Bang' },
-  //   { value: 'chiLinh', label: 'Chi Linh' },
-  //   { value: 'daLat', label: 'Da Lat' },
-  //   { value: 'daNang', label: 'Da Nang' },
-  //   { value: 'dienBienPhu', label: 'Dien Bien Phu' },
-  //   { value: 'dongHa', label: 'Dong Ha' },
-  //   { value: 'giaNghia', label: 'Gia Nghia' },
-  //   { value: 'haLong', label: 'Ha Long' },
-  //   { value: 'haiDuong', label: 'Hai Duong' },
-  //   { value: 'haiPhong', label: 'Hai Phong' },
-  //   { value: 'hoaBinh', label: 'Hoa Binh' },
-  //   { value: 'hoChiMinhCity', label: 'Ho Chi Minh City' },
-  //   { value: 'hoiAn', label: 'Hoi An' },
-  //   { value: 'hungYen', label: 'Hung Yen' },
-  //   { value: 'konTum', label: 'Kon Tum' },
-  //   { value: 'laGi', label: 'La Gi' },
-  //   { value: 'laiChau', label: 'Lai Chau' },
-  //   { value: 'langSon', label: 'Lang Son' },
-  //   { value: 'longXuyen', label: 'Long Xuyen' },
-  //   { value: 'mongCai', label: 'Mong Cai' },
-  //   { value: 'myTho', label: 'My Tho' },
-  //   { value: 'namDinh', label: 'Nam Dinh' },
-  //   { value: 'nhaTrang', label: 'Nha Trang' },
-  //   { value: 'ninhBinh', label: 'Ninh Binh' },
-  //   { value: 'phanRang', label: 'Phan Rang' },
-  //   { value: 'phanThiet', label: 'Phan Thiet' },
-  //   { value: 'pleiku', label: 'Pleiku' },
-  //   { value: 'quiNhon', label: 'Qui Nhon' },
-  //   { value: 'quangBinh', label: 'Quang Binh' },
-  //   { value: 'quangNgai', label: 'Quang Ngai' },
-  //   { value: 'rachGia', label: 'Rach Gia' },
-  //   { value: 'saDec', label: 'Sa Dec' },
-  //   { value: 'saPa', label: 'Sa Pa' },
-  //   { value: 'socTrang', label: 'Soc Trang' },
-  //   { value: 'sonLa', label: 'Son La' },
-  //   { value: 'songCau', label: 'Song Cau' },
-  //   { value: 'tanAn', label: 'Tan An' },
-  //   { value: 'tayNinh', label: 'Tay Ninh' },
-  //   { value: 'thaiBinh', label: 'Thai Binh' },
-  //   { value: 'thaiNguyen', label: 'Thai Nguyen' },
-  //   { value: 'thanhHoa', label: 'Thanh Hoa' },
-  //   { value: 'thuDauMot', label: 'Thu Dau Mot' },
-  //   { value: 'traVinh', label: 'Tra Vinh' },
-  //   { value: 'tuyenQuang', label: 'Tuyen Quang' },
-  //   { value: 'tuyHoa', label: 'Tuy Hoa' },
-  //   { value: 'vietTri', label: 'Viet Tri' },
-  //   { value: 'vinh', label: 'Vinh' },
-  //   { value: 'vinhLong', label: 'Vinh Long' },
-  //   { value: 'vinhYen', label: 'Vinh Yen' },
-  //   { value: 'vungTau', label: 'Vung Tau' },
-  //   { value: 'yenBai', label: 'Yen Bai' },
-  //   { value: 'yenVinh', label: 'Yen Vinh' },
-  // ];  
+  const handleExpireTimeChange = (dateTime: Dayjs | null) => {
+    setExpireDateTime(dateTime);
+  }
+  
 
   const handlePropertyLengthChange = (value: number | null) => {
     setPropertyLength(value);
@@ -107,8 +52,8 @@ const CreateProperty: React.FC = () => {
   );
 
   const handleChangeListingType = (value: SegmentedValue) => {
-    const formatedValue = value = "For sale" ? 'sell' : "hire"
-    setPostType(formatedValue)
+    const formatedValue = value === "For sale" ? 'sell' : 'hire';
+    setPostType(formatedValue);
   }
 
   const handleEditorChange = (content: any, editor: any) => {
@@ -121,11 +66,13 @@ const CreateProperty: React.FC = () => {
       data["location"] = {
         city: data.city,
         district: data.district,
+        ward: data.ward,
         address: data.address
       }
       delete data.city;
       delete data.district;
       delete data.address;
+      delete data.ward;
 
       data["area"] = {
         propertyWidth: data.propertyWidth,
@@ -146,6 +93,8 @@ const CreateProperty: React.FC = () => {
       const words = data.listingType.split(' ');
       data.listingType = `${words[0].charAt(0).toLowerCase()}${words[0].slice(1)}${words[1].charAt(0).toUpperCase()}${words[1].slice(1)}`;
 
+      data['expireDate'] = expireDateTime;
+
       const response = await propertiesService.createProperty(data);
       
       if (response.code === 200) {
@@ -162,7 +111,7 @@ const CreateProperty: React.FC = () => {
   return (
     <div className="d-flex align-items-center justify-content-center">
       <Card 
-        title="Create Property"
+        title="Create property"
         className="custom-card" 
         extra={<Link to="/admin/properties">Back</Link>}
       >
@@ -247,7 +196,7 @@ const CreateProperty: React.FC = () => {
             </Col>
             
             <Col span={24}>
-              <Form.Item label={`Property ${postType}ing description:`}>
+              <Form.Item label={`Property ${postType} description:`}>
                 <Editor
                   id="description" 
                   value={editorContent}
@@ -265,7 +214,7 @@ const CreateProperty: React.FC = () => {
             <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
               <Form.Item label="Post type:" name='postType' initialValue={'default'}>
                 <Radio.Group>
-                  <Radio value="default"> Default </Radio>
+                  <Radio value="default" className="label-light"> Default </Radio>
                   <Radio value="preminum"> Preminum </Radio>
                   <Radio value="featured"> Featured </Radio>
                 </Radio.Group>
@@ -279,16 +228,11 @@ const CreateProperty: React.FC = () => {
                 </Radio.Group>
               </Form.Item>
             </Col>
-            <Col sm={24} md={24}  lg={12} xl={12} xxl={12}>
-              <Form.Item label="Post expire after:" name='expireAt' initialValue={''}>
-                <Radio.Group>
-                  <Radio value="day">1 day</Radio>
-                  <Radio value="week">1 week</Radio>
-                  <Radio value="month">1 month</Radio>
-                  <Radio value="">None</Radio>
-                </Radio.Group>
-              </Form.Item>
+
+            <Col span={24}>
+              <ExpireTimePicker onExpireDateTimeChange={handleExpireTimeChange} />
             </Col>
+
             <Col sm={24} md={24}  lg={12} xl={12} xxl={12}>
               <Form.Item label="Post position:" name='position'>
                 <InputNumber 
@@ -302,7 +246,7 @@ const CreateProperty: React.FC = () => {
             </Col>
             <Col span={24}>
               <Form.Item>
-                <Button type="primary" htmlType="submit">
+                <Button className='custom-btn-main' type="primary" htmlType="submit">
                   Submit
                 </Button>
               </Form.Item>

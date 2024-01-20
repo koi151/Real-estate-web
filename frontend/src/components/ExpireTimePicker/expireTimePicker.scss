@@ -1,0 +1,13 @@
+.time-display {
+  margin-top: 2rem;
+  display: flex;
+  b {
+    color: #555;
+    margin-right: 5rem;
+  }
+}
+
+.time-picker {
+  display: flex;
+  flex-direction: column;
+}

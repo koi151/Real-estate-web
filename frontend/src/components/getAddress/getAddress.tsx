@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Col, Form, Row, Select } from 'antd';
+import { Col, Form, Input, Row, Select } from 'antd';
 
 interface OptionType {
   code: number;
@@ -110,6 +110,12 @@ const GetAddress: React.FC = () => {
             optionFilterProp="children"
             filterOption={filterOption}
           />
+        </Form.Item>
+      </Col>
+
+      <Col span={24}>
+        <Form.Item label='Address' name='address'>
+          <Input placeholder={`Enter your address`} />
         </Form.Item>
       </Col>
     </Row>
