@@ -186,18 +186,21 @@ export const createPost = async (req: Request, res: Response) => {
 // [PATCH] /admin/properties/edit/:propertyId
 export const editPatch = async (req: Request, res: Response) => {
   try {    
-    const id: string = req.params.propertyId
-    const property: PropertyType = processPropertyData(req);
+    console.log(req.params.propertyId);
+    res.send(req.body);
 
-    await Property.updateOne(
-      { _id: id },
-      property
-    )
+    // const id: string = req.params.propertyId
+    // const property: PropertyType = processPropertyData(req);
 
-    res.status(200).json({
-      code: 200,
-      message: 'Property edited successfully'
-    })
+    // await Property.updateOne(
+    //   { _id: id },
+    //   property
+    // )
+
+    // res.status(200).json({
+    //   code: 200,
+    //   message: 'Property edited successfully'
+    // })
 
   } catch (error) {
     console.log('Error occurred while editing property:', error);

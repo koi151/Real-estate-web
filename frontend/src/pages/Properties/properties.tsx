@@ -113,7 +113,6 @@ const Properties: React.FC = () => {
     }
 
     const currentCheckBox = document.querySelector(`.item-wrapper__upper-content--checkbox span input[id="${id}"]`) as HTMLInputElement;
-    console.log(currentCheckBox.checked)
     if (currentCheckBox?.checked) {
       setCheckedList([...checkedList, `${id}-${position}`]);
     }

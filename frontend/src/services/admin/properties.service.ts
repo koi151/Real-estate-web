@@ -16,12 +16,15 @@ class PropertiesServiceAdmin {
     return (await this.api.patch(`/change-status/${status}/${id}`)).data;
   }
 
+  async getSingleProperty(id: string) {
+    return (await this.api.get(`/detail/${id}`)).data;
+  }
+
   async multiChangeProperties(ids: string[], type: ValidMultiChangeType) {
     return (await this.api.patch(`/multi-change`, {ids, type})).data;
   }
 
   async createProperty(property: PropertyType) {
-    console.log('sv:', property)
     // const config = {
     //   headers: {
     //     'Content-Type': 'multipart/form-data',

@@ -18,18 +18,30 @@ const validateField = (data: any, field: string, res: Response) => {
     return false;
   }
 
-  if (field === 'area' || field === 'position' || field === 'price') {
+  if (field === 'position' || field === 'price') {
     if (!validateNumberField(data[field], field.charAt(0).toUpperCase() + field.slice(1), res)) {
       return false;
     }
+  } else if (field === 'area') {
+    if (data[field]?.propertyWidth && data[field]?.propertyLength) {
+      validateNumberField(data[field].propertyWidth, 'Property width', res);
+      validateNumberField(data[field].propertyLength, 'Property length', res);
+    } else {
+      res.json({
+        code: 400,
+        error: true,
+        message: "Width and Length of property must be included"
+      })
+    }
+ 
   }
-
   return true;
 };
 
 const validateNumberField = (value: any, fieldName: string, res: Response) => {
   if (!/^\d+$/.test(value)) {
-    res.status(400).json({
+    res.json({
+      code: 400,
       error: true,
       message: `${fieldName} must be a number`,
     });
@@ -47,4 +59,4 @@ export const createPost = async (req: Request, res: Response, next: NextFunction
     }
   }
   next();
-};
+}

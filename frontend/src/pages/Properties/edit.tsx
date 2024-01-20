@@ -1,91 +1,53 @@
 import { Button, Card, Col, Form, Input, InputNumber, Radio, Row, Segmented, Select, message } from "antd";
-import React, { useState } from "react";
-import { Editor } from '@tinymce/tinymce-react';
 import { SegmentedValue } from "antd/es/segmented";
-
+import React, { useEffect, useState } from "react";
+import { Editor } from '@tinymce/tinymce-react';
+import { Link, useNavigate, useParams } from "react-router-dom";
 import propertiesService from "../../services/admin/properties.service";
-import { Link } from "react-router-dom";
-import './create.scss'
+import { PropertyType } from "../../../../backend/commonTypes";
 import GetAddress from "../../components/getAddress/getAddress";
 
-const CreateProperty: React.FC = () => {
+const EditProperty: React.FC = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+
   const [postType, setPostType] = useState<string>('sell');
   const [propertyWidth, setPropertyWidth] = useState<number | null>(null);
   const [propertyLength, setPropertyLength] = useState<number | null>(null);
   const [priceMultiplier, setPriceMultiplier] = useState<number>(1);
   const [editorContent, setEditorContent] = useState<string>("");
+
+  const [property, setProperty] = useState<PropertyType | undefined>(undefined);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (!id) {
+          message.error('Error occurred while searching property information, redirect to previous page', 3);
+          navigate(-1);
+          return;
+        }
+        const response = await propertiesService.getSingleProperty(id);
+
+        if(response?.code === 200 && response.property) {
+          setProperty(response.property);
+        } else {
+          message.error(response.message, 2);
+        }
+
+      } catch (error) {
+        message.error('No property found', 2);
+        console.log('Error occurred:', error);
+      }
+    };
+    fetchData();
+  }, [id])
   
   const propertyCategoryOptions = [
     { value: 'townHouse', label: 'Town house' },
     { value: 'apartment', label: 'Apartment' },
     { value: 'villa', label: 'Villa' },
   ]
-
-  // const cityOptions = [
-  //   { value: 'anGiang', label: 'An Giang' },
-  //   { value: 'bacGiang', label: 'Bac Giang' },
-  //   { value: 'bacKan', label: 'Bac Kan' },
-  //   { value: 'bacLieu', label: 'Bac Lieu' },
-  //   { value: 'bacNinh', label: 'Bac Ninh' },
-  //   { value: 'benThuy', label: 'Ben Thuy' },
-  //   { value: 'benTre', label: 'Ben Tre' },
-  //   { value: 'bienHoa', label: 'Bien Hoa' },
-  //   { value: 'buonMeThuot', label: 'Buon Me Thuot' },
-  //   { value: 'caMau', label: 'Ca Mau' },
-  //   { value: 'canTho', label: 'Can Tho' },
-  //   { value: 'caoBang', label: 'Cao Bang' },
-  //   { value: 'chiLinh', label: 'Chi Linh' },
-  //   { value: 'daLat', label: 'Da Lat' },
-  //   { value: 'daNang', label: 'Da Nang' },
-  //   { value: 'dienBienPhu', label: 'Dien Bien Phu' },
-  //   { value: 'dongHa', label: 'Dong Ha' },
-  //   { value: 'giaNghia', label: 'Gia Nghia' },
-  //   { value: 'haLong', label: 'Ha Long' },
-  //   { value: 'haiDuong', label: 'Hai Duong' },
-  //   { value: 'haiPhong', label: 'Hai Phong' },
-  //   { value: 'hoaBinh', label: 'Hoa Binh' },
-  //   { value: 'hoChiMinhCity', label: 'Ho Chi Minh City' },
-  //   { value: 'hoiAn', label: 'Hoi An' },
-  //   { value: 'hungYen', label: 'Hung Yen' },
-  //   { value: 'konTum', label: 'Kon Tum' },
-  //   { value: 'laGi', label: 'La Gi' },
-  //   { value: 'laiChau', label: 'Lai Chau' },
-  //   { value: 'langSon', label: 'Lang Son' },
-  //   { value: 'longXuyen', label: 'Long Xuyen' },
-  //   { value: 'mongCai', label: 'Mong Cai' },
-  //   { value: 'myTho', label: 'My Tho' },
-  //   { value: 'namDinh', label: 'Nam Dinh' },
-  //   { value: 'nhaTrang', label: 'Nha Trang' },
-  //   { value: 'ninhBinh', label: 'Ninh Binh' },
-  //   { value: 'phanRang', label: 'Phan Rang' },
-  //   { value: 'phanThiet', label: 'Phan Thiet' },
-  //   { value: 'pleiku', label: 'Pleiku' },
-  //   { value: 'quiNhon', label: 'Qui Nhon' },
-  //   { value: 'quangBinh', label: 'Quang Binh' },
-  //   { value: 'quangNgai', label: 'Quang Ngai' },
-  //   { value: 'rachGia', label: 'Rach Gia' },
-  //   { value: 'saDec', label: 'Sa Dec' },
-  //   { value: 'saPa', label: 'Sa Pa' },
-  //   { value: 'socTrang', label: 'Soc Trang' },
-  //   { value: 'sonLa', label: 'Son La' },
-  //   { value: 'songCau', label: 'Song Cau' },
-  //   { value: 'tanAn', label: 'Tan An' },
-  //   { value: 'tayNinh', label: 'Tay Ninh' },
-  //   { value: 'thaiBinh', label: 'Thai Binh' },
-  //   { value: 'thaiNguyen', label: 'Thai Nguyen' },
-  //   { value: 'thanhHoa', label: 'Thanh Hoa' },
-  //   { value: 'thuDauMot', label: 'Thu Dau Mot' },
-  //   { value: 'traVinh', label: 'Tra Vinh' },
-  //   { value: 'tuyenQuang', label: 'Tuyen Quang' },
-  //   { value: 'tuyHoa', label: 'Tuy Hoa' },
-  //   { value: 'vietTri', label: 'Viet Tri' },
-  //   { value: 'vinh', label: 'Vinh' },
-  //   { value: 'vinhLong', label: 'Vinh Long' },
-  //   { value: 'vinhYen', label: 'Vinh Yen' },
-  //   { value: 'vungTau', label: 'Vung Tau' },
-  //   { value: 'yenBai', label: 'Yen Bai' },
-  //   { value: 'yenVinh', label: 'Yen Vinh' },
-  // ];  
 
   const handlePropertyLengthChange = (value: number | null) => {
     setPropertyLength(value);
@@ -113,6 +75,7 @@ const CreateProperty: React.FC = () => {
 
   const handleEditorChange = (content: any, editor: any) => {
     const contentString = typeof content === 'string' ? content : '';
+    console.log('content:', contentString);
     setEditorContent(contentString);
   };
 
@@ -162,7 +125,7 @@ const CreateProperty: React.FC = () => {
   return (
     <div className="d-flex align-items-center justify-content-center">
       <Card 
-        title="Create Property"
+        title="Edit Property"
         className="custom-card" 
         extra={<Link to="/admin/properties">Back</Link>}
       >
@@ -314,4 +277,4 @@ const CreateProperty: React.FC = () => {
   )
 }
 
-export default CreateProperty;
+export default EditProperty;
