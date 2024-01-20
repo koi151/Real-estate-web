@@ -33,6 +33,7 @@ const propertySchema = new mongoose.Schema(
     location: {
       city: String,
       district: String,
+      ward: String,
       address: String
     },
     propertyDetails: {

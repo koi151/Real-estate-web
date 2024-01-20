@@ -11,6 +11,7 @@ export const statusValues = ["active", "inactive"];
 export interface Location {
   city?: string;
   district?: string;
+  ward?: String,
   address?: string;
 }
 
