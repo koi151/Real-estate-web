@@ -4,21 +4,22 @@ import React, { useState } from "react";
 import { Editor } from '@tinymce/tinymce-react';
 import { SegmentedValue } from "antd/es/segmented";
 import { Link } from "react-router-dom";
+import dayjs, { Dayjs } from "dayjs";
 
 import propertiesService from "../../services/admin/properties.service";
 import GetAddress from "../../components/getAddress/getAddress";
 import ExpireTimePicker from "../../components/ExpireTimePicker/expireTimePicker";
 import './create.scss'
-import { Dayjs } from "dayjs";
 
 const CreateProperty: React.FC = () => {
+
   const [postType, setPostType] = useState<string>('sell');
   const [propertyWidth, setPropertyWidth] = useState<number | null>(null);
   const [propertyLength, setPropertyLength] = useState<number | null>(null);
   const [priceMultiplier, setPriceMultiplier] = useState<number>(1);
   const [editorContent, setEditorContent] = useState<string>("");
 
-  // child component
+  // data from child component
   const [expireDateTime, setExpireDateTime] = useState<Dayjs | null>(null);
   
   const propertyCategoryOptions = [
@@ -31,7 +32,6 @@ const CreateProperty: React.FC = () => {
     setExpireDateTime(dateTime);
   }
   
-
   const handlePropertyLengthChange = (value: number | null) => {
     setPropertyLength(value);
   };
@@ -93,16 +93,21 @@ const CreateProperty: React.FC = () => {
       const words = data.listingType.split(' ');
       data.listingType = `${words[0].charAt(0).toLowerCase()}${words[0].slice(1)}${words[1].charAt(0).toUpperCase()}${words[1].slice(1)}`;
 
-      data['expireDate'] = expireDateTime;
-      console.log(data)
-
-      // const response = await propertiesService.createProperty(data);
+      if (expireDateTime) {
+        data['expireAt'] = expireDateTime;
+      } else if (data.expireAt === 'day' || data.expireAt === 'week' || data.expireAt === 'month') {
+        const duration = data.expireAt === 'day' ? 1 : (data.expireAt === 'week' ? 7 : 30);
+        const expirationDate = dayjs().add(duration, 'day');
+        data['expireAt'] = expirationDate;
+      }
+    
+      const response = await propertiesService.createProperty(data);
       
-      // if (response.code === 200) {
-      //   message.success("Property created successfully !", 3);
-      // } else {
-      //   message.error(response.message, 3)
-      // }
+      if (response.code === 200) {
+        message.success("Property created successfully !", 3);
+      } else {
+        message.error(response.message, 3)
+      }
 
     } catch (error) {
       message.error("Error occured while creating new property.")

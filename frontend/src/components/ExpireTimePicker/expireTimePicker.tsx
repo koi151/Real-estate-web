@@ -1,4 +1,4 @@
-import { Button, DatePicker, Form, Radio, RadioChangeEvent, Space } from "antd";
+import { Button, Col, DatePicker, Form, Radio, RadioChangeEvent, Row, Space } from "antd";
 import dayjs, { Dayjs } from 'dayjs';
 import React, { useState } from "react";
 import './expireTimePicker.scss'
@@ -62,37 +62,45 @@ const ExpireTimePicker: React.FC<ExpireTimePickerProps> = ({ onExpireDateTimeCha
 
         <div className="time-picker" style={{ marginTop: "2rem" }}>
           <div className="d-flex">
-            <Space direction="vertical" style={{ width: "50%" }}>
-              <DatePicker
-                disabled
-                showTime
-                value={currentDateTime}
-                onChange={handleDateTimeChange}
-                style={{ width: "90%" }}
-              />
-              <Button onClick={handleSetCurrentDateTime} className="custom-btn-main">Update current time</Button>
-            </Space>
+            <Row gutter={16}>
+              <Col sm={24} md={12} lg={12} xl={12} xxl={12} className="custom-col-one">
+                <DatePicker
+                  disabled
+                  showTime
+                  value={currentDateTime}
+                  onChange={handleDateTimeChange}
+                  style={{ width: "90%" }}
+                />
+                <Button onClick={handleSetCurrentDateTime} className="custom-btn-main">Update current time</Button>
+              </Col>
 
-            <Space direction="vertical" style={{ width: "50%" }}>
-              <DatePicker
-                showTime
-                value={expireDateTime}
-                onChange={handleExpireDateTimeChange}
-                style={{ width: "90%" }}
-                disabledDate={disabledDate} 
-                disabledTime={disabledTime}
-              />
-              <Button 
-                onClick={handleSetExpireDateTime} 
-                className="custom-btn-main"
-              >
-                Set expire time
-              </Button>
-            </Space>
+              <Col sm={24} md={12} lg={12} xl={12} xxl={12} className="custom-col-two">
+                <DatePicker
+                  showTime
+                  value={expireDateTime}
+                  onChange={handleExpireDateTimeChange}
+                  style={{ width: "90%" }}
+                  disabledDate={disabledDate} 
+                  disabledTime={disabledTime}
+                />
+                <Button 
+                  onClick={handleSetExpireDateTime} 
+                  className="custom-btn-main"
+                >
+                  Set expire time
+                </Button>
+              </Col>
+            </Row>
           </div>
           <div className="time-display">
-            <p>Current time: <b>{currentDateTime?.format('HH:mm - DD/MM/YYYY')}</b></p>
-            <p>Expire time: <b>{expireDateTime?.format('HH:mm - DD/MM/YYYY')}</b></p>
+            <Row gutter={16} style={{width: "100%"}}>
+              <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                <p>Current time: <b>{currentDateTime?.format('HH:mm - DD/MM/YYYY')}</b></p>
+              </Col>
+              <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                <p>Expire time: <b>{expireDateTime ? expireDateTime?.format('HH:mm - DD/MM/YYYY') : 'Not select'}</b></p>
+              </Col>
+            </Row>
           </div>
         </div>
       </div>

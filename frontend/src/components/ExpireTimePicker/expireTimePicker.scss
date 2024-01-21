@@ -1,13 +1,47 @@
 .time-display {
   margin-top: 2rem;
   display: flex;
+
+  p {
+    margin: 0;
+  }
+
   b {
     color: #555;
-    margin-right: 5rem;
   }
 }
 
 .time-picker {
   display: flex;
   flex-direction: column;
+
+  .custom-btn-main {
+    margin-top: 1rem;
+  }
+
+  @media (max-width: 767px) {
+    .ant-col-sm-24 {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .custom-col-one {
+      margin-top: 2rem;
+
+      .custom-btn-main {
+        margin-top: 1.5rem;
+      }
+    }
+
+    .custom-col-two {
+      margin-top: 3.5rem;
+      
+      .custom-btn-main {
+        margin-top: 1.5rem;
+      }
+    }
+  }
 }
+

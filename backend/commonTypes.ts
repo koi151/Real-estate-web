@@ -42,6 +42,7 @@ export interface PropertyType {
   location?: Location;
   listingType?: string;
   propertyDetails?: PropertyDetails;
+  slug?: string;
   createdAt?: Date;
   expireAt?: Date;
   deleted?: boolean;

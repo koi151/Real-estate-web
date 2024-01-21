@@ -19,6 +19,7 @@ const processPropertyData = (req: Request): PropertyType => {
     price: req.body.price,
     images: req.body.images,
     location: req.body.location,
+    slug: req.body.slug,
     listingType: req.body.listingType,
     propertyDetails: req.body.propertyDetails,
     deleted: req.body.deleted,
@@ -31,9 +32,10 @@ export const index = async (req: Request, res: Response) => {
     interface Find {
       deleted: boolean,
       status?: string,
-      title?: RegExp
+      title?: RegExp,
+      slug?: RegExp
     }
-
+    
     let status: string | undefined = req.query.status?.toString();
 
     const find: Find = {
@@ -43,9 +45,12 @@ export const index = async (req: Request, res: Response) => {
 
     // Searching
     const searchObject = searchHelper(req.query);
-    if (searchObject.regex) {
-      find.title = searchObject.regex;
-    }
+    const { regex, slugRegex } = searchObject;
+
+    if (regex) {
+      const orClause = { $or: [{ title: regex }, { slug: slugRegex }] };
+      Object.assign(find, orClause);
+    }    
 
     // Pagination
     const countRecords = await Property.countDocuments(find);
@@ -101,6 +106,7 @@ export const index = async (req: Request, res: Response) => {
     })
   }
 }
+
 
 // [GET] /admin/properties/:propertyId
 export const detail = async (req: Request, res: Response) => {

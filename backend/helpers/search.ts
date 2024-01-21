@@ -1,27 +1,31 @@
+import { convertToSlug } from "./convertToSlug";
+
+// searchHelper.ts
 interface SearchObject {
-  keyword: string, 
-  regex?: RegExp
+  keyword: string,
+  regex?: RegExp,
+  slugRegex?: RegExp
 }
 
 export const searchHelper = (query: any): SearchObject => {
   try {
-    let searchObject: SearchObject = {
-      keyword: ""
-    }
-
+    let searchObject: SearchObject = { keyword: "" }
     if (query.keyword) {
-      searchObject.keyword = query.keyword;
+      const keywordRegex = new RegExp(query.keyword, "i");
 
-      const regex = new RegExp(searchObject.keyword, 'i')
-      searchObject.regex = regex;
+      const unicodeSlug = convertToSlug(query.keyword);
+      const slugRegex = new RegExp(unicodeSlug, "i");
+
+      searchObject.keyword = query.keyword;
+      searchObject.regex = keywordRegex;
+      searchObject.slugRegex = slugRegex;
     }
-    
+
+    console.log("searchObject:", searchObject)
     return searchObject;
 
   } catch (error) {
-    console.log('Error occcurred in searchHelper:', searchHelper);
-    return { 
-      keyword: "" 
-    };
+    console.log('Error occurred in searchHelper:', error);
+    return { keyword: "" };
   }
 }
