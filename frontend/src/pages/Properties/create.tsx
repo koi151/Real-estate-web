@@ -94,14 +94,15 @@ const CreateProperty: React.FC = () => {
       data.listingType = `${words[0].charAt(0).toLowerCase()}${words[0].slice(1)}${words[1].charAt(0).toUpperCase()}${words[1].slice(1)}`;
 
       data['expireDate'] = expireDateTime;
+      console.log(data)
 
-      const response = await propertiesService.createProperty(data);
+      // const response = await propertiesService.createProperty(data);
       
-      if (response.code === 200) {
-        message.success("Property created successfully !", 3);
-      } else {
-        message.error(response.message, 3)
-      }
+      // if (response.code === 200) {
+      //   message.success("Property created successfully !", 3);
+      // } else {
+      //   message.error(response.message, 3)
+      // }
 
     } catch (error) {
       message.error("Error occured while creating new property.")
