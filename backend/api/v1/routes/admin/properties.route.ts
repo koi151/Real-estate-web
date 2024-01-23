@@ -1,8 +1,14 @@
 import { Router } from "express";
+import multer from "multer";
+
 const router: Router = Router();
 
 import * as controller from '../../controllers/admin/properties.controller';
-import * as validate from '../../validates/admin/property.validate'
+import * as validate from '../../validates/admin/property.validate';
+import * as uploadCloud from '../../../../middlewares/admin/uploadCloud.middleware'
+
+const storage = multer.memoryStorage(); // You can configure storage as needed
+const upload = multer({ storage: storage });
 
 router.get('/', controller.index);
 
@@ -10,7 +16,9 @@ router.get('/detail/:propertyId', controller.detail)
 
 router.post(
   '/create',
-  validate.createPost, 
+  upload.fields([{ name: 'images', maxCount: 8 }]),
+  validate.createPost,
+  uploadCloud.uploadFields,
   controller.createPost
 );
 

@@ -2,7 +2,6 @@ import express, { Express } from 'express';
 import * as database from './configs/database';
 import { systemConfig } from './configs/system';
 
-import bodyParser from 'body-parser';
 import methodOverride from 'method-override';
 import cors from "cors";
 import dotenv from "dotenv"; 
@@ -20,8 +19,8 @@ const port: number | string = process.env.PORT || 3000;
 app.use(methodOverride('_method'));
 app.use(cors());
 
-app.use(bodyParser.urlencoded({ extended: true }))
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // TinyMCE
 app.use(

@@ -21,7 +21,6 @@ export const searchHelper = (query: any): SearchObject => {
       searchObject.slugRegex = slugRegex;
     }
 
-    console.log("searchObject:", searchObject)
     return searchObject;
 
   } catch (error) {

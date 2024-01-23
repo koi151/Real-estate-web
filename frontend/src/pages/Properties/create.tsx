@@ -10,6 +10,9 @@ import propertiesService from "../../services/admin/properties.service";
 import GetAddress from "../../components/getAddress/getAddress";
 import ExpireTimePicker from "../../components/ExpireTimePicker/expireTimePicker";
 import './create.scss'
+import UploadMultipleFile from "../../components/UploadMultipleFile/uploadMultipleFile";
+
+// type FileType = Parameters<NonNullable<UploadProps['beforeUpload']>>[0];
 
 const CreateProperty: React.FC = () => {
 
@@ -21,7 +24,7 @@ const CreateProperty: React.FC = () => {
 
   // data from child component
   const [expireDateTime, setExpireDateTime] = useState<Dayjs | null>(null);
-  
+
   const propertyCategoryOptions = [
     { value: 'townHouse', label: 'Town house' },
     { value: 'apartment', label: 'Apartment' },
@@ -63,57 +66,68 @@ const CreateProperty: React.FC = () => {
 
   const onFinishForm = async (data: any) => {
     try {
-      data["location"] = {
-        city: data.city,
-        district: data.district,
-        ward: data.ward,
-        address: data.address
-      }
-      delete data.city;
-      delete data.district;
-      delete data.address;
-      delete data.ward;
+      const formData = new FormData();
+      console.log('data:', data)
 
-      data["area"] = {
-        propertyWidth: data.propertyWidth,
-        propertyLength: data.propertyLength,
-      }
-      delete data.width;
-      delete data.length;
-
-      data['propertyDetails'] = {
-        propertyType: data.propertyType
-      }
-      delete data.propertyType;
-
-      data['description'] = editorContent;
-      data.price = priceMultiplier * data.price;
+      formData.append('title', data.title);
+      formData.append('position', data.position);
       
-      // etc: For rent => forRent
+      formData.append('postType', data.postType);   
+      formData.append('status', data.status);
+  
+      // Append location data
+      formData.append('location[city]', data.city);
+      formData.append('location[district]', data.district);
+      formData.append('location[ward]', data.ward);
+      formData.append('location[address]', data.address);
+  
+      // Append area data
+      formData.append('area[propertyWidth]', data.propertyWidth);
+      formData.append('area[propertyLength]', data.propertyLength);
+  
+      // Append propertyDetails data
+      formData.append('propertyDetails[propertyType]', data.propertyType);
+  
+      // Append description
+      formData.append('description', editorContent);
+  
+      // Append calculated price
+      formData.append('price', String(priceMultiplier * data.price));
+  
+      // Append listingType
       const words = data.listingType.split(' ');
-      data.listingType = `${words[0].charAt(0).toLowerCase()}${words[0].slice(1)}${words[1].charAt(0).toUpperCase()}${words[1].slice(1)}`;
-
+      const formattedListingType = `${words[0].charAt(0).toLowerCase()}${words[0].slice(1)}${words[1].charAt(0).toUpperCase()}${words[1].slice(1)}`;
+      formData.append('listingType', formattedListingType);
+  
+      // Append expireAt
       if (expireDateTime) {
-        data['expireAt'] = expireDateTime;
+        formData.append('expireAt', expireDateTime.toISOString());
+        
       } else if (data.expireAt === 'day' || data.expireAt === 'week' || data.expireAt === 'month') {
         const duration = data.expireAt === 'day' ? 1 : (data.expireAt === 'week' ? 7 : 30);
         const expirationDate = dayjs().add(duration, 'day');
-        data['expireAt'] = expirationDate;
-      }
-    
-      const response = await propertiesService.createProperty(data);
-      
-      if (response.code === 200) {
-        message.success("Property created successfully !", 3);
-      } else {
-        message.error(response.message, 3)
+        formData.append('expireAt', expirationDate.toISOString()); // Adjust to your date format
       }
 
+      if (data.images && data.images.length > 0) {
+        data.images.forEach((imageFile: any) => {
+          formData.append('images', imageFile.originFileObj);
+        });
+      }
+          
+      const response = await propertiesService.createProperty(formData);
+  
+      if (response.code === 200) {
+        message.success("Property created successfully!", 3);
+      } else {
+        message.error(response.message, 3);
+      }
+  
     } catch (error) {
-      message.error("Error occured while creating new property.")
+      message.error("Error occurred while creating a new property.");
     }
   }
-
+  
   return (
     <div className="d-flex align-items-center justify-content-center">
       <Card 
@@ -121,7 +135,13 @@ const CreateProperty: React.FC = () => {
         className="custom-card" 
         extra={<Link to="/admin/properties">Back</Link>}
       >
-        <Form layout="vertical" onFinish={onFinishForm} >
+        <Form 
+          layout="vertical" 
+          onFinish={onFinishForm}
+          method="POST"
+          encType="multipart/form-data" 
+        >
+          
           <Row gutter={16}>
             <Col span={24} className="mb-5">
               <Form.Item 
@@ -250,6 +270,10 @@ const CreateProperty: React.FC = () => {
                 />
               </Form.Item>
             </Col>
+            <Col span={24}>
+              <UploadMultipleFile />
+            </Col>
+
             <Col span={24}>
               <Form.Item>
                 <Button className='custom-btn-main' type="primary" htmlType="submit">

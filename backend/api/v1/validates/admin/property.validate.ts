@@ -1,11 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 
 const validateNumberField = (value: any, fieldName: string, res: Response): boolean => {
-  if (!value) {
-    return true;
-  }
-  
-  if (!/^\d+$/.test(value)) {
+  if (typeof value === 'number' || !value) {
+    return true
+  } else {
     res.json({
       code: 400,
       error: true,
@@ -13,27 +11,30 @@ const validateNumberField = (value: any, fieldName: string, res: Response): bool
     });
     return false;
   }
-  return true;
 };
 
 const validateField = (data: any, field: string, res: Response): boolean => {
   switch (field) {
     case 'position':
     case 'price':
-      return validateNumberField(data[field], field.charAt(0).toUpperCase() + field.slice(1), res);
+      return validateNumberField(parseFloat(data[field]), field.charAt(0).toUpperCase() + field.slice(1), res);
 
     case 'area':
       const { propertyWidth, propertyLength } = data[field] || {};
-      if (propertyWidth && propertyLength) {
+
+      const widthAsNumber = parseFloat(propertyWidth);
+      const lengthAsNumber = parseFloat(propertyLength);
+
+      if (!isNaN(widthAsNumber) && !isNaN(lengthAsNumber)) {
         return (
-          validateNumberField(propertyWidth, 'Property width', res) &&
-          validateNumberField(propertyLength, 'Property length', res)
+          validateNumberField(widthAsNumber, 'Property width', res) &&
+          validateNumberField(lengthAsNumber, 'Property length', res)
         );
       } else {
         res.json({
           code: 400,
           error: true,
-          message: "Width and Length of property must be included",
+          message: "Width and Length of property must be valid numbers",
         });
         return false;
       }
@@ -43,8 +44,11 @@ const validateField = (data: any, field: string, res: Response): boolean => {
   }
 };
 
+
 export const createPost = async (req: Request, res: Response, next: NextFunction) => {
   const requiredFields = ['title', 'area', 'price', 'position'];
+
+  console.log(req.body)
 
   if (!req.body.title) {
     res.json({

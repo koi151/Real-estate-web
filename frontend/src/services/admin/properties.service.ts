@@ -24,13 +24,13 @@ class PropertiesServiceAdmin {
     return (await this.api.patch(`/multi-change`, {ids, type})).data;
   }
 
-  async createProperty(property: PropertyType) {
-    // const config = {
-    //   headers: {
-    //     'Content-Type': 'multipart/form-data',
-    //   },
-    // };
-    return (await this.api.post('/create', property)).data;
+  async createProperty(property: any) {
+    const config = {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    };
+    return (await this.api.post('/create', property, config)).data;
   }
 }
 

@@ -13,10 +13,14 @@ const processPropertyData = (req: Request): PropertyType => {
     title: req.body.title,
     status: req.body.status,
     postType: req.body.postType,
-    position: req.body.position,
+    position: parseFloat(req.body.position),
     description: req.body.description,
-    area: req.body.area,
-    price: req.body.price,
+    area: {
+      propertyWidth: parseFloat(req.body.area.propertyWidth),
+      propertyLength: parseFloat(req.body.area.propertyLength), 
+    },
+
+    price: parseFloat(req.body.price),
     images: req.body.images,
     location: req.body.location,
     slug: req.body.slug,
@@ -164,9 +168,10 @@ export const singleDelete = async (req: Request, res: Response) => {
 }
 
 // [POST] /admin/properties/create
-export const createPost = async (req: Request, res: Response) => {
-  try {    
+export const createPost = async (req: any, res: Response) => {
+  try {
     const property: PropertyType = processPropertyData(req);
+
     if (!property.position) {
       const cntProperty = await Property.countDocuments();
       property.position = cntProperty + 1;

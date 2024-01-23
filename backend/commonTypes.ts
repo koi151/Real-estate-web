@@ -1,3 +1,5 @@
+import { UploadFile } from "antd";
+
 export type RoomType = "bedrooms" | "bathrooms" | "kitchens" | "livingRooms";
 export type ValidStatus = 'active' | 'inactive';
 export type ValidMultiChangeType = 'active' | "inactive" | "position" | "delete" 
@@ -66,4 +68,9 @@ export interface GetPropertiesOptions {
   params?: Record<string, any>;
   pageSize?: number;
   currentPage?: number;
+}
+
+// FILES
+export interface CustomUploadFile extends UploadFile {
+  base64Data: string;
 }
