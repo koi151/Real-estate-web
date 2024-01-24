@@ -1,4 +1,4 @@
-import { Button, Card, Col, Flex, Form, Input, InputNumber, Radio, Row, Segmented, Select, Skeleton, Spin, message } from "antd";
+import { Button, Card, Col, Form, Input, InputNumber, Radio, Row, Segmented, Select, Spin, message } from "antd";
 import { SegmentedValue } from "antd/es/segmented";
 import React, { useEffect, useState } from "react";
 import { Editor } from '@tinymce/tinymce-react';
@@ -6,7 +6,9 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 
 import propertiesService from "../../services/admin/properties.service";
 import { PropertyType } from "../../../../backend/commonTypes";
+import * as standardizeData from '../../helpers/standardizeData'
 import GetAddress from "../../components/getAddress/getAddress";
+import UploadMultipleFile from "../../components/UploadMultipleFile/uploadMultipleFile";
 
 const EditProperty: React.FC = () => {
   const { id } = useParams();
@@ -46,10 +48,6 @@ const EditProperty: React.FC = () => {
     };
     fetchData();
   }, [id])
-
-  useEffect(() => {
-    console.log(property);
-  }, [property])
   
   const propertyCategoryOptions = [
     { value: 'townHouse', label: 'Town house' },
@@ -69,13 +67,6 @@ const EditProperty: React.FC = () => {
     setPriceMultiplier(value === 'million' ? 1 : 1000);
   };
 
-  const selectPriceUnit = (
-    <Select defaultValue="million" onChange={handlePriceUnitChange}>
-      <Select.Option value="million">million</Select.Option>
-      <Select.Option value="billion">billion</Select.Option>
-    </Select>
-  );
-
   const handleChangeListingType = (value: SegmentedValue) => {
     const formatedValue = value = "For sale" ? 'sell' : "hire"
     setPostType(formatedValue)
@@ -86,7 +77,6 @@ const EditProperty: React.FC = () => {
     setEditorContent(contentString);
   };
 
-  // const getExpireDay =
 
   const onFinishForm = async (data: any) => {
     try {
@@ -146,16 +136,17 @@ const EditProperty: React.FC = () => {
             className="custom-card" 
             extra={<Link to="/admin/properties">Back</Link>}
           >
-            <Form layout="vertical" onFinish={onFinishForm} >
+            <Form layout="vertical" onFinish={onFinishForm}>
               <Row gutter={16}>
                 <Col span={24} className="mb-5">
                   <Form.Item 
                     label='Listing type:' 
                     name='listingType' 
                     style={{height: "4.5rem"}}
+                    initialValue={standardizeData.listingType(property?.listingType || "")}
                   >
                     <Segmented 
-                      options={['For sale', 'For rent']} 
+                      options={['For Sale', 'For Rent']} 
                       block 
                       className="custom-segmented"
                       onChange={handleChangeListingType}
@@ -166,20 +157,25 @@ const EditProperty: React.FC = () => {
                   <Form.Item 
                     label={<span>Post title <b className="required-txt">- required:</b></span>}
                     name='title'
+                    initialValue={property?.title}
                   >
                     <Input type="text" id="title" value={property?.title} required />
                   </Form.Item>
                 </Col>
 
                 <Col span={24}>
-                  <GetAddress />
+                  <GetAddress initialValues={property?.location}/>
                 </Col>
 
                 <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
-                  <Form.Item label='Property length' name='propertyLength'>
+                  <Form.Item 
+                    label='Property length' 
+                    name='propertyLength' 
+                    initialValue={property?.area?.propertyLength}
+                  >
                     <InputNumber 
-                      value={property?.area?.propertyLength}
-                      type="number" min={0} 
+                      type="number" 
+                      min={0} 
                       onChange={handlePropertyLengthChange}
                       className="custom-number-input" 
                       placeholder="Enter length of property"
@@ -187,9 +183,8 @@ const EditProperty: React.FC = () => {
                   </Form.Item>
                 </Col>
                 <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
-                  <Form.Item label='Property width' name='propertyWidth'>
+                  <Form.Item label='Property width' name='propertyWidth' initialValue={property?.area?.propertyWidth}>
                     <InputNumber 
-                      value={property?.area?.propertyWidth}
                       type="number" min={0} 
                       className="custom-number-input" 
                       onChange={handlePropertyWidthChange}
@@ -198,19 +193,27 @@ const EditProperty: React.FC = () => {
                   </Form.Item>
                 </Col>
                 <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
-                  <Form.Item label='Area'>
+                  <Form.Item 
+                    label='Area'
+                    initialValue={property?.area?.propertyLength && property?.area?.propertyWidth 
+                      ? property?.area?.propertyLength * property?.area?.propertyWidth 
+                      : undefined}
+                  >
                     <InputNumber 
                       disabled 
-                      type="number" min={0} 
+                      type="number" 
+                      min={0} 
                       className="custom-number-input" 
                       placeholder="Enter width and height"
-                      value={propertyLength && propertyWidth && propertyLength * propertyWidth}
+                      defaultValue={property?.area?.propertyLength && property?.area?.propertyWidth 
+                        ? property?.area?.propertyLength * property?.area?.propertyWidth 
+                        : undefined}
                     />
                   </Form.Item>
                 </Col>
 
                 <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
-                  <Form.Item label='Property type' name='propertyType'>
+                  <Form.Item label='Property type' name='propertyType' initialValue={property?.propertyDetails?.propertyType}>
                     <Select
                       value={property?.propertyDetails?.propertyType}
                       placeholder='Please select property type'
@@ -220,10 +223,22 @@ const EditProperty: React.FC = () => {
                   </Form.Item> 
                 </Col>
                 <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
-                  <Form.Item label={`Property ${postType} price`} name='price'>
+                  <Form.Item 
+                    label={`Property ${postType} price`} 
+                    name='price'
+                    initialValue={property?.price && property.price >= 1000 ? property.price / 1000 : property?.price}
+                  >
                     <Input 
                       value={property?.price}
-                      addonAfter={selectPriceUnit} 
+                      addonAfter={
+                        <Select 
+                          value={property?.price && property.price >= 1000 ? "billion" : "million"} 
+                          onChange={handlePriceUnitChange}
+                        >
+                          <Select.Option value="million">million</Select.Option>
+                          <Select.Option value="billion">billion</Select.Option>
+                        </Select>
+                      } 
                       placeholder={`Please select property ${postType} price`} 
                     />
                   </Form.Item>
@@ -283,6 +298,9 @@ const EditProperty: React.FC = () => {
                       placeholder='Auto increase by default'
                     />
                   </Form.Item>
+                </Col>
+                <Col span={24}>
+                  <UploadMultipleFile uploadedImages={property?.images}/>
                 </Col>
                 <Col span={24}>
                   <Form.Item>

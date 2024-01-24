@@ -21,7 +21,7 @@ const processPropertyData = (req: Request): PropertyType => {
     },
 
     price: parseFloat(req.body.price),
-    images: req.body.images,
+    images: Array(req.body.images),
     location: req.body.location,
     slug: req.body.slug,
     listingType: req.body.listingType,
@@ -61,7 +61,7 @@ export const index = async (req: Request, res: Response) => {
     let paginationObject = paginationHelper(
       {
         currentPage: typeof(req.query.currentPage) == "string" ? parseInt(req.query.currentPage) : 1,
-        limitItems: 2,
+        limitItems: 3,
         skip: null, // helper return skip, totalPage value, do not change
         totalPage: null,
       },
@@ -112,7 +112,7 @@ export const index = async (req: Request, res: Response) => {
 }
 
 
-// [GET] /admin/properties/:propertyId
+// [GET] /admin/properties/detail/:propertyId
 export const detail = async (req: Request, res: Response) => {
   try {
     const id : string = req.params.propertyId;

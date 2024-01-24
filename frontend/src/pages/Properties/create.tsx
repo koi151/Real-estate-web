@@ -67,7 +67,6 @@ const CreateProperty: React.FC = () => {
   const onFinishForm = async (data: any) => {
     try {
       const formData = new FormData();
-      console.log('data:', data)
 
       formData.append('title', data.title);
       formData.append('position', data.position);

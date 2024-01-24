@@ -7,8 +7,7 @@ import * as controller from '../../controllers/admin/properties.controller';
 import * as validate from '../../validates/admin/property.validate';
 import * as uploadCloud from '../../../../middlewares/admin/uploadCloud.middleware'
 
-const storage = multer.memoryStorage(); // You can configure storage as needed
-const upload = multer({ storage: storage });
+const upload = multer();
 
 router.get('/', controller.index);
 

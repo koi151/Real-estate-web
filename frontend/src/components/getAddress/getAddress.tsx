@@ -9,17 +9,51 @@ interface OptionType {
 
 const API_HOST = 'https://provinces.open-api.vn/api/';
 
-const GetAddress: React.FC = () => {
+const GetAddress: React.FC<{ initialValues?: any }> = ({ initialValues }) => {
   const [cities, setCities] = useState<OptionType[]>([]);
   const [districts, setDistricts] = useState<OptionType[]>([]);
   const [wards, setWards] = useState<OptionType[]>([]);
-  const [selectedCity, setSelectedCity] = useState<string | undefined>(undefined);
-  const [selectedDistrict, setSelectedDistrict] = useState<string | undefined>(undefined);
-  const [selectedWard, setSelectedWard] = useState<string | undefined>(undefined);
+  const [selectedCity, setSelectedCity] = useState<string | undefined>(initialValues?.city);
+  const [selectedDistrict, setSelectedDistrict] = useState<string | undefined>(initialValues?.district);
+  const [selectedWard, setSelectedWard] = useState<string | undefined>(initialValues?.ward);
 
   useEffect(() => {
     fetchCities();
   }, []);
+
+  useEffect(() => {
+    if (initialValues?.city && cities.length > 0) {
+      const selectedCityCode = cities.find(city => city.name === initialValues.city)?.code;
+      if (selectedCityCode !== undefined) {
+        setSelectedCity(initialValues.city);
+        fetchDistricts(selectedCityCode);
+      }
+    }
+  }, [cities, initialValues]);
+  
+  useEffect(() => {
+    if (districts.length > 0) {
+      if (initialValues?.district) {
+        const selectedDistrictCode = districts.find(district => district.name === initialValues.district)?.code;
+        if (selectedDistrictCode !== undefined) {
+          setSelectedDistrict(initialValues.district);
+          fetchWards(selectedDistrictCode);
+        }
+      }
+    }
+  }, [districts, initialValues]);
+
+  useEffect(() => {
+    if (wards.length > 0) {
+      if (initialValues?.ward) {
+        const selectedWardCode = wards.find(ward => ward.name === initialValues.ward)?.code;
+        if (selectedWardCode !== undefined) {
+          setSelectedWard(initialValues.ward);
+        }
+      }
+    }
+  }, [wards, initialValues])
+  
 
   const fetchCities = async () => {
     const response = await axios.get<OptionType[]>(`${API_HOST}?depth=1`);
@@ -65,7 +99,7 @@ const GetAddress: React.FC = () => {
   return (
     <Row gutter={16}>
       <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
-        <Form.Item label='City' name='city'>
+        <Form.Item label='City' name='city' initialValue={initialValues?.city || undefined}>
           <Select
             placeholder="Choose city"
             onChange={handleCityChange}
@@ -79,7 +113,7 @@ const GetAddress: React.FC = () => {
         </Form.Item>
       </Col>
       <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
-        <Form.Item label='District' name='district'>
+        <Form.Item label='District' name='district' initialValue={initialValues?.district || undefined}>
           <Select
             placeholder="Choose district"
             onChange={handleDistrictChange}
@@ -93,7 +127,7 @@ const GetAddress: React.FC = () => {
         </Form.Item>
       </Col>
       <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
-        <Form.Item label='Ward' name='ward'>
+        <Form.Item label='Ward' name='ward' initialValue={initialValues?.ward || undefined}>
           <Select
             placeholder="Choose ward"
             onChange={handleWardChange}
@@ -107,7 +141,7 @@ const GetAddress: React.FC = () => {
         </Form.Item>
       </Col>
       <Col span={24}>
-        <Form.Item label='Address' name='address'>
+        <Form.Item label='Address' name='address' initialValue={initialValues?.address || undefined}>
           <Input placeholder={`Enter your address`} />
         </Form.Item>
       </Col>
