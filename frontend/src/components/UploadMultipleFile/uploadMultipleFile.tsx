@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
-import { Modal, Upload, UploadProps, Form, Row, Col } from 'antd';
+import { Modal, Upload, UploadProps, Form } from 'antd';
 import type { UploadFile } from 'antd/es/upload/interface';
 
 type FileType = Parameters<NonNullable<UploadProps['beforeUpload']>>[0];

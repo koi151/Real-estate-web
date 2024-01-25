@@ -3,12 +3,14 @@ import { SegmentedValue } from "antd/es/segmented";
 import React, { useEffect, useState } from "react";
 import { Editor } from '@tinymce/tinymce-react';
 import { Link, useNavigate, useParams } from "react-router-dom";
+import dayjs, { Dayjs } from "dayjs";
 
 import propertiesService from "../../services/admin/properties.service";
 import { PropertyType } from "../../../../backend/commonTypes";
 import * as standardizeData from '../../helpers/standardizeData'
 import GetAddress from "../../components/getAddress/getAddress";
 import UploadMultipleFile from "../../components/UploadMultipleFile/uploadMultipleFile";
+import ExpireTimePicker from "../../components/ExpireTimePicker/expireTimePicker";
 
 const EditProperty: React.FC = () => {
   const { id } = useParams();
@@ -22,6 +24,8 @@ const EditProperty: React.FC = () => {
   const [editorContent, setEditorContent] = useState<string>("");
 
   const [property, setProperty] = useState<PropertyType | undefined>(undefined);
+  // data from child component
+  const [expireDateTime, setExpireDateTime] = useState<Dayjs | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -77,47 +81,70 @@ const EditProperty: React.FC = () => {
     setEditorContent(contentString);
   };
 
+  const handleExpireTimeChange = (dateTime: Dayjs | null) => {
+    setExpireDateTime(dateTime);
+  }
 
   const onFinishForm = async (data: any) => {
     try {
-      data["location"] = {
-        city: data.city,
-        district: data.district,
-        address: data.address
-      }
-      delete data.city;
-      delete data.district;
-      delete data.address;
+      const formData = new FormData();
 
-      data["area"] = {
-        propertyWidth: data.propertyWidth,
-        propertyLength: data.propertyLength,
-      }
-      delete data.width;
-      delete data.length;
-
-      data['propertyDetails'] = {
-        propertyType: data.propertyType
-      }
-      delete data.propertyType;
-
-      data['description'] = editorContent;
-      data.price = priceMultiplier * data.price;
+      formData.append('title', data.title);
+      formData.append('position', data.position);
       
-      // etc: For rent => forRent
+      formData.append('postType', data.postType);   
+      formData.append('status', data.status);
+  
+      // Append location data
+      formData.append('location[city]', data.city);
+      formData.append('location[district]', data.district);
+      formData.append('location[ward]', data.ward);
+      formData.append('location[address]', data.address);
+  
+      // Append area data
+      formData.append('area[propertyWidth]', data.propertyWidth);
+      formData.append('area[propertyLength]', data.propertyLength);
+  
+      // Append propertyDetails data
+      formData.append('propertyDetails[propertyType]', data.propertyType);
+  
+      // Append description
+      formData.append('description', editorContent);
+  
+      // Append calculated price
+      formData.append('price', String(priceMultiplier * data.price));
+  
+      // Append listingType
       const words = data.listingType.split(' ');
-      data.listingType = `${words[0].charAt(0).toLowerCase()}${words[0].slice(1)}${words[1].charAt(0).toUpperCase()}${words[1].slice(1)}`;
-
-      const response = await propertiesService.createProperty(data);
-      
-      if (response.code === 200) {
-        message.success("Property created successfully !", 3);
-      } else {
-        message.error(response.message, 3)
+      const formattedListingType = `${words[0].charAt(0).toLowerCase()}${words[0].slice(1)}${words[1].charAt(0).toUpperCase()}${words[1].slice(1)}`;
+      formData.append('listingType', formattedListingType);
+  
+      // Append expireAt
+      if (expireDateTime) {
+        formData.append('expireAt', expireDateTime.toISOString());
+        
+      } else if (data.expireAt === 'day' || data.expireAt === 'week' || data.expireAt === 'month') {
+        const duration = data.expireAt === 'day' ? 1 : (data.expireAt === 'week' ? 7 : 30);
+        const expirationDate = dayjs().add(duration, 'day');
+        formData.append('expireAt', expirationDate.toISOString());
       }
 
+      if (data.images?.length > 0) {
+        data.images.forEach((imageFile: any) => {
+          formData.append('images', imageFile.originFileObj);
+        });
+      }
+          
+      const response = await propertiesService.createProperty(formData);
+  
+      if (response.code === 200) {
+        message.success("Property created successfully!", 3);
+      } else {
+        message.error(response.message, 3);
+      }
+  
     } catch (error) {
-      message.error("Error occured while creating new property.")
+      message.error("Error occurred while creating a new property.");
     }
   }
 
@@ -277,15 +304,11 @@ const EditProperty: React.FC = () => {
                     </Radio.Group>
                   </Form.Item>
                 </Col>
-                <Col sm={24} md={24}  lg={12} xl={12} xxl={12}>
-                  <Form.Item label="Post expire after:" name='expireAt'>
-                    <Radio.Group>
-                      <Radio value="day">1 day</Radio>
-                      <Radio value="week">1 week</Radio>
-                      <Radio value="month">1 month</Radio>
-                      <Radio value="">None</Radio>
-                    </Radio.Group>
-                  </Form.Item>
+                <Col span={24}>
+                  <ExpireTimePicker 
+                    onExpireDateTimeChange={handleExpireTimeChange} 
+                    expireTimeGiven={property?.expireAt}
+                  />
                 </Col>
                 <Col sm={24} md={24}  lg={12} xl={12} xxl={12}>
                   <Form.Item label="Post position:" name='position' initialValue={property?.position}>

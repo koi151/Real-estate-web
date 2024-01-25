@@ -1,17 +1,25 @@
 import { Button, Col, DatePicker, Form, Radio, RadioChangeEvent, Row } from "antd";
 import dayjs, { Dayjs } from 'dayjs';
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
+import * as dateTimeHelper from '../../helpers/dateTimeHelpers'
 import './expireTimePicker.scss'
 
 interface ExpireTimePickerProps {
   onExpireDateTimeChange: (dateTime: Dayjs | null) => void;
+  expireTimeGiven?: Date | string 
 }
 
-const ExpireTimePicker: React.FC<ExpireTimePickerProps> = ({ onExpireDateTimeChange }) => {
+const ExpireTimePicker: React.FC<ExpireTimePickerProps> = ({ onExpireDateTimeChange, expireTimeGiven }) => {
   
   const [currentDateTime, setCurrentDateTime] = useState<Dayjs | null>(dayjs());
   const [expireDateTime, setExpireDateTime] = useState<Dayjs | null>(null);
+
+  useEffect(() => {
+    if (expireTimeGiven) {
+      setExpireDateTime(dayjs(expireTimeGiven));
+    }
+  }, [expireTimeGiven]);
 
   const handleChangeExpireOption = (e: RadioChangeEvent) => {
     const timePicker = document.querySelector('.time-picker');
@@ -51,7 +59,10 @@ const ExpireTimePicker: React.FC<ExpireTimePickerProps> = ({ onExpireDateTimeCha
   };
 
   return (
-    <Form.Item label="Post expire after:" name="expireAt" initialValue={'other'}>
+    <Form.Item 
+      label={expireDateTime && `Post expire after ${dateTimeHelper.differenceInTime(expireDateTime.toDate())}`}
+      name="expireAt" 
+      initialValue={'other'}>
       <div>
         <Radio.Group defaultValue={'other'} onChange={handleChangeExpireOption}>
           <Radio value="day">1 day</Radio>
