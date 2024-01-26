@@ -9,24 +9,25 @@ import { isValidStatus } from "../../../../helpers/dataTypeCheck";
 import { PropertyType, ValidMultiChangeType } from "../../../../commonTypes";
 
 const processPropertyData = (req: Request): PropertyType => {
-  return {
-    title: req.body.title,
-    status: req.body.status,
-    postType: req.body.postType,
-    position: parseFloat(req.body.position),
-    description: req.body.description,
-    area: {
-      propertyWidth: parseFloat(req.body.area.propertyWidth),
-      propertyLength: parseFloat(req.body.area.propertyLength), 
-    },
+  const images = Array.isArray(req.body.images) ? req.body.images.map(String) : [String(req.body.images)];
 
+  return {
+    title: req.body.title || '',
+    status: req.body.status || '',
+    postType: req.body.postType || '',
+    position: parseFloat(req.body.position),
+    description: req.body.description || '',
+    area: {
+      propertyWidth: parseFloat(req.body.area?.propertyWidth),
+      propertyLength: parseFloat(req.body.area?.propertyLength),
+    },
     price: parseFloat(req.body.price),
-    images: Array(req.body.images),
-    location: req.body.location,
-    slug: req.body.slug,
-    listingType: req.body.listingType,
-    propertyDetails: req.body.propertyDetails,
-    deleted: req.body.deleted,
+    images: images,
+    location: req.body.location || '',
+    slug: req.body.slug || '',
+    listingType: req.body.listingType || '',
+    propertyDetails: req.body.propertyDetails || '',
+    deleted: Boolean(req.body.deleted),
   };
 };
 
@@ -197,21 +198,23 @@ export const createPost = async (req: any, res: Response) => {
 // [PATCH] /admin/properties/edit/:propertyId
 export const editPatch = async (req: Request, res: Response) => {
   try {    
-    console.log(req.params.propertyId);
-    res.send(req.body);
+    const id: string = req.params.propertyId;
+    const propertyUpdated: PropertyType = processPropertyData(req);
 
-    // const id: string = req.params.propertyId
-    // const property: PropertyType = processPropertyData(req);
+    console.log(req.body)
 
-    // await Property.updateOne(
-    //   { _id: id },
-    //   property
-    // )
 
-    // res.status(200).json({
-    //   code: 200,
-    //   message: 'Property edited successfully'
-    // })
+    await Property.findOneAndUpdate(
+      { _id: id },
+      {
+        $push: { images: { $each: propertyUpdated.images } },
+      }
+    );
+
+    res.status(200).json({
+      code: 200,
+      message: 'Property updated successfully'
+    })
 
   } catch (error) {
     console.log('Error occurred while editing property:', error);

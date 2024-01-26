@@ -32,6 +32,15 @@ class PropertiesServiceAdmin {
     };
     return (await this.api.post('/create', property, config)).data;
   }
+
+  async updateProperty(property: any, id: string) {
+    const config = {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    };
+    return (await this.api.patch(`/edit/${id}`, property, config)).data;
+  }
 }
 
 const propertiesService = new PropertiesServiceAdmin();

@@ -105,7 +105,7 @@ const CreateProperty: React.FC = () => {
       } else if (data.expireAt === 'day' || data.expireAt === 'week' || data.expireAt === 'month') {
         const duration = data.expireAt === 'day' ? 1 : (data.expireAt === 'week' ? 7 : 30);
         const expirationDate = dayjs().add(duration, 'day');
-        formData.append('expireAt', expirationDate.toISOString()); // Adjust to your date format
+        formData.append('expireAt', expirationDate.toISOString());
       }
 
       if (data.images && data.images.length > 0) {

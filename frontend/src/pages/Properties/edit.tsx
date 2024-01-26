@@ -87,6 +87,13 @@ const EditProperty: React.FC = () => {
 
   const onFinishForm = async (data: any) => {
     try {
+      if (!id) {
+        console.error('Cannot get property id');
+        message.error('Error occurred', 3);
+        return;
+      }
+
+      console.log("data:", data)
       const formData = new FormData();
 
       formData.append('title', data.title);
@@ -134,13 +141,14 @@ const EditProperty: React.FC = () => {
           formData.append('images', imageFile.originFileObj);
         });
       }
-          
-      const response = await propertiesService.createProperty(formData);
-  
+      
+      const response = await propertiesService.updateProperty(formData, id);
+      
       if (response.code === 200) {
-        message.success("Property created successfully!", 3);
+        message.success('Property updated successfully!', 3);
       } else {
-        message.error(response.message, 3);
+        console.error(response.message);
+        message.error('Error occurred', 3);
       }
   
     } catch (error) {
@@ -163,7 +171,12 @@ const EditProperty: React.FC = () => {
             className="custom-card" 
             extra={<Link to="/admin/properties">Back</Link>}
           >
-            <Form layout="vertical" onFinish={onFinishForm}>
+            <Form 
+              layout="vertical" 
+              method="POST"
+              encType="multipart/form-data" 
+              onFinish={onFinishForm}
+            >
               <Row gutter={16}>
                 <Col span={24} className="mb-5">
                   <Form.Item 
@@ -328,7 +341,7 @@ const EditProperty: React.FC = () => {
                 <Col span={24}>
                   <Form.Item>
                     <Button type="primary" htmlType="submit">
-                      Submit
+                      Update
                     </Button>
                   </Form.Item>
                 </Col>

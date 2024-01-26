@@ -48,8 +48,6 @@ const validateField = (data: any, field: string, res: Response): boolean => {
 export const createPost = async (req: Request, res: Response, next: NextFunction) => {
   const requiredFields = ['title', 'area', 'price', 'position'];
 
-  console.log(req.body)
-
   if (!req.body.title) {
     res.json({
       code: 400,
