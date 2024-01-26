@@ -1,4 +1,4 @@
-import { Button, Card, Col, Form, Input, InputNumber, Radio, Row, Segmented, Select, Skeleton, message } from "antd";
+import { Button, Card, Col, Form, Input, InputNumber, Radio, Row, Segmented, Select, Spin, message } from "antd";
 import { SegmentedValue } from "antd/es/segmented";
 import React, { useEffect, useState } from "react";
 import { Editor } from '@tinymce/tinymce-react';
@@ -158,49 +158,61 @@ const EditProperty: React.FC = () => {
 
   return (
     <div>
-      <div className="d-flex align-items-center justify-content-center">
-        <Card 
-          title="Edit Property"
-          className="custom-card" 
-          extra={<Link to="/admin/properties">Back</Link>}
-        >
-          <Skeleton loading={loading} active style={{height: "100vh"}}>
-            <Form 
-              layout="vertical" 
-              method="POST"
-              encType="multipart/form-data" 
-              onFinish={onFinishForm}
+      { loading ? (
+          <div className='d-flex justify-content-center' style={{width: "100%", height: "100vh"}}>
+            <Spin tip='Loading...' size="large">
+              <div className="content" />
+            </Spin>
+          </div>
+      ) : (
+        <div className="d-flex align-items-center justify-content-center"> 
+          <Form 
+            layout="vertical" 
+            onFinish={onFinishForm}
+            method="POST"
+            encType="multipart/form-data"
+            className="custom-form" 
+          >
+            <Card 
+              title="Basic information"
+              className="custom-card" 
+              extra={<Link to="/admin/properties">Back</Link>}
             >
               <Row gutter={16}>
                 <Col span={24} className="mb-5">
-                  <Form.Item 
-                    label='Listing type:' 
-                    name='listingType' 
-                    style={{height: "4.5rem"}}
-                    initialValue={standardizeData.listingType(property?.listingType || "")}
-                  >
-                    <Segmented 
-                      options={['For Sale', 'For Rent']} 
-                      block 
-                      className="custom-segmented"
-                      onChange={handleChangeListingType}
-                    />
-                  </Form.Item>
+                    <Form.Item 
+                      label='Listing type:' 
+                      name='listingType' 
+                      style={{height: "4.5rem"}}
+                      initialValue={standardizeData.listingType(property?.listingType || "")}
+                    >
+                      <Segmented 
+                        options={['For Sale', 'For Rent']} 
+                        block 
+                        className="custom-segmented"
+                        onChange={handleChangeListingType}
+                      />
+                    </Form.Item>
                 </Col>
-                <Col span={24}>
-                  <Form.Item 
-                    label={<span>Post title <b className="required-txt">- required:</b></span>}
-                    name='title'
-                    initialValue={property?.title}
-                  >
-                    <Input type="text" id="title" value={property?.title} required />
-                  </Form.Item>
+                <Col sm={24}>
+                  <Form.Item label='Property type' name='propertyType' initialValue={property?.propertyDetails?.propertyType}>
+                    <Select
+                      value={property?.propertyDetails?.propertyType}
+                      placeholder='Please select property type'
+                      style={{ width: "100%" }}
+                      options={propertyCategoryOptions}
+                    />
+                  </Form.Item> 
                 </Col>
 
                 <Col span={24}>
                   <GetAddress initialValues={property?.location}/>
                 </Col>
+              </Row>
+            </Card>
 
+            <Card title="Property information" className="custom-card" style={{marginTop: '2rem'}}>
+              <Row gutter={16}>
                 <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
                   <Form.Item 
                     label='Property length' 
@@ -208,8 +220,7 @@ const EditProperty: React.FC = () => {
                     initialValue={property?.area?.propertyLength}
                   >
                     <InputNumber 
-                      type="number" 
-                      min={0} 
+                      type="number" min={0} 
                       onChange={handlePropertyLengthChange}
                       className="custom-number-input" 
                       placeholder="Enter length of property"
@@ -217,7 +228,11 @@ const EditProperty: React.FC = () => {
                   </Form.Item>
                 </Col>
                 <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
-                  <Form.Item label='Property width' name='propertyWidth' initialValue={property?.area?.propertyWidth}>
+                  <Form.Item 
+                    label='Property width' 
+                    name='propertyWidth'
+                    initialValue={property?.area?.propertyWidth}
+                  >
                     <InputNumber 
                       type="number" min={0} 
                       className="custom-number-input" 
@@ -245,19 +260,8 @@ const EditProperty: React.FC = () => {
                     />
                   </Form.Item>
                 </Col>
-
                 <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
-                  <Form.Item label='Property type' name='propertyType' initialValue={property?.propertyDetails?.propertyType}>
-                    <Select
-                      value={property?.propertyDetails?.propertyType}
-                      placeholder='Please select property type'
-                      style={{ width: "100%" }}
-                      options={propertyCategoryOptions}
-                    />
-                  </Form.Item> 
-                </Col>
-                <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
-                  <Form.Item 
+                  <Form.Item
                     label={`Property ${postType} price`} 
                     name='price'
                     initialValue={property?.price && property.price >= 1000 ? property.price / 1000 : property?.price}
@@ -277,7 +281,36 @@ const EditProperty: React.FC = () => {
                     />
                   </Form.Item>
                 </Col>
-                
+
+                <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                  <Form.Item label={`Price per meter square`}>
+                    <Input
+                      disabled 
+                      placeholder={`Select property ${postType} price and area to view`} 
+                      style={{width: "100%"}}
+                      value={`${property?.area?.propertyLength && property?.area?.propertyWidth && property?.price 
+                        && (priceMultiplier * property.price / (property.area.propertyLength * property.area.propertyWidth)).toFixed(2)} million`}
+                    />
+                  </Form.Item>
+                </Col>
+
+                <Col span={24}>
+                  <UploadMultipleFile uploadedImages={property?.images}/>
+                </Col>
+              </Row>
+            </Card>
+
+            <Card title="Post information" className="custom-card" style={{marginTop: '2rem'}}>
+              <Row gutter={16}>
+                <Col span={24}>
+                  <Form.Item 
+                    label={<span>Post title <b className="required-txt">- required:</b></span>}
+                    name='title'
+                    initialValue={property?.title}
+                  >
+                    <Input type="text" id="title" required />
+                  </Form.Item>
+                </Col>
                 <Col span={24}>
                   <Form.Item label={`Property ${postType}ing description:`}>
                     <Editor
@@ -297,7 +330,7 @@ const EditProperty: React.FC = () => {
                 <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
                   <Form.Item label="Post type:" name='postType' initialValue={property?.postType}>
                     <Radio.Group>
-                      <Radio value="default"> Default </Radio>
+                      <Radio value="default" className="label-light"> Default </Radio>
                       <Radio value="preminum"> Preminum </Radio>
                       <Radio value="featured"> Featured </Radio>
                     </Radio.Group>
@@ -311,16 +344,18 @@ const EditProperty: React.FC = () => {
                     </Radio.Group>
                   </Form.Item>
                 </Col>
+
                 <Col span={24}>
                   <ExpireTimePicker 
                     onExpireDateTimeChange={handleExpireTimeChange} 
                     expireTimeGiven={property?.expireAt}
                   />
                 </Col>
+
                 <Col sm={24} md={24}  lg={12} xl={12} xxl={12}>
                   <Form.Item label="Post position:" name='position' initialValue={property?.position}>
-                    <InputNumber
-                      value={property?.position}               
+                    <InputNumber 
+                      // value={property?.position}               
                       type="number"
                       id="position" 
                       min={0} 
@@ -330,20 +365,17 @@ const EditProperty: React.FC = () => {
                   </Form.Item>
                 </Col>
                 <Col span={24}>
-                  <UploadMultipleFile uploadedImages={property?.images}/>
-                </Col>
-                <Col span={24}>
                   <Form.Item>
-                    <Button type="primary" htmlType="submit">
-                      Update
+                    <Button className='custom-btn-main' type="primary" htmlType="submit">
+                      Submit
                     </Button>
                   </Form.Item>
                 </Col>
               </Row>
-            </Form>
-          </Skeleton>
-        </Card>
-      </div>
+            </Card>
+          </Form>
+        </div>
+      )}
     </div>
 
   )

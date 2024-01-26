@@ -106,3 +106,24 @@ label {
     color: $color-highlight;
   }
 }
+
+// skeleton 
+.custom-skeleton-edit {
+  .ant-skeleton-content {
+    .ant-skeleton-title {
+      height: 2.6rem !important;
+    }
+
+    .ant-skeleton-paragraph {
+
+      li {
+        margin-top: 2rem;
+        height: 2.2rem !important;
+      }
+    }
+  }
+}
+
+.custom-form {
+  width: 85%;
+}

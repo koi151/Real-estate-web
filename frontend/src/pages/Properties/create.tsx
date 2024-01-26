@@ -1,6 +1,6 @@
 import { Button, Card, Col, Form, Input, InputNumber, 
          Radio, Row, Segmented, Select, message } from "antd";
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import { Editor } from '@tinymce/tinymce-react';
 import { SegmentedValue } from "antd/es/segmented";
 import { Link } from "react-router-dom";
@@ -15,6 +15,7 @@ import './create.scss'
 const CreateProperty: React.FC = () => {
 
   const [postType, setPostType] = useState<string>('sell');
+  const [price, setPrice] = useState<number | null>(null);
   const [propertyWidth, setPropertyWidth] = useState<number | null>(null);
   const [propertyLength, setPropertyLength] = useState<number | null>(null);
   const [priceMultiplier, setPriceMultiplier] = useState<number>(1);
@@ -28,6 +29,11 @@ const CreateProperty: React.FC = () => {
     { value: 'apartment', label: 'Apartment' },
     { value: 'villa', label: 'Villa' },
   ]
+
+  const handlePriceChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const inputValue = parseFloat(event.target.value);
+    setPrice(isNaN(inputValue) ? null : inputValue);
+  }
 
   const handleExpireTimeChange = (dateTime: Dayjs | null) => {
     setExpireDateTime(dateTime);
@@ -126,19 +132,19 @@ const CreateProperty: React.FC = () => {
   }
   
   return (
-    <div className="d-flex align-items-center justify-content-center">
-      <Card 
-        title="Create property"
-        className="custom-card" 
-        extra={<Link to="/admin/properties">Back</Link>}
+    <div className="d-flex flex-column align-items-center justify-content-center"> 
+      <Form 
+        layout="vertical" 
+        onFinish={onFinishForm}
+        method="POST"
+        encType="multipart/form-data"
+        className="custom-form" 
       >
-        <Form 
-          layout="vertical" 
-          onFinish={onFinishForm}
-          method="POST"
-          encType="multipart/form-data" 
+        <Card 
+          title="Basic information"
+          className="custom-card" 
+          extra={<Link to="/admin/properties">Back</Link>}
         >
-          
           <Row gutter={16}>
             <Col span={24} className="mb-5">
               <Form.Item 
@@ -155,19 +161,24 @@ const CreateProperty: React.FC = () => {
                 />
               </Form.Item>
             </Col>
-            <Col span={24}>
-              <Form.Item 
-                label={<span>Post title <b className="required-txt">- required:</b></span>}
-                name='title'
-              >
-                <Input type="text" id="title" required />
-              </Form.Item>
+            <Col sm={24}>
+              <Form.Item label='Property type' name='propertyType'>
+                <Select
+                  placeholder='Please select property type'
+                  style={{ width: "100%" }}
+                  options={propertyCategoryOptions}
+                />
+              </Form.Item> 
             </Col>
 
             <Col span={24}>
               <GetAddress />
             </Col>
+          </Row>
+        </Card>
 
+        <Card title="Property information" className="custom-card" style={{marginTop: '2rem'}}>
+          <Row gutter={16}>
             <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
               <Form.Item label='Property length' name='propertyLength'>
                 <InputNumber 
@@ -199,25 +210,41 @@ const CreateProperty: React.FC = () => {
                 />
               </Form.Item>
             </Col>
-
-            <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
-              <Form.Item label='Property type' name='propertyType'>
-                <Select
-                  placeholder='Please select property type'
-                  style={{ width: "100%" }}
-                  options={propertyCategoryOptions}
-                />
-              </Form.Item> 
-            </Col>
             <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
               <Form.Item label={`Property ${postType} price`} name='price'>
                 <Input 
                   addonAfter={selectPriceUnit} 
-                  placeholder={`Please select property ${postType} price`} 
+                  placeholder={`Please select property ${postType} price`}
+                  onChange={handlePriceChange}
                 />
               </Form.Item>
             </Col>
-            
+            <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+              <Form.Item label={`Price per meter square`}>
+                <Input
+                  disabled 
+                  placeholder={`Select property ${postType} price and area to view`} 
+                  style={{width: "100%"}}
+                  value={`${propertyLength && propertyWidth && price && (priceMultiplier * price / (propertyLength * propertyWidth)).toFixed(2)} million`}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={24}>
+              <UploadMultipleFile />
+            </Col>
+          </Row>
+        </Card>
+
+        <Card title="Post information" className="custom-card" style={{marginTop: '2rem'}}>
+          <Row gutter={16}>
+            <Col span={24}>
+              <Form.Item 
+                label={<span>Post title <b className="required-txt">- required:</b></span>}
+                name='title'
+              >
+                <Input type="text" id="title" required />
+              </Form.Item>
+            </Col>
             <Col span={24}>
               <Form.Item label={`Property ${postType} description:`}>
                 <Editor
@@ -268,10 +295,6 @@ const CreateProperty: React.FC = () => {
               </Form.Item>
             </Col>
             <Col span={24}>
-              <UploadMultipleFile />
-            </Col>
-
-            <Col span={24}>
               <Form.Item>
                 <Button className='custom-btn-main' type="primary" htmlType="submit">
                   Submit
@@ -279,8 +302,8 @@ const CreateProperty: React.FC = () => {
               </Form.Item>
             </Col>
           </Row>
-        </Form>
-      </Card>
+        </Card>
+      </Form>
     </div>
   )
 }

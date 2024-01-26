@@ -128,13 +128,11 @@ const Properties: React.FC = () => {
 
   return (
     <>
-      {/* <Skeleton loading={true} active className='custom-skeleton-breadcrumb'> */}
-        <h1 className="main-content-title">Properties:</h1>
-        <Breadcrumb style={{ margin: '16px 0' }} items={[
-          {breadcrumbName: 'Home'},
-          {breadcrumbName: 'Properties'}
-        ]} />
-      {/* </Skeleton> */}
+      <h1 className="main-content-title">Properties:</h1>
+      <Breadcrumb style={{ margin: '16px 0' }} items={[
+        {breadcrumbName: 'Home'},
+        {breadcrumbName: 'Properties'}
+      ]} />
 
       <FilterBox 
         onKeywordChange={handleKeywordChange}
@@ -142,7 +140,6 @@ const Properties: React.FC = () => {
         onSortingChange={handleSortingChange}
         checkedList={checkedList}
         resetFilters={resetFilters}
-        loadingStatus={loading}
       />
 
       {error ? (
