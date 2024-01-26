@@ -1,7 +1,8 @@
 import React from "react";
 import { Menu } from "antd";
 import { DashboardOutlined, SettingOutlined, LockOutlined } from '@ant-design/icons';
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
+
 import './siderMenu.scss';
 
 interface MenuItem {
@@ -12,11 +13,11 @@ interface MenuItem {
 }
 
 const SiderMenu: React.FC = () => {
-  const location = useLocation();
+
   const items: MenuItem[] = [
     { key: 'Dashboard', label: <Link to={'/admin/dashboard'}>Dashboard</Link>, icon: <DashboardOutlined className="sider-icon" /> },
-    { key: 'properties', label: <Link to={'/admin/properties'}>Properties</Link>, icon: <SettingOutlined className="sider-icon" /> },
-    { key: 'categories', label: <Link to={'/admin/categories'}>Categories</Link>, icon: <SettingOutlined className="sider-icon" /> },
+    { key: 'Properties', label: <Link to={'/admin/properties'}>Properties</Link>, icon: <SettingOutlined className="sider-icon" /> },
+    { key: 'Categories', label: <Link to={'/admin/property-categories'}>Categories</Link>, icon: <SettingOutlined className="sider-icon" /> },
     { key: 'CRM', label: 'CRM', icon: <SettingOutlined className="sider-icon" /> },
     { key: 'Authentication', label: 'Authentication', icon: <LockOutlined className="sider-icon" />, children: [] },
   ];
@@ -31,7 +32,7 @@ const SiderMenu: React.FC = () => {
       className="sider-menu"
       theme='dark'
       mode="inline"
-      defaultSelectedKeys={[location.pathname]}
+      defaultSelectedKeys={['Properties']}
       style={{ overflowY: 'auto' }}
       items={menuItems}
     />

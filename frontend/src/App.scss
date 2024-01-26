@@ -127,3 +127,12 @@ label {
 .custom-form {
   width: 85%;
 }
+
+// Sider
+.ant-menu-item {
+  .ant-menu-title-content {
+    a {
+      text-decoration: none !important;
+    }
+  }
+}

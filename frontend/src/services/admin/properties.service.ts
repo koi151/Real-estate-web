@@ -5,6 +5,7 @@ class PropertiesServiceAdmin {
   private api: any; 
 
   constructor(baseUrl = "http://localhost:3000/api/v1/admin/properties") {
+    console.log(baseUrl)
     this.api = createApi(baseUrl);
   }
 

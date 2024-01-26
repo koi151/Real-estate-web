@@ -4,6 +4,7 @@ import CreateProperty from "./pages/Properties/create";
 import PropertyDetail from "./pages/Properties/detail";
 import EditProperty from "./pages/Properties/edit";
 import Properties from "./pages/Properties/properties";
+import PropertyCategories from "./pages/PropertyCategories/PropertyCategories";
 
 export const routes = [
   {
@@ -29,6 +30,10 @@ export const routes = [
       {
         path: 'properties/edit/:id',
         element: <EditProperty />
+      },
+      {
+        path: 'property-categories',
+        element: <PropertyCategories />
       }
     ]
   }

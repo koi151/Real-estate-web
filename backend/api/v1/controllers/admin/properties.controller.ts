@@ -201,9 +201,6 @@ export const editPatch = async (req: Request, res: Response) => {
     const id: string = req.params.propertyId;
     const propertyUpdated: PropertyType = processPropertyData(req);
 
-    console.log(req.body)
-
-
     await Property.findOneAndUpdate(
       { _id: id },
       {

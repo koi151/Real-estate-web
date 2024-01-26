@@ -61,6 +61,7 @@
     "@babel/preset-react": "^7.23.3",
     "@babel/preset-typescript": "^7.23.3",
     "@types/lodash.debounce": "^4.0.9",
+    "dotenv": "^16.4.1",
     "exports-loader": "^5.0.0",
     "imports-loader": "^5.0.0",
     "ts-loader": "^9.5.1",
