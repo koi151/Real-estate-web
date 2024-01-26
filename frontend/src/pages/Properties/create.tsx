@@ -9,10 +9,8 @@ import dayjs, { Dayjs } from "dayjs";
 import propertiesService from "../../services/admin/properties.service";
 import GetAddress from "../../components/getAddress/getAddress";
 import ExpireTimePicker from "../../components/ExpireTimePicker/expireTimePicker";
-import './create.scss'
 import UploadMultipleFile from "../../components/UploadMultipleFile/uploadMultipleFile";
-
-// type FileType = Parameters<NonNullable<UploadProps['beforeUpload']>>[0];
+import './create.scss'
 
 const CreateProperty: React.FC = () => {
 

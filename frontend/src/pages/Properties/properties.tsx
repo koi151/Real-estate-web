@@ -3,7 +3,7 @@ import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { Breadcrumb, Button, Checkbox, Col, InputNumber, Pagination, 
-         PaginationProps, Row, Space, Tag,  Tooltip,  message } from 'antd';
+         PaginationProps, Row, Skeleton, Space, Tag,  Tooltip,  message } from 'antd';
 
 import * as standardizeData from '../../helpers/standardizeData'
 import getPriceUnit from '../../helpers/getPriceUnit';
@@ -19,6 +19,7 @@ import './properties.scss';
 const Properties: React.FC = () => {
   const navigate = useNavigate();
 
+  const [loading, setLoading] = useState(true);
   const [propertyList, setPropertyList] = useState<PropertyType[]>([]);
   const [error, setError] = useState<string | null>(null); 
   const [propertyCount, setPropertyCount] = useState<number>(0);
@@ -60,6 +61,7 @@ const Properties: React.FC = () => {
           setPropertyList(response.properties);
           setPaginationObj(response.paginationObject);
           setPropertyCount(response.propertyCount);
+          setLoading(false);
         } else {
           message.error(response.message, 2);
         }
@@ -126,11 +128,13 @@ const Properties: React.FC = () => {
 
   return (
     <>
-      <h1 className="main-content-title">Properties:</h1>
-      <Breadcrumb style={{ margin: '16px 0' }} items={[
-        {breadcrumbName: 'Home'},
-        {breadcrumbName: 'Properties'}
-      ]} />
+      {/* <Skeleton loading={true} active className='custom-skeleton-breadcrumb'> */}
+        <h1 className="main-content-title">Properties:</h1>
+        <Breadcrumb style={{ margin: '16px 0' }} items={[
+          {breadcrumbName: 'Home'},
+          {breadcrumbName: 'Properties'}
+        ]} />
+      {/* </Skeleton> */}
 
       <FilterBox 
         onKeywordChange={handleKeywordChange}
@@ -138,163 +142,168 @@ const Properties: React.FC = () => {
         onSortingChange={handleSortingChange}
         checkedList={checkedList}
         resetFilters={resetFilters}
+        loadingStatus={loading}
       />
 
       {error ? (
         <div>{error}</div>
-      ) : propertyList.length > 0 ? (
-        propertyList.map((property, index) => (
-          <div className='item-wrapper' key={index} data-id={property._id}>  
-            <Row className='item-wrapper__custom-row'>
-              <div className='item-wrapper__upper-content' key={index}>
-                  <Col
-                    className='d-flex flex-column justify-content-center'  
-                    span={1}
-                  >
-                    {property.position ?
-                      <Tooltip title={
-                        <span>
-                          Property at <span style={{ color: 'orange' }}>#{property.position}</span> position
-                        </span>
-                      }>
-                        <InputNumber
-                          min={0}
-                          className='item-wrapper__upper-content--position' 
-                          defaultValue={property.position} 
-                          onChange={(value) => onChangePosition(property._id, value)}
-                          data-id={property._id}
-                        />
-                      </Tooltip>
-                    : <Tooltip title='Please add the position of property'>No data</Tooltip>    
-                    }
-                    
-                    <Checkbox
-                      onChange={handleCheckboxChange(property._id)}
-                      className='item-wrapper__upper-content--checkbox'
-                      id={property._id}
-                    ></Checkbox>
-                  </Col>
-
-                <Col xxl={4} xl={4} lg={4} md={4} sm={4}>
-                  {property.images?.length ? 
-                    <img 
-                      src={property.images?.[0] ?? ""} 
-                      className='item-wrapper__upper-content--image' 
-                      alt='property img' 
-                    />
-                  : <span className='d-flex justify-content-center align-items-center' style={{height: "100%"}}> No image </span>
-                  }
-                </Col>
-                <Col 
-                  xxl={7} xl={7} lg={7} md={7} sm={7}
-                  className='item-wrapper__custom-col' 
-                >
-                  <div>
-                    <h3 className='item-wrapper__upper-content--title'>
-                      {property.title}
-                    </h3>
-                    <div className='item-wrapper__upper-content--location'>
-                      {property.location ? (
-                        <span>{property.location.city}, {property.location.district}</span>
-                      ) : "No information"}
-                    </div>
-                  </div>
-                  <div>
-                    {property.price ? 
-                      <span className='item-wrapper__upper-content--price'>
-                        <span className='price-number'>
-                          { property.price > 1000 ? property.price / 1000 : property.price }
-                        </span>
-                        <span className='price-unit'>{getPriceUnit(property.price)}
-                          <span style={{ margin: '0 .85rem' }}>/</span>
-                        </span>
-                      </span>
-                      : <Tooltip title='No data of price'>...</Tooltip>
-                    }
-                    {property.area?.propertyWidth && property.area?.propertyLength ? 
-                      <span className='item-wrapper__upper-content--area'>
-                        <span className='area-number'>
-                          {property.area.propertyWidth * property.area.propertyLength}
-                        </span>
-                        <span className='area-unit'>m²</span>
-                      </span>
-                      : <Tooltip title='No data of area'>...</Tooltip>
-                    }
-                  </div>
-                </Col>
-                <Col xxl={3} xl={3} lg={3} md={3} sm={3}>
-                  <div className='item-wrapper__upper-content--rooms'>
-                    {property.propertyDetails?.features ? (
-                      <div className='d-flex flex-column justify-content-center'>
-                        <RoomCountTooltip roomList={property.propertyDetails?.features} type="bedrooms" />
-                        <RoomCountTooltip roomList={property.propertyDetails?.features} type="bathrooms" />
-                        <ViewCount propertyView={property.view} />
-                      </div>
-                    ) : (
-                      <>
-                        <RoomCountTooltip roomList={null} type="bedrooms" />
-                        <RoomCountTooltip roomList={null} type="bathrooms" />
-                        <ViewCount propertyView={property.view} />
-                      </>
-                    )}
-                  </div>
-                </Col>
-                <Col
-                  className='item-wrapper__custom-col-two'  
-                  xxl={6} xl={6} lg={6} md={6} sm={6}
-                >
-                  <div style={{marginLeft: "2rem"}}>
-                    {property.status && property._id ? (
-                      <StatusButton itemId={property._id} status={property.status} />
-                    ) : (
-                      <Tooltip title='Please add property status or id'>No data</Tooltip>
-                    )}
-                    <div className='item-wrapper__upper-content--listing-type'>
-                      <p className='tag-text'>Tags: </p>
-                      <Space size={[0, 8]} wrap>
-                        {property.listingType === 'forSale' 
-                          && renderTag(property.listingType, { forSale: 'green', forRent: 'orange' })}
-                        {property.propertyDetails?.propertyType === 'house' 
-                        && renderTag(property.propertyDetails.propertyType, { house: 'purple', apartment: 'blue' })}
-                      </Space>
-                    </div>
-                  </div>
-                </Col>
-                <Col
-                  className='item-wrapper__custom-col-two'  
-                  xxl={2} xl={2} lg={2} md={2} sm={2}
-                >
-                  <div className='button-wrapper'>
-                    <Link to={`/admin/properties/detail/${property._id}`}> 
-                      <Button className='detail-btn'>Detail</Button> 
-                    </Link>
-                    <Link to={`/admin/properties/edit/${property._id}`}> 
-                      <Button className='edit-btn'>Edit</Button> 
-                    </Link>
-                    <Link to={`/admin/properties/delete/${property._id}`}> 
-                      <Button type="primary" danger>Delete</Button> 
-                    </Link>
-                  </div>
-                </Col>
-              </div>
-            </Row>
-            <div className='line'></div>
-            <Row>
-              <Col span={24}>
-                <div className='item-wrapper__lower-content'>
-                  <div className='item-wrapper__lower-content--date-created'>
-                    Created: {property.createdAt ? new Date(property.createdAt).toLocaleString() : 'No data'}
-                  </div>
-                  <div className='item-wrapper__lower-content--date-created'>
-                    Expire: {property.expireAt ? new Date(property.expireAt).toLocaleString() : 'No data'}
-                  </div>
-                </div>
-              </Col>
-            </Row>
-          </div>
-        ))
       ) : (
-        <>Loading...</>
+        <Skeleton loading={loading} active style={{padding: '3.5rem'}}>
+          {propertyList.length > 0 ? (
+            propertyList.map((property, index) => (
+              <div className='item-wrapper' key={index} data-id={property._id}>  
+                <Row className='item-wrapper__custom-row'>
+                  <div className='item-wrapper__upper-content' key={index}>
+                      <Col
+                        className='d-flex flex-column justify-content-center'  
+                        span={1}
+                      >
+                        {property.position ?
+                          <Tooltip title={
+                            <span>
+                              Property at <span style={{ color: 'orange' }}>#{property.position}</span> position
+                            </span>
+                          }>
+                            <InputNumber
+                              min={0}
+                              className='item-wrapper__upper-content--position' 
+                              defaultValue={property.position} 
+                              onChange={(value) => onChangePosition(property._id, value)}
+                              data-id={property._id}
+                            />
+                          </Tooltip>
+                        : <Tooltip title='Please add the position of property'>No data</Tooltip>    
+                        }
+                        
+                        <Checkbox
+                          onChange={handleCheckboxChange(property._id)}
+                          className='item-wrapper__upper-content--checkbox'
+                          id={property._id}
+                        ></Checkbox>
+                      </Col>
+
+                    <Col xxl={4} xl={4} lg={4} md={4} sm={4}>
+                      {property.images?.length ? 
+                        <img 
+                          src={property.images?.[0] ?? ""} 
+                          className='item-wrapper__upper-content--image' 
+                          alt='property img' 
+                        />
+                      : <span className='d-flex justify-content-center align-items-center' style={{height: "100%"}}> No image </span>
+                      }
+                    </Col>
+                    <Col 
+                      xxl={7} xl={7} lg={7} md={7} sm={7}
+                      className='item-wrapper__custom-col' 
+                    >
+                      <div>
+                        <h3 className='item-wrapper__upper-content--title'>
+                          {property.title}
+                        </h3>
+                        <div className='item-wrapper__upper-content--location'>
+                          {property.location ? (
+                            <span>{property.location.city}, {property.location.district}</span>
+                          ) : "No information"}
+                        </div>
+                      </div>
+                      <div>
+                        {property.price ? 
+                          <span className='item-wrapper__upper-content--price'>
+                            <span className='price-number'>
+                              { property.price > 1000 ? property.price / 1000 : property.price }
+                            </span>
+                            <span className='price-unit'>{getPriceUnit(property.price)}
+                              <span style={{ margin: '0 .85rem' }}>/</span>
+                            </span>
+                          </span>
+                          : <Tooltip title='No data of price'>...</Tooltip>
+                        }
+                        {property.area?.propertyWidth && property.area?.propertyLength ? 
+                          <span className='item-wrapper__upper-content--area'>
+                            <span className='area-number'>
+                              {property.area.propertyWidth * property.area.propertyLength}
+                            </span>
+                            <span className='area-unit'>m²</span>
+                          </span>
+                          : <Tooltip title='No data of area'>...</Tooltip>
+                        }
+                      </div>
+                    </Col>
+                    <Col xxl={3} xl={3} lg={3} md={3} sm={3}>
+                      <div className='item-wrapper__upper-content--rooms'>
+                        {property.propertyDetails?.features ? (
+                          <div className='d-flex flex-column justify-content-center'>
+                            <RoomCountTooltip roomList={property.propertyDetails?.features} type="bedrooms" />
+                            <RoomCountTooltip roomList={property.propertyDetails?.features} type="bathrooms" />
+                            <ViewCount propertyView={property.view} />
+                          </div>
+                        ) : (
+                          <>
+                            <RoomCountTooltip roomList={null} type="bedrooms" />
+                            <RoomCountTooltip roomList={null} type="bathrooms" />
+                            <ViewCount propertyView={property.view} />
+                          </>
+                        )}
+                      </div>
+                    </Col>
+                    <Col
+                      className='item-wrapper__custom-col-two'  
+                      xxl={6} xl={6} lg={6} md={6} sm={6}
+                    >
+                      <div style={{marginLeft: "2rem"}}>
+                        {property.status && property._id ? (
+                          <StatusButton itemId={property._id} status={property.status} />
+                        ) : (
+                          <Tooltip title='Please add property status or id'>No data</Tooltip>
+                        )}
+                        <div className='item-wrapper__upper-content--listing-type'>
+                          <p className='tag-text'>Tags: </p>
+                          <Space size={[0, 8]} wrap>
+                            {property.listingType === 'forSale' 
+                              && renderTag(property.listingType, { forSale: 'green', forRent: 'orange' })}
+                            {property.propertyDetails?.propertyType === 'house' 
+                            && renderTag(property.propertyDetails.propertyType, { house: 'purple', apartment: 'blue' })}
+                          </Space>
+                        </div>
+                      </div>
+                    </Col>
+                    <Col
+                      className='item-wrapper__custom-col-two'  
+                      xxl={2} xl={2} lg={2} md={2} sm={2}
+                    >
+                      <div className='button-wrapper'>
+                        <Link to={`/admin/properties/detail/${property._id}`}> 
+                          <Button className='detail-btn'>Detail</Button> 
+                        </Link>
+                        <Link to={`/admin/properties/edit/${property._id}`}> 
+                          <Button className='edit-btn'>Edit</Button> 
+                        </Link>
+                        <Link to={`/admin/properties/delete/${property._id}`}> 
+                          <Button type="primary" danger>Delete</Button> 
+                        </Link>
+                      </div>
+                    </Col>
+                  </div>
+                </Row>
+                <div className='line'></div>
+                <Row>
+                  <Col span={24}>
+                    <div className='item-wrapper__lower-content'>
+                      <div className='item-wrapper__lower-content--date-created'>
+                        Created: {property.createdAt ? new Date(property.createdAt).toLocaleString() : 'No data'}
+                      </div>
+                      <div className='item-wrapper__lower-content--date-created'>
+                        Expire: {property.expireAt ? new Date(property.expireAt).toLocaleString() : 'No data'}
+                      </div>
+                    </div>
+                  </Col>
+                </Row>
+              </div>
+            ))
+          ) : (
+            <>Loading...</>
+          )}
+        </Skeleton>
       )}
       <Pagination
         // showSizeChanger

@@ -1,4 +1,4 @@
-import { Button, Card, Col, Form, Input, InputNumber, Radio, Row, Segmented, Select, Spin, message } from "antd";
+import { Button, Card, Col, Form, Input, InputNumber, Radio, Row, Segmented, Select, Skeleton, message } from "antd";
 import { SegmentedValue } from "antd/es/segmented";
 import React, { useEffect, useState } from "react";
 import { Editor } from '@tinymce/tinymce-react';
@@ -158,19 +158,13 @@ const EditProperty: React.FC = () => {
 
   return (
     <div>
-      { loading ? (
-          <div className='d-flex justify-content-center' style={{width: "100%", height: "100vh"}}>
-            <Spin tip='Loading...' size="large">
-              <div className="content" />
-            </Spin>
-          </div>
-      ) : (
-        <div className="d-flex align-items-center justify-content-center">
-          <Card 
-            title="Edit Property"
-            className="custom-card" 
-            extra={<Link to="/admin/properties">Back</Link>}
-          >
+      <div className="d-flex align-items-center justify-content-center">
+        <Card 
+          title="Edit Property"
+          className="custom-card" 
+          extra={<Link to="/admin/properties">Back</Link>}
+        >
+          <Skeleton loading={loading} active style={{height: "100vh"}}>
             <Form 
               layout="vertical" 
               method="POST"
@@ -347,9 +341,9 @@ const EditProperty: React.FC = () => {
                 </Col>
               </Row>
             </Form>
-          </Card>
-        </div>
-      )}
+          </Skeleton>
+        </Card>
+      </div>
     </div>
 
   )

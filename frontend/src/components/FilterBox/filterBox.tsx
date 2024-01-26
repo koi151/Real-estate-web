@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Col, Row, Select, SelectProps, Slider, message } from 'antd';
+import { Button, Col, Row, Select, SelectProps, Slider, message, Skeleton } from 'antd';
 import { FaPlus } from "react-icons/fa6";
 import Search, { SearchProps } from 'antd/es/input/Search';
 import { IoFilter } from 'react-icons/io5';
@@ -19,11 +19,14 @@ interface FilterBoxProps {
   }) => void;
   checkedList: string[]; 
   resetFilters: () => void;
+  loadingStatus: boolean;
 }
 
-const FilterBox: React.FC<FilterBoxProps> = ({ onKeywordChange, onStatusChange, onSortingChange, checkedList, resetFilters}) => {
+const FilterBox: React.FC<FilterBoxProps> = ({ onKeywordChange, onStatusChange, onSortingChange, checkedList, resetFilters, loadingStatus }) => {
   
   const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(true);
   const [keyword, setKeyword] = useState<string | null>(null);
   const [status, setStatus] = useState<string>('');
   const [sorting, setSorting] = useState<{
@@ -33,6 +36,10 @@ const FilterBox: React.FC<FilterBoxProps> = ({ onKeywordChange, onStatusChange, 
     sortKey: '',
     sortValue: '',
   });
+
+  useEffect(() => {
+    setLoading(loadingStatus);
+  }, [loadingStatus]);
 
   const buildURL = () => {
     const params: { [key: string]: string } = {};
@@ -53,7 +60,7 @@ const FilterBox: React.FC<FilterBoxProps> = ({ onKeywordChange, onStatusChange, 
   useEffect(() => {
     onStatusChange(status);
     onSortingChange(sorting);
-    onKeywordChange(keyword)
+    onKeywordChange(keyword);
     navigate(buildURL());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status, sorting, keyword]);  
@@ -97,7 +104,7 @@ const FilterBox: React.FC<FilterBoxProps> = ({ onKeywordChange, onStatusChange, 
       message.success(response.message, 3);
 
     } else {
-      message.error("Error occurred, can not do multiple update", 3)
+      message.error("Error occurred, can not do multiple updates", 3)
     }
   }
 
@@ -118,112 +125,114 @@ const FilterBox: React.FC<FilterBoxProps> = ({ onKeywordChange, onStatusChange, 
   ];
 
   return (
-    <div className='filter-box'>
-      <div className='filter-box__button-wrapper'>
-        <Search
-          className='search-box'
-          placeholder="Search by title..." 
-          onSearch={onSearch}
-        />
-        <Button className='filter-button'>
-          Filters <IoFilter/>
-        </Button>
-        <Link to={'/admin/properties/create'} className='custom-link'>
-          <Button className='add-new-button'>
-            Add new <FaPlus/>
-          </Button>
-        </Link>
-      </div>
-
-      <div className='filter-box__detail'>
-        <Row className='custom-row'>
-          <Col
-            xxl={8} xl={8} lg={8}
-          >
-            <div className='status-filter'>
-              <span>Filter by status:</span>
-              <span className='status-filter__status-wrap mr-2'>
-                <br/>
-                <Button 
-                  onClick={() => handleStatusClick('')} 
-                  className={`custom-btn ${!status ? 'active' : ''}`}
-                >
-                  All
-                </Button>
-                <Button 
-                  onClick={() => handleStatusClick('active')} 
-                  className={`custom-btn ${status === 'active' ? 'active' : ''}`}
-                >
-                  Active
-                </Button>
-                <Button
-                  onClick={() => handleStatusClick('inactive')} 
-                  className={`custom-btn ${status === 'inactive' ? 'active' : ''}`}
-                >
-                  Inactive
-                </Button>
-              </span>
-            </div>
-          </Col>
-          <Col
-            xxl={8} xl={8} lg={8}
-          >
-            <div className='sorting-items'>
-              <span>Sorting by: </span>
-              <br/>
-              <Select
-                placement='bottomLeft'
-                placeholder="Choose sorting method"
-                defaultValue={'position-desc'}
-                onChange={handleSortingChange}
-                options={sortingOptions}
-                className='sorting-items__select'
-              />
-            </div>
-          </Col>
-          <Col
-            xxl={8} xl={8} lg={8}
-          >
-            <div className='multiple-change'>
-              <span>Multiple change: </span>
-              <Select
-                placement='bottomLeft'
-                placeholder="Choose change to apply"
-                // defaultValue='None'
-                onChange={handleMultipleChange}
-                options={multipleChangeOptions}
-                className='multiple-change__select'
-              />
-            </div>
-          </Col>
-          <Col
-            xxl={8} xl={8} lg={8}
-          >
-            <Slider
-              className='custom-slider'
-              range
-              step={10}
-              defaultValue={[20, 50]}
-              // onChange={onChange}
-              // onChangeComplete={onChangeComplete}
+    <>
+      <Skeleton loading={loading} active style={{padding: '3.5rem'}}>
+        <div className='filter-box'>
+          <div className='filter-box__button-wrapper'>
+            <Search
+              className='search-box'
+              placeholder="Search by title..." 
+              onSearch={onSearch}
             />
-          </Col>
-          <Col
-            xxl={8} xl={8} lg={8}
-          >
-            <Button
-              onClick={handleResetFilters}  
-              className='clear-filters' 
-              danger type='primary'>
-              Clear filters
+            <Button className='filter-button'>
+              Filters <IoFilter/>
             </Button>
-          </Col>
-        </Row>
-      </div>
-    </div>
-  )
+            <Link to={'/admin/properties/create'} className='custom-link'>
+              <Button className='add-new-button'>
+                Add new <FaPlus/>
+              </Button>
+            </Link>
+          </div>
+        </div>  
+
+        <div className='filter-box__detail'>
+          <Row className='custom-row'>
+            <Col
+              xxl={8} xl={8} lg={8}
+            >
+              <div className='status-filter'>
+                <span>Filter by status:</span>
+                <span className='status-filter__status-wrap mr-2'>
+                  <br/>
+                  <Button 
+                    onClick={() => handleStatusClick('')} 
+                    className={`custom-btn ${!status ? 'active' : ''}`}
+                  >
+                    All
+                  </Button>
+                  <Button 
+                    onClick={() => handleStatusClick('active')} 
+                    className={`custom-btn ${status === 'active' ? 'active' : ''}`}
+                  >
+                    Active
+                  </Button>
+                  <Button
+                    onClick={() => handleStatusClick('inactive')} 
+                    className={`custom-btn ${status === 'inactive' ? 'active' : ''}`}
+                  >
+                    Inactive
+                  </Button>
+                </span>
+              </div>
+            </Col>
+            <Col
+              xxl={8} xl={8} lg={8}
+            >
+              <div className='sorting-items'>
+                <span>Sorting by: </span>
+                <br/>
+                <Select
+                  placement='bottomLeft'
+                  placeholder="Choose sorting method"
+                  defaultValue={'position-desc'}
+                  onChange={handleSortingChange}
+                  options={sortingOptions}
+                  className='sorting-items__select'
+                />
+              </div>
+            </Col>
+            <Col
+              xxl={8} xl={8} lg={8}
+            >
+              <div className='multiple-change'>
+                <span>Multiple change: </span>
+                <Select
+                  placement='bottomLeft'
+                  placeholder="Choose change to apply"
+                  // defaultValue='None'
+                  onChange={handleMultipleChange}
+                  options={multipleChangeOptions}
+                  className='multiple-change__select'
+                />
+              </div>
+            </Col>
+            <Col
+              xxl={8} xl={8} lg={8}
+            >
+              <Slider
+                className='custom-slider'
+                range
+                step={10}
+                defaultValue={[20, 50]}
+                // onChange={onChange}
+                // onChangeComplete={onChangeComplete}
+              />
+            </Col>
+            <Col
+              xxl={8} xl={8} lg={8}
+            >
+              <Button
+                onClick={handleResetFilters}  
+                className='clear-filters' 
+                danger type='primary'>
+                Clear filters
+              </Button>
+            </Col>
+          </Row>
+        </div>
+      </Skeleton>
+    </>
+  );
 };
 
 export default FilterBox;
-
-
