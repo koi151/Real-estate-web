@@ -24,8 +24,10 @@ const EditProperty: React.FC = () => {
   const [editorContent, setEditorContent] = useState<string>("");
 
   const [property, setProperty] = useState<PropertyType | undefined>(undefined);
+
   // data from child component
   const [expireDateTime, setExpireDateTime] = useState<Dayjs | null>(null);
+  const [imageUrlToRemove, setImageUrlToRemove] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -92,8 +94,7 @@ const EditProperty: React.FC = () => {
         message.error('Error occurred', 3);
         return;
       }
-
-      console.log("data:", data)
+      
       const formData = new FormData();
 
       formData.append('title', data.title);
@@ -102,17 +103,17 @@ const EditProperty: React.FC = () => {
       formData.append('postType', data.postType);   
       formData.append('status', data.status);
   
-      // Append location data
+      // Append location 
       formData.append('location[city]', data.city);
       formData.append('location[district]', data.district);
       formData.append('location[ward]', data.ward);
       formData.append('location[address]', data.address);
   
-      // Append area data
+      // Append area 
       formData.append('area[propertyWidth]', data.propertyWidth);
       formData.append('area[propertyLength]', data.propertyLength);
   
-      // Append propertyDetails data
+      // Append propertyDetails 
       formData.append('propertyDetails[propertyType]', data.propertyType);
   
       // Append description
@@ -136,11 +137,17 @@ const EditProperty: React.FC = () => {
         formData.append('expireAt', expirationDate.toISOString());
       }
 
+      // Append images
       if (data.images?.length > 0) {
         data.images.forEach((imageFile: any) => {
           formData.append('images', imageFile.originFileObj);
         });
       }
+
+      // Append image urls that need to remove from db
+      imageUrlToRemove.forEach((imageUrl) => {
+        formData.append(`images_remove`, imageUrl);
+      });
       
       const response = await propertiesService.updateProperty(formData, id);
       
@@ -153,6 +160,14 @@ const EditProperty: React.FC = () => {
   
     } catch (error) {
       message.error("Error occurred while creating a new property.");
+    }
+  }
+
+  // Child component functions  
+  const handleImageUrlRemove = (imageUrl: string | undefined) => {
+    // Check if imageUrl is not undefined and not already in the array
+    if (imageUrlToRemove !== undefined && imageUrl !== undefined) {
+      setImageUrlToRemove(prevImages => [...prevImages, imageUrl]);
     }
   }
 
@@ -295,7 +310,7 @@ const EditProperty: React.FC = () => {
                 </Col>
 
                 <Col span={24}>
-                  {/* <UploadMultipleFile uploadedImages={property?.images}/> */}
+                  <UploadMultipleFile uploadedImages={property?.images} setImageUrlRemove={handleImageUrlRemove}/>
                 </Col>
               </Row>
             </Card>

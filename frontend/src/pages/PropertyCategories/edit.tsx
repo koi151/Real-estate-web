@@ -12,8 +12,9 @@ const EditPropertyCategories: React.FC = () => {
 
   const [loading, setLoading] = useState(true);
   const [editorContent, setEditorContent] = useState<string>("");
-
   const [category, setCategory] = useState<PropertyCategoryType | undefined>(undefined);
+
+  // data from child component
   const [imageUrlToRemove, setImageUrlToRemove] = useState<string[]>([]);
 
   useEffect(() => {
@@ -76,14 +77,14 @@ const EditPropertyCategories: React.FC = () => {
       }
 
       // Append image urls that need to remove from db
-      imageUrlToRemove.forEach((imageUrl, index) => {
+      imageUrlToRemove.forEach((imageUrl) => {
         formData.append(`images_remove`, imageUrl);
       });
       
       const response = await propertyCategoriesService.updateCategory(formData, id);
       
       if (response.code === 200) {
-        message.success('Property updated successfully!', 3);
+        message.success('Property category updated successfully!', 3);
       } else {
         console.error(response.message);
         message.error('Error occurred', 3);
@@ -101,7 +102,6 @@ const EditPropertyCategories: React.FC = () => {
       setImageUrlToRemove(prevImages => [...prevImages, imageUrl]);
     }
   }
-  
 
   return (
     <div>

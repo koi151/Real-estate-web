@@ -85,17 +85,16 @@ export const changeStatus = async (req: Request, res: Response) => {
 // [PATCH] /admin/property-categories/edit/:propertyId
 export const editPatch = async (req: Request, res: Response) => {
   try {    
-    console.log("req.body:", req.body)
     const id: string = req.params.categoryId;
-    const propertyUpdated: PropertyCategoryType = processCategoryData(req);
+    const categoryUpdated: PropertyCategoryType = processCategoryData(req);
 
-    const images = await processImagesData(req.body.images);
-    const imagesToRemove = await processImagesData(req.body.images_remove)
+    const images = processImagesData(req.body.images);
+    const imagesToRemove = processImagesData(req.body.images_remove)
     
     await PropertyCategory.findOneAndUpdate(
       { _id: id },
       { 
-        $set: propertyUpdated,  // Update non-image fields
+        $set: categoryUpdated,  // Update non-image fields
         $push: { images: { $each: images }} // Push new images
       }
     );

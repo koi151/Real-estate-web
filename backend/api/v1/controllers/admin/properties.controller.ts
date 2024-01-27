@@ -9,7 +9,6 @@ import { isValidStatus } from "../../../../helpers/dataTypeCheck";
 import { PropertyType, ValidMultiChangeType } from "../../../../commonTypes";
 
 const processPropertyData = (req: Request): PropertyType => {
-  const images = Array.isArray(req.body.images) ? req.body.images.map(String) : [String(req.body.images)];
 
   return {
     title: req.body.title || '',
@@ -22,13 +21,16 @@ const processPropertyData = (req: Request): PropertyType => {
       propertyLength: parseFloat(req.body.area?.propertyLength),
     },
     price: parseFloat(req.body.price),
-    images: images,
     location: req.body.location || '',
     slug: req.body.slug || '',
     listingType: req.body.listingType || '',
     propertyDetails: req.body.propertyDetails || '',
     deleted: Boolean(req.body.deleted),
   };
+};
+
+const processImagesData = (imageUrls: string[] | string | undefined): string[] => {
+  return imageUrls ? (Array.isArray(imageUrls) ? imageUrls : [imageUrls]) : [];
 };
 
 // [GET] /admin/properties
@@ -200,11 +202,21 @@ export const editPatch = async (req: Request, res: Response) => {
     const id: string = req.params.propertyId;
     const propertyUpdated: PropertyType = processPropertyData(req);
 
+    const images = processImagesData(req.body.images);
+    const imagesToRemove = processImagesData(req.body.images_remove);
+
     await Property.findOneAndUpdate(
       { _id: id },
-      {
-        $push: { images: { $each: propertyUpdated.images } },
+      { 
+        $set: propertyUpdated,  // Update non-image fields
+        $push: { images: { $each: images }} // Push new images
       }
+    );
+    
+    // Remove specified images // push && pull together causes CONFLICT 
+    await Property.findOneAndUpdate(
+      { _id: id },
+      { $pull: { images: { $in: imagesToRemove }}} // Remove specified images
     );
 
     res.status(200).json({
