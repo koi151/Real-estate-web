@@ -10,6 +10,7 @@ const categorySchema = new mongoose.Schema(
     images: Array,
     description: String,
     parent_id: String,
+    status: String,
     slug: {
       type: String, 
       slug: "title",
@@ -25,6 +26,6 @@ const categorySchema = new mongoose.Schema(
   }
 );
 
-const Category = mongoose.model("Categories", categorySchema, "categories");
+const Category = mongoose.model("Categories", categorySchema, "property-categories");
 
 export default Category;

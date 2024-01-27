@@ -55,7 +55,7 @@ const Properties: React.FC = () => {
           ...(sorting?.sortValue && { sortValue: sorting.sortValue }), 
           currentPage: currentPage,
           pageSize: 2
-      });
+        });
 
         if(response?.code === 200) {
           setPropertyList(response.properties);
@@ -249,7 +249,7 @@ const Properties: React.FC = () => {
                     >
                       <div style={{marginLeft: "2rem"}}>
                         {property.status && property._id ? (
-                          <StatusButton itemId={property._id} status={property.status} />
+                          <StatusButton typeofChange='changePropertyStatus' itemId={property._id} status={property.status} />
                         ) : (
                           <Tooltip title='Please add property status or id'>No data</Tooltip>
                         )}

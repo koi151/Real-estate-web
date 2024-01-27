@@ -15,22 +15,24 @@ const getBase64 = (file: FileType): Promise<string> =>
 
 type Props = {
   uploadedImages?: string[];
+  setImageUrlRemove?: (imageUrl: string | undefined) => void;
 };
 
-const UploadMultipleFile: React.FC<Props> = ({ uploadedImages }) => {
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewImage, setPreviewImage] = useState<string | string[] | undefined>();
-  const [previewTitle, setPreviewTitle] = useState('');
-  const [fileList, setFileList] = useState<UploadFile[]>(uploadedImages?.map((url, index) => ({
-    uid: index.toString(),
-    name: url,
-    status: 'done',
-    url: url,
-  })) || []);
+const UploadMultipleFile: React.FC<Props> = ({ uploadedImages, setImageUrlRemove = () => {} }) => {
 
-  useEffect(() => {
-    console.log(previewImage);
-  }, [previewImage]);
+  const [previewOpen, setPreviewOpen] = useState<boolean>(false);
+  const [previewImage, setPreviewImage] = useState<string | string[] | undefined>();
+  const [previewTitle, setPreviewTitle] = useState<string>('');;
+
+  const [fileList, setFileList] = useState<UploadFile[]>(
+    uploadedImages?.map((url, index) => ({
+      uid: `existing-${index.toString()}`, 
+      name: url,
+      status: 'done',
+      url: url,
+      uploaded: true
+    })) || []
+  );
 
   const handleCancel = () => setPreviewOpen(false);
 
@@ -45,6 +47,10 @@ const UploadMultipleFile: React.FC<Props> = ({ uploadedImages }) => {
   };
 
   const handleChange: UploadProps['onChange'] = ({ fileList: newFileList }) => setFileList(newFileList);
+
+  const handleRemove = (file: UploadFile) => {
+    setImageUrlRemove(file.url);
+  }
 
   const uploadButton = (
     <div>
@@ -61,6 +67,7 @@ const UploadMultipleFile: React.FC<Props> = ({ uploadedImages }) => {
           fileList={fileList}
           onPreview={handlePreview}
           onChange={handleChange}
+          onRemove={handleRemove}
           multiple={true}
           method='POST'
           name='images'
@@ -77,3 +84,4 @@ const UploadMultipleFile: React.FC<Props> = ({ uploadedImages }) => {
 };
 
 export default UploadMultipleFile;
+

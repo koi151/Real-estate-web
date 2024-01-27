@@ -112,7 +112,6 @@ export const index = async (req: Request, res: Response) => {
   }
 }
 
-
 // [GET] /admin/properties/detail/:propertyId
 export const detail = async (req: Request, res: Response) => {
   try {

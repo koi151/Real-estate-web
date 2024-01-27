@@ -295,7 +295,7 @@ const EditProperty: React.FC = () => {
                 </Col>
 
                 <Col span={24}>
-                  <UploadMultipleFile uploadedImages={property?.images}/>
+                  {/* <UploadMultipleFile uploadedImages={property?.images}/> */}
                 </Col>
               </Row>
             </Card>
@@ -315,7 +315,7 @@ const EditProperty: React.FC = () => {
                   <Form.Item label={`Property ${postType}ing description:`}>
                     <Editor
                       id="description" 
-                      value={property?.description}               
+                      initialValue={property?.description}               
                       onEditorChange={handleEditorChange}
                       apiKey='zabqr76pjlluyvwebi3mqiv72r4vyshj6g0u07spd34wk1t2' // hide
                       init={{
@@ -367,7 +367,7 @@ const EditProperty: React.FC = () => {
                 <Col span={24}>
                   <Form.Item>
                     <Button className='custom-btn-main' type="primary" htmlType="submit">
-                      Submit
+                      Update
                     </Button>
                   </Form.Item>
                 </Col>
@@ -377,7 +377,6 @@ const EditProperty: React.FC = () => {
         </div>
       )}
     </div>
-
   )
 }
 

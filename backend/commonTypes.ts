@@ -50,6 +50,20 @@ export interface PropertyType {
   deleted?: boolean;
 }
 
+export interface PropertyCategoryType {
+  _id?: string;
+  title: string;
+  status?: ValidStatus;
+  position?: number;
+  description?: any,
+  parent_id?: string,
+  images?: string[];
+  slug?: string;
+  createdAt?: Date;
+  expireAt?: Date;
+  deleted?: boolean;
+}
+
 export interface SortingQuery {
   sortKey: string;
   sortValue: string;
