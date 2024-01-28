@@ -31,6 +31,6 @@ router.patch(
 router.patch('/change-status/:status/:propertyId', controller.changeStatus);
 // router.patch('/multi-change', controller.multiChange);
 
-// router.delete('/delete/:propertyId', controller.singleDelete);
+router.delete('/delete/:categoryId', controller.singleDelete);
 
 export const propertyCategoriesRoutes: Router = router;

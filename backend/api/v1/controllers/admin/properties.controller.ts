@@ -145,7 +145,7 @@ export const detail = async (req: Request, res: Response) => {
   }
 }
 
-// [GET] /admin/properties/delete/:propertyId
+// [DELETE] /admin/properties/delete/:propertyId
 export const singleDelete = async (req: Request, res: Response) => {
   try {
     const id: string = req.params.propertyId;

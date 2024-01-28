@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { Breadcrumb, Button, Checkbox, Col, InputNumber, Pagination, 
+import { Breadcrumb, Button, Checkbox, Col, Image, InputNumber, Pagination, 
          PaginationProps, Popconfirm, Row, Skeleton, Space, Tag,  Tooltip,  message } from 'antd';
 
 import * as standardizeData from '../../helpers/standardizeData'
@@ -14,7 +14,6 @@ import ViewCount from '../../components/Counters/ViewCount/viewCount';
 import RoomCountTooltip from '../../components/Counters/RoomCount/roomCount';
 import FilterBox from '../../components/FilterBox/filterBox';
 import StatusButton from '../../components/StatusButton/statusButton';
-import sanitizeHtml from 'sanitize-html';
 import './properties.scss';
 
 const Properties: React.FC = () => {
@@ -135,10 +134,11 @@ const Properties: React.FC = () => {
       return;
     } 
     const response = await propertiesService.deleteProperty(id);
-    console.log(response)
 
     if (response?.code === 200) {
       message.success(response.message, 3);
+      setPropertyList(prevPropertyList => prevPropertyList.filter(property => property._id !== id));
+
     } else {
       message.error('Error occurred, can not delete');
     }
@@ -201,12 +201,12 @@ const Properties: React.FC = () => {
 
                     <Col xxl={4} xl={4} lg={4} md={4} sm={4}>
                       {property.images?.length ? 
-                        <img 
+                        <Image
                           src={property.images?.[0] ?? ""} 
-                          className='item-wrapper__upper-content--image' 
                           alt='property img' 
+                          width={200}
                         />
-                      : <span className='d-flex justify-content-center align-items-center' style={{height: "100%"}}> No image </span>
+                        : <span className='d-flex justify-content-center align-items-center' style={{height: "100%"}}> No image </span>
                       }
                     </Col>
                     <Col 

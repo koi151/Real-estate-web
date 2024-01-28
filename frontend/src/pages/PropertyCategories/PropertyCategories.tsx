@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Checkbox, Col, InputNumber, Pagination, Row, Skeleton, Tooltip, message } from 'antd';
+import { Button, Checkbox, Col, Image, InputNumber, Pagination, Popconfirm, Row, Skeleton, Tooltip, message } from 'antd';
 import { Link } from 'react-router-dom';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 
@@ -10,7 +10,6 @@ import StatusButton from '../../components/StatusButton/statusButton';
 
 import sanitizeHtml from 'sanitize-html';
 import '../Properties/properties.scss';
-
 
 const PropertyCategories: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -84,6 +83,24 @@ const PropertyCategories: React.FC = () => {
     // }
     console.log('handleCheckboxChange')
   };
+
+  // Delete item
+  const confirmDelete = async (id?: string) => {
+    if (!id) {
+      message.error('Error occurred, can not delete');
+      console.log('Can not get id')
+      return;
+    } 
+    const response = await propertyCategoriesService.deleteCategory(id);
+
+    if (response?.code === 200) {
+      message.success(response.message, 3);
+      setCategoryList(prevCategoryList => prevCategoryList.filter(category => category._id !== id));
+
+    } else {
+      message.error('Error occurred, can not delete');
+    }
+  };
   
   //keyword, status, sorting, currentPage
 
@@ -138,12 +155,12 @@ const PropertyCategories: React.FC = () => {
 
                       <Col xxl={4} xl={4} lg={4} md={4} sm={4}>
                         {category.images?.length ? 
-                          <img 
+                          <Image
                             src={category.images?.[0] ?? ""} 
-                            className='item-wrapper__upper-content--image' 
                             alt='category img' 
+                            width={200}
                           />
-                        : <span className='d-flex justify-content-center align-items-center' style={{height: "100%"}}> No image </span>
+                          : <span className='d-flex justify-content-center align-items-center' style={{height: "100%"}}> No image </span>
                         }
                       </Col>
                       <Col 
@@ -183,9 +200,15 @@ const PropertyCategories: React.FC = () => {
                           <Link to={`/admin/property-categories/edit/${category._id}`}> 
                             <Button className='edit-btn'>Edit</Button> 
                           </Link>
-                          <Link to={`/admin/property-categories/delete/${category._id}`}> 
+                          <Popconfirm
+                            title="Delete the task"
+                            description="Are you sure to delete this property category?"
+                            onConfirm={() => confirmDelete(category._id)}
+                            okText="Yes"
+                            cancelText="No"
+                          >
                             <Button type="primary" danger>Delete</Button> 
-                          </Link>
+                        </Popconfirm>
                         </div>
                       </Col>
                     </div>

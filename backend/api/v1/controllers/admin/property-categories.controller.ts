@@ -24,7 +24,9 @@ const processImagesData = (imageUrls: string[] | string | undefined): string[] =
 // [GET] /admin/property-categories
 export const index = async (req: Request, res: Response) => {
   try {
-    const categories = await PropertyCategory.find()
+    const categories = await PropertyCategory.find({
+      deleted: false
+    })
 
     if (categories.length > 0) {
       res.status(200).json({
@@ -146,6 +148,30 @@ export const detail = async (req: Request, res: Response) => {
     res.status(400).json({
       code: 400,
       message: "Error occurred while fetching properties data"
+    })
+  }
+}
+
+// [DELETE] /admin/property-categories/delete/:propertyId
+export const singleDelete = async (req: Request, res: Response) => {
+  try {
+    const id: string = req.params.categoryId;
+
+    await PropertyCategory.updateOne(
+      { _id: id },
+      { deleted: true }
+    )
+
+    res.status(200).json({
+      code: 200,
+      message: "Property category deleted successfully"
+    })
+
+  } catch (error) {
+    console.log('Error occurred while deleting category:', error);
+    res.status(400).json({
+      code: 400,
+      message: "Error occurred while deleting category"
     })
   }
 }
