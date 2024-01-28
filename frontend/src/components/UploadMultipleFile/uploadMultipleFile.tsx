@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { Modal, Upload, UploadProps, Form } from 'antd';
 import type { UploadFile } from 'antd/es/upload/interface';
@@ -69,7 +69,6 @@ const UploadMultipleFile: React.FC<Props> = ({ uploadedImages, setImageUrlRemove
           onChange={handleChange}
           onRemove={handleRemove}
           multiple={true}
-          method='POST'
           name='images'
           accept='image/*'
         >

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { PropertyCategoryType } from "../../../../backend/commonTypes";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Button, Card, Col, Form, Input, InputNumber, Radio, Row, Spin, UploadFile, message } from "antd";
+import { Button, Card, Col, Form, Input, InputNumber, Radio, Row, Spin, message } from "antd";
 import propertyCategoriesService from "../../services/admin/property-categories.service";
 import UploadMultipleFile from "../../components/UploadMultipleFile/uploadMultipleFile";
 import { Editor } from '@tinymce/tinymce-react';
@@ -43,7 +43,7 @@ const EditPropertyCategories: React.FC = () => {
     fetchData();
   }, [id])
 
-  const handleEditorChange = (content: any, editor: any) => {
+  const handleEditorChange = (content: any) => {
     const contentString = typeof content === 'string' ? content : '';
     setEditorContent(contentString);
   };
@@ -56,7 +56,6 @@ const EditPropertyCategories: React.FC = () => {
         return;
       }
 
-      console.log("data:", data)
       const formData = new FormData();
 
       formData.append('title', data.title);

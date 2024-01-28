@@ -41,6 +41,10 @@ class PropertiesServiceAdmin {
     };
     return (await this.api.patch(`/edit/${id}`, property, config)).data;
   }
+
+  async deleteProperty(id: string) {
+    return (await this.api.delete(`/delete/${id}`)).data;
+  }
 }
 
 const propertiesService = new PropertiesServiceAdmin();

@@ -16,6 +16,10 @@ class PropertyCategoriesServiceAdmin {
     return (await this.api.patch(`/change-status/${status}/${id}`)).data;
   }
 
+  async deleteCategory(id: string) {
+    return (await this.api.delete(`/delete/${id}`)).data;
+  }
+
   async getSingleCategory(id: string) {
     return (await this.api.get(`/detail/${id}`)).data;
   }

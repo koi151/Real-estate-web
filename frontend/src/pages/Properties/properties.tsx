@@ -3,7 +3,7 @@ import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { Breadcrumb, Button, Checkbox, Col, InputNumber, Pagination, 
-         PaginationProps, Row, Skeleton, Space, Tag,  Tooltip,  message } from 'antd';
+         PaginationProps, Popconfirm, Row, Skeleton, Space, Tag,  Tooltip,  message } from 'antd';
 
 import * as standardizeData from '../../helpers/standardizeData'
 import getPriceUnit from '../../helpers/getPriceUnit';
@@ -14,6 +14,7 @@ import ViewCount from '../../components/Counters/ViewCount/viewCount';
 import RoomCountTooltip from '../../components/Counters/RoomCount/roomCount';
 import FilterBox from '../../components/FilterBox/filterBox';
 import StatusButton from '../../components/StatusButton/statusButton';
+import sanitizeHtml from 'sanitize-html';
 import './properties.scss';
 
 const Properties: React.FC = () => {
@@ -126,6 +127,24 @@ const Properties: React.FC = () => {
     </Tag>
   );
 
+  // Delete item
+  const confirmDelete = async (id?: string) => {
+    if (!id) {
+      message.error('Error occurred, can not delete');
+      console.log('Can not get id')
+      return;
+    } 
+    const response = await propertiesService.deleteProperty(id);
+    console.log(response)
+
+    if (response?.code === 200) {
+      message.success(response.message, 3);
+    } else {
+      message.error('Error occurred, can not delete');
+    }
+  };
+  
+
   return (
     <>
       <h1 className="main-content-title">Properties:</h1>
@@ -145,10 +164,11 @@ const Properties: React.FC = () => {
       {error ? (
         <div>{error}</div>
       ) : (
-        <Skeleton loading={loading} active style={{padding: '3.5rem'}}>
-          {propertyList.length > 0 ? (
-            propertyList.map((property, index) => (
-              <div className='item-wrapper' key={index} data-id={property._id}>  
+        <Skeleton loading={loading} active style={{ padding: '3.5rem' }}>
+          {propertyList?.length > 0 ? (
+            propertyList.map((property, index) => {
+              return (
+                <div className='item-wrapper' key={index} data-id={property._id}>  
                 <Row className='item-wrapper__custom-row'>
                   <div className='item-wrapper__upper-content' key={index}>
                       <Col
@@ -275,9 +295,15 @@ const Properties: React.FC = () => {
                         <Link to={`/admin/properties/edit/${property._id}`}> 
                           <Button className='edit-btn'>Edit</Button> 
                         </Link>
-                        <Link to={`/admin/properties/delete/${property._id}`}> 
+                        <Popconfirm
+                          title="Delete the task"
+                          description="Are you sure to delete this property?"
+                          onConfirm={() => confirmDelete(property._id)}
+                          okText="Yes"
+                          cancelText="No"
+                        >
                           <Button type="primary" danger>Delete</Button> 
-                        </Link>
+                        </Popconfirm>
                       </div>
                     </Col>
                   </div>
@@ -296,11 +322,15 @@ const Properties: React.FC = () => {
                   </Col>
                 </Row>
               </div>
-            ))
+              );
+            })
           ) : (
             <>Loading...</>
           )}
         </Skeleton>
+
+          
+        
       )}
       <Pagination
         // showSizeChanger

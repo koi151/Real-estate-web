@@ -20,10 +20,11 @@ const validateField = (data: any, field: string, res: Response): boolean => {
       return validateNumberField(parseFloat(data[field]), field.charAt(0).toUpperCase() + field.slice(1), res);
 
     case 'area':
-      const { propertyWidth, propertyLength } = data[field] || {};
-
-      const widthAsNumber = parseFloat(propertyWidth);
-      const lengthAsNumber = parseFloat(propertyLength);
+      if (!data["propertyWidth"] && !data["propertyLength"]) 
+        return;
+      
+      const widthAsNumber = parseFloat(data["propertyWidth"]);
+      const lengthAsNumber = parseFloat(data["propertyLength"]);
 
       if (!isNaN(widthAsNumber) && !isNaN(lengthAsNumber)) {
         return (

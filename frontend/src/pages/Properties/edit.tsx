@@ -140,7 +140,9 @@ const EditProperty: React.FC = () => {
       // Append images
       if (data.images?.length > 0) {
         data.images.forEach((imageFile: any) => {
-          formData.append('images', imageFile.originFileObj);
+          if (!imageFile.hasOwnProperty('uploaded') || (imageFile.hasOwnProperty('uploaded') && !imageFile.uploaded)) {
+            formData.append('images', imageFile.originFileObj);
+          }
         });
       }
 
