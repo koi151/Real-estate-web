@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Col, Row, Select, SelectProps, Slider, message, Skeleton } from 'antd';
+import { Button, Col, Row, Segmented, Select, SelectProps, Slider, message } from 'antd';
 import { FaPlus } from "react-icons/fa6";
 import Search, { SearchProps } from 'antd/es/input/Search';
 import { IoFilter } from 'react-icons/io5';
 import { Link, useNavigate } from 'react-router-dom';
+import { SegmentedValue } from 'antd/es/segmented';
 
 import propertiesService from '../../services/admin/properties.service';
 import { ValidMultiChangeType } from '../../../../backend/commonTypes';
 
 import './filterBox.scss';
+import { reverseListingType } from '../../helpers/standardizeData';
 
 interface FilterBoxProps {
+  onListingTypeChange: (newType: string | null) => void;
   onKeywordChange: (newKeyword: string | null) => void;
   onStatusChange: (newStatus: string | null) => void;
   onSortingChange: (newSorting: {
@@ -21,10 +24,12 @@ interface FilterBoxProps {
   resetFilters: () => void;
 }
 
-const FilterBox: React.FC<FilterBoxProps> = ({ onKeywordChange, onStatusChange, onSortingChange, checkedList, resetFilters }) => {
+const FilterBox: React.FC<FilterBoxProps> = ({ onListingTypeChange, onKeywordChange, onStatusChange, onSortingChange, checkedList, resetFilters }) => {
   
   const navigate = useNavigate();
 
+  // Sorting & Filtering
+  const [listingType, setListingType] = useState<string | null>(null);
   const [keyword, setKeyword] = useState<string | null>(null);
   const [status, setStatus] = useState<string>('');
   const [sorting, setSorting] = useState<{
@@ -34,10 +39,15 @@ const FilterBox: React.FC<FilterBoxProps> = ({ onKeywordChange, onStatusChange, 
     sortKey: '',
     sortValue: '',
   });
+  // End Sorting & Filtering
+
+  const [isFilterDetailVisible, setIsFilterDetailVisible] = useState<boolean>(true);
+
 
   const buildURL = () => {
     const params: { [key: string]: string } = {};
     if (keyword) params['keyword'] = keyword;
+    if (listingType) params['listingType'] = listingType;
     if (status) params['status'] = status;
     if (sorting.sortKey && sorting.sortValue) {
       params['sortKey'] = sorting.sortKey;
@@ -52,12 +62,13 @@ const FilterBox: React.FC<FilterBoxProps> = ({ onKeywordChange, onStatusChange, 
   };
 
   useEffect(() => {
+    onListingTypeChange(listingType);
     onStatusChange(status);
     onSortingChange(sorting);
     onKeywordChange(keyword);
     navigate(buildURL());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status, sorting, keyword]);  
+  }, [status, sorting, keyword, listingType]);  
 
   const handleStatusClick = (value: string) => {
     setStatus(value);
@@ -121,24 +132,37 @@ const FilterBox: React.FC<FilterBoxProps> = ({ onKeywordChange, onStatusChange, 
   return (
     <>
       <div className='filter-box'>
-        <div className='filter-box__button-wrapper'>
-          <Search
-            className='search-box'
-            placeholder="Search by title..." 
-            onSearch={onSearch}
-          />
-          <Button className='filter-button'>
-            Filters <IoFilter/>
-          </Button>
-          <Link to={'/admin/properties/create'} className='custom-link'>
-            <Button className='add-new-button'>
-              Add new <FaPlus/>
+        <div className='d-flex justify-content-between align-items-center'>
+          <div className='filter-box__button-wrapper--left'>
+          </div>
+          <div className='filter-box__button-wrapper--right'>
+            <Search
+              className='search-box'
+              placeholder="Search by title..." 
+              onSearch={onSearch}
+            />
+            <Button 
+              className='filter-button d-flex align-items-center justify-content-center ml-1'
+              onClick={() => setIsFilterDetailVisible((prev) => !prev)}
+            >
+              Filters <IoFilter style={{marginLeft: '.75rem'}}/>
             </Button>
-          </Link>
+            <Link to={'/admin/properties/create'} className='custom-link'>
+              <Button className='add-new-button'>
+                Add new <FaPlus/>
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>  
 
-      <div className='filter-box__detail'>
+      <Segmented 
+        options={['All', 'For rent', 'For sale']} 
+        onChange={value => setListingType(value === 'All' ? '' : reverseListingType(value as string))} 
+        className={`listing-type ${isFilterDetailVisible ? '' : 'fade-out'}`}
+      />          
+
+      <div className={`filter-box__detail ${isFilterDetailVisible ? '' : 'fade-out'}`}>
         <Row className='custom-row'>
           <Col
             xxl={8} xl={8} lg={8}

@@ -27,6 +27,8 @@ const Properties: React.FC = () => {
   // Searching and filtering
   const [checkedList, setCheckedList] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  
+  const [listingType, setListingType] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [keyword, setKeyword] = useState<string | null>(null); 
   const [sorting, setSorting] = useState<SortingQuery>(
@@ -51,6 +53,7 @@ const Properties: React.FC = () => {
         const response = await propertiesService.getProperties({ 
           ...(keyword && { keyword }), 
           ...(status && { status }), 
+          ...(listingType && { listingType }), 
           ...(sorting?.sortKey && { sortKey: sorting.sortKey }), 
           ...(sorting?.sortValue && { sortValue: sorting.sortValue }), 
           currentPage: currentPage,
@@ -73,7 +76,11 @@ const Properties: React.FC = () => {
       }
     };
     fetchData();
-  }, [keyword, status, sorting, currentPage]);  
+  }, [keyword, status, sorting, currentPage, listingType]);  
+
+  const handleListingTypeChange = (newType: string | null) => {
+    setListingType(newType);
+  }
 
   const handleKeywordChange = (newKeyword: string | null) => {
     setKeyword(newKeyword);
@@ -153,7 +160,8 @@ const Properties: React.FC = () => {
         {breadcrumbName: 'Properties'}
       ]} />
 
-      <FilterBox 
+      <FilterBox
+        onListingTypeChange={handleListingTypeChange} 
         onKeywordChange={handleKeywordChange}
         onStatusChange={handleStatusChange}
         onSortingChange={handleSortingChange}
@@ -164,6 +172,7 @@ const Properties: React.FC = () => {
       {error ? (
         <div>{error}</div>
       ) : (
+        <>
         <Skeleton loading={loading} active style={{ padding: '3.5rem' }}>
           {propertyList?.length > 0 ? (
             propertyList.map((property, index) => {
@@ -276,7 +285,7 @@ const Properties: React.FC = () => {
                         <div className='item-wrapper__upper-content--listing-type'>
                           <p className='tag-text'>Tags: </p>
                           <Space size={[0, 8]} wrap>
-                            {property.listingType === 'forSale' 
+                            {(property.listingType === 'forSale' || property.listingType === 'forRent') 
                               && renderTag(property.listingType, { forSale: 'green', forRent: 'orange' })}
                             {property.propertyDetails?.propertyType === 'house' 
                             && renderTag(property.propertyDetails.propertyType, { house: 'purple', apartment: 'blue' })}
@@ -328,9 +337,9 @@ const Properties: React.FC = () => {
             <>Loading...</>
           )}
         </Skeleton>
-
-          
-        
+        <Skeleton loading={loading} active style={{ padding: '3.5rem' }}></Skeleton>
+        <Skeleton loading={loading} active style={{ padding: '3.5rem' }}></Skeleton>
+        </>
       )}
       <Pagination
         // showSizeChanger

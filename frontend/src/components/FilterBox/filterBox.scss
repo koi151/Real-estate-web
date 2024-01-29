@@ -1,3 +1,50 @@
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    height: 0;
+    padding: 0 2rem;
+
+  }
+  100% {
+    opacity: 1;
+    height: 15rem;
+    padding: 2rem 3rem;
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+    height: 15rem;
+    padding: 2rem 3rem;
+  }
+  100% {
+    opacity: 0;
+    height: 0rem;
+    padding: 0 2rem;
+  }
+}
+
+@keyframes segmentedFadeIn {
+  0% {
+    opacity: 0;
+    height: 0;
+  }
+  100% {
+    opacity: 1;
+    height: auto;
+  }
+}
+
+@keyframes segmentedFadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    height: 0rem;
+  }
+}
 
 .filter-box {
   display: flex;
@@ -10,27 +57,33 @@
   }
 
   &__button-wrapper {
-    display: flex;
-    justify-content: flex-end;
+    &--right {
+      display: flex;
+      justify-content: flex-end;
 
-    .search-box {
-      width: 30rem;
-    }
+      .search-box {
+        width: 30rem;
+      }
 
-    .custom-link {
-      text-decoration: none;
-      .filter-button, .add-new-button {
-        margin-left: 1rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        svg {
+      .custom-link {
+        text-decoration: none;
+        .filter-button, .add-new-button {
           margin-left: 1rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          svg {
+            margin-left: 1rem;
+          }
         }
       }
-    }
-  } 
+    } 
+  }
+
+  &__detail.fade-out {
+    animation: fadeOut .3s ease-in-out forwards;
+  }
 
   &__detail {
     display: flex;
@@ -39,9 +92,12 @@
     background-color: #fff;
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
     margin: .5rem 0;
-    margin-top: 1rem;
-    padding: 2rem 3rem;
+    margin-top: 0;
     border-radius: .8rem;
+    opacity: 1;
+    max-height: 15rem;
+    overflow: hidden;
+    animation: fadeIn .3s ease-in-out forwards;
 
     .sorting-items {
       margin-left: 2rem;
@@ -87,4 +143,28 @@
   :hover {
     color: #fff;
   }
+}
+
+.listing-type.fade-out {
+  animation: segmentedFadeOut .3s ease-in-out forwards;
+}
+
+.listing-type {
+  animation: segmentedFadeIn .3s ease-in-out forwards;
+
+  .ant-segmented-group {
+    .ant-segmented-item {
+      .ant-segmented-item-label {
+        font-weight: 400;
+      }
+    }
+
+    .ant-segmented-item-selected { 
+      .ant-segmented-item-label {
+        font-weight: 600;
+      }
+    }
+  }
+
+  
 }

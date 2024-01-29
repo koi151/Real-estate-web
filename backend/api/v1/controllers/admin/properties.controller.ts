@@ -37,17 +37,20 @@ const processImagesData = (imageUrls: string[] | string | undefined): string[] =
 export const index = async (req: Request, res: Response) => {
   try {
     interface Find {
-      deleted: boolean,
-      status?: string,
-      title?: RegExp,
-      slug?: RegExp
+      deleted?: boolean | null,
+      listingType?: string | null
+      status?: string | null,
+      title?: RegExp | null,
+      slug?: RegExp | null
     }
     
     let status: string | undefined = req.query.status?.toString();
+    let listingType: string | undefined = req.query.listingType?.toString();
 
     const find: Find = {
       deleted: false,
       ...(status && { status }),
+      ...(listingType && { listingType }),
     };
 
     // Searching
