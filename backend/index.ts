@@ -11,7 +11,7 @@ import moment from 'moment';
 dotenv.config();
 database.connect();
 
-import v1AdminRoutes from "./api/v1/routes/admin/index.routes";
+import v1AdminRoutes from "./api/v1/routes/admin/index.router";
 
 const app: Express = express();
 const port: number | string = process.env.PORT || 3000;

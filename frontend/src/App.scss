@@ -152,3 +152,43 @@ label {
     margin-top: #{$i}rem;
   }
 }
+
+// Buttons
+@mixin button-style($color, $hover-color) {
+	border-color: $color !important;
+	transition: all .2s;
+	width: 3rem;
+	height: 3rem;
+  background-color: #fff;
+
+	a {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	svg {
+		color: $color !important;
+	}
+
+	&:hover {
+		border-color: $hover-color !important;
+		transform: scale(1.2);
+
+		span {
+			color: $hover-color;
+		}
+	}
+}
+
+.detail-btn {
+	@include button-style(#595050, #8d8383);
+}
+
+.edit-btn {
+	@include button-style(#ffb702, #ffc942);
+}
+
+.delete-btn {
+	@include button-style(#f42024, #ff4d4f);
+}

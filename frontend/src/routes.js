@@ -7,6 +7,7 @@ import Properties from "./pages/Properties/properties";
 import EditPropertyCategories from "./pages/PropertyCategories/edit";
 
 import PropertyCategories from "./pages/PropertyCategories/propertyCategories.tsx";
+import AdminRoles from "./pages/Roles/roles";
 
 
 export const routes = [
@@ -41,6 +42,10 @@ export const routes = [
       {
         path: 'property-categories/edit/:id',
         element: <EditPropertyCategories />
+      },
+      {
+        path: 'roles',
+        element: <AdminRoles />
       }
     ]
   }

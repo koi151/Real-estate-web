@@ -109,118 +109,121 @@ const PropertyCategories: React.FC = () => {
       { error ? (
         <div>{error}</div>
       ) : (
-        <Skeleton loading={loading} active style={{ padding: '3.5rem' }}>
-          {categoryList?.length > 0 ? (
-            categoryList.map((category, index) => {
-              const cleanHtml = sanitizeHtml(category.description, {
-                allowedTags: false,
-                allowedAttributes: false,
-                allowedStyles: {
-                  '*': {
-                    'color': [/^rgb\(\d+,\s*\d+,\s*\d+\)$/, /^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$/],
-                  },
-                },                
-              });
-              
-              return (
-                <div className='item-wrapper' key={index} data-id={category._id}>  
-                  <Row className='item-wrapper__custom-row'>
-                    <div className='item-wrapper__upper-content' key={index}>
-                      <Col
-                        className='d-flex flex-column justify-content-center'  
-                        span={1}
-                      >
-                        {category.position ?
-                          <Tooltip title={
-                            <span>
-                              Category at <span style={{ color: 'orange' }}>#{category.position}</span> position
-                            </span>
-                          }>
-                            <InputNumber
-                              min={0}
-                              className='item-wrapper__upper-content--position' 
-                              defaultValue={category.position} 
-                              onChange={(value) => onChangePosition(category._id, value)}
-                              data-id={category._id}
+        <>
+          <Skeleton loading={loading} active style={{ padding: '3.5rem' }}>
+            {categoryList?.length > 0 ? (
+              categoryList.map((category, index) => {
+                const cleanHtml = sanitizeHtml(category.description, {
+                  allowedTags: false,
+                  allowedAttributes: false,
+                  allowedStyles: {
+                    '*': {
+                      'color': [/^rgb\(\d+,\s*\d+,\s*\d+\)$/, /^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$/],
+                    },
+                  },                
+                });
+                
+                return (
+                  <div className='item-wrapper' key={index} data-id={category._id}>  
+                    <Row className='item-wrapper__custom-row'>
+                      <div className='item-wrapper__upper-content' key={index}>
+                        <Col
+                          className='d-flex flex-column justify-content-center'  
+                          span={1}
+                        >
+                          {category.position ?
+                            <Tooltip title={
+                              <span>
+                                Category at <span style={{ color: 'orange' }}>#{category.position}</span> position
+                              </span>
+                            }>
+                              <InputNumber
+                                min={0}
+                                className='item-wrapper__upper-content--position' 
+                                defaultValue={category.position} 
+                                onChange={(value) => onChangePosition(category._id, value)}
+                                data-id={category._id}
+                              />
+                            </Tooltip>
+                          : <Tooltip title='Please add the position of property'>No data</Tooltip>    
+                          }
+                          <Checkbox
+                            onChange={handleCheckboxChange(category._id)}
+                            className='item-wrapper__upper-content--checkbox'
+                            id={category._id}
+                          ></Checkbox>
+                        </Col>
+
+                        <Col xxl={4} xl={4} lg={4} md={4} sm={4}>
+                          {category.images?.length ? 
+                            <Image
+                              src={category.images?.[0] ?? ""} 
+                              alt='category img' 
+                              width={200}
                             />
-                          </Tooltip>
-                        : <Tooltip title='Please add the position of property'>No data</Tooltip>    
-                        }
-                        <Checkbox
-                          onChange={handleCheckboxChange(category._id)}
-                          className='item-wrapper__upper-content--checkbox'
-                          id={category._id}
-                        ></Checkbox>
-                      </Col>
-
-                      <Col xxl={4} xl={4} lg={4} md={4} sm={4}>
-                        {category.images?.length ? 
-                          <Image
-                            src={category.images?.[0] ?? ""} 
-                            alt='category img' 
-                            width={200}
-                          />
-                          : <span className='d-flex justify-content-center align-items-center' style={{height: "100%"}}> No image </span>
-                        }
-                      </Col>
-                      <Col 
-                        xxl={7} xl={7} lg={7} md={7} sm={7}
-                        className='item-wrapper__custom-col' 
-                      >
-                        <div>
-                          <h3 className='item-wrapper__upper-content--title'>
-                            {category.title}
-                          </h3>
-                          <div 
-                            key={index} 
-                            data-id={category._id}
-                            dangerouslySetInnerHTML={{ __html: cleanHtml }}
-                          /></div>
-                      </Col>
-                      <Col
-                        className='item-wrapper__custom-col-two'  
-                        xxl={6} xl={6} lg={6} md={6} sm={6}
-                      >
-                        <div style={{marginLeft: "2rem"}}>
-                          {category.status && category._id ? (
-                            <StatusButton typeofChange='changePropertyCategoriesStatus' itemId={category._id} status={category.status} />
-                          ) : (
-                            <Tooltip title='Please add property status or id'>No data</Tooltip>
-                          )}
-                        </div>
-                      </Col>
-                      <Col
-                        className='item-wrapper__custom-col-two'  
-                        xxl={2} xl={2} lg={2} md={2} sm={2}
-                      >
-                        <div className='button-wrapper'>
-                          <Link to={`/admin/property-categories/detail/${category._id}`}> 
-                            <Button className='detail-btn'>Detail</Button> 
-                          </Link>
-                          <Link to={`/admin/property-categories/edit/${category._id}`}> 
-                            <Button className='edit-btn'>Edit</Button> 
-                          </Link>
-                          <Popconfirm
-                            title="Delete the task"
-                            description="Are you sure to delete this property category?"
-                            onConfirm={() => confirmDelete(category._id)}
-                            okText="Yes"
-                            cancelText="No"
-                          >
-                            <Button type="primary" danger>Delete</Button> 
-                        </Popconfirm>
-                        </div>
-                      </Col>
-                    </div>
-                  </Row>                
-                </div>
-              );
-            })
-          ) : (
-            <>Loading...</>
-          )}
-        </Skeleton>
-
+                            : <span className='d-flex justify-content-center align-items-center' style={{height: "100%"}}> No image </span>
+                          }
+                        </Col>
+                        <Col 
+                          xxl={7} xl={7} lg={7} md={7} sm={7}
+                          className='item-wrapper__custom-col' 
+                        >
+                          <div>
+                            <h3 className='item-wrapper__upper-content--title'>
+                              {category.title}
+                            </h3>
+                            <div 
+                              key={index} 
+                              data-id={category._id}
+                              dangerouslySetInnerHTML={{ __html: cleanHtml }}
+                            /></div>
+                        </Col>
+                        <Col
+                          className='item-wrapper__custom-col-two'  
+                          xxl={6} xl={6} lg={6} md={6} sm={6}
+                        >
+                          <div style={{marginLeft: "2rem"}}>
+                            {category.status && category._id ? (
+                              <StatusButton typeofChange='changePropertyCategoriesStatus' itemId={category._id} status={category.status} />
+                            ) : (
+                              <Tooltip title='Please add property status or id'>No data</Tooltip>
+                            )}
+                          </div>
+                        </Col>
+                        <Col
+                          className='item-wrapper__custom-col-two'  
+                          xxl={2} xl={2} lg={2} md={2} sm={2}
+                        >
+                          <div className='button-wrapper'>
+                            <Link to={`/admin/property-categories/detail/${category._id}`}> 
+                              <Button className='detail-btn'>Detail</Button> 
+                            </Link>
+                            <Link to={`/admin/property-categories/edit/${category._id}`}> 
+                              <Button className='edit-btn'>Edit</Button> 
+                            </Link>
+                            <Popconfirm
+                              title="Delete the task"
+                              description="Are you sure to delete this property category?"
+                              onConfirm={() => confirmDelete(category._id)}
+                              okText="Yes"
+                              cancelText="No"
+                            >
+                              <Button type="primary" danger>Delete</Button> 
+                          </Popconfirm>
+                          </div>
+                        </Col>
+                      </div>
+                    </Row>                
+                  </div>
+                );
+              })
+            ) : (
+              <>Loading...</>
+            )}
+          </Skeleton>
+          <Skeleton loading={loading} active style={{ padding: '3.5rem' }}></Skeleton>
+          <Skeleton loading={loading} active style={{ padding: '3.5rem' }}></Skeleton>
+        </>
       )}
       <Pagination
         // showSizeChanger

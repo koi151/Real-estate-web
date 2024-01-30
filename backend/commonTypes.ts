@@ -64,6 +64,16 @@ export interface PropertyCategoryType {
   deleted?: boolean;
 }
 
+export interface RolesType {
+  _id?: string;
+  title: string;
+  description?: string;
+  permissions?: string[];
+  deleted?: boolean;
+  createdAt?: Date;
+  updateAt?: Date;
+}
+
 export interface SortingQuery {
   sortKey: string;
   sortValue: string;
@@ -82,9 +92,4 @@ export interface GetPropertiesOptions {
   params?: Record<string, any>;
   pageSize?: number;
   currentPage?: number;
-}
-
-// FILES
-export interface CustomUploadFile extends UploadFile {
-  base64Data: string;
 }
