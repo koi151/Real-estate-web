@@ -29,3 +29,34 @@ export const index = async (req: Request, res: Response) => {
     })
   }
 }
+
+// [DELETE] /admin/roles/delete/:roleId
+export const singleDelete = async (req: Request, res: Response) => {
+  try {
+    const id: string = req.params.roleId;
+
+    const result = await Role.updateOne(
+      { _id: id },
+      { deleted: true }
+    )
+
+    if (result.matchedCount) {
+      res.status(200).json({
+        code: 200,
+        message: "Role deleted successfully"
+      });
+    } else {
+      res.status(404).json({
+        code: 404,
+        message: "Role not found"
+      });
+    }
+
+  } catch (error) {
+    console.log('Error occurred while deleting role:', error);
+    res.status(400).json({
+      code: 400,
+      message: "Error occurred while deleting role"
+    })
+  }
+}

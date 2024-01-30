@@ -56,7 +56,7 @@ const AdminRoles: React.FC = () => {
             <Popconfirm
               title="Delete role"
               description="Are you sure to delete this role?"
-              // onConfirm={() => confirmDelete(role._id)}
+              onConfirm={() => confirmDelete(role._id)}
               okText="Yes"
               cancelText="No"
             >
@@ -90,6 +90,22 @@ const AdminRoles: React.FC = () => {
     };
     fetchData();
   }, [])
+
+  const confirmDelete = async (id?: string) => {
+    if (!id) {
+      message.error('Error occurred, can not delete');
+      console.log('Can not get id')
+      return;
+    } 
+    const response = await AdminRolesService.deleteRole(id);
+
+    if (response?.code === 200) {
+      message.success(response.message, 3);
+      setRoles(prevRoleList => prevRoleList.filter(role => role._id !== id));
+    } else {
+      message.error('Error occurred, can not delete role');
+    }
+  };
 
   return (
     <>

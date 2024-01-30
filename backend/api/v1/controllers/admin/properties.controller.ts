@@ -153,15 +153,22 @@ export const singleDelete = async (req: Request, res: Response) => {
   try {
     const id: string = req.params.propertyId;
 
-    await Property.updateOne(
+    const result = await Property.updateOne(
       { _id: id },
       { deleted: true }
     )
 
-    res.status(200).json({
-      code: 200,
-      message: "Property deleted successfully"
-    })
+    if (result.matchedCount) {
+      res.status(200).json({
+        code: 200,
+        message: "Property deleted successfully"
+      });
+    } else {
+      res.status(404).json({
+        code: 404,
+        message: "Property not found"
+      });
+    }
 
   } catch (error) {
     console.log('Error occurred while deleting property:', error);

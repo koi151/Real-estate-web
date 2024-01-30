@@ -157,15 +157,22 @@ export const singleDelete = async (req: Request, res: Response) => {
   try {
     const id: string = req.params.categoryId;
 
-    await PropertyCategory.updateOne(
+    const result = await PropertyCategory.updateOne(
       { _id: id },
       { deleted: true }
     )
 
-    res.status(200).json({
-      code: 200,
-      message: "Property category deleted successfully"
-    })
+    if (result.matchedCount) {
+      res.status(200).json({
+        code: 200,
+        message: "Property category deleted successfully"
+      });
+    } else {
+      res.status(404).json({
+        code: 404,
+        message: "Property category not found"
+      });
+    }
 
   } catch (error) {
     console.log('Error occurred while deleting category:', error);

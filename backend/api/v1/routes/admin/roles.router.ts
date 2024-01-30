@@ -8,4 +8,6 @@ import * as controller from '../../controllers/admin/roles.controller';
 
 router.get('/', controller.index);
 
+router.delete('/delete/:roleId', controller.singleDelete);
+
 export const RolesRoutes: Router = router;
