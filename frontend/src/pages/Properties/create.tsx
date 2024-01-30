@@ -1,4 +1,4 @@
-import { Button, Card, Col, Form, Input, InputNumber, 
+import { Badge, Button, Card, Col, Form, Input, InputNumber, 
          Radio, Row, Segmented, Select, message } from "antd";
 import React, { ChangeEvent, useState } from "react";
 import { Editor } from '@tinymce/tinymce-react';
@@ -7,9 +7,9 @@ import { Link } from "react-router-dom";
 import dayjs, { Dayjs } from "dayjs";
 
 import propertiesService from "../../services/admin/properties.service";
-import GetAddress from "../../components/getAddress/getAddress";
-import ExpireTimePicker from "../../components/ExpireTimePicker/expireTimePicker";
-import UploadMultipleFile from "../../components/UploadMultipleFile/uploadMultipleFile";
+import GetAddress from "../../components/admin/getAddress/getAddress";
+import ExpireTimePicker from "../../components/admin/ExpireTimePicker/expireTimePicker";
+import UploadMultipleFile from "../../components/admin/UploadMultipleFile/uploadMultipleFile";
 import './create.scss'
 
 const CreateProperty: React.FC = () => {
@@ -140,42 +140,43 @@ const CreateProperty: React.FC = () => {
         encType="multipart/form-data"
         className="custom-form" 
       >
-        <Card 
-          title="Basic information"
-          className="custom-card" 
-          extra={<Link to="/admin/properties">Back</Link>}
-        >
-          <Row gutter={16}>
-            <Col span={24} className="mb-5">
-              <Form.Item 
-                label='Choose listing type' 
-                name='listingType' 
-                initialValue={'For sale'}
-                style={{height: "4.5rem"}}
-              >
-                <Segmented 
-                  options={['For sale', 'For rent']} 
-                  block 
-                  className="custom-segmented"
-                  onChange={handleChangeListingType}
-                />
-              </Form.Item>
-            </Col>
-            <Col sm={24}>
-              <Form.Item label='Property type' name='propertyType'>
-                <Select
-                  placeholder='Please select property type'
-                  style={{ width: "100%" }}
-                  options={propertyCategoryOptions}
-                />
-              </Form.Item> 
-            </Col>
+        <Badge.Ribbon text={<Link to="/admin/properties">Back</Link>} color="purple" className="custom-ribbon">
+          <Card 
+            title="Basic information"
+            className="custom-card" 
+          >
+            <Row gutter={16}>
+              <Col span={24} className="mb-5">
+                <Form.Item 
+                  label='Choose listing type' 
+                  name='listingType' 
+                  initialValue={'For sale'}
+                  style={{height: "4.5rem"}}
+                >
+                  <Segmented 
+                    options={['For sale', 'For rent']} 
+                    block 
+                    className="custom-segmented"
+                    onChange={handleChangeListingType}
+                  />
+                </Form.Item>
+              </Col>
+              <Col sm={24}>
+                <Form.Item label='Property type' name='propertyType'>
+                  <Select
+                    placeholder='Please select property type'
+                    style={{ width: "100%" }}
+                    options={propertyCategoryOptions}
+                  />
+                </Form.Item> 
+              </Col>
 
-            <Col span={24}>
-              <GetAddress />
-            </Col>
-          </Row>
-        </Card>
+              <Col span={24}>
+                <GetAddress />
+              </Col>
+            </Row>
+          </Card>
+        </Badge.Ribbon>
 
         <Card title="Property information" className="custom-card" style={{marginTop: '2rem'}}>
           <Row gutter={16}>

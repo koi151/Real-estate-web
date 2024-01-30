@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Checkbox, Col, Image, InputNumber, Pagination, Popconfirm, Row, Skeleton, Tooltip, message } from 'antd';
+import { Breadcrumb, Button, Checkbox, Col, Image, InputNumber, Pagination, Popconfirm, Row, Skeleton, Tooltip, message } from 'antd';
 import { Link } from 'react-router-dom';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 
 import propertyCategoriesService from '../../services/admin/property-categories.service';
 import { PropertyCategoryType } from '../../../../backend/commonTypes';
 import { SortingQuery } from '../../../../backend/commonTypes';
-import StatusButton from '../../components/StatusButton/statusButton';
+import StatusButton from '../../components/admin/StatusButton/statusButton';
 
 import sanitizeHtml from 'sanitize-html';
 import '../Properties/properties.scss';
+import FilterBox from '../../components/admin/FilterBox/filterBox';
 
 const PropertyCategories: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -106,6 +107,26 @@ const PropertyCategories: React.FC = () => {
 
   return (
     <>
+      <div className='title-wrapper'>
+        <h1 className="main-content-title">Property categories:</h1>
+        <Breadcrumb
+          className='mt-1 mb-1'
+          items={[
+            { title: <Link to="/admin">Admin</Link> },
+            { title: <Link to="/admin/property-categories">Categories</Link> },
+          ]}
+        />
+      </div>
+
+      {/* <FilterBox
+        onListingTypeChange={handleListingTypeChange} 
+        onKeywordChange={handleKeywordChange}
+        onStatusChange={handleStatusChange}
+        onSortingChange={handleSortingChange}
+        checkedList={checkedList}
+        resetFilters={resetFilters}
+      /> */}
+
       { error ? (
         <div>{error}</div>
       ) : (
@@ -114,8 +135,6 @@ const PropertyCategories: React.FC = () => {
             {categoryList?.length > 0 ? (
               categoryList.map((category, index) => {
                 const cleanHtml = sanitizeHtml(category.description, {
-                  allowedTags: false,
-                  allowedAttributes: false,
                   allowedStyles: {
                     '*': {
                       'color': [/^rgb\(\d+,\s*\d+,\s*\d+\)$/, /^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$/],
@@ -172,11 +191,16 @@ const PropertyCategories: React.FC = () => {
                             <h3 className='item-wrapper__upper-content--title'>
                               {category.title}
                             </h3>
-                            <div 
-                              key={index} 
-                              data-id={category._id}
-                              dangerouslySetInnerHTML={{ __html: cleanHtml }}
-                            /></div>
+                            {cleanHtml ? (
+                              <div 
+                                key={index} 
+                                data-id={category._id}
+                                dangerouslySetInnerHTML={{ __html: cleanHtml }}
+                              />
+                            ) : (
+                              <div>No description</div>
+                            )}
+                          </div>
                         </Col>
                         <Col
                           className='item-wrapper__custom-col-two'  
@@ -190,6 +214,7 @@ const PropertyCategories: React.FC = () => {
                             )}
                           </div>
                         </Col>
+                        <Col xxl={3} xl={3} lg={3} md={3} sm={3}></Col>
                         <Col
                           className='item-wrapper__custom-col-two'  
                           xxl={2} xl={2} lg={2} md={2} sm={2}
@@ -213,7 +238,17 @@ const PropertyCategories: React.FC = () => {
                           </div>
                         </Col>
                       </div>
-                    </Row>                
+                    </Row>      
+                    <div className='line'></div>
+                    <Row>
+                      <Col span={24}>
+                        <div className='item-wrapper__lower-content'>
+                          <div className='item-wrapper__lower-content--date-created'>
+                            Created at: {category.createdAt ? new Date(category.createdAt).toLocaleString() : 'No data'}
+                          </div>
+                        </div>
+                      </Col>
+                    </Row>          
                   </div>
                 );
               })

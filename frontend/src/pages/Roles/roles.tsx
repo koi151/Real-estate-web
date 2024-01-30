@@ -1,4 +1,4 @@
-import { Breadcrumb, Button, message, Popconfirm, Table, Tooltip, type TableProps } from 'antd';
+import { Breadcrumb, Button, message, Popconfirm, Table, Tooltip, type TableProps, Skeleton, Spin } from 'antd';
 import React, { useEffect, useState } from "react"
 import { RolesType } from '../../../../backend/commonTypes';
 import AdminRolesService from '../../services/admin/roles.service';
@@ -6,8 +6,8 @@ import { Link } from 'react-router-dom';
 import { DeleteOutlined, EditOutlined, SolutionOutlined } from '@ant-design/icons';
 
 const AdminRoles: React.FC = () => {
+  const [loading, setLoading] = useState(true);
   const [roles, setRoles] = useState<RolesType[]>([]);
-  const [error, setError] = useState<string | null>(null); 
 
   const columns: TableProps<RolesType>['columns'] = [
     {
@@ -40,7 +40,7 @@ const AdminRoles: React.FC = () => {
             <Link to={`/admin/roles/detail/${role._id}`}> 
               <Button 
                 icon={<SolutionOutlined />} 
-                className='mr-1 detail-btn' 
+                className='mr-1 detail-btn-2' 
               />
             </Link>
           </Tooltip>
@@ -48,7 +48,7 @@ const AdminRoles: React.FC = () => {
             <Link to={`/admin/roles/edit/${role._id}`}> 
               <Button 
                 icon={<EditOutlined />}
-                className='mr-1 edit-btn'
+                className='mr-1 edit-btn-2'
               />
             </Link>
             </Tooltip>
@@ -62,7 +62,7 @@ const AdminRoles: React.FC = () => {
             >
               <Button 
                 icon={<DeleteOutlined />} 
-                className='mr-1 delete-btn'
+                className='mr-1 delete-btn-2'
               />
             </Popconfirm>
           </Tooltip>
@@ -70,7 +70,7 @@ const AdminRoles: React.FC = () => {
       )
     }
   ];
-
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -78,13 +78,13 @@ const AdminRoles: React.FC = () => {
 
         if(response?.code === 200) {
           setRoles(response.roles);
+          setLoading(false);
         } else {
           message.error(response.message, 2);
         }
 
       } catch (error) {
         message.error('No role found', 2);
-        setError('No role found.');
         console.log('Error occurred:', error);
       }
     };
@@ -109,12 +109,26 @@ const AdminRoles: React.FC = () => {
 
   return (
     <>
-      <h1 className="main-content-title">Properties:</h1>
-      <Breadcrumb style={{ margin: '16px 0' }} items={[
-        {breadcrumbName: 'Admin'},
-        {breadcrumbName: 'roles'}
-      ]} />
-      <Table columns={columns} dataSource={roles}/>
+      <div className='title-wrapper'>
+        <h1 className="main-content-title">Admin Roles:</h1>
+        <Breadcrumb
+          className='mt-1 mb-1'
+          items={[
+            { title: <Link to="/admin">Admin</Link> },
+            { title: <Link to="/admin/roles">Roles</Link> },
+          ]}
+        />
+      </div>
+
+      {!loading ? 
+        <Table columns={columns} dataSource={roles}/>  
+      : 
+      <div className='d-flex justify-content-center' style={{width: "100%", height: "20rem"}}>
+        <Spin tip='Loading...' size="large">
+          <div className="content" />
+        </Spin>
+      </div>
+      }
     </>
   )
 }

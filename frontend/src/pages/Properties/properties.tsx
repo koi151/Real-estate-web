@@ -10,10 +10,10 @@ import getPriceUnit from '../../helpers/getPriceUnit';
 
 import propertiesService from '../../services/admin/properties.service';
 import { PropertyType, PaginationObject, SortingQuery } from '../../../../backend/commonTypes';
-import ViewCount from '../../components/Counters/ViewCount/viewCount';
-import RoomCountTooltip from '../../components/Counters/RoomCount/roomCount';
-import FilterBox from '../../components/FilterBox/filterBox';
-import StatusButton from '../../components/StatusButton/statusButton';
+import ViewCount from '../../components/admin/Counters/ViewCount/viewCount';
+import RoomCountTooltip from '../../components/admin/Counters/RoomCounter/roomCount';
+import FilterBox from '../../components/admin/FilterBox/filterBox';
+import StatusButton from '../../components/admin/StatusButton/statusButton';
 import './properties.scss';
 
 const Properties: React.FC = () => {
@@ -154,11 +154,16 @@ const Properties: React.FC = () => {
 
   return (
     <>
-      <h1 className="main-content-title">Properties:</h1>
-      <Breadcrumb style={{ margin: '16px 0' }} items={[
-        {breadcrumbName: 'Home'},
-        {breadcrumbName: 'Properties'}
-      ]} />
+      <div className='title-wrapper'>
+        <h1 className="main-content-title">Property:</h1>
+        <Breadcrumb
+          className='mt-1 mb-1'
+          items={[
+            { title: <Link to="/admin">Admin</Link> },
+            { title: <Link to="/admin/properties">Properties</Link> },
+          ]}
+        />
+      </div>
 
       <FilterBox
         onListingTypeChange={handleListingTypeChange} 

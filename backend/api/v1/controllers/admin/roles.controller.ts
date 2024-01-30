@@ -89,8 +89,6 @@ export const editPatch = async (req: Request, res: Response) => {
     }
 
     const roleUpdated: RolesType = processRoleData(req);
-
-    console.log("roleUpdated:", roleUpdated)
     
     const result = await Role.updateOne(
       { _id: id },

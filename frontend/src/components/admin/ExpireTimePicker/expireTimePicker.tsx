@@ -2,7 +2,7 @@ import { Button, Col, DatePicker, Form, Radio, RadioChangeEvent, Row } from "ant
 import dayjs, { Dayjs } from 'dayjs';
 import React, { useEffect, useState } from "react";
 
-import * as dateTimeHelper from '../../helpers/dateTimeHelpers'
+import * as dateTimeHelper from '../../../helpers/dateTimeHelpers'
 import './expireTimePicker.scss'
 
 interface ExpireTimePickerProps {

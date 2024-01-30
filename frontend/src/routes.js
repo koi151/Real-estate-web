@@ -1,5 +1,5 @@
-import LayoutDefault from "./components/Layouts/LayoutDefault/layoutDefault";
-import Home from "./pages/Home/home";
+import LayoutDefault from "./components/admin/LayoutDefault/layoutDefault";
+import DashBoard from "./pages/Dashboard/dashboard";
 import CreateProperty from "./pages/Properties/create";
 import PropertyDetail from "./pages/Properties/detail";
 import EditProperty from "./pages/Properties/edit";
@@ -7,6 +7,7 @@ import Properties from "./pages/Properties/properties";
 import EditPropertyCategories from "./pages/PropertyCategories/edit";
 
 import PropertyCategories from "./pages/PropertyCategories/propertyCategories.tsx";
+import RoleDetail from "./pages/Roles/detail";
 import EditRole from "./pages/Roles/edit";
 import AdminRoles from "./pages/Roles/roles";
 
@@ -18,7 +19,7 @@ export const routes = [
     children: [
       {
         index: true,
-        element: <Home />
+        element: <DashBoard />
       },
       {
         path: "properties",
@@ -51,6 +52,10 @@ export const routes = [
       {
         path: 'roles/edit/:id',
         element: <EditRole />
+      },
+      {
+        path: 'roles/detail/:id',
+        element: <RoleDetail />
       }
     ]
   }

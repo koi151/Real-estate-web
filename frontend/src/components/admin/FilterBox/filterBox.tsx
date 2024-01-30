@@ -6,11 +6,11 @@ import { IoFilter } from 'react-icons/io5';
 import { Link, useNavigate } from 'react-router-dom';
 import { SegmentedValue } from 'antd/es/segmented';
 
-import propertiesService from '../../services/admin/properties.service';
-import { ValidMultiChangeType } from '../../../../backend/commonTypes';
+import propertiesService from '../../../services/admin/properties.service';
+import { ValidMultiChangeType } from '../../../../../backend/commonTypes';
 
 import './filterBox.scss';
-import { reverseListingType } from '../../helpers/standardizeData';
+import { reverseListingType } from '../../../helpers/standardizeData';
 
 interface FilterBoxProps {
   onListingTypeChange: (newType: string | null) => void;

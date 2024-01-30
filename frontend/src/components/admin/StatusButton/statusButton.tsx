@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Button, message } from 'antd';
 
-import propertiesService from '../../services/admin/properties.service';
-import propertyCategoriesService from '../../services/admin/property-categories.service';
+import propertiesService from '../../../services/admin/properties.service';
+import propertyCategoriesService from '../../../services/admin/property-categories.service';
 
-import { ValidStatus } from '../../../../backend/commonTypes';
+import { ValidStatus } from '../../../../../backend/commonTypes';
 
 interface StatusButtonProps {
   typeofChange: 'changePropertyStatus' | 'changePropertyCategoriesStatus'; 

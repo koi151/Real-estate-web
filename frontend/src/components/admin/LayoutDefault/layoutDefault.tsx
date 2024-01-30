@@ -5,7 +5,7 @@ import { Content } from "antd/es/layout/layout";
 import Sider from "antd/es/layout/Sider";
 import { Outlet } from 'react-router-dom';
 // import MiniNotification from "../../MiniNotification/miniNotification";
-import SiderMenu from "../../SiderMenu/siderMenu";
+import SiderMenu from "../SiderMenu/siderMenu";
 
 import { MenuUnfoldOutlined, SearchOutlined } from '@ant-design/icons'
 import logo from '../../../assets/images/logo.png';

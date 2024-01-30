@@ -1,11 +1,11 @@
-import { Badge, Button, Card, Col, Form, Input, Row, Spin, message } from "antd";
+import { Badge, Card, Col, Form, Input, Row, Spin, message } from "antd";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import AdminRolesService from "../../services/admin/roles.service";
 import { RolesType } from "../../../../backend/commonTypes";
 import TextArea from "antd/es/input/TextArea";
 
-const EditRole: React.FC = () => {
+const RoleDetail: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -38,29 +38,6 @@ const EditRole: React.FC = () => {
     fetchData();
   }, [id])
 
-  const onFinishForm = async (data: any) => {
-    try {
-      if (!id) {
-        console.error('Cannot get role id');
-        message.error('Error occurred', 3);
-        return;
-      }
-
-      const response = await AdminRolesService.updateRole(data, id);
-      
-      if (response.code === 200) {
-        message.success('Role updated successfully!', 3);
-      } else {
-        console.error(response.message);
-        message.error('Error occurred', 3);
-      }
-  
-    } catch (error) {
-      console.log("Error occurred:", error);
-      message.error("Error occurred while updating role.");
-    }
-  }
-
   return (
     <>
       { loading ? (
@@ -73,9 +50,7 @@ const EditRole: React.FC = () => {
         <div className="d-flex align-items-center justify-content-center"> 
           <Form
             layout="vertical" 
-            onFinish={onFinishForm}
-            method="POST"
-            encType="multipart/form-data"
+            disabled
             className="custom-form" 
           >
             <Badge.Ribbon text={<Link to="/admin/roles">Back</Link>} color="purple" className="custom-ribbon">
@@ -91,7 +66,7 @@ const EditRole: React.FC = () => {
                       name='title'
                       initialValue={role?.title}
                     >
-                      <Input type="text" id="title" required />
+                      <Input type="text" id="title" required disabled/>
                     </Form.Item>
                   </Col>
                   <Col span={24}>
@@ -100,15 +75,7 @@ const EditRole: React.FC = () => {
                       initialValue={role?.description}
                       name='description'  
                     >
-                      <TextArea rows={5} placeholder="Enter role descripton here" />
-                    </Form.Item>
-                  </Col>
-                  
-                  <Col span={24}>
-                    <Form.Item>
-                      <Button className='custom-btn-main' type="primary" htmlType="submit">
-                        Update
-                      </Button>
+                      <TextArea rows={5} placeholder="Enter role descripton here" disabled />
                     </Form.Item>
                   </Col>
                 </Row>
@@ -121,4 +88,4 @@ const EditRole: React.FC = () => {
   )
 }
 
-export default EditRole;
+export default RoleDetail;

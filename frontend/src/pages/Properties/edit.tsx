@@ -1,4 +1,4 @@
-import { Button, Card, Col, Form, Input, InputNumber, Radio, Row, Segmented, Select, Spin, message } from "antd";
+import { Badge, Button, Card, Col, Form, Input, InputNumber, Radio, Row, Segmented, Select, Spin, message } from "antd";
 import { SegmentedValue } from "antd/es/segmented";
 import React, { useEffect, useState } from "react";
 import { Editor } from '@tinymce/tinymce-react';
@@ -8,9 +8,9 @@ import dayjs, { Dayjs } from "dayjs";
 import propertiesService from "../../services/admin/properties.service";
 import { PropertyType } from "../../../../backend/commonTypes";
 import * as standardizeData from '../../helpers/standardizeData'
-import GetAddress from "../../components/getAddress/getAddress";
-import UploadMultipleFile from "../../components/UploadMultipleFile/uploadMultipleFile";
-import ExpireTimePicker from "../../components/ExpireTimePicker/expireTimePicker";
+import GetAddress from "../../components/admin/getAddress/getAddress";
+import UploadMultipleFile from "../../components/admin/UploadMultipleFile/uploadMultipleFile";
+import ExpireTimePicker from "../../components/admin/ExpireTimePicker/expireTimePicker";
 
 const EditProperty: React.FC = () => {
   const { id } = useParams();
@@ -190,43 +190,44 @@ const EditProperty: React.FC = () => {
             encType="multipart/form-data"
             className="custom-form" 
           >
-            <Card 
-              title="Basic information"
-              className="custom-card" 
-              extra={<Link to="/admin/properties">Back</Link>}
-            >
-              <Row gutter={16}>
-                <Col span={24} className="mb-5">
-                    <Form.Item 
-                      label='Listing type:' 
-                      name='listingType' 
-                      style={{height: "4.5rem"}}
-                      initialValue={standardizeData.listingType(property?.listingType || "")}
-                    >
-                      <Segmented 
-                        options={['For Sale', 'For Rent']} 
-                        block 
-                        className="custom-segmented"
-                        onChange={handleChangeListingType}
+            <Badge.Ribbon text={<Link to="/admin/properties">Back</Link>} color="purple" className="custom-ribbon">
+              <Card 
+                title="Basic information"
+                className="custom-card" 
+              >
+                <Row gutter={16}>
+                  <Col span={24} className="mb-5">
+                      <Form.Item 
+                        label='Listing type:' 
+                        name='listingType' 
+                        style={{height: "4.5rem"}}
+                        initialValue={standardizeData.listingType(property?.listingType || "")}
+                      >
+                        <Segmented 
+                          options={['For Sale', 'For Rent']} 
+                          block 
+                          className="custom-segmented"
+                          onChange={handleChangeListingType}
+                        />
+                      </Form.Item>
+                  </Col>
+                  <Col sm={24}>
+                    <Form.Item label='Property type' name='propertyType' initialValue={property?.propertyDetails?.propertyType}>
+                      <Select
+                        value={property?.propertyDetails?.propertyType}
+                        placeholder='Please select property type'
+                        style={{ width: "100%" }}
+                        options={propertyCategoryOptions}
                       />
-                    </Form.Item>
-                </Col>
-                <Col sm={24}>
-                  <Form.Item label='Property type' name='propertyType' initialValue={property?.propertyDetails?.propertyType}>
-                    <Select
-                      value={property?.propertyDetails?.propertyType}
-                      placeholder='Please select property type'
-                      style={{ width: "100%" }}
-                      options={propertyCategoryOptions}
-                    />
-                  </Form.Item> 
-                </Col>
+                    </Form.Item> 
+                  </Col>
 
-                <Col span={24}>
-                  <GetAddress initialValues={property?.location}/>
-                </Col>
-              </Row>
-            </Card>
+                  <Col span={24}>
+                    <GetAddress initialValues={property?.location}/>
+                  </Col>
+                </Row>
+              </Card>
+            </Badge.Ribbon>
 
             <Card title="Property information" className="custom-card" style={{marginTop: '2rem'}}>
               <Row gutter={16}>
