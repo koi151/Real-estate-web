@@ -4,6 +4,7 @@ import CreateProperty from "./pages/Properties/create";
 import PropertyDetail from "./pages/Properties/detail";
 import EditProperty from "./pages/Properties/edit";
 import Properties from "./pages/Properties/properties";
+import PropertyCategoriesDetail from "./pages/PropertyCategories/detail";
 import EditPropertyCategories from "./pages/PropertyCategories/edit";
 
 import PropertyCategories from "./pages/PropertyCategories/propertyCategories.tsx";
@@ -40,6 +41,10 @@ export const routes = [
       {
         path: 'property-categories',
         element: <PropertyCategories />
+      },
+      {
+        path: 'property-categories/detail/:id',
+        element: <PropertyCategoriesDetail />
       },
       {
         path: 'property-categories/edit/:id',
