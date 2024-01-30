@@ -7,6 +7,7 @@ import Properties from "./pages/Properties/properties";
 import EditPropertyCategories from "./pages/PropertyCategories/edit";
 
 import PropertyCategories from "./pages/PropertyCategories/propertyCategories.tsx";
+import EditRole from "./pages/Roles/edit";
 import AdminRoles from "./pages/Roles/roles";
 
 
@@ -46,6 +47,10 @@ export const routes = [
       {
         path: 'roles',
         element: <AdminRoles />
+      },
+      {
+        path: 'roles/edit/:id',
+        element: <EditRole />
       }
     ]
   }

@@ -19,9 +19,9 @@ class RolesServiceAdmin {
     return (await this.api.delete(`/delete/${id}`)).data;
   }
 
-  // async getSingleCategory(id: string) {
-  //   return (await this.api.get(`/detail/${id}`)).data;
-  // }
+  async getSingleRole(id: string) {
+    return (await this.api.get(`/detail/${id}`)).data;
+  }
 
   // async multiChangeProperties(ids: string[], type: ValidMultiChangeType) {
   //   return (await this.api.patch(`/multi-change`, {ids, type})).data;
@@ -36,14 +36,9 @@ class RolesServiceAdmin {
   //   return (await this.api.post('/create', property, config)).data;
   // }
 
-  // async updateCategory(category: any, id: string) {
-  //   const config = {
-  //     headers: {
-  //       'Content-Type': 'multipart/form-data',
-  //     },
-  //   };
-  //   return (await this.api.patch(`/edit/${id}`, category, config)).data;
-  // }
+  async updateRole(category: any, id: string) {
+    return (await this.api.patch(`/edit/${id}`, category)).data;
+  }
 }
 
 const AdminRolesService = new RolesServiceAdmin();

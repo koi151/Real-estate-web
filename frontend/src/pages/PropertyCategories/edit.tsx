@@ -21,7 +21,7 @@ const EditPropertyCategories: React.FC = () => {
     const fetchData = async () => {
       try {
         if (!id) {
-          message.error('Error occurred while searching property information, redirect to previous page', 3);
+          message.error('Can not find property, redirect to previous page', 3);
           navigate(-1);
           return;
         }
@@ -103,7 +103,7 @@ const EditPropertyCategories: React.FC = () => {
   }
 
   return (
-    <div>
+    <>
       { loading ? (
           <div className='d-flex justify-content-center' style={{width: "100%", height: "100vh"}}>
             <Spin tip='Loading...' size="large">
@@ -188,7 +188,7 @@ const EditPropertyCategories: React.FC = () => {
           </Form>
         </div>
       )}
-    </div>
+    </>
   )
 }
 

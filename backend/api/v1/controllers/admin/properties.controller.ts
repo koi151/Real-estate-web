@@ -110,17 +110,24 @@ export const index = async (req: Request, res: Response) => {
 
   } catch (error) {
     console.log('Error occurred while fetching properties data:', error);
-    res.status(400).json({
-      code: 400,
-      message: "Error occurred while fetching properties data"
-    })
+    return res.status(500).json({
+      code: 500,
+      message: 'Internal Server Error'
+    });
   }
 }
 
 // [GET] /admin/properties/detail/:propertyId
 export const detail = async (req: Request, res: Response) => {
   try {
-    const id : string = req.params.propertyId;
+    const id: string | undefined = req.params.propertyId;
+    if (!id) {
+      return res.status(400).json({
+        code: 400,
+        message: 'Invalid property ID'
+      });
+    }
+
     const property = await Property.findOne(
       { _id: id }, 
       { deleted: false }
@@ -141,17 +148,23 @@ export const detail = async (req: Request, res: Response) => {
 
   } catch (error) {
     console.log('Error occurred while fetching properties data:', error);
-    res.status(400).json({
-      code: 400,
-      message: "Error occurred while fetching properties data"
-    })
+    return res.status(500).json({
+      code: 500,
+      message: 'Internal Server Error'
+    });
   }
 }
 
 // [DELETE] /admin/properties/delete/:propertyId
 export const singleDelete = async (req: Request, res: Response) => {
   try {
-    const id: string = req.params.propertyId;
+    const id: string | undefined = req.params.propertyId;
+    if (!id) {
+      return res.status(400).json({
+        code: 400,
+        message: 'Invalid property ID'
+      });
+    }
 
     const result = await Property.updateOne(
       { _id: id },
@@ -172,10 +185,10 @@ export const singleDelete = async (req: Request, res: Response) => {
 
   } catch (error) {
     console.log('Error occurred while deleting property:', error);
-    res.status(400).json({
-      code: 400,
-      message: "Error occurred while deleting property"
-    })
+    return res.status(500).json({
+      code: 500,
+      message: 'Internal Server Error'
+    });
   }
 }
 
@@ -199,17 +212,24 @@ export const createPost = async (req: any, res: Response) => {
 
   } catch (error) {
     console.log('Error occurred while creating property:', error);
-    res.status(400).json({
-      code: 400,
-      message: "Error occurred while creating property"
-    })
+    return res.status(500).json({
+      code: 500,
+      message: 'Internal Server Error'
+    });
   }
 }
 
 // [PATCH] /admin/properties/edit/:propertyId
 export const editPatch = async (req: Request, res: Response) => {
   try {    
-    const id: string = req.params.propertyId;
+    const id: string | undefined = req.params.propertyId;
+    if (!id) {
+      return res.status(400).json({
+        code: 400,
+        message: 'Invalid property ID'
+      });
+    }
+
     const propertyUpdated: PropertyType = processPropertyData(req);
 
     const images = processImagesData(req.body.images);
@@ -236,10 +256,10 @@ export const editPatch = async (req: Request, res: Response) => {
 
   } catch (error) {
     console.log('Error occurred while editing property:', error);
-    res.status(400).json({
-      code: 400,
-      message: "Error occurred while editing property"
-    })
+    return res.status(500).json({
+      code: 500,
+      message: 'Internal Server Error'
+    });
   }
 }
 
@@ -270,18 +290,24 @@ export const changeStatus = async (req: Request, res: Response) => {
 
   } catch (error) {
     console.log('Error occurred while multing changing property:', error);
-    res.status(400).json({
-      code: 400,
-      message: "Error occurred while multing changing property"
-    })
+    return res.status(500).json({
+      code: 500,
+      message: 'Internal Server Error'
+    });
   }
 } 
 
 // [PATCH] /admin/properties/multi-change
 export const multiChange = async (req: Request, res: Response) => {
   try {
-
-    const idsAndPos: string[] = req.body.ids;
+    const idsAndPos: string[] | undefined = req.body.ids;
+    if (!idsAndPos) {
+      return res.status(400).json({
+        code: 400,
+        message: 'Invalid ID'
+      });
+    }
+    
     const type: ValidMultiChangeType = req.body.type;  
 
     let idOnlyList: string[] = [];
@@ -349,9 +375,9 @@ export const multiChange = async (req: Request, res: Response) => {
 
   } catch (error) {
     console.log('Error occurred while multing changing property:', error);
-    res.status(400).json({
-      code: 400,
-      message: "Error occurred while multing changing property"
-    })
+    return res.status(500).json({
+      code: 500,
+      message: 'Internal Server Error'
+    });
   }
 } 

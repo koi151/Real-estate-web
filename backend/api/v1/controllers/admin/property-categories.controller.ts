@@ -43,10 +43,10 @@ export const index = async (req: Request, res: Response) => {
 
   } catch (error) {
     console.log("Error occurred:", error);
-    res.status(400).json({
-      code: 400,
-      message: "Error occurred while fetching property categories data"
-    })
+    return res.status(500).json({
+      code: 500,
+      message: 'Internal Server Error'
+    });
   }
 }
 
@@ -77,17 +77,23 @@ export const changeStatus = async (req: Request, res: Response) => {
 
   } catch (error) {
     console.log('Error occurred while multing changing property:', error);
-    res.status(400).json({
-      code: 400,
-      message: "Error occurred while multing changing property"
-    })
+    return res.status(500).json({
+      code: 500,
+      message: 'Internal Server Error'
+    });
   }
 } 
 
 // [PATCH] /admin/property-categories/edit/:propertyId
 export const editPatch = async (req: Request, res: Response) => {
   try {    
-    const id: string = req.params.categoryId;
+    const id: string | undefined = req.params.categoryId;
+    if (!id) {
+      return res.status(400).json({
+        code: 400,
+        message: 'Invalid category ID'
+      });
+    }
     const categoryUpdated: PropertyCategoryType = processCategoryData(req);
 
     const images = processImagesData(req.body.images);
@@ -114,17 +120,24 @@ export const editPatch = async (req: Request, res: Response) => {
 
   } catch (error) {
     console.log('Error occurred while editing property:', error);
-    res.status(400).json({
-      code: 400,
-      message: "Error occurred while editing property"
-    })
+    return res.status(500).json({
+      code: 500,
+      message: 'Internal Server Error'
+    });
   }
 }
 
 // [GET] /admin/property-categories/detail/:categoryId
 export const detail = async (req: Request, res: Response) => {
   try {
-    const id : string = req.params.categoryId;
+    const id: string | undefined = req.params.categoryId;
+    if (!id) {
+      return res.status(400).json({
+        code: 400,
+        message: 'Invalid category ID'
+      });
+    }
+  
     const category = await PropertyCategory.findOne(
       { _id: id }, 
       { deleted: false }
@@ -145,17 +158,23 @@ export const detail = async (req: Request, res: Response) => {
 
   } catch (error) {
     console.log('Error occurred while fetching properties data:', error);
-    res.status(400).json({
-      code: 400,
-      message: "Error occurred while fetching properties data"
-    })
+    return res.status(500).json({
+      code: 500,
+      message: 'Internal Server Error'
+    });
   }
 }
 
 // [DELETE] /admin/property-categories/delete/:propertyId
 export const singleDelete = async (req: Request, res: Response) => {
   try {
-    const id: string = req.params.categoryId;
+    const id: string | undefined = req.params.categoryId;
+    if (!id) {
+      return res.status(400).json({
+        code: 400,
+        message: 'Invalid category ID'
+      });
+    }
 
     const result = await PropertyCategory.updateOne(
       { _id: id },
@@ -176,9 +195,9 @@ export const singleDelete = async (req: Request, res: Response) => {
 
   } catch (error) {
     console.log('Error occurred while deleting category:', error);
-    res.status(400).json({
-      code: 400,
-      message: "Error occurred while deleting category"
-    })
+    return res.status(500).json({
+      code: 500,
+      message: 'Internal Server Error'
+    });
   }
 }
