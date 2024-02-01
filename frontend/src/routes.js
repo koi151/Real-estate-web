@@ -4,6 +4,7 @@ import CreateProperty from "./pages/Properties/create";
 import PropertyDetail from "./pages/Properties/detail";
 import EditProperty from "./pages/Properties/edit";
 import Properties from "./pages/Properties/properties";
+import CreatePropertyCategory from "./pages/PropertyCategories/create";
 import PropertyCategoriesDetail from "./pages/PropertyCategories/detail";
 import EditPropertyCategories from "./pages/PropertyCategories/edit";
 
@@ -45,6 +46,10 @@ export const routes = [
       {
         path: 'property-categories/detail/:id',
         element: <PropertyCategoriesDetail />
+      },
+      {
+        path: 'property-categories/create',
+        element: <CreatePropertyCategory />
       },
       {
         path: 'property-categories/edit/:id',

@@ -1,9 +1,8 @@
-import { Badge, Button, Card, Col, Form, Input, InputNumber, Radio, Row, Segmented, Select, Spin, message } from "antd";
-import { SegmentedValue } from "antd/es/segmented";
+import { Badge, Card, Col, Form, Input, InputNumber, Radio, Row, Segmented, Select, Spin, message } from "antd";
 import React, { useEffect, useState } from "react";
 import { Editor } from '@tinymce/tinymce-react';
 import { Link, useNavigate, useParams } from "react-router-dom";
-import dayjs, { Dayjs } from "dayjs";
+import { Dayjs } from "dayjs";
 
 import propertiesService from "../../services/admin/properties.service";
 import { PropertyType } from "../../../../backend/commonTypes";
@@ -18,16 +17,12 @@ const PropertyDetail: React.FC = () => {
 
   const [loading, setLoading] = useState(true);
   const [postType, setPostType] = useState<string>('sell');
-  const [propertyWidth, setPropertyWidth] = useState<number | null>(null);
-  const [propertyLength, setPropertyLength] = useState<number | null>(null);
   const [priceMultiplier, setPriceMultiplier] = useState<number>(1);
-  const [editorContent, setEditorContent] = useState<string>("");
 
   const [property, setProperty] = useState<PropertyType | undefined>(undefined);
 
   // data from child component
   const [expireDateTime, setExpireDateTime] = useState<Dayjs | null>(null);
-  const [imageUrlToRemove, setImageUrlToRemove] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -54,34 +49,7 @@ const PropertyDetail: React.FC = () => {
     };
     fetchData();
   }, [id])
-  
-  const propertyCategoryOptions = [
-    { value: 'townHouse', label: 'Town house' },
-    { value: 'apartment', label: 'Apartment' },
-    { value: 'villa', label: 'Villa' },
-  ]
 
-  const handlePropertyLengthChange = (value: number | null) => {
-    setPropertyLength(value);
-  };
-
-  const handlePropertyWidthChange  = (value: number | null) => {
-    setPropertyWidth(value);
-  };
-
-  const handlePriceUnitChange = (value: string) => {
-    setPriceMultiplier(value === 'million' ? 1 : 1000);
-  };
-
-  const handleChangeListingType = (value: SegmentedValue) => {
-    const formatedValue = value = "For sale" ? 'sell' : "hire"
-    setPostType(formatedValue)
-  }
-
-  const handleEditorChange = (content: any, editor: any) => {
-    const contentString = typeof content === 'string' ? content : '';
-    setEditorContent(contentString);
-  };
 
   const handleExpireTimeChange = (dateTime: Dayjs | null) => {
     setExpireDateTime(dateTime);
@@ -120,18 +88,16 @@ const PropertyDetail: React.FC = () => {
                           options={['For Sale', 'For Rent']} 
                           block 
                           className="custom-segmented"
-                          onChange={handleChangeListingType}
                         />
                       </Form.Item>
                   </Col>
                   <Col sm={24}>
-                    <Form.Item label='Property type' name='propertyType' initialValue={property?.propertyDetails?.propertyType}>
+                    <Form.Item label='Property type' name='propertyCategory' initialValue={property?.propertyDetails?.propertyCategory}>
                       <Select
                         disabled
-                        value={property?.propertyDetails?.propertyType}
+                        value={property?.propertyDetails?.propertyCategory}
                         placeholder='Please select property type'
                         style={{ width: "100%" }}
-                        options={propertyCategoryOptions}
                       />
                     </Form.Item> 
                   </Col>
@@ -153,7 +119,6 @@ const PropertyDetail: React.FC = () => {
                   >
                     <InputNumber 
                       type="number" min={0} disabled
-                      onChange={handlePropertyLengthChange}
                       className="custom-number-input" 
                       placeholder="Enter length of property"
                     />
@@ -168,7 +133,6 @@ const PropertyDetail: React.FC = () => {
                     <InputNumber 
                       type="number" min={0} disabled
                       className="custom-number-input" 
-                      onChange={handlePropertyWidthChange}
                       placeholder="Enter width of property"
                     />
                   </Form.Item>
@@ -204,7 +168,6 @@ const PropertyDetail: React.FC = () => {
                       addonAfter={
                         <Select 
                           value={property?.price && property.price >= 1000 ? "billion" : "million"} 
-                          onChange={handlePriceUnitChange}
                         >
                           <Select.Option value="million">million</Select.Option>
                           <Select.Option value="billion">billion</Select.Option>
@@ -250,7 +213,6 @@ const PropertyDetail: React.FC = () => {
                       disabled
                       id="description" 
                       initialValue={property?.description}               
-                      onEditorChange={handleEditorChange}
                       apiKey='zabqr76pjlluyvwebi3mqiv72r4vyshj6g0u07spd34wk1t2' // hide
                       init={{
                         toolbar_mode: 'sliding', 

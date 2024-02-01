@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Breadcrumb, Button, Checkbox, Col, Image, InputNumber, Pagination, Popconfirm, Row, Skeleton, Tooltip, message } from 'antd';
-import { Link } from 'react-router-dom';
+import { Breadcrumb, Button, Checkbox, Col, Image, InputNumber, Pagination, PaginationProps, Popconfirm, Row, Skeleton, Tooltip, message } from 'antd';
+import { Link, useNavigate } from 'react-router-dom';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 
 import propertyCategoriesService from '../../services/admin/property-categories.service';
-import { PropertyCategoryType } from '../../../../backend/commonTypes';
+import { PaginationObject, PropertyCategoryType } from '../../../../backend/commonTypes';
 import { SortingQuery } from '../../../../backend/commonTypes';
 import StatusButton from '../../components/admin/StatusButton/statusButton';
 
@@ -13,20 +13,36 @@ import '../Properties/properties.scss';
 import FilterBox from '../../components/admin/FilterBox/filterBox';
 
 const PropertyCategories: React.FC = () => {
+  const navigate = useNavigate();
+
   const [loading, setLoading] = useState(true);
   const [categoryList, setCategoryList] = useState<PropertyCategoryType[]>([]);
   const [error, setError] = useState<string | null>(null); 
+  const [categoryCount, setCategoryCount] = useState<number>(0);
 
   // Searching and filtering
   const [checkedList, setCheckedList] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [status, setStatus] = useState<string | null>(null);
   const [keyword, setKeyword] = useState<string | null>(null); 
+
   const [sorting, setSorting] = useState<SortingQuery>(
     { sortKey: '', sortValue: '' }
   )
 
+  const [paginationObj, setPaginationObj] = useState<PaginationObject>({
+    currentPage: null,
+    limitItems: null,
+    skip: null,
+    totalPage: null,
+  })
+
+  const onPageChange: PaginationProps['onChange'] = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
   useEffect(() => {
+    setLoading(true);
     const fetchData = async () => {
       try {
         const response = await propertyCategoriesService.getPropertyCategories({ 
@@ -41,49 +57,66 @@ const PropertyCategories: React.FC = () => {
 
         if(response?.code === 200) {
           setCategoryList(response.categories);
-          // setPaginationObj(response.paginationObject);
-          // setPropertyCount(response.propertyCount);
+          setPaginationObj(response.paginationObject);
+          setCategoryCount(response.categoryCount);
           setLoading(false);
         } else {
           message.error(response.message, 2);
         }
 
       } catch (error) {
-        message.error('No property found', 2);
+        message.error('No category found', 2);
         setError('No property found.');
         console.log('Error occurred:', error);
       }
     };
     fetchData();
-  }, []);
+  }, [keyword, status, sorting, currentPage]);
 
   const onChangePosition = (id: string | undefined, position: number | null) => {
-    // if (position === null || id === undefined){
-    //   message.error("Error occurred, can not change position of property");
-    //   console.log('id or value parameter is undefined')
-    // }
+    if (position === null || id === undefined){
+      message.error("Error occurred, can not change position of category");
+      console.log('id or value parameter is undefined')
+    }
 
-    // const currentCheckBox = document.querySelector(`.item-wrapper__upper-content--checkbox span input[id="${id}"]`) as HTMLInputElement;
-    // if (currentCheckBox?.checked) {
-    //   setCheckedList([...checkedList, `${id}-${position}`]);
-    // }
-    console.log('position change')
+    const currentCheckBox = document.querySelector(`.item-wrapper__upper-content--checkbox span input[id="${id}"]`) as HTMLInputElement;
+    if (currentCheckBox?.checked) {
+      setCheckedList([...checkedList, `${id}-${position}`]);
+    }
   }
 
   const handleCheckboxChange = (id: string | undefined) => (e: CheckboxChangeEvent) => {
-    // if (id === undefined) {
-    //   message.error('Error occurred', 3);
-    //   console.log('id parameter is undefined');
-    //   return;
-    // }
-    // if (e.target.checked) {
-    //   const position = document.querySelector(`.item-wrapper__upper-content--position input[data-id="${id}"]`) as HTMLInputElement;
-    //   setCheckedList([...checkedList, `${id}-${position.value}`]);
-    // } else {
-    //   setCheckedList(checkedList.filter((itemId) => itemId !== id));
-    // }
-    console.log('handleCheckboxChange')
+    if (id === undefined) {
+      message.error('Error occurred', 3);
+      console.log('id parameter is undefined');
+      return;
+    }
+    if (e.target.checked) {
+      const position = document.querySelector(`.item-wrapper__upper-content--position input[data-id="${id}"]`) as HTMLInputElement;
+      setCheckedList([...checkedList, `${id}-${position.value}`]);
+    } else {
+      setCheckedList(checkedList.filter((itemId) => itemId !== id));
+    }
   };
+
+  const handleKeywordChange = (newKeyword: string | null) => {
+    setKeyword(newKeyword);
+  };
+
+  const handleStatusChange = (newStatus: string | null) => {
+    setStatus(newStatus);
+  };
+
+  const handleSortingChange = (newSorting: any) => {
+    setSorting(newSorting);
+  }
+
+  const resetFilters = () => {
+    setKeyword(null);
+    setStatus(null);
+    setSorting({sortKey: '', sortValue: ''});
+    navigate('/admin/property-categories');
+  }
 
   // Delete item
   const confirmDelete = async (id?: string) => {
@@ -118,14 +151,14 @@ const PropertyCategories: React.FC = () => {
         />
       </div>
 
-      {/* <FilterBox
-        onListingTypeChange={handleListingTypeChange} 
+      <FilterBox
+        onListingTypeChange={() => {}}
         onKeywordChange={handleKeywordChange}
         onStatusChange={handleStatusChange}
         onSortingChange={handleSortingChange}
         checkedList={checkedList}
         resetFilters={resetFilters}
-      /> */}
+      />
 
       { error ? (
         <div>{error}</div>
@@ -263,10 +296,10 @@ const PropertyCategories: React.FC = () => {
       <Pagination
         // showSizeChanger
         showQuickJumper
-        // pageSize={paginationObj.limitItems || 4}
-        // onChange={onPageChange}
-        // defaultCurrent={paginationObj.currentPage || 1}
-        // total={propertyCount}
+        pageSize={paginationObj.limitItems || 4}
+        onChange={onPageChange}
+        defaultCurrent={paginationObj.currentPage || 1}
+        total={categoryCount}
       />
     </>
   );

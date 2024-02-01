@@ -1,5 +1,3 @@
-import { UploadFile } from "antd";
-
 export type RoomType = "bedrooms" | "bathrooms" | "kitchens" | "livingRooms";
 export type ValidStatus = 'active' | 'inactive';
 export type ValidMultiChangeType = 'active' | "inactive" | "position" | "delete" 
@@ -20,7 +18,7 @@ export interface Location {
 export interface PropertyDetails {
   subType?: string;
   features?: string[];
-  propertyType?: string;
+  propertyCategory?: string;
 }
 
 export interface PropertyType {
@@ -50,6 +48,7 @@ export interface PropertyType {
   deleted?: boolean;
 }
 
+// PROPERTY CATEGORIES
 export interface PropertyCategoryType {
   _id?: string;
   title: string;
@@ -64,6 +63,20 @@ export interface PropertyCategoryType {
   deleted?: boolean;
 }
 
+// TREE
+export interface TreeNode {
+  _id?: string;
+  title: string;
+  parent_id?: string;
+}
+
+export interface TreeSelectNode {
+  value: string;
+  title: string;
+  children?: TreeSelectNode[];
+}
+
+// ADMIN ROLES
 export interface RolesType {
   _id?: string;
   title: string;

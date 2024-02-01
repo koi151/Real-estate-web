@@ -12,9 +12,9 @@ class PropertyCategoriesServiceAdmin {
     return (await this.api.get("/", { params: options })).data;
   }
 
-  async changeCategoryStatus(id: string, status: ValidStatus) {
-    return (await this.api.patch(`/change-status/${status}/${id}`)).data;
-  }
+  async getCategoryTree() {
+    return (await this.api.get(`/category-tree`)).data;
+  };
 
   async deleteCategory(id: string) {
     return (await this.api.delete(`/delete/${id}`)).data;
@@ -24,18 +24,22 @@ class PropertyCategoriesServiceAdmin {
     return (await this.api.get(`/detail/${id}`)).data;
   }
 
-  // async multiChangeProperties(ids: string[], type: ValidMultiChangeType) {
+  async changeCategoryStatus(id: string, status: ValidStatus) {
+    return (await this.api.patch(`/change-status/${status}/${id}`)).data;
+  }
+
+  // async multiChangeCategories(ids: string[], type: ValidMultiChangeType) {
   //   return (await this.api.patch(`/multi-change`, {ids, type})).data;
   // }
 
-  // async createProperty(property: any) {
-  //   const config = {
-  //     headers: {
-  //       'Content-Type': 'multipart/form-data',
-  //     },
-  //   };
-  //   return (await this.api.post('/create', property, config)).data;
-  // }
+  async createCategory(property: any) {
+    const config = {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    };
+    return (await this.api.post('/create', property, config)).data;
+  }
 
   async updateCategory(category: any, id: string) {
     const config = {

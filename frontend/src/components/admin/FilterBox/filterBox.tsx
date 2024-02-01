@@ -3,7 +3,7 @@ import { Button, Col, Row, Segmented, Select, SelectProps, Slider, message } fro
 import { FaPlus } from "react-icons/fa6";
 import Search, { SearchProps } from 'antd/es/input/Search';
 import { IoFilter } from 'react-icons/io5';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { SegmentedValue } from 'antd/es/segmented';
 
 import propertiesService from '../../../services/admin/properties.service';
@@ -27,6 +27,7 @@ interface FilterBoxProps {
 const FilterBox: React.FC<FilterBoxProps> = ({ onListingTypeChange, onKeywordChange, onStatusChange, onSortingChange, checkedList, resetFilters }) => {
   
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Sorting & Filtering
   const [listingType, setListingType] = useState<string | null>(null);
@@ -43,7 +44,6 @@ const FilterBox: React.FC<FilterBoxProps> = ({ onListingTypeChange, onKeywordCha
 
   const [isFilterDetailVisible, setIsFilterDetailVisible] = useState<boolean>(true);
 
-
   const buildURL = () => {
     const params: { [key: string]: string } = {};
     if (keyword) params['keyword'] = keyword;
@@ -54,7 +54,7 @@ const FilterBox: React.FC<FilterBoxProps> = ({ onListingTypeChange, onKeywordCha
       params['sortValue'] = sorting.sortValue;
     }
 
-    return `/admin/properties${Object.keys(params).length > 0 ? `?${new URLSearchParams(params)}` : ''}`;
+    return `${location.pathname}${Object.keys(params).length > 0 ? `?${new URLSearchParams(params)}` : ''}`;
   };
   
   const onSearch: SearchProps['onSearch'] = (value) => {
@@ -147,7 +147,7 @@ const FilterBox: React.FC<FilterBoxProps> = ({ onListingTypeChange, onKeywordCha
             >
               Filters <IoFilter style={{marginLeft: '.75rem'}}/>
             </Button>
-            <Link to={'/admin/properties/create'} className='custom-link'>
+            <Link to={`${location.pathname}/create`} className='custom-link'>
               <Button className='add-new-button'>
                 Add new <FaPlus/>
               </Button>
@@ -156,13 +156,15 @@ const FilterBox: React.FC<FilterBoxProps> = ({ onListingTypeChange, onKeywordCha
         </div>
       </div>  
 
-      <Segmented 
-        options={['All', 'For rent', 'For sale']} 
-        onChange={value => setListingType(value === 'All' ? '' : reverseListingType(value as string))} 
-        className={`listing-type ${isFilterDetailVisible ? '' : 'fade-out'}`}
-      />          
+      {listingType && (
+        <Segmented 
+          options={['All', 'For rent', 'For sale']} 
+          onChange={value => setListingType(value === 'All' ? '' : reverseListingType(value as string))} 
+          className={`listing-type ${isFilterDetailVisible ? '' : 'fade-out'}`}
+        />
+      )}          
 
-      <div className={`filter-box__detail ${isFilterDetailVisible ? '' : 'fade-out'}`}>
+      <div className={`filter-box__detail ${isFilterDetailVisible ? '' : 'fade-out'} ${listingType ? '' : 'mt-3'}`}>
         <Row className='custom-row'>
           <Col
             xxl={8} xl={8} lg={8}
@@ -216,7 +218,6 @@ const FilterBox: React.FC<FilterBoxProps> = ({ onListingTypeChange, onKeywordCha
               <Select
                 placement='bottomLeft'
                 placeholder="Choose change to apply"
-                // defaultValue='None'
                 onChange={handleMultipleChange}
                 options={multipleChangeOptions}
                 className='multiple-change__select'

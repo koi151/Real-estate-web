@@ -37,7 +37,7 @@ const propertySchema = new mongoose.Schema(
       address: String
     },
     propertyDetails: {
-      propertyType: String,
+      propertyCategory: String,
       subType: String,
       features: Array,
     },

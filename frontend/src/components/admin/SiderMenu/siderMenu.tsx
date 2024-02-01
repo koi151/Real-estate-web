@@ -1,6 +1,6 @@
 import React from "react";
 import { Menu } from "antd";
-import { DashboardOutlined, SettingOutlined, LockOutlined, AuditOutlined } from '@ant-design/icons';
+import { DashboardOutlined, SettingOutlined, LockOutlined, AuditOutlined, InboxOutlined } from '@ant-design/icons';
 import { Link } from "react-router-dom";
 
 import './siderMenu.scss';
@@ -17,7 +17,7 @@ const SiderMenu: React.FC = () => {
   const items: MenuItem[] = [
     { key: 'Dashboard', label: <Link to={'/admin/dashboard'}>Dashboard</Link>, icon: <DashboardOutlined className="sider-icon" /> },
     { key: 'Properties', label: <Link to={'/admin/properties'}>Properties</Link>, icon: <SettingOutlined className="sider-icon" /> },
-    { key: 'Categories', label: <Link to={'/admin/property-categories'}>Categories</Link>, icon: <SettingOutlined className="sider-icon" /> },
+    { key: 'Categories', label: <Link to={'/admin/property-categories'}>Categories</Link>, icon: <InboxOutlined className="sider-icon" /> },
     { key: 'Roles', label: <Link to={'/admin/roles'}>Roles</Link>, icon: <AuditOutlined className="sider-icon" /> },
     { key: 'CRM', label: 'CRM', icon: <SettingOutlined className="sider-icon" /> },
     { key: 'Authentication', label: 'Authentication', icon: <LockOutlined className="sider-icon" />, children: [] },

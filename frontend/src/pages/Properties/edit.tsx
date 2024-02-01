@@ -114,7 +114,7 @@ const EditProperty: React.FC = () => {
       formData.append('area[propertyLength]', data.propertyLength);
   
       // Append propertyDetails 
-      formData.append('propertyDetails[propertyType]', data.propertyType);
+      formData.append('propertyDetails[propertyCategory]', data.propertyCategory);
   
       // Append description
       formData.append('description', editorContent);
@@ -212,9 +212,9 @@ const EditProperty: React.FC = () => {
                       </Form.Item>
                   </Col>
                   <Col sm={24}>
-                    <Form.Item label='Property type' name='propertyType' initialValue={property?.propertyDetails?.propertyType}>
+                    <Form.Item label='Property type' name='propertyCategory' initialValue={property?.propertyDetails?.propertyCategory}>
                       <Select
-                        value={property?.propertyDetails?.propertyType}
+                        value={property?.propertyDetails?.propertyCategory}
                         placeholder='Please select property type'
                         style={{ width: "100%" }}
                         options={propertyCategoryOptions}

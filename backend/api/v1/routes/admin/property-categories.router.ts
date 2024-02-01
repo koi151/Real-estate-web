@@ -10,15 +10,16 @@ import * as uploadCloud from '../../../../middlewares/admin/uploadCloud.middlewa
 const upload = multer();
 
 router.get('/', controller.index);
-router.get('/detail/:categoryId', controller.detail)
+router.get('/detail/:categoryId', controller.detail);
+router.get('/category-tree', controller.categoryTree);
 
-// router.post(
-//   '/create',
-//   upload.fields([{ name: 'images', maxCount: 8 }]),
-//   validate.createPost,
-//   uploadCloud.uploadFields,
-//   controller.createPost
-// );
+router.post(
+  '/create',
+  upload.fields([{ name: 'images', maxCount: 8 }]),
+  // validate.createPost,
+  uploadCloud.uploadFields,
+  controller.createPost
+);
 
 router.patch(
   '/edit/:categoryId', 

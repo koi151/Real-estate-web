@@ -1,16 +1,20 @@
 import { Badge, Button, Card, Col, Form, Input, InputNumber, 
-         Radio, Row, Segmented, Select, message } from "antd";
-import React, { ChangeEvent, useState } from "react";
+         Radio, Row, Segmented, Select, TreeSelect, message } from "antd";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import { Editor } from '@tinymce/tinymce-react';
 import { SegmentedValue } from "antd/es/segmented";
 import { Link } from "react-router-dom";
 import dayjs, { Dayjs } from "dayjs";
 
 import propertiesService from "../../services/admin/properties.service";
+import propertyCategoriesService from "../../services/admin/property-categories.service";
+
 import GetAddress from "../../components/admin/getAddress/getAddress";
 import ExpireTimePicker from "../../components/admin/ExpireTimePicker/expireTimePicker";
 import UploadMultipleFile from "../../components/admin/UploadMultipleFile/uploadMultipleFile";
+import { DefaultOptionType } from "antd/es/select";
 import './create.scss'
+import { CaretRightOutlined } from "@ant-design/icons";
 
 const CreateProperty: React.FC = () => {
 
@@ -21,6 +25,9 @@ const CreateProperty: React.FC = () => {
   const [priceMultiplier, setPriceMultiplier] = useState<number>(1);
   const [editorContent, setEditorContent] = useState<string>("");
 
+  const [categoryTree, setCategoryTree] = useState<DefaultOptionType[] | undefined>(undefined);
+  const [category, setCategory] = useState<string>();
+
   // data from child component
   const [expireDateTime, setExpireDateTime] = useState<Dayjs | null>(null);
 
@@ -29,6 +36,23 @@ const CreateProperty: React.FC = () => {
     { value: 'apartment', label: 'Apartment' },
     { value: 'villa', label: 'Villa' },
   ]
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await propertyCategoriesService.getCategoryTree();
+        if (response.code === 200) {
+          setCategoryTree(response.categoryTree);
+        } else {
+          message.error(response.error, 3);
+        }
+      } catch (error) {
+        console.error('Error fetching category tree:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handlePriceChange = (event: ChangeEvent<HTMLInputElement>) => {
     const inputValue = parseFloat(event.target.value);
@@ -49,6 +73,11 @@ const CreateProperty: React.FC = () => {
 
   const handlePriceUnitChange = (value: string) => {
     setPriceMultiplier(value === 'million' ? 1 : 1000);
+  };
+
+  const handleTreeSelectChange = (newValue: string) => {
+    console.log(newValue);
+    setCategory(newValue);
   };
 
   const selectPriceUnit = (
@@ -89,7 +118,7 @@ const CreateProperty: React.FC = () => {
       formData.append('area[propertyLength]', data.propertyLength);
   
       // Append propertyDetails data
-      formData.append('propertyDetails[propertyType]', data.propertyType);
+      formData.append('propertyDetails[propertyCategory]', data.propertyCategory);
   
       // Append description
       formData.append('description', editorContent);
@@ -161,16 +190,23 @@ const CreateProperty: React.FC = () => {
                   />
                 </Form.Item>
               </Col>
-              <Col sm={24}>
-                <Form.Item label='Property type' name='propertyType'>
-                  <Select
-                    placeholder='Please select property type'
-                    style={{ width: "100%" }}
-                    options={propertyCategoryOptions}
+              <Col span={24}>
+                <Form.Item 
+                  label='Select property category' 
+                  name='category' 
+                >
+                  <TreeSelect
+                    style={{ width: '100%' }}
+                    value={category}
+                    dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                    treeData={categoryTree}
+                    placeholder="Please select"
+                    treeDefaultExpandAll
+                    onChange={handleTreeSelectChange}
+                    treeLine
                   />
-                </Form.Item> 
+                </Form.Item>
               </Col>
-
               <Col span={24}>
                 <GetAddress />
               </Col>

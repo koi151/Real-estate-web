@@ -50,6 +50,7 @@ const Properties: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
         const response = await propertiesService.getProperties({ 
           ...(keyword && { keyword }), 
           ...(status && { status }), 
@@ -292,8 +293,8 @@ const Properties: React.FC = () => {
                           <Space size={[0, 8]} wrap>
                             {(property.listingType === 'forSale' || property.listingType === 'forRent') 
                               && renderTag(property.listingType, { forSale: 'green', forRent: 'orange' })}
-                            {property.propertyDetails?.propertyType === 'house' 
-                            && renderTag(property.propertyDetails.propertyType, { house: 'purple', apartment: 'blue' })}
+                            {property.propertyDetails?.propertyCategory === 'house' 
+                            && renderTag(property.propertyDetails.propertyCategory, { house: 'purple', apartment: 'blue' })}
                           </Space>
                         </div>
                       </div>
