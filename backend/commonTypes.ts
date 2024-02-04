@@ -6,12 +6,11 @@ export const postTypeValues = ["default", "preminum", "featured"];
 export const listingTypeValues = ["forSale", "forRent"];
 export const statusValues = ["active", "inactive"];
 
-
 // PROPERTY INFO
 export interface Location {
   city?: string;
   district?: string;
-  ward?: String,
+  ward?: string,
   address?: string;
 }
 

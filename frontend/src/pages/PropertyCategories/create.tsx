@@ -16,9 +16,6 @@ const CreatePropertyCategory: React.FC = () => {
   const [categoryTree, setCategoryTree] = useState<DefaultOptionType[] | undefined>(undefined);
   const [categoryTitle, setCategoryTitle] = useState<string>();
 
-  // data from child component
-  const [imageUrlToRemove, setImageUrlToRemove] = useState<string[]>([]);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -33,6 +30,7 @@ const CreatePropertyCategory: React.FC = () => {
 
       } catch (error) {
         console.error('Error fetching category tree:', error);
+        message.error("Error occurred, can not get categories", 3);
       }
     };
 
@@ -45,7 +43,6 @@ const CreatePropertyCategory: React.FC = () => {
   };
 
   const handleTreeSelectChange = (newValue: string) => {
-    console.log(newValue);
     setCategoryTitle(newValue);
   };
 
@@ -53,13 +50,13 @@ const CreatePropertyCategory: React.FC = () => {
     try {
       const formData = new FormData();
 
-      formData.append('title', data.title);
-      formData.append('position', data.position);
-      formData.append('status', data.status);
-      formData.append('parent_id', data.parent_id);
+      data.title && formData.append('title', data.title);
+      data.position && formData.append('position', data.position);
+      data.status && formData.append('status', data.status);
+      data.parent_id && formData.append('parent_id', data.parent_id);
   
       // Append description
-      formData.append('description', editorContent);
+      editorContent && formData.append('description', editorContent);
 
       // Append images
       if (data.images?.length > 0) {
@@ -68,32 +65,18 @@ const CreatePropertyCategory: React.FC = () => {
             formData.append('images', imageFile.originFileObj);
           }
         });
-      }
-
-      // Append image urls that need to remove from db
-      imageUrlToRemove.forEach((imageUrl) => {
-        formData.append(`images_remove`, imageUrl);
-      });
-      
+      }      
       const response = await propertyCategoriesService.createCategory(formData);
       
       if (response.code === 200) {
-        message.success('Property category updated successfully!', 3);
+        message.success('Property category craeted successfully!', 3);
       } else {
         console.error(response.message);
         message.error('Error occurred', 3);
       }
   
     } catch (error) {
-      message.error("Error occurred while updating category.");
-    }
-  }
-
-  // Child component functions  
-  const handleImageUrlRemove = (imageUrl: string | undefined) => {
-    // Check if imageUrl is not undefined and not already in the array
-    if (imageUrlToRemove !== undefined && imageUrl !== undefined) {
-      setImageUrlToRemove(prevImages => [...prevImages, imageUrl]);
+      message.error("Error occurred while creating category.");
     }
   }
 
@@ -132,15 +115,15 @@ const CreatePropertyCategory: React.FC = () => {
                 </Col>
                 <Col span={24}>
                   <Form.Item 
-                    label='Select property category' 
-                    name='category' 
+                    label='Select parent category' 
+                    name='parent_id' 
                   >
                     <TreeSelect
                       style={{ width: '100%' }}
                       value={categoryTitle}
                       dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
                       treeData={categoryTree}
-                      placeholder="Please select"
+                      placeholder="None by default"
                       treeDefaultExpandAll
                       onChange={handleTreeSelectChange}
                       treeLine
@@ -184,7 +167,7 @@ const CreatePropertyCategory: React.FC = () => {
                 </Col>
 
                 <Col span={24}>
-                  <UploadMultipleFile uploadedImages={category?.images} setImageUrlRemove={handleImageUrlRemove}/>
+                  <UploadMultipleFile uploadedImages={category?.images}/>
                 </Col>
                 
                 <Col span={24}>

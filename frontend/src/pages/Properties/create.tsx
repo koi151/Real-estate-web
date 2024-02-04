@@ -14,7 +14,6 @@ import ExpireTimePicker from "../../components/admin/ExpireTimePicker/expireTime
 import UploadMultipleFile from "../../components/admin/UploadMultipleFile/uploadMultipleFile";
 import { DefaultOptionType } from "antd/es/select";
 import './create.scss'
-import { CaretRightOutlined } from "@ant-design/icons";
 
 const CreateProperty: React.FC = () => {
 
@@ -30,12 +29,6 @@ const CreateProperty: React.FC = () => {
 
   // data from child component
   const [expireDateTime, setExpireDateTime] = useState<Dayjs | null>(null);
-
-  const propertyCategoryOptions = [
-    { value: 'townHouse', label: 'Town house' },
-    { value: 'apartment', label: 'Apartment' },
-    { value: 'villa', label: 'Villa' },
-  ]
 
   useEffect(() => {
     const fetchData = async () => {
@@ -76,7 +69,6 @@ const CreateProperty: React.FC = () => {
   };
 
   const handleTreeSelectChange = (newValue: string) => {
-    console.log(newValue);
     setCategory(newValue);
   };
 
@@ -100,53 +92,55 @@ const CreateProperty: React.FC = () => {
   const onFinishForm = async (data: any) => {
     try {
       const formData = new FormData();
-
-      formData.append('title', data.title);
-      formData.append('position', data.position);
-      
-      formData.append('postType', data.postType);   
-      formData.append('status', data.status);
+  
+      data.title && formData.append('title', data.title);
+      data.position && formData.append('position', data.position);
+  
+      formData.append('postType', data.postType || 'default');
+      data.status && formData.append('status', data.status);
   
       // Append location data
-      formData.append('location[city]', data.city);
-      formData.append('location[district]', data.district);
-      formData.append('location[ward]', data.ward);
-      formData.append('location[address]', data.address);
+      data.city && formData.append('location[city]', data.city);
+      data.district && formData.append('location[district]', data.district);
+      data.ward && formData.append('location[ward]', data.ward);
+      data.address && formData.append('location[address]', data.address);
   
       // Append area data
-      formData.append('area[propertyWidth]', data.propertyWidth);
-      formData.append('area[propertyLength]', data.propertyLength);
+      data.propertyWidth && formData.append('area[propertyWidth]', data.propertyWidth);
+      data.propertyLength && formData.append('area[propertyLength]', data.propertyLength);
   
       // Append propertyDetails data
-      formData.append('propertyDetails[propertyCategory]', data.propertyCategory);
+      data.propertyCategory && formData.append('propertyDetails[propertyCategory]', data.propertyCategory);
   
       // Append description
-      formData.append('description', editorContent);
+      editorContent && formData.append('description', editorContent);
   
       // Append calculated price
-      formData.append('price', String(priceMultiplier * data.price));
+      const parsedPrice = parseFloat(data.price);
+      parsedPrice && formData.append('price', isNaN(parsedPrice) ? '' : String(priceMultiplier * parsedPrice));
   
       // Append listingType
-      const words = data.listingType.split(' ');
-      const formattedListingType = `${words[0].charAt(0).toLowerCase()}${words[0].slice(1)}${words[1].charAt(0).toUpperCase()}${words[1].slice(1)}`;
-      formData.append('listingType', formattedListingType);
+      if (data.listingType) {
+        const words = data.listingType.split(' ');
+        const formattedListingType = `${words[0].charAt(0).toLowerCase()}${words[0].slice(1)}${words[1].charAt(0).toUpperCase()}${words[1].slice(1)}`;
+        formData.append('listingType', formattedListingType);
+      }
   
       // Append expireAt
       if (expireDateTime) {
         formData.append('expireAt', expireDateTime.toISOString());
-        
       } else if (data.expireAt === 'day' || data.expireAt === 'week' || data.expireAt === 'month') {
         const duration = data.expireAt === 'day' ? 1 : (data.expireAt === 'week' ? 7 : 30);
         const expirationDate = dayjs().add(duration, 'day');
         formData.append('expireAt', expirationDate.toISOString());
       }
-
+  
       if (data.images && data.images.length > 0) {
         data.images.forEach((imageFile: any) => {
           formData.append('images', imageFile.originFileObj);
         });
       }
-          
+  
       const response = await propertiesService.createProperty(formData);
   
       if (response.code === 200) {
@@ -154,11 +148,11 @@ const CreateProperty: React.FC = () => {
       } else {
         message.error(response.message, 3);
       }
-  
     } catch (error) {
       message.error("Error occurred while creating a new property.");
     }
   }
+  
   
   return (
     <div className="d-flex flex-column align-items-center justify-content-center"> 

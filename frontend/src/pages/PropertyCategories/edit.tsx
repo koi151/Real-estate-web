@@ -58,13 +58,13 @@ const EditPropertyCategories: React.FC = () => {
 
       const formData = new FormData();
 
-      formData.append('title', data.title);
-      formData.append('position', data.position);
-      formData.append('status', data.status);
-      formData.append('parent_id', data.parent_id);
+      data.title && formData.append('title', data.title);
+      data.position && formData.append('position', data.position);
+      data.status && formData.append('status', data.status);
+      data.parent_id && formData.append('parent_id', data.parent_id);
   
       // Append description
-      formData.append('description', editorContent);
+      editorContent && formData.append('description', editorContent);
 
       // Append images
       if (data.images?.length > 0) {
@@ -76,9 +76,11 @@ const EditPropertyCategories: React.FC = () => {
       }
 
       // Append image urls that need to remove from db
-      imageUrlToRemove.forEach((imageUrl) => {
-        formData.append(`images_remove`, imageUrl);
-      });
+      if (imageUrlToRemove.length > 0) {
+        imageUrlToRemove.forEach((imageUrl) => {
+          formData.append(`images_remove`, imageUrl);
+        });
+      }
       
       const response = await propertyCategoriesService.updateCategory(formData, id);
       

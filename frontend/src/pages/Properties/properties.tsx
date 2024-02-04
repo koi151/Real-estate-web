@@ -37,7 +37,7 @@ const Properties: React.FC = () => {
 
   const [paginationObj, setPaginationObj] = useState<PaginationObject>({
     currentPage: null,
-    limitItems: null,
+    limitItems: 4,
     skip: null,
     totalPage: null,
   })
@@ -234,7 +234,7 @@ const Properties: React.FC = () => {
                         </h3>
                         <div className='item-wrapper__upper-content--location'>
                           {property.location ? (
-                            <span>{property.location.city}, {property.location.district}</span>
+                            <span>{property.location.city ? property.location.city : 'No info'}, {property.location.district ? property.location.district : 'no info'}</span>
                           ) : "No information"}
                         </div>
                       </div>

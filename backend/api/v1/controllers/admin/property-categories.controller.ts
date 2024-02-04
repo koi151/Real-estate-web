@@ -8,54 +8,13 @@ import Category from "../../models/propertyCategories.model";
 import { paginationHelper } from "../../../../helpers/pagination";
 import { Document } from "mongoose";
 import { createTreeHelper } from "../../../../helpers/createTree";
-
-const processCategoryData = (req: Request): PropertyCategoryType => {
-  return {
-    title: req.body.title || '',
-    status: req.body.status || '',
-    position: parseFloat(req.body.position),
-    description: req.body.description || '',
-    slug: req.body.slug || '',
-    parent_id: req.body.parent_id || '',
-    deleted: Boolean(req.body.deleted),
-  };
-}
+import { processCategoryData } from "../../../../helpers/processData";
 
 const processImagesData = (imageUrls: string[] | string | undefined): string[] => {
   return imageUrls ? (Array.isArray(imageUrls) ? imageUrls : [imageUrls]) : [];
 };
 
-
 // [GET] /admin/property-categories
-// export const index = async (req: Request, res: Response) => {
-//   try {
-//     const categories = await PropertyCategory.find({
-//       deleted: false
-//     })
-
-//     if (categories.length > 0) {
-//       res.status(200).json({
-//         code: 200,
-//         message: 'Success',
-//         categories: categories
-//       });
-//     } else {
-//       res.status(404).json({
-//         code: 404,
-//         message: 'No categories found',
-//       });
-//     }
-
-//   } catch (error) {
-//     console.log("Error occurred:", error);
-//     return res.status(500).json({
-//       code: 500,
-//       message: 'Internal Server Error'
-//     });
-//   }
-// }
-
-// [GET] /admin/properties
 export const index = async (req: Request, res: Response) => {
   try {
     interface Find {
@@ -87,7 +46,7 @@ export const index = async (req: Request, res: Response) => {
     let paginationObject = paginationHelper(
       {
         currentPage: typeof(req.query.currentPage) == "string" ? parseInt(req.query.currentPage) : 1,
-        limitItems: 2,
+        limitItems: 4,
         skip: null, // helper return skip, totalPage value, do not change
         totalPage: null,
       },
@@ -298,7 +257,7 @@ export const createPost = async (req: Request, res: Response) => {
     const newCategory = new Category(category);
     await newCategory.save();
     
-    res.json({
+    res.status(200).json({
       code: 200,
       message: "Created new property category successfully"
     })

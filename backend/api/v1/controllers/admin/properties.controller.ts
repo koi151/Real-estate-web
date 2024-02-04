@@ -8,27 +8,7 @@ import { paginationHelper } from '../../../../helpers/pagination';
 import { isValidStatus } from "../../../../helpers/dataTypeCheck";
 
 import { PropertyType, ValidMultiChangeType } from "../../../../commonTypes";
-
-const processPropertyData = (req: Request): PropertyType => {
-
-  return {
-    title: req.body.title || '',
-    status: req.body.status || '',
-    postType: req.body.postType || '',
-    position: parseFloat(req.body.position),
-    description: req.body.description || '',
-    area: {
-      propertyWidth: parseFloat(req.body.area?.propertyWidth),
-      propertyLength: parseFloat(req.body.area?.propertyLength),
-    },
-    price: parseFloat(req.body.price),
-    location: req.body.location || '',
-    slug: req.body.slug || '',
-    listingType: req.body.listingType || '',
-    propertyDetails: req.body.propertyDetails || '',
-    deleted: Boolean(req.body.deleted),
-  };
-};
+import { processPropertyData } from "../../../../helpers/processData";
 
 const processImagesData = (imageUrls: string[] | string | undefined): string[] => {
   return imageUrls ? (Array.isArray(imageUrls) ? imageUrls : [imageUrls]) : [];

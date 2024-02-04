@@ -34,6 +34,7 @@ class PropertiesServiceAdmin {
   }
 
   async updateProperty(property: any, id: string) {
+    console.log("property:", property, id)
     const config = {
       headers: {
         'Content-Type': 'multipart/form-data',

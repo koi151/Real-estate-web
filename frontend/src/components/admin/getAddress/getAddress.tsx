@@ -3,94 +3,100 @@ import axios from 'axios';
 import { Col, Form, Input, Row, Select } from 'antd';
 
 interface OptionType {
-  code: number;
   name: string;
+  province_id?: string;
+  district_id?: string;
 }
 
-const API_HOST = 'https://provinces.open-api.vn/api/';
+const API_HOST = 'https://vapi.vnappmob.com/api';
 
 const GetAddress: React.FC<{ initialValues?: any }> = ({ initialValues }) => {
   const [cities, setCities] = useState<OptionType[]>([]);
   const [districts, setDistricts] = useState<OptionType[]>([]);
   const [wards, setWards] = useState<OptionType[]>([]);
-  const [selectedCity, setSelectedCity] = useState<string | undefined>(initialValues?.city);
-  const [selectedDistrict, setSelectedDistrict] = useState<string | undefined>(initialValues?.district);
-  const [selectedWard, setSelectedWard] = useState<string | undefined>(initialValues?.ward);
+
+  const [selectedCityCode, setSelectedCityCode] = useState<string | undefined>(initialValues?.city);
+  const [selectedDistrictCode, setSelectedDistrictCode] = useState<string | undefined>(initialValues?.district);
+  const [selectedWardCode, setSelectedWardCode] = useState<string | undefined>(initialValues?.ward);
 
   useEffect(() => {
     fetchCities();
   }, []);
 
   useEffect(() => {
-    if (initialValues?.city && cities.length > 0) {
-      const selectedCityCode = cities.find(city => city.name === initialValues.city)?.code;
-      if (selectedCityCode !== undefined) {
-        setSelectedCity(initialValues.city);
-        fetchDistricts(selectedCityCode);
+    if (selectedCityCode) {
+      const selectedCity = cities.find(city => city.province_id === selectedCityCode);
+      if (selectedCity !== undefined) {
+        fetchDistricts(selectedCity.province_id || '');
       }
     }
-  }, [cities, initialValues]);
-  
-  useEffect(() => {
-    if (districts.length > 0) {
-      if (initialValues?.district) {
-        const selectedDistrictCode = districts.find(district => district.name === initialValues.district)?.code;
-        if (selectedDistrictCode !== undefined) {
-          setSelectedDistrict(initialValues.district);
-          fetchWards(selectedDistrictCode);
-        }
-      }
-    }
-  }, [districts, initialValues]);
+  }, [selectedCityCode]);
 
   useEffect(() => {
-    if (wards.length > 0) {
-      if (initialValues?.ward) {
-        const selectedWardCode = wards.find(ward => ward.name === initialValues.ward)?.code;
-        if (selectedWardCode !== undefined) {
-          setSelectedWard(initialValues.ward);
-        }
-      }
+    if (districts.length > 0 && selectedDistrictCode !== undefined) {
+      fetchWards(selectedDistrictCode);
     }
-  }, [wards, initialValues])
+  }, [districts, selectedDistrictCode]);
   
+  useEffect(() => {
+    if (wards.length > 0 && initialValues?.ward) {
+      setSelectedWardCode(initialValues.ward);
+    }
+  }, [wards, initialValues]);
 
   const fetchCities = async () => {
-    const response = await axios.get<OptionType[]>(`${API_HOST}?depth=1`);
-    setCities(response.data);
+    const response = await axios.get<{ results: any }>(`${API_HOST}/province`);
+    const formattedCities = response.data.results.map((city: any) => ({
+      name: city.province_name,
+      province_id: city.province_id,
+    }));
+    setCities(formattedCities);
   };
 
-  const fetchDistricts = async (cityCode: number) => {
-    const response = await axios.get<{ districts: OptionType[] }>(`${API_HOST}p/${cityCode}?depth=2`);
-    setDistricts(response.data.districts);
+  const fetchDistricts = async (cityId: string) => {
+    const response = await axios.get<{ results: any }>(`${API_HOST}/province/district/${cityId}`);
+    const formattedDistricts = response.data.results.map((district: any) => ({
+      name: district.district_name,
+      district_id: district.district_id,
+    }));
+    setDistricts(formattedDistricts);
   };
 
-  const fetchWards = async (districtCode: number) => {
-    const response = await axios.get<{ wards: OptionType[] }>(`${API_HOST}d/${districtCode}?depth=2`);
-    setWards(response.data.wards);
+  const fetchWards = async (selectedDistrictCode: string) => {
+    if (selectedDistrictCode) {
+      const response = await axios.get<{ results: any }>(`${API_HOST}/province/ward/${selectedDistrictCode}`);
+      const formattedWards = response.data.results.map((ward: any) => ({
+        name: ward.ward_name,
+        ward_id: ward.ward_id,
+      }));
+      setWards(formattedWards);
+    } else {
+      setWards([]);
+    }
   };
 
   const handleCityChange = (value: string) => {
-    setSelectedCity(value);
-    setSelectedDistrict(undefined);
-    setSelectedWard(undefined);
-    const selectedCityCode = cities.find(city => city.name === value)?.code;
-    if (selectedCityCode !== undefined) {
-      fetchDistricts(selectedCityCode);
+    setSelectedCityCode(value);
+    setSelectedDistrictCode(undefined);
+    setSelectedWardCode(undefined);
+    const selectedCity = cities.find(city => city.name === value);
+    if (selectedCity !== undefined) {
+      fetchDistricts(selectedCity.province_id || '');
     }
   };
 
   const handleDistrictChange = (value: string) => {
-    setSelectedDistrict(value);
-    setSelectedWard(undefined);
-    const selectedDistrictCode = districts.find(district => district.name === value)?.code;
-    if (selectedDistrictCode !== undefined) {
-      fetchWards(selectedDistrictCode);
+    const selectedDistrict = districts.find(district => district.name === value);
+    if (selectedDistrict !== undefined) {
+      setSelectedDistrictCode(selectedDistrict.district_id || '');
+      setSelectedWardCode(undefined);
+      fetchWards(selectedDistrict.district_id || ''); 
     }
   };
+  
 
   const handleWardChange = (value: string) => {
-    setSelectedWard(value);
+    setSelectedWardCode(value);
   };
 
   const filterOption = (input: string, option?: { label: string; value: string }) =>
@@ -99,13 +105,13 @@ const GetAddress: React.FC<{ initialValues?: any }> = ({ initialValues }) => {
   return (
     <Row gutter={16}>
       <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
-        <Form.Item label='City' name='city' initialValue={initialValues?.city || undefined}>
+        <Form.Item label='City' name='city' initialValue={initialValues?.city}>
           <Select
             placeholder="Choose city"
             onChange={handleCityChange}
-            value={selectedCity}
+            value={selectedCityCode}
             style={{ width: "100%" }}
-            options={cities.map(city => ({ value: city.name, label: city.name }))}
+            options={cities.map(city => ({ value: city.name || '', label: city.name }))}
             showSearch
             optionFilterProp="children"
             filterOption={filterOption}
@@ -113,13 +119,13 @@ const GetAddress: React.FC<{ initialValues?: any }> = ({ initialValues }) => {
         </Form.Item>
       </Col>
       <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
-        <Form.Item label='District' name='district' initialValue={initialValues?.district || undefined}>
+        <Form.Item label='District' name='district' initialValue={initialValues?.district}>
           <Select
             placeholder="Choose district"
             onChange={handleDistrictChange}
-            value={selectedDistrict}
+            value={selectedDistrictCode}
             style={{ width: "100%" }}
-            options={districts.map(district => ({ value: district.name, label: district.name }))}
+            options={districts.map(district => ({ value: district.name || '', label: district.name }))}
             showSearch
             optionFilterProp="children"
             filterOption={filterOption}
@@ -127,11 +133,11 @@ const GetAddress: React.FC<{ initialValues?: any }> = ({ initialValues }) => {
         </Form.Item>
       </Col>
       <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
-        <Form.Item label='Ward' name='ward' initialValue={initialValues?.ward || undefined}>
+        <Form.Item label='Ward' name='ward' initialValue={initialValues?.ward}>
           <Select
             placeholder="Choose ward"
             onChange={handleWardChange}
-            value={selectedWard}
+            value={selectedWardCode}
             style={{ width: "100%" }}
             options={wards.map(ward => ({ value: ward.name, label: ward.name }))}
             showSearch
@@ -141,7 +147,7 @@ const GetAddress: React.FC<{ initialValues?: any }> = ({ initialValues }) => {
         </Form.Item>
       </Col>
       <Col span={24}>
-        <Form.Item label='Address' name='address' initialValue={initialValues?.address || undefined}>
+        <Form.Item label='Address' name='address' initialValue={initialValues?.address}>
           <Input placeholder={`Enter your address`} />
         </Form.Item>
       </Col>

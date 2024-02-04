@@ -11,7 +11,6 @@ const propertySchema = new mongoose.Schema(
     listingType: {
       type: String, 
       enum: listingTypeValues,
-
     },
     postType: {
       type: String,
