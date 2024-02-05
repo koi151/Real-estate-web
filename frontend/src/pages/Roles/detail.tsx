@@ -5,7 +5,7 @@ import AdminRolesService from "../../services/admin/roles.service";
 import { RolesType } from "../../../../backend/commonTypes";
 import TextArea from "antd/es/input/TextArea";
 
-const RoleDetail: React.FC = () => {
+const AdminRoleDetail: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -88,4 +88,4 @@ const RoleDetail: React.FC = () => {
   )
 }
 
-export default RoleDetail;
+export default AdminRoleDetail;

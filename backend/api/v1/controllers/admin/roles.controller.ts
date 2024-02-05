@@ -2,15 +2,7 @@ import { Request, Response } from "express"
 
 import Role from "../../models/roles.model";
 import { RolesType } from "../../../../commonTypes";
-
-const processRoleData = (req: Request): RolesType => {
-  return {
-    title: req.body.title || '',
-    description: req.body.description || '',
-    permissions: Array.isArray(req.body.permissions) ? req.body.permissions : [req.body.permissions || ''],
-    deleted: Boolean(req.body.deleted),
-  };
-}
+import { processRoleData } from "../../../../helpers/processData";
 
 // [GET] /admin/roles
 export const index = async (req: Request, res: Response) => {
@@ -70,6 +62,28 @@ export const detail = async (req: Request, res: Response) => {
 
   } catch (error) {
     console.log('Error occurred while fetching role data:', error);
+    return res.status(500).json({
+      code: 500,
+      message: 'Internal Server Error'
+    });
+  }
+}
+
+// [POST] /admin/roles/create
+export const createPost = async (req: Request, res: Response) => {
+  try {    
+    const role: RolesType = processRoleData(req);
+    
+    const newRole = new Role(role);
+    await newRole.save();
+
+    res.status(200).json({
+      code: 200,
+      message: 'Role created successfully'
+    })
+
+  } catch (error) {
+    console.log('Error occurred while creating role:', error);
     return res.status(500).json({
       code: 500,
       message: 'Internal Server Error'

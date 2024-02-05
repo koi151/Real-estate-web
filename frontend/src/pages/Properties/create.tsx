@@ -153,7 +153,6 @@ const CreateProperty: React.FC = () => {
     }
   }
   
-  
   return (
     <div className="d-flex flex-column align-items-center justify-content-center"> 
       <Form 
@@ -243,7 +242,8 @@ const CreateProperty: React.FC = () => {
             </Col>
             <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
               <Form.Item label={`Property ${postType} price`} name='price'>
-                <Input 
+                <Input
+                  type='number'
                   addonAfter={selectPriceUnit} 
                   placeholder={`Please select property ${postType} price`}
                   onChange={handlePriceChange}

@@ -4,7 +4,7 @@ import multer from "multer";
 const router: Router = Router();
 
 import * as controller from '../../controllers/admin/property-categories.controller';
-// import * as validate from '../../validates/admin/property.validate';
+import * as validate from '../../validates/admin/propertyCategory.validate';
 import * as uploadCloud from '../../../../middlewares/admin/uploadCloud.middleware'
 
 const upload = multer();
@@ -16,7 +16,7 @@ router.get('/category-tree', controller.categoryTree);
 router.post(
   '/create',
   upload.fields([{ name: 'images', maxCount: 8 }]),
-  // validate.createPost,
+  validate.createPropertyCategory,
   uploadCloud.uploadFields,
   controller.createPost
 );
@@ -24,7 +24,7 @@ router.post(
 router.patch(
   '/edit/:categoryId', 
   upload.fields([{ name: 'images', maxCount: 8 }]),
-  // validate.createPost,
+  validate.createPropertyCategory,
   uploadCloud.uploadFields,
   controller.editPatch
 );

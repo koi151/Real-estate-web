@@ -1,5 +1,5 @@
 import { Request } from "express";
-import { PropertyCategoryType, PropertyType } from "../commonTypes";
+import { PropertyCategoryType, PropertyType, RolesType } from "../commonTypes";
 
 export const parseToValidNumber = (value?: string | null | undefined): number | undefined => {
   return value ? parseFloat(value) || undefined : undefined;
@@ -28,7 +28,7 @@ export const processPropertyData = (req: Request): PropertyType => {
     propertyDetails: {
       propertyCategory: req.body.propertyDetails?.propertyCategory && String(req.body.propertyDetails.propertyCategory),
       subType: req.body.propertyDetails?.subType && String(req.body.propertyDetails.subType),
-      features: req.body.propertyDetails?.features.length > 0 && Array(req.body.propertyDetails.features),
+      features: Array.isArray(req.body.propertyDetails?.features) ? req.body.propertyDetails?.features : [req.body.propertyDetails?.features || ''],
     },
   };
 };
@@ -41,5 +41,14 @@ export const processCategoryData = (req: Request): PropertyCategoryType => {
     position: parseFloat(req.body.position),
     description: req.body.description && String(req.body.description),
     parent_id: req.body.parent_id && String(req.body.parent_id),
+  };
+}
+
+// Admin role
+export const processRoleData = (req: Request): RolesType => {
+  return {
+    title: req.body.title && String(req.body.title),
+    description: req.body.description && String(req.body.description),
+    permissions: req.body.permissions?.length > 0 && Array(req.body.permissions),
   };
 }

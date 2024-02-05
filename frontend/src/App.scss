@@ -181,6 +181,7 @@ label {
 	}
 }
 
+
 .detail-btn-2 {
 	@include button-style(#595050, #8d8383);
 }
@@ -191,6 +192,21 @@ label {
 
 .delete-btn-2 {
 	@include button-style(#f42024, #ff4d4f);
+}
+
+.custom-link {
+  text-decoration: none;
+  .filter-button, .add-new-button {
+    margin-left: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+      margin-left: 1rem;
+      font-weight: 400;
+    }
+  }
 }
 
 // Breadcrumb

@@ -1,3 +1,4 @@
+import { RolesType } from '../../../../backend/commonTypes';
 import createApi from '../api.service';
 
 class RolesServiceAdmin {
@@ -11,10 +12,6 @@ class RolesServiceAdmin {
     return (await this.api.get("/")).data;
   }
 
-  // async changeCategoryStatus(id: string, status: ValidStatus) {
-  //   return (await this.api.patch(`/change-status/${status}/${id}`)).data;
-  // }
-
   async deleteRole(id: string) {
     return (await this.api.delete(`/delete/${id}`)).data;
   }
@@ -23,21 +20,12 @@ class RolesServiceAdmin {
     return (await this.api.get(`/detail/${id}`)).data;
   }
 
-  // async multiChangeProperties(ids: string[], type: ValidMultiChangeType) {
-  //   return (await this.api.patch(`/multi-change`, {ids, type})).data;
-  // }
+  async createRole(role: RolesType) {
+    return (await this.api.post(`/create`, role)).data;
+  }
 
-  // async createProperty(property: any) {
-  //   const config = {
-  //     headers: {
-  //       'Content-Type': 'multipart/form-data',
-  //     },
-  //   };
-  //   return (await this.api.post('/create', property, config)).data;
-  // }
-
-  async updateRole(category: any, id: string) {
-    return (await this.api.patch(`/edit/${id}`, category)).data;
+  async updateRole(role: RolesType, id: string) {
+    return (await this.api.patch(`/edit/${id}`, role)).data;
   }
 }
 

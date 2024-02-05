@@ -1,17 +1,21 @@
 import LayoutDefault from "./components/admin/LayoutDefault/layoutDefault";
-import DashBoard from "./pages/Dashboard/dashboard";
-import CreateProperty from "./pages/Properties/create";
-import PropertyDetail from "./pages/Properties/detail";
-import EditProperty from "./pages/Properties/edit";
+
+import DashBoard from "./pages/Home/dashboard";
+
 import Properties from "./pages/Properties/properties";
-import CreatePropertyCategory from "./pages/PropertyCategories/create";
-import PropertyCategoriesDetail from "./pages/PropertyCategories/detail";
-import EditPropertyCategories from "./pages/PropertyCategories/edit";
+import PropertyDetail from "./pages/Properties/detail";
+import CreateProperty from "./pages/Properties/create";
+import EditProperty from "./pages/Properties/edit";
 
 import PropertyCategories from "./pages/PropertyCategories/propertyCategories.tsx";
-import RoleDetail from "./pages/Roles/detail";
-import EditRole from "./pages/Roles/edit";
+import PropertyCategoriesDetail from "./pages/PropertyCategories/detail";
+import EditPropertyCategories from "./pages/PropertyCategories/edit";
+import CreatePropertyCategory from "./pages/PropertyCategories/create";
+
 import AdminRoles from "./pages/Roles/roles";
+import AdminRoleDetail from "./pages/Roles/detail";
+import CreateAdminRole from "./pages/Roles/create";
+import EditAdminRole from "./pages/Roles/edit";
 
 
 export const routes = [
@@ -60,12 +64,16 @@ export const routes = [
         element: <AdminRoles />
       },
       {
+        path: 'roles/create',
+        element: <CreateAdminRole />
+      },
+      {
         path: 'roles/edit/:id',
-        element: <EditRole />
+        element: <EditAdminRole />
       },
       {
         path: 'roles/detail/:id',
-        element: <RoleDetail />
+        element: <AdminRoleDetail />
       }
     ]
   }

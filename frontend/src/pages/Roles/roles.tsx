@@ -2,10 +2,13 @@ import { Breadcrumb, Button, message, Popconfirm, Table, Tooltip, type TableProp
 import React, { useEffect, useState } from "react"
 import { RolesType } from '../../../../backend/commonTypes';
 import AdminRolesService from '../../services/admin/roles.service';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { DeleteOutlined, EditOutlined, SolutionOutlined } from '@ant-design/icons';
+import { FaPlus } from 'react-icons/fa';
 
 const AdminRoles: React.FC = () => {
+  const location = useLocation();
+
   const [loading, setLoading] = useState(true);
   const [roles, setRoles] = useState<RolesType[]>([]);
 
@@ -118,6 +121,13 @@ const AdminRoles: React.FC = () => {
             { title: <Link to="/admin/roles">Roles</Link> },
           ]}
         />
+      </div>
+      <div className='d-flex justify-content-end' style={{width: '100%'}}>
+        <Link to={`${location.pathname}/create`} className='custom-link'>
+          <Button className='add-new-button'>
+            Add new <FaPlus />
+          </Button>
+        </Link>
       </div>
 
       {!loading ? 
