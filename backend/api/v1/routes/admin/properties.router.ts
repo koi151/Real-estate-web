@@ -15,7 +15,7 @@ router.get('/detail/:propertyId', controller.detail)
 router.post(
   '/create',
   upload.fields([{ name: 'images', maxCount: 8 }]),
-  // validate.createPost,
+  validate.createProperty,
   uploadCloud.uploadFields,
   controller.createPost
 );
@@ -23,7 +23,7 @@ router.post(
 router.patch(
   '/edit/:propertyId', 
   upload.fields([{ name: 'images', maxCount: 8 }]),
-  // validate.createPost,
+  validate.createProperty,
   uploadCloud.uploadFields,
   controller.editPatch
 );
