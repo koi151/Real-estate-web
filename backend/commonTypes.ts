@@ -62,6 +62,23 @@ export interface PropertyCategoryType {
   deleted?: boolean;
 }
 
+// ADMIN ACCOUNT
+export interface AdminAccountType {
+  _id: string;
+  fullName: string,
+  password: string,
+  email: string,
+  token: string,
+  role_id?: string,
+  phone?: string,
+  avatar?: string,
+  status?: ValidStatus,
+  createdAt?: Date;
+  expireAt?: Date;
+  deleted?: boolean;
+  roleTitle?: string;
+}
+
 // TREE
 export interface TreeNode {
   _id?: string;

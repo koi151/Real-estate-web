@@ -123,7 +123,7 @@ const AdminRoles: React.FC = () => {
         />
       </div>
       <div className='d-flex justify-content-end' style={{width: '100%'}}>
-        <Link to={`${location.pathname}/create`} className='custom-link'>
+        <Link to={`${location.pathname}/create`} className='custom-link mb-3'>
           <Button className='add-new-button'>
             Add new <FaPlus />
           </Button>

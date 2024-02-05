@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { statusValues } from '../../../commonTypes';
 const slug = require('mongoose-slug-updater');
 
 mongoose.plugin(slug);
@@ -10,7 +11,10 @@ const categorySchema = new mongoose.Schema(
     images: Array,
     description: String,
     parent_id: String,
-    status: String,
+    status: {
+      type: String,
+      enum: statusValues
+    },
     slug: {
       type: String, 
       slug: "title",

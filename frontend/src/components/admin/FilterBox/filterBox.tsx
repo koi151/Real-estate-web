@@ -4,7 +4,6 @@ import { FaPlus } from "react-icons/fa6";
 import Search, { SearchProps } from 'antd/es/input/Search';
 import { IoFilter } from 'react-icons/io5';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { SegmentedValue } from 'antd/es/segmented';
 
 import propertiesService from '../../../services/admin/properties.service';
 import { ValidMultiChangeType } from '../../../../../backend/commonTypes';
@@ -155,14 +154,14 @@ const FilterBox: React.FC<FilterBoxProps> = ({ onListingTypeChange, onKeywordCha
           </div>
         </div>
       </div>  
-
-      {listingType && (
+      
+      {onListingTypeChange.toString() !== '() => {}' && (
         <Segmented 
           options={['All', 'For rent', 'For sale']} 
           onChange={value => setListingType(value === 'All' ? '' : reverseListingType(value as string))} 
           className={`listing-type ${isFilterDetailVisible ? '' : 'fade-out'}`}
         />
-      )}          
+      )}  
 
       <div className={`filter-box__detail ${isFilterDetailVisible ? '' : 'fade-out'} ${listingType ? '' : 'mt-3'}`}>
         <Row className='custom-row'>

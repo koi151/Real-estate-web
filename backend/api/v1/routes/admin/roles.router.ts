@@ -22,4 +22,4 @@ router.patch(
 
 router.delete('/delete/:roleId', controller.singleDelete);
 
-export const RolesRoutes: Router = router;
+export const rolesRoutes: Router = router;
