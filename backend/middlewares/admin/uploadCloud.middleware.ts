@@ -3,6 +3,7 @@ import { uploadToCloudinary } from "../../helpers/uploadToCloudinary";
 
 export const uploadSingle = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    console.log(req["file"])
     const result = await uploadToCloudinary(req["file"].buffer);
     req.body[req["file"].fieldname] = result;
   } catch (error) {

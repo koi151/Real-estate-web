@@ -1,5 +1,7 @@
 import { Request } from "express";
-import { PropertyCategoryType, PropertyType, RolesType } from "../commonTypes";
+import { AdminAccountType, PropertyCategoryType, PropertyType, RolesType } from "../commonTypes";
+import bcrypt from 'bcrypt';
+
 
 export const parseToValidNumber = (value?: string | null | undefined): number | undefined => {
   return value ? parseFloat(value) || undefined : undefined;
@@ -50,5 +52,21 @@ export const processRoleData = (req: Request): RolesType => {
     title: req.body.title && String(req.body.title),
     description: req.body.description && String(req.body.description),
     permissions: req.body.permissions?.length > 0 && Array(req.body.permissions),
+  };
+}
+
+// Admin account
+export const processAdminAccountData = async (req: Request): Promise<AdminAccountType> => {
+  const hashedPassword = req.body.password && await bcrypt.hash(String(req.body.password), 10);
+
+  return {
+    fullName: req.body.fullName && String(req.body.fullName),
+    email: req.body.email && String(req.body.email),
+    password: hashedPassword,
+    token: req.body.token && String(req.body.token),
+    status: req.body.status,
+    phone: req.body.phone && String(req.body.phone),
+    role_id: req.body.role_id && String(req.body.role_id),
+    avatar: req.body.avatar && String(req.body.avatar)
   };
 }

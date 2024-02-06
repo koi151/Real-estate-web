@@ -3,7 +3,6 @@ import { Breadcrumb, Button, Checkbox, Col, Image, InputNumber, Pagination, Pagi
 import { Link, useNavigate } from 'react-router-dom';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 
-import propertyCategoriesService from '../../services/admin/property-categories.service';
 import { PaginationObject, AdminAccountType } from '../../../../backend/commonTypes';
 import { SortingQuery } from '../../../../backend/commonTypes';
 import StatusButton from '../../components/admin/StatusButton/statusButton';

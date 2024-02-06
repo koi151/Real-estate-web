@@ -1,5 +1,4 @@
 import createApi from '../api.service';
-import { AdminAccountType } from '../../../../backend/commonTypes';
 
 class AccountsServiceAdmin {
   private api: any; 
@@ -26,14 +25,14 @@ class AccountsServiceAdmin {
   //   return (await this.api.patch(`/multi-change`, {ids, type})).data;
   // }
 
-  // async createProperty(property: any) {
-  //   const config = {
-  //     headers: {
-  //       'Content-Type': 'multipart/form-data',
-  //     },
-  //   };
-  //   return (await this.api.post('/create', property, config)).data;
-  // }
+  async createAccount(info: any) {
+    const config = {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    };
+    return (await this.api.post('/create', info, config)).data;
+  }
 
   // async updateProperty(property: any, id: string) {
   //   console.log("property:", property, id)

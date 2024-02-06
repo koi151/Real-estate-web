@@ -1,24 +1,24 @@
 import { Router } from "express";
-// import multer from "multer";
+import multer from "multer";
 
 const router: Router = Router();
 
 import * as controller from '../../controllers/admin/accounts.controller';
 // import * as validate from '../../validates/admin/property.validate';
-// import * as uploadCloud from '../../../../middlewares/admin/uploadCloud.middleware'
+import * as uploadCloud from '../../../../middlewares/admin/uploadCloud.middleware'
 
-// const upload = multer();
+const upload = multer();
 
 router.get('/', controller.index);
 // router.get('/detail/:propertyId', controller.detail)
 
-// router.post(
-//   '/create',
-//   upload.fields([{ name: 'images', maxCount: 8 }]),
-//   validate.createProperty,
-//   uploadCloud.uploadFields,
-//   controller.createPost
-// );
+router.post(
+  '/create',
+  upload.single('avatar'),
+  // validate.createProperty,
+  uploadCloud.uploadSingle,
+  controller.createPost
+);
 
 // router.patch(
 //   '/edit/:propertyId', 

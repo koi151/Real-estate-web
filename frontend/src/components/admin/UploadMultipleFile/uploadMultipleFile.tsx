@@ -16,21 +16,21 @@ const getBase64 = (file: FileType): Promise<string> =>
 type Props = {
   uploadedImages?: string[];
   setImageUrlRemove?: (imageUrl: string | undefined) => void;
+  singleImageMode?: boolean;
 };
 
-const UploadMultipleFile: React.FC<Props> = ({ uploadedImages, setImageUrlRemove = () => {} }) => {
-
+const UploadMultipleFile: React.FC<Props> = ({ uploadedImages, setImageUrlRemove = () => {}, singleImageMode = false }) => {
   const [previewOpen, setPreviewOpen] = useState<boolean>(false);
   const [previewImage, setPreviewImage] = useState<string | string[] | undefined>();
-  const [previewTitle, setPreviewTitle] = useState<string>('');;
+  const [previewTitle, setPreviewTitle] = useState<string>('');
 
   const [fileList, setFileList] = useState<UploadFile[]>(
     uploadedImages?.map((url, index) => ({
-      uid: `existing-${index.toString()}`, 
+      uid: `existing-${index.toString()}`,
       name: url,
       status: 'done',
       url: url,
-      uploaded: true
+      uploaded: true,
     })) || []
   );
 
@@ -50,7 +50,7 @@ const UploadMultipleFile: React.FC<Props> = ({ uploadedImages, setImageUrlRemove
 
   const handleRemove = (file: UploadFile) => {
     setImageUrlRemove(file.url);
-  }
+  };
 
   const uploadButton = (
     <div>
@@ -61,18 +61,18 @@ const UploadMultipleFile: React.FC<Props> = ({ uploadedImages, setImageUrlRemove
 
   return (
     <>
-      <Form.Item name="images" getValueFromEvent={(e) => e.fileList} label='Upload images:'>
+      <Form.Item name="images" getValueFromEvent={(e) => e.fileList} label="Upload images:">
         <Upload
           listType="picture-card"
           fileList={fileList}
           onPreview={handlePreview}
           onChange={handleChange}
           onRemove={handleRemove}
-          multiple={true}
-          name='images'
-          accept='image/*'
+          multiple={!singleImageMode}
+          name="images"
+          accept="image/*"
         >
-          {fileList.length >= 8 ? null : uploadButton}
+          {fileList.length >= (singleImageMode ? 1 : 8) ? null : uploadButton}
         </Upload>
       </Form.Item>
       <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={handleCancel}>
@@ -83,4 +83,3 @@ const UploadMultipleFile: React.FC<Props> = ({ uploadedImages, setImageUrlRemove
 };
 
 export default UploadMultipleFile;
-
