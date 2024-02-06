@@ -30,7 +30,10 @@ export const processPropertyData = (req: Request): PropertyType => {
     propertyDetails: {
       propertyCategory: req.body.propertyDetails?.propertyCategory && String(req.body.propertyDetails.propertyCategory),
       subType: req.body.propertyDetails?.subType && String(req.body.propertyDetails.subType),
-      features: Array.isArray(req.body.propertyDetails?.features) ? req.body.propertyDetails?.features : [req.body.propertyDetails?.features || ''],
+      features: 
+        Array.isArray(req.body.propertyDetails?.features) && req.body.propertyDetails.features.length > 0 
+          ? req.body.propertyDetails.features 
+          : [req.body.propertyDetails.features].filter(Boolean)
     },
   };
 };
@@ -51,7 +54,7 @@ export const processRoleData = (req: Request): RolesType => {
   return {
     title: req.body.title && String(req.body.title),
     description: req.body.description && String(req.body.description),
-    permissions: req.body.permissions?.length > 0 && Array(req.body.permissions),
+    permissions: Array.isArray(req.body.permissions) && req.body.permissions.length > 0 ? req.body.permissions : [req.body.permissions].filter(Boolean)
   };
 }
 
