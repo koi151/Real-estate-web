@@ -139,7 +139,7 @@ const EditAdminAccounts: React.FC = () => {
           className="custom-form" 
           validateMessages={validateMessages}
         >
-          <Badge.Ribbon text={<Link to="/admin/property-categories">Back</Link>} color="purple" className="custom-ribbon">
+          <Badge.Ribbon text={<Link to="/admin/accounts">Back</Link>} color="purple" className="custom-ribbon">
             <Card 
               title="Create administrator account" 
               className="custom-card" 

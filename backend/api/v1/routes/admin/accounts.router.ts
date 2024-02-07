@@ -28,7 +28,7 @@ router.patch(
   controller.editPatch
 );
 
-// router.patch('/change-status/:status/:propertyId', controller.changeStatus);
+router.patch('/change-status/:status/:accountId', controller.changeStatus);
 // router.patch('/multi-change', controller.multiChange);
 
 // router.delete('/delete/:propertyId', controller.singleDelete);

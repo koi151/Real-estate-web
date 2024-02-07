@@ -18,7 +18,7 @@ const AdminAccounts: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [accountList, setAccountList] = useState<AdminAccountType[]>([]);
   const [error, setError] = useState<string | null>(null); 
-  const [accountCount, setaccountCount] = useState<number>(0);
+  // const [accountCount, setaccountCount] = useState<number>(0);
 
   // Searching and filtering
   const [checkedList, setCheckedList] = useState<string[]>([]);
@@ -219,7 +219,7 @@ const AdminAccounts: React.FC = () => {
                           <div style={{marginLeft: "2rem"}}>
                             {account.status && account._id ? (
                               <StatusButton 
-                                typeofChange='changePropertyCategoriesStatus' 
+                                typeofChange='changeAccountStatus' 
                                 itemId={account._id} 
                                 status={account.status} 
                               />

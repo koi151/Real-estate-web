@@ -3,14 +3,15 @@ import { Request, Response } from "express";
 import AdminAccount from "../../models/adminAccount.model";
 import Role from "../../models/roles.model";
 import { AdminAccountType } from "../../../../commonTypes";
-import { processAdminAccountData, processImagesData } from "../../../../helpers/processData";
+import { processAdminAccountData } from "../../../../helpers/processData";
+import { isValidStatus } from "../../../../helpers/dataTypeCheck";
 
 // [GET] /admin/accounts
 export const index = async (req: Request, res: Response) => {
   try {
     const accounts = await AdminAccount.find(
       { deleted: false }
-    ).select('fullName email phone avatar role_id status createdAt');
+    ).select('-password -token');
     
     const accountPromises = accounts.map(async (account) => {
       const role = await Role.findOne(
@@ -125,10 +126,52 @@ export const createPost = async (req: Request, res: Response) => {
   }
 }
 
+// [PATCH] /admin/accounts/change-status/:status/:id
+export const changeStatus = async (req: Request, res: Response) => {
+  try {
+    const id: string | undefined = req.params.accountId;
+    if (!id) {
+      return res.status(400).json({
+        code: 400,
+        message: 'Invalid account ID'
+      });
+    }
+    
+    const status = req.params.status;
+    if (!isValidStatus(status)) {
+      return res.status(400).json({
+        code: 400,
+        message: 'Invalid status value',
+      });
+    }
+
+    await AdminAccount.updateOne(
+      { _id: String(id) }, 
+      { 
+        deleted: false,
+        status: req.params.status
+      }
+    )
+
+    res.status(200).json({
+      code: 200,
+      message: "Admin account status updated successfully"
+    })
+
+  } catch (error) {
+    console.log('Error occurred while updating admin account:', error);
+    return res.status(500).json({
+      code: 500,
+      message: 'Internal Server Error'
+    });
+  }
+} 
+
+
 // [PATCH] /admin/accounts/edit/:accountId
 export const editPatch = async (req: Request, res: Response) => {
   try {    
-    const id: string | undefined = req.params.accountId
+    const id: string | undefined = req.params.accountId;
     if (!id) {
       return res.status(400).json({
         code: 400,
@@ -142,10 +185,8 @@ export const editPatch = async (req: Request, res: Response) => {
     const updateOperation: any = {};
 
     if (avatarToRemove) { // Unset avatar if requested
-      console.log("delete:", avatarToRemove)
       updateOperation.$unset = { avatar: '' };
     } else if (accountUpdates.avatar) { // Push new avatar if available
-      console.log("push:", accountUpdates.avatar)
       updateOperation.$set = { avatar: accountUpdates.avatar };
     }
 
@@ -163,12 +204,11 @@ export const editPatch = async (req: Request, res: Response) => {
       });
     }
 
-  } catch (error) {
-    console.log('Error occurred while updating administrator account:', error);
+  } catch (err) {
+    console.log('Error occurred while updating administrator account:', err);
     return res.status(500).json({
       code: 500,
       message: 'Internal Server Error'
     });
   }
 }
-

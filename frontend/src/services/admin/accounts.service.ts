@@ -1,3 +1,4 @@
+import { ValidStatus } from '../../../../backend/commonTypes';
 import createApi from '../api.service';
 
 class AccountsServiceAdmin {
@@ -17,9 +18,9 @@ class AccountsServiceAdmin {
     return (await this.api.get(`/detail/${id}`)).data;
   }
 
-  // async changePropertyStatus(id: string, status: ValidStatus) {
-  //   return (await this.api.patch(`/change-status/${status}/${id}`)).data;
-  // }
+  async changeAccountStatus(id: string, status: ValidStatus) {
+    return (await this.api.patch(`/change-status/${status}/${id}`)).data;
+  }
 
   // async multiChangeProperties(ids: string[], type: ValidMultiChangeType) {
   //   return (await this.api.patch(`/multi-change`, {ids, type})).data;
