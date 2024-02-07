@@ -18,6 +18,7 @@ import CreateAdminRole from "./pages/Roles/create";
 import EditAdminRole from "./pages/Roles/edit";
 
 import AdminAccounts from "./pages/Accounts/accounts";
+import AdminAccountsDetail from "./pages/Accounts/detail";
 import CreateAdminAccounts from "./pages/Accounts/create";
 import EditAdminAccounts from "./pages/Accounts/edit";
 
@@ -82,6 +83,10 @@ export const routes = [
       {
         path: 'accounts',
         element: <AdminAccounts />
+      },
+      {
+        path: 'accounts/detail/:id',
+        element: <AdminAccountsDetail />
       },
       {
         path: 'accounts/create',

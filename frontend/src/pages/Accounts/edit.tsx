@@ -141,7 +141,7 @@ const EditAdminAccounts: React.FC = () => {
         >
           <Badge.Ribbon text={<Link to="/admin/accounts">Back</Link>} color="purple" className="custom-ribbon">
             <Card 
-              title="Create administrator account" 
+              title="Edit administrator account" 
               className="custom-card" 
               style={{marginTop: '2rem'}}
               extra={<Link to="/admin/accounts">Back</Link>}
