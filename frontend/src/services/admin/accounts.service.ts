@@ -13,9 +13,9 @@ class AccountsServiceAdmin {
     return (await this.api.get("/")).data;
   }
 
-  // async getSingleProperty(id: string) {
-  //   return (await this.api.get(`/detail/${id}`)).data;
-  // }
+  async getSingleAccount(id: string) {
+    return (await this.api.get(`/detail/${id}`)).data;
+  }
 
   // async changePropertyStatus(id: string, status: ValidStatus) {
   //   return (await this.api.patch(`/change-status/${status}/${id}`)).data;
@@ -34,15 +34,14 @@ class AccountsServiceAdmin {
     return (await this.api.post('/create', info, config)).data;
   }
 
-  // async updateProperty(property: any, id: string) {
-  //   console.log("property:", property, id)
-  //   const config = {
-  //     headers: {
-  //       'Content-Type': 'multipart/form-data',
-  //     },
-  //   };
-  //   return (await this.api.patch(`/edit/${id}`, property, config)).data;
-  // }
+  async updateAccount(info: any, id: string) {
+    const config = {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    };
+    return (await this.api.patch(`/edit/${id}`, info, config)).data;
+  }
 
   async deleteAccount(id: string) {
     return (await this.api.delete(`/delete/${id}`)).data;

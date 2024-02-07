@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Breadcrumb, Button, Checkbox, Col, Image, InputNumber, Pagination, PaginationProps, Popconfirm, Row, Skeleton, Tooltip, message } from 'antd';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 
 import { PaginationObject, AdminAccountType } from '../../../../backend/commonTypes';
@@ -10,9 +10,10 @@ import StatusButton from '../../components/admin/StatusButton/statusButton';
 import '../Properties/properties.scss';
 import FilterBox from '../../components/admin/FilterBox/filterBox';
 import adminAccountsService from '../../services/admin/accounts.service';
+import { FaPlus } from 'react-icons/fa';
 
 const AdminAccounts: React.FC = () => {
-  const navigate = useNavigate();
+  const location = useLocation();
 
   const [loading, setLoading] = useState(true);
   const [accountList, setAccountList] = useState<AdminAccountType[]>([]);
@@ -132,7 +133,7 @@ const AdminAccounts: React.FC = () => {
   return (
     <>
       <div className='title-wrapper'>
-        <h1 className="main-content-title">Admin accounts:</h1>
+        <h1 className="main-content-title">Administrator accounts:</h1>
         <Breadcrumb
           className='mt-1 mb-1'
           items={[
@@ -156,6 +157,14 @@ const AdminAccounts: React.FC = () => {
       ) : (
         <>
           <Skeleton loading={loading} active style={{ padding: '3.5rem' }}>
+            <div className='d-flex justify-content-end' style={{width: '100%'}}>
+              <Link to={`${location.pathname}/create`} className='custom-link'>
+                <Button className='add-new-button'>
+                  Add new <FaPlus />
+                </Button>
+              </Link>
+            </div>
+
             {accountList?.length > 0 ? (
               accountList.map((account, index) => {
                 

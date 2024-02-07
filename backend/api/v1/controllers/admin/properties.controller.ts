@@ -8,11 +8,8 @@ import { paginationHelper } from '../../../../helpers/pagination';
 import { isValidStatus } from "../../../../helpers/dataTypeCheck";
 
 import { PropertyType, ValidMultiChangeType } from "../../../../commonTypes";
-import { processPropertyData } from "../../../../helpers/processData";
+import { processImagesData, processPropertyData } from "../../../../helpers/processData";
 
-const processImagesData = (imageUrls: string[] | string | undefined): string[] => {
-  return imageUrls ? (Array.isArray(imageUrls) ? imageUrls : [imageUrls]) : [];
-};
 
 // [GET] /admin/properties
 export const index = async (req: Request, res: Response) => {

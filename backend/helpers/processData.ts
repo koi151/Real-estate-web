@@ -2,9 +2,13 @@ import { Request } from "express";
 import { AdminAccountType, PropertyCategoryType, PropertyType, RolesType } from "../commonTypes";
 import bcrypt from 'bcrypt';
 
-
 export const parseToValidNumber = (value?: string | null | undefined): number | undefined => {
   return value ? parseFloat(value) || undefined : undefined;
+};
+
+// Images
+export const processImagesData = (imageUrls: string[] | string | undefined): string[] => {
+  return imageUrls ? (Array.isArray(imageUrls) ? imageUrls : [imageUrls]) : [];
 };
 
 // Property

@@ -61,7 +61,11 @@ const UploadMultipleFile: React.FC<Props> = ({ uploadedImages, setImageUrlRemove
 
   return (
     <>
-      <Form.Item name="images" getValueFromEvent={(e) => e.fileList} label="Upload images:">
+      <Form.Item 
+        name="images" 
+        getValueFromEvent={(e) => e.fileList}
+        label={singleImageMode ? "Upload avatar" : "Upload images:"}
+      >
         <Upload
           listType="picture-card"
           fileList={fileList}
@@ -72,7 +76,7 @@ const UploadMultipleFile: React.FC<Props> = ({ uploadedImages, setImageUrlRemove
           name="images"
           accept="image/*"
         >
-          {fileList.length >= (singleImageMode ? 1 : 8) ? null : uploadButton}
+          {singleImageMode && fileList.length >= 1 ? null : uploadButton}
         </Upload>
       </Form.Item>
       <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={handleCancel}>

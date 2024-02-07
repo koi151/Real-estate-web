@@ -67,8 +67,8 @@ export interface AdminAccountType {
   _id?: string;
   fullName: string,
   password: string,
-  email: string,
   token: string,
+  email?: string,
   role_id?: string,
   phone?: string,
   avatar?: string,

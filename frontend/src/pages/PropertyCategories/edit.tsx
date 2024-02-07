@@ -10,7 +10,7 @@ const EditPropertyCategories: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [editorContent, setEditorContent] = useState<string>("");
   const [category, setCategory] = useState<PropertyCategoryType | undefined>(undefined);
 

@@ -94,6 +94,7 @@ const EditProperty: React.FC = () => {
         message.error('Error occurred', 3);
         return;
       }      
+
       const formData = new FormData();
 
       data.title && formData.append('title', data.title);

@@ -1,4 +1,4 @@
-import { Breadcrumb, Button, message, Popconfirm, Table, Tooltip, type TableProps, Skeleton, Spin } from 'antd';
+import { Breadcrumb, Button, message, Popconfirm, Table, Tooltip, type TableProps, Spin } from 'antd';
 import React, { useEffect, useState } from "react"
 import { RolesType } from '../../../../backend/commonTypes';
 import AdminRolesService from '../../services/admin/roles.service';
@@ -122,16 +122,18 @@ const AdminRoles: React.FC = () => {
           ]}
         />
       </div>
-      <div className='d-flex justify-content-end' style={{width: '100%'}}>
-        <Link to={`${location.pathname}/create`} className='custom-link mb-3'>
-          <Button className='add-new-button'>
-            Add new <FaPlus />
-          </Button>
-        </Link>
-      </div>
 
       {!loading ? 
-        <Table columns={columns} dataSource={roles}/>  
+        <>
+          <div className='d-flex justify-content-end' style={{width: '100%'}}>
+            <Link to={`${location.pathname}/create`} className='custom-link mb-3'>
+              <Button className='add-new-button'>
+                Add new <FaPlus />
+              </Button>
+            </Link>
+          </div>
+          <Table columns={columns} dataSource={roles} rowKey="_id"/>  
+        </>
       : 
       <div className='d-flex justify-content-center' style={{width: "100%", height: "20rem"}}>
         <Spin tip='Loading...' size="large">

@@ -1,13 +1,48 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Select from "antd/es/select";
 import { Badge, Button, Card, Col, 
-        Form, Input, Radio, Row, message } from "antd";
+        Form, Input, Radio, Row, Spin, message } from "antd";
 
 import UploadMultipleFile from "../../components/admin/UploadMultipleFile/uploadMultipleFile";
 import adminAccountsService from "../../services/admin/accounts.service";
+import { AdminAccountType } from "../../../../backend/commonTypes";
 
-const CreateAdminAccounts: React.FC = () => {
+const EditAdminAccounts: React.FC = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+
+  const [account, setAccount] = useState<AdminAccountType | undefined>(undefined);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  // data from child component
+  const [imageUrlToRemove, setImageUrlToRemove] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (!id) {
+          message.error('Could not found account, redirect to previous page', 3);
+          navigate(-1);
+          return;
+        }
+        const response = await adminAccountsService.getSingleAccount(id);
+
+        if(response?.code === 200 && response.account) {
+          setAccount(response.account);
+          setLoading(false);
+        } else {
+          message.error(response.message, 2);
+          setLoading(false);
+        }
+
+      } catch (error) {
+        message.error('Could not found administrator account information', 3);
+        console.log('Error occurred:', error);
+      }
+    };
+    fetchData();
+  }, [id])
 
   /* eslint-disable no-template-curly-in-string */
   const validateMessages = {
@@ -32,24 +67,49 @@ const CreateAdminAccounts: React.FC = () => {
     </Form.Item>
   );
 
+  const handleImageUrlRemove = (imageUrl: string | undefined) => {
+    // Check if imageUrl is not undefined and not already in the array
+    if (imageUrlToRemove !== undefined && imageUrl !== undefined) {
+      setImageUrlToRemove(prevImages => [...prevImages, imageUrl]);
+    }
+  }
+
   const onFinishForm = async (data: any) => {
     try {
-      console.log('data:', data)
+      if (!id) {
+        console.error('Cannot get administrator account id');
+        message.error('Error occurred', 3);
+        return;
+      }
+      
       const formData = new FormData();
 
-      data.title && formData.append('title', data.title);
+      data.fullName && formData.append('fullName', data.fullName);
       data.password && formData.append('password', data.password);
       data.email && formData.append('email', data.email);
       data.status && formData.append('status', data.status);
-      data.phone && formData.append('phone', data.phone);
+      data.phone && formData.append('phone', data.phone); 
 
       // Append avatar
-      data.images && formData.append('avatar', data.images[0].originFileObj);   
+      if (data.images?.length > 0) {
+        data.images.forEach((imageFile: any) => {
+          if (!imageFile.hasOwnProperty('uploaded') || (imageFile.hasOwnProperty('uploaded') && !imageFile.uploaded)) {
+            formData.append('avatar', imageFile.originFileObj);
+          }
+        });
+      }
 
-      const response = await adminAccountsService.createAccount(formData);
+      // Append image urls that need to remove from db
+      if (imageUrlToRemove.length > 0) {
+        imageUrlToRemove.forEach((imageUrl) => {
+          formData.append(`images_remove`, imageUrl);
+        });
+      }
+
+      const response = await adminAccountsService.updateAccount(formData, id);
       
       if (response.code === 200) {
-        message.success('Account created successfully!', 3);
+        message.success('Account updated successfully!', 3);
       } else {
         console.error(response.message);
         message.error('Error occurred', 3);
@@ -57,19 +117,19 @@ const CreateAdminAccounts: React.FC = () => {
   
     } catch (err) {
       console.log(err);
-      message.error("Error occurred while creating account.");
+      message.error("Error occurred while updating account.");
     }
   }
 
   return (
     <>
-    {/* { loading ? (
+    { loading ? (
         <div className='d-flex justify-content-center' style={{width: "100%", height: "100vh"}}>
           <Spin tip='Loading...' size="large">
             <div className="content" />
           </Spin>
         </div>
-    ) : ( */}
+    ) : (
       <div className="d-flex align-items-center justify-content-center"> 
         <Form 
           layout="vertical" 
@@ -89,9 +149,10 @@ const CreateAdminAccounts: React.FC = () => {
               <Row gutter={16}>
                 <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
                   <Form.Item 
-                    label={<span>Full name <b className="required-txt">- required:</b></span>}
+                    label='Full name:'
                     name='fullName'
                     rules={[{ required: true }]}
+                    initialValue={account?.fullName}
                   >
                     <Input 
                       type="text" required
@@ -105,6 +166,7 @@ const CreateAdminAccounts: React.FC = () => {
                     label='Email:' 
                     name='email' 
                     rules={[{ type: 'email' }]}
+                    initialValue={account?.email}
                   >
                     <Input 
                       type='email' id="email" 
@@ -115,12 +177,9 @@ const CreateAdminAccounts: React.FC = () => {
                 <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
                   <Form.Item
                     name="password"
-                    label="Password:"
+                    label={<span>Password <b className="required-txt">- change if needed:</b></span>}
                     rules={[
-                      {
-                        required: true,
-                        message: 'Please input your password!',
-                      },
+                      { message: 'Please input your password!' },
                       {
                         min: 6, 
                         message: 'Password must be at least 6 characters long!',
@@ -130,22 +189,17 @@ const CreateAdminAccounts: React.FC = () => {
                         message: 'Password must be at most 20 characters long!',
                       },
                     ]}
-                    hasFeedback
                   >
-                    <Input.Password placeholder="Please enter your password"/>
+                    <Input.Password placeholder="Change your password if needed"/>
                   </Form.Item>
                 </Col>
                 <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
                   <Form.Item
                     name="confirm"
-                    label="Confirm Password:"
+                    label="Confirm password:"
                     dependencies={['password']}
-                    hasFeedback
                     rules={[
-                      {
-                        required: true,
-                        message: 'Please confirm your password!',
-                      },
+                      { message: 'Please confirm your password!'},
                       ({ getFieldValue }) => ({
                         validator(_, value) {
                           if (!value || getFieldValue('password') === value) {
@@ -165,6 +219,7 @@ const CreateAdminAccounts: React.FC = () => {
                     name="phone"
                     label="Phone number:"
                     rules={[{ required: true, message: 'Please input your phone number!' }]}
+                    initialValue={account?.phone}
                   >
                     <Input 
                       placeholder="Please enter your phone"
@@ -175,7 +230,7 @@ const CreateAdminAccounts: React.FC = () => {
                 </Col>
                 
                 <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
-                  <Form.Item label="Account status:" name='status' initialValue={'active'}>
+                  <Form.Item label="Account status:" name='status' initialValue={account?.status}>
                     <Radio.Group>
                       <Radio value="active">Active</Radio>
                       <Radio value="inactive">Inactive</Radio>
@@ -184,13 +239,16 @@ const CreateAdminAccounts: React.FC = () => {
                 </Col>
 
                 <Col span={24}>
-                  <UploadMultipleFile singleImageMode={true} />
+                  <UploadMultipleFile 
+                    uploadedImages={account?.avatar ? [account.avatar] : []} 
+                    setImageUrlRemove={handleImageUrlRemove}
+                    singleImageMode={true} />
                 </Col>
                 
                 <Col span={24}>
                   <Form.Item>
                     <Button className='custom-btn-main' type="primary" htmlType="submit">
-                      Create
+                      Update
                     </Button>
                   </Form.Item>
                 </Col>
@@ -199,9 +257,9 @@ const CreateAdminAccounts: React.FC = () => {
           </Badge.Ribbon>
         </Form>
       </div>
-    {/* )} */}
+      )}
     </>
   )
 }
 
-export default CreateAdminAccounts;
+export default EditAdminAccounts;

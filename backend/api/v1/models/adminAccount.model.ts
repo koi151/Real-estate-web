@@ -8,7 +8,7 @@ mongoose.plugin(slug);
 
 const adminAccountSchema = new mongoose.Schema(
   {
-    fullname: String,
+    fullName: String,
     password: String,
     email: String,
     token: {
