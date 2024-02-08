@@ -15,10 +15,6 @@ const EditAdminRole: React.FC = () => {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
   useEffect(() => {
-    console.log("selectedItems:", selectedItems)
-  }, [selectedItems])
-
-  useEffect(() => {
     const fetchData = async () => {
       try {
         if (!id) {
@@ -59,6 +55,13 @@ const EditAdminRole: React.FC = () => {
     })),
   }));
 
+  const convertLabelToPermission = (label: string): string => {
+    const parts = label.toLowerCase().split(' ');
+    const basePermission = parts.slice(0, -1).join('-');
+    const action = parts[parts.length - 1].toLowerCase();
+    return `${basePermission}_${action}`;
+  };
+
   const convertPermissionToLabels = (label: string): string => {
     const parts = label.toLowerCase().split(/[-_]/);
     const basePermission = parts.slice(0, -1).map((word, index) => index === 0 ? word.charAt(0).toUpperCase() + word.slice(1) : word).join(' ');
@@ -74,6 +77,9 @@ const EditAdminRole: React.FC = () => {
         message.error('Error occurred', 3);
         return;
       }
+
+      const convertedPermissions = selectedItems.map(convertLabelToPermission);
+      data.permissions = convertedPermissions;
 
       const response = await AdminRolesService.updateRole(data, id);
       
