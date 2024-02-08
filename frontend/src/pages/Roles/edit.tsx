@@ -1,9 +1,10 @@
-import { Badge, Button, Card, Col, Form, Input, Row, Spin, message } from "antd";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { Badge, Button, Card, Col, Form, Input, Row, Spin, message, Select } from "antd";
+import TextArea from "antd/es/input/TextArea";
 import AdminRolesService from "../../services/admin/roles.service";
 import { RolesType } from "../../../../backend/commonTypes";
-import TextArea from "antd/es/input/TextArea";
+import { AiFillEye, AiOutlineEdit, AiOutlineDelete, AiOutlinePlusSquare } from 'react-icons/ai';
 
 const EditAdminRole: React.FC = () => {
   const { id } = useParams();
@@ -11,12 +12,17 @@ const EditAdminRole: React.FC = () => {
 
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState<RolesType | undefined>(undefined);
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+
+  useEffect(() => {
+    console.log("selectedItems:", selectedItems)
+  }, [selectedItems])
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         if (!id) {
-          message.error('Can not find role, redirect to previous page', 3);
+          message.error('Cannot find role, redirecting to previous page...', 3);
           navigate(-1);
           return;
         }
@@ -24,6 +30,7 @@ const EditAdminRole: React.FC = () => {
 
         if(response?.code === 200 && response.role) {
           setRole(response.role);
+          setSelectedItems(response.role.permissions.map(convertPermissionToLabels));
           setLoading(false);
         } else {
           message.error(response.message, 2);
@@ -36,7 +43,29 @@ const EditAdminRole: React.FC = () => {
       }
     };
     fetchData();
-  }, [id])
+  }, [id]);
+
+  const roleOptions = ['Properties', 'Property categories', 'Administrator roles', 'Administrator accounts'].flatMap(label => ({
+    label,
+    options: ['view', 'create', 'edit', 'delete'].map(action => ({
+      value: `${label} ${action}`,
+      label: `${label} ${action}`,
+      icon: {
+        view: <AiFillEye />,
+        create: <AiOutlinePlusSquare />,
+        edit: <AiOutlineEdit />,
+        delete: <AiOutlineDelete />,
+      }[action],
+    })),
+  }));
+
+  const convertPermissionToLabels = (label: string): string => {
+    const parts = label.toLowerCase().split(/[-_]/);
+    const basePermission = parts.slice(0, -1).map((word, index) => index === 0 ? word.charAt(0).toUpperCase() + word.slice(1) : word).join(' ');
+    const action = parts[parts.length - 1];
+    return `${basePermission} ${action}`;
+  };  
+  
 
   const onFinishForm = async (data: any) => {
     try {
@@ -90,6 +119,7 @@ const EditAdminRole: React.FC = () => {
                       label={<span>Role title <b className="required-txt">- required:</b></span>}
                       name='title'
                       initialValue={role?.title}
+                      rules={[{ required: true, message: 'Please input the role title!' }]}
                     >
                       <Input type="text" id="title" required />
                     </Form.Item>
@@ -100,10 +130,38 @@ const EditAdminRole: React.FC = () => {
                       initialValue={role?.description}
                       name='description'  
                     >
-                      <TextArea rows={5} placeholder="Enter role descripton here" />
+                      <TextArea rows={5} placeholder="Enter role description here" />
                     </Form.Item>
                   </Col>
-                  
+                  <Col span={24}>
+                    <Form.Item
+                      label={`Role permissions:`} 
+                      name='permissions'  
+                    >
+                      <Select 
+                        mode="multiple" 
+                        allowClear 
+                        placeholder="Choose role permissions" 
+                        defaultValue={selectedItems}
+                        onChange={setSelectedItems} 
+                        style={{ width: '100%' }} 
+                      >
+                        {roleOptions.map(category => (
+                          <Select.OptGroup label={category.label} key={category.label}>
+                            {category.options.map(option => (
+                              <Select.Option value={option.value} key={option.value}>
+                                <div className="d-flex align-items-center">
+                                  {option.icon}
+                                  <div className="ml-1">{option.label}</div>
+                                </div>
+                              </Select.Option>
+                            ))}
+                          </Select.OptGroup>
+                        ))}
+                      </Select>
+
+                    </Form.Item>
+                  </Col>
                   <Col span={24}>
                     <Form.Item>
                       <Button className='custom-btn-main' type="primary" htmlType="submit">
