@@ -143,12 +143,12 @@ const EditAdminRole: React.FC = () => {
                     <Form.Item
                       label={`Role permissions:`} 
                       name='permissions'  
+                      initialValue={selectedItems}
                     >
                       <Select 
                         mode="multiple" 
                         allowClear 
                         placeholder="Choose role permissions" 
-                        defaultValue={selectedItems}
                         onChange={setSelectedItems} 
                         style={{ width: '100%' }} 
                       >

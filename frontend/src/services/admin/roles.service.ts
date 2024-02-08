@@ -8,6 +8,10 @@ class RolesServiceAdmin {
     this.api = createApi(baseUrl);
   }
 
+  async getRoleTitles() {
+    return (await this.api.get("/titles")).data;
+  }
+
   async getRoles() {
     return (await this.api.get("/")).data;
   }

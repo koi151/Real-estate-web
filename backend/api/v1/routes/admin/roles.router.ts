@@ -6,6 +6,7 @@ import * as controller from '../../controllers/admin/roles.controller';
 import * as validate from '../../validates/admin/adminRole.validate';
 
 router.get('/', controller.index);
+router.get('/titles', controller.roleTitles);
 router.get('/detail/:roleId', controller.detail);
 
 router.post(

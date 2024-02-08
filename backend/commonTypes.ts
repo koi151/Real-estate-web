@@ -103,6 +103,12 @@ export interface RolesType {
   updateAt?: Date;
 }
 
+// Custom role request type - FE accepts from BE
+export interface RoleTitleType {
+  _id: string,
+  title: string
+}
+
 export interface SortingQuery {
   sortKey: string;
   sortValue: string;

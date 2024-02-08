@@ -134,6 +134,7 @@ const EditPropertyCategories: React.FC = () => {
                       label={<span>Post title <b className="required-txt">- required:</b></span>}
                       name='title'
                       initialValue={category?.title}
+                      required
                     >
                       <Input type="text" id="title" required />
                     </Form.Item>

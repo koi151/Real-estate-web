@@ -31,6 +31,34 @@ export const index = async (req: Request, res: Response) => {
   }
 }
 
+// [GET] /admin/roles/titles
+export const roleTitles = async (req: Request, res: Response) => {
+  try {
+    const roleTitles = await Role.find({ deleted: false }).select('title');
+
+    if (roleTitles.length > 0) {
+      res.status(200).json({
+        code: 200,
+        message: 'Success',
+        roleTitles: roleTitles
+      })
+    } else {
+      res.status(400).json({
+        code: 400,
+        message: "No roles found"
+      })  
+    }
+
+  } catch (error) {
+    console.log("Error occurred, can not fetch roles data:", error);
+    return res.status(500).json({
+      code: 500,
+      message: 'Internal Server Error'
+    });
+  }
+}
+
+
 // [GET] /admin/roles/detail/:roleId
 export const detail = async (req: Request, res: Response) => {
   try {

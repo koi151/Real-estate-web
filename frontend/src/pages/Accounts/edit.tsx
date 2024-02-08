@@ -6,7 +6,8 @@ import { Badge, Button, Card, Col,
 
 import UploadMultipleFile from "../../components/admin/UploadMultipleFile/uploadMultipleFile";
 import adminAccountsService from "../../services/admin/accounts.service";
-import { AdminAccountType } from "../../../../backend/commonTypes";
+import { AdminAccountType, RoleTitleType } from "../../../../backend/commonTypes";
+import AdminRolesService from "../../services/admin/roles.service";
 
 const EditAdminAccounts: React.FC = () => {
   const { id } = useParams();
@@ -14,6 +15,7 @@ const EditAdminAccounts: React.FC = () => {
 
   const [account, setAccount] = useState<AdminAccountType | undefined>(undefined);
   const [loading, setLoading] = useState<boolean>(true);
+  const [roleTitles, setRoleTitles] = useState<any>([]);
 
   // data from child component
   const [imageUrlToRemove, setImageUrlToRemove] = useState<string[]>([]);
@@ -21,28 +23,43 @@ const EditAdminAccounts: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Fetch account data
         if (!id) {
           message.error('Could not found account, redirect to previous page', 3);
           navigate(-1);
           return;
         }
-        const response = await adminAccountsService.getSingleAccount(id);
-
-        if(response?.code === 200 && response.account) {
-          setAccount(response.account);
-          setLoading(false);
+        
+        const accountResponse = await adminAccountsService.getSingleAccount(id);
+        if(accountResponse?.code === 200 && accountResponse.account) {
+          setAccount(accountResponse.account);
         } else {
-          message.error(response.message, 2);
-          setLoading(false);
+          message.error(accountResponse.message || 'Could not find administrator account information', 2);
         }
+  
+        // Fetch role titles
+        const roleTitlesResponse = await AdminRolesService.getRoleTitles();
+        if(roleTitlesResponse?.code === 200) {
+          const formattedTitles = roleTitlesResponse?.roleTitles.map((role: RoleTitleType) => (
+            { "value": role._id, "label": role.title }
+          ));
+          setRoleTitles(formattedTitles);
 
+        } else {
+          message.error(roleTitlesResponse.message || 'No roles found', 2);
+        }
+  
+        setLoading(false);
+        
       } catch (error) {
-        message.error('Could not found administrator account information', 3);
+        message.error('Error occurred while fetching data', 3);
         console.log('Error occurred:', error);
       }
     };
+    
     fetchData();
-  }, [id])
+  }, [id]);
+  
 
   /* eslint-disable no-template-curly-in-string */
   const validateMessages = {
@@ -56,6 +73,7 @@ const EditAdminAccounts: React.FC = () => {
     },
   };
 
+  // Phone
   const prefixSelector = (
     // name="prefix"
     <Form.Item noStyle>
@@ -66,6 +84,11 @@ const EditAdminAccounts: React.FC = () => {
       </Select>
     </Form.Item>
   );
+
+   // Select 
+   const filterOption = (input: string, option?: { label: string; value: string }) =>
+   (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
+ 
 
   const handleImageUrlRemove = (imageUrl: string | undefined) => {
     // Check if imageUrl is not undefined and not already in the array
@@ -225,6 +248,23 @@ const EditAdminAccounts: React.FC = () => {
                       placeholder="Please enter your phone"
                       addonBefore={prefixSelector} 
                       style={{ width: '100%' }} 
+                    />
+                  </Form.Item>
+                </Col>
+
+                <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
+                  <Form.Item
+                    name="role_id"
+                    label="Administrator role:"
+                    required
+                    initialValue={account?.role_id}
+                  >
+                    <Select
+                      showSearch
+                      placeholder="Select administrator role of account"
+                      optionFilterProp="children"
+                      filterOption={filterOption}
+                      options={roleTitles}
                     />
                   </Form.Item>
                 </Col>

@@ -25,14 +25,12 @@ const CreateAdminRole: React.FC = () => {
     })),
   }));
     
-  
   const convertLabelToPermission = (label: string): string => {
     const parts = label.toLowerCase().split(' ');
     const basePermission = parts.slice(0, -1).join('-');
     const action = parts[parts.length - 1].toLowerCase();
     return `${basePermission}_${action}`;
   };
-
 
   const onFinishForm = async (data: any) => {
     try {

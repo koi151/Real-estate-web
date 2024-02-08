@@ -109,6 +109,7 @@ const CreatePropertyCategory: React.FC = () => {
                   <Form.Item 
                     label={<span>Post title <b className="required-txt">- required:</b></span>}
                     name='title'
+                    required                  
                   >
                     <Input type="text" id="title" required />
                   </Form.Item>

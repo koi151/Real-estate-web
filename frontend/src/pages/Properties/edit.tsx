@@ -276,9 +276,6 @@ const EditProperty: React.FC = () => {
                       min={0} 
                       className="custom-number-input" 
                       placeholder="Enter width and height"
-                      defaultValue={property?.area?.propertyLength && property?.area?.propertyWidth 
-                        ? property?.area?.propertyLength * property?.area?.propertyWidth 
-                        : undefined}
                     />
                   </Form.Item>
                 </Col>
@@ -329,6 +326,7 @@ const EditProperty: React.FC = () => {
                   <Form.Item 
                     label={<span>Post title <b className="required-txt">- required:</b></span>}
                     name='title'
+                    required
                     initialValue={property?.title}
                   >
                     <Input type="text" id="title" required />

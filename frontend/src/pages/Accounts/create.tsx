@@ -1,13 +1,41 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Select from "antd/es/select";
 import { Badge, Button, Card, Col, 
-        Form, Input, Radio, Row, message } from "antd";
+        Form, Input, Radio, Row, Spin, message } from "antd";
 
 import UploadMultipleFile from "../../components/admin/UploadMultipleFile/uploadMultipleFile";
 import adminAccountsService from "../../services/admin/accounts.service";
+import AdminRolesService from "../../services/admin/roles.service";
+import { RoleTitleType } from "../../../../backend/commonTypes";
 
 const CreateAdminAccounts: React.FC = () => {
+
+  const [loading, setLoading] = useState(true);
+  const [roleTitles, setRoleTitles] = useState<any>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await AdminRolesService.getRoleTitles();
+
+        if(response?.code === 200) {
+          const formattedTitles = response?.roleTitles.map((role: RoleTitleType) => (
+            { "value": role._id, "label": role.title }
+          )) 
+          setRoleTitles(formattedTitles);
+          setLoading(false);
+        } else {
+          message.error(response.message, 2);
+        }
+
+      } catch (error) {
+        message.error('No role found', 2);
+        console.log('Error occurred:', error);
+      }
+    };
+    fetchData();
+  }, [])
 
   /* eslint-disable no-template-curly-in-string */
   const validateMessages = {
@@ -21,6 +49,11 @@ const CreateAdminAccounts: React.FC = () => {
     },
   };
 
+  // Select 
+  const filterOption = (input: string, option?: { label: string; value: string }) =>
+  (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
+
+  // Phone
   const prefixSelector = (
     // name="prefix"
     <Form.Item noStyle>
@@ -30,13 +63,12 @@ const CreateAdminAccounts: React.FC = () => {
         <Select.Option value="86">+86</Select.Option>
       </Select>
     </Form.Item>
-  );
+  ); //
 
   const onFinishForm = async (data: any) => {
     try {
-      console.log('data:', data)
       const formData = new FormData();
-
+    
       data.title && formData.append('title', data.title);
       data.password && formData.append('password', data.password);
       data.email && formData.append('email', data.email);
@@ -63,13 +95,13 @@ const CreateAdminAccounts: React.FC = () => {
 
   return (
     <>
-    {/* { loading ? (
+    { loading ? (
         <div className='d-flex justify-content-center' style={{width: "100%", height: "100vh"}}>
           <Spin tip='Loading...' size="large">
             <div className="content" />
           </Spin>
         </div>
-    ) : ( */}
+    ) : (
       <div className="d-flex align-items-center justify-content-center"> 
         <Form 
           layout="vertical" 
@@ -164,12 +196,27 @@ const CreateAdminAccounts: React.FC = () => {
                   <Form.Item
                     name="phone"
                     label="Phone number:"
-                    rules={[{ required: true, message: 'Please input your phone number!' }]}
+                    rules={[{ message: 'Please input your phone number!' }]}
                   >
                     <Input 
                       placeholder="Please enter your phone"
                       addonBefore={prefixSelector} 
                       style={{ width: '100%' }} 
+                    />
+                  </Form.Item>
+                </Col>
+                <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
+                  <Form.Item
+                    name="role_id"
+                    label="Administrator role:"
+                    required
+                  >
+                    <Select
+                      showSearch
+                      placeholder="Select administrator role of account"
+                      optionFilterProp="children"
+                      filterOption={filterOption}
+                      options={roleTitles}
                     />
                   </Form.Item>
                 </Col>
@@ -199,7 +246,7 @@ const CreateAdminAccounts: React.FC = () => {
           </Badge.Ribbon>
         </Form>
       </div>
-    {/* )} */}
+      )}
     </>
   )
 }
