@@ -161,7 +161,13 @@ export const editPatch = async (req: Request, res: Response) => {
 // [DELETE] /admin/roles/delete/:roleId
 export const singleDelete = async (req: Request, res: Response) => {
   try {
-    const id: string = req.params.roleId;
+    const id: string | undefined = req.params.roleId;
+    if (!id) {
+      return res.status(400).json({
+        code: 400,
+        message: 'Invalid role ID'
+      });
+    }
 
     const result = await Role.updateOne(
       { _id: id },

@@ -168,7 +168,6 @@ export const changeStatus = async (req: Request, res: Response) => {
   }
 } 
 
-
 // [PATCH] /admin/accounts/edit/:accountId
 export const editPatch = async (req: Request, res: Response) => {
   try {    
@@ -210,6 +209,44 @@ export const editPatch = async (req: Request, res: Response) => {
 
   } catch (err) {
     console.log('Error occurred while updating administrator account:', err);
+    return res.status(500).json({
+      code: 500,
+      message: 'Internal Server Error'
+    });
+  }
+}
+
+
+// [DELETE] /admin/accounts/delete/:accountID
+export const singleDelete = async (req: Request, res: Response) => {
+  try {
+    const id: string | undefined = req.params.accountId;
+    if (!id) {
+      return res.status(400).json({
+        code: 400,
+        message: 'Invalid account ID'
+      });
+    }
+
+    const result = await AdminAccount.updateOne(
+      { _id: id },
+      { deleted: true }
+    )
+
+    if (result.matchedCount) {
+      res.status(200).json({
+        code: 200,
+        message: "Account deleted successfully"
+      });
+    } else {
+      res.status(404).json({
+        code: 404,
+        message: "Account not found"
+      });
+    }
+
+  } catch (error) {
+    console.log('Error occurred while deleting role:', error);
     return res.status(500).json({
       code: 500,
       message: 'Internal Server Error'

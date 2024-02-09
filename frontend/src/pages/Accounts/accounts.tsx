@@ -125,7 +125,7 @@ const AdminAccounts: React.FC = () => {
       setAccountList(prevaccountList => prevaccountList.filter(account => account._id !== id));
 
     } else {
-      message.error('Error occurred, can not delete');
+      message.error('Error occurred, can not delete', 3);
     }
   };
   

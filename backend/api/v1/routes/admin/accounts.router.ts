@@ -31,6 +31,6 @@ router.patch(
 router.patch('/change-status/:status/:accountId', controller.changeStatus);
 // router.patch('/multi-change', controller.multiChange);
 
-// router.delete('/delete/:propertyId', controller.singleDelete);
+router.delete('/delete/:accountId', controller.singleDelete);
 
 export const accountsRoutes: Router = router;

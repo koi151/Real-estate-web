@@ -12,8 +12,6 @@ export const loginPost = async (req: Request, res: Response) => {
 
     const userInfo: AdminAccountLogType = await processAdminAccountLogData(req);
 
-    console.log('email check:', userInfo.email)
-
     const user = await AdminAccount.findOne({ 
       email: userInfo.email,
       deleted: false
@@ -28,10 +26,6 @@ export const loginPost = async (req: Request, res: Response) => {
     }
 
     const passwordMatch = await bcrypt.compare(userInfo.password, user.password);
-    console.log('userInfo.password:', userInfo.password)
-    console.log('user.password:', user.password)
-
-    console.log("passwordMatch:", passwordMatch)
 
     if (!passwordMatch) {
       res.json({
