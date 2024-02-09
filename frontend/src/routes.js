@@ -21,6 +21,7 @@ import AdminAccounts from "./pages/Accounts/accounts";
 import AdminAccountsDetail from "./pages/Accounts/detail";
 import CreateAdminAccounts from "./pages/Accounts/create";
 import EditAdminAccounts from "./pages/Accounts/edit";
+import AdminRegister from "./pages/Register/adminRegister";
 
 
 export const routes = [
@@ -96,6 +97,10 @@ export const routes = [
         path: 'accounts/edit/:id',
         element: <EditAdminAccounts />
       },
+      {
+        path: '/admin/auth/register',
+        element: <AdminRegister />
+      }
     ]
   }
 ]
