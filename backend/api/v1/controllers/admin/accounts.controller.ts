@@ -183,15 +183,18 @@ export const editPatch = async (req: Request, res: Response) => {
     const accountUpdates: AdminAccountType = await processAdminAccountData(req);
     const avatarToRemove: string | undefined = req.body.images_remove;
 
-    const updateOperation: any = {};
+    const updateOperation: any = { $set: accountUpdates };
 
     if (avatarToRemove) { // Unset avatar if requested
       updateOperation.$unset = { avatar: '' };
     } else if (accountUpdates.avatar) { // Push new avatar if available
-      updateOperation.$set = { avatar: accountUpdates.avatar };
+      updateOperation.$set.avatar = accountUpdates.avatar;
     }
 
-    const result = await AdminAccount.updateOne({ _id: id }, updateOperation);
+    const result = await AdminAccount.updateOne(
+      { _id: id },
+      updateOperation
+    );
     
     if (result.matchedCount) {
       res.status(200).json({

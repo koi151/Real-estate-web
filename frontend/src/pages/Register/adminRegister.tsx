@@ -13,21 +13,19 @@ const AdminRegister: React.FC<AdminRegisterProps> = ({ isRegisterPage }) => {
   const navigate = useNavigate();
 
   const onFinishForm = async (data: any) => {
-    console.log("data:", data)
-
     try {
       const response = await adminAuthorizationService.submitLogin(data);
 
-        switch (response) {
-          case "wrong info":
-            message.error('Account is not exists, please try again', 3);
+        switch (response.code) {
+          case 401:
+            message.error(`${response.message}, please try again`, 3);
             break;
-          case "blocked":
-            message.error('Account has been blocked!', 3);
+          case 403:
+            message.error(response.message, 3);
             break;
-          case "success":
-            message.success('Login successful. Welcome to admin page !');
-            navigate('/admin/products');
+          case 200:
+              message.success(`${isRegisterPage ? "Register" : "Login"} successful. Welcome to administrator page !`);
+              navigate('/admin/properties');
             break;
           default:
             break;

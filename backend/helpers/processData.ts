@@ -1,5 +1,5 @@
 import { Request } from "express";
-import { AdminAccountType, PropertyCategoryType, PropertyType, RolesType } from "../commonTypes";
+import { AdminAccountLogType, AdminAccountType, PropertyCategoryType, PropertyType, RolesType } from "../commonTypes";
 import bcrypt from 'bcrypt';
 
 export const parseToValidNumber = (value?: string | null | undefined): number | undefined => {
@@ -74,6 +74,14 @@ export const processAdminAccountData = async (req: Request): Promise<AdminAccoun
     status: req.body.status,
     phone: req.body.phone && String(req.body.phone),
     role_id: req.body.role_id && String(req.body.role_id),
-    avatar: req.body.avatar && String(req.body.avatar)
+  };
+}
+
+// Admin account - Login && register
+export const processAdminAccountLogData = async (req: Request): Promise<AdminAccountLogType> => {
+
+  return {
+    email: req.body.email && String(req.body.email),
+    password: req.body.password && String(req.body.password),
   };
 }

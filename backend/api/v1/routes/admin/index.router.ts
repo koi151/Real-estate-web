@@ -5,6 +5,7 @@ import { propertiesRoutes } from "./properties.router";
 import { propertyCategoriesRoutes } from "./property-categories.router";
 import { rolesRoutes } from "./roles.router";
 import { accountsRoutes } from "./accounts.router";
+import { authRoutes } from "./auth.router";
 
 const v1AdminRoutes = (app: Express): void => {
   const ADMIN_PATH: string = systemConfig.adminPrefix;
@@ -17,6 +18,10 @@ const v1AdminRoutes = (app: Express): void => {
   app.use(`${version}/${ADMIN_PATH}/roles`, rolesRoutes);
 
   app.use(`${version}/${ADMIN_PATH}/accounts`, accountsRoutes);
+
+  app.use(`${version}/${ADMIN_PATH}/accounts`, accountsRoutes);
+
+  app.use(`${version}/${ADMIN_PATH}/auth`, authRoutes);
 
 }
 

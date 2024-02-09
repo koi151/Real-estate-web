@@ -79,6 +79,12 @@ export interface AdminAccountType {
   roleTitle?: string;
 }
 
+// ADMIN ACCOUNT
+export interface AdminAccountLogType {
+  email: string,
+  password: string,
+}
+
 // TREE
 export interface TreeNode {
   _id?: string;

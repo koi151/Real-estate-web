@@ -98,8 +98,12 @@ export const routes = [
         element: <EditAdminAccounts />
       },
       {
+        path: '/admin/auth/login',
+        element: <AdminRegister isRegisterPage={false} />
+      },
+      {
         path: '/admin/auth/register',
-        element: <AdminRegister />
+        element: <AdminRegister/>
       }
     ]
   }

@@ -104,11 +104,14 @@ const EditAdminAccounts: React.FC = () => {
         message.error('Error occurred', 3);
         return;
       }
+
+      console.log("data", data)
       
       const formData = new FormData();
 
       data.fullName && formData.append('fullName', data.fullName);
       data.password && formData.append('password', data.password);
+      data.role_id && formData.append('role_id', data.role_id);
       data.email && formData.append('email', data.email);
       data.status && formData.append('status', data.status);
       data.phone && formData.append('phone', data.phone); 
