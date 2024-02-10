@@ -17,7 +17,7 @@ router.post(
   upload.single('avatar'),
   // validate.createProperty,
   uploadCloud.uploadSingle,
-  controller.createPost
+  controller.registerPost
 );
 
 router.patch(

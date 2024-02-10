@@ -32,7 +32,7 @@ class AccountsServiceAdmin {
         'Content-Type': 'multipart/form-data',
       },
     };
-    return (await this.api.post('/create', info, config)).data;
+    return (await this.api.post('/register', info, config)).data;
   }
 
   async updateAccount(info: any, id: string) {

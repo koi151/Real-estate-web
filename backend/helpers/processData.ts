@@ -64,7 +64,7 @@ export const processRoleData = (req: Request): RolesType => {
 
 // Admin account
 export const processAdminAccountData = async (req: Request): Promise<AdminAccountType> => {
-  const hashedPassword = req.body.password && await bcrypt.hash(String(req.body.password), 10);
+  const hashedPassword = req.body.password && await bcrypt.hash(String(req.body.password), process.env.SALT_ROUNDS);
 
   return {
     fullName: req.body.fullName && String(req.body.fullName),

@@ -105,18 +105,37 @@ export const detail = async (req: Request, res: Response) => {
 };
 
 
-// [POST] /admin/accounts/create
-export const createPost = async (req: Request, res: Response) => {
+// [POST] /admin/accounts/register
+export const registerPost = async (req: Request, res: Response) => {
   try {    
-    const account: AdminAccountType = await processAdminAccountData(req);
+    if (req.body.email) {
+      const userExisted = AdminAccount.find({
+        email: req.body.email,
+      })
 
-    const newAccount = new AdminAccount(account);
-    await newAccount.save();
-    
-    res.status(200).json({
-      code: 200,
-      message: "New administrator account created successfully"
-    })
+      if (userExisted) {
+        return res.status(409).json({
+          code: 409,
+          message: "Email existed"
+        })
+      }
+
+      const account: AdminAccountType = await processAdminAccountData(req);
+
+      const newAccount = new AdminAccount(account);
+      await newAccount.save();
+      
+      return res.status(200).json({
+        code: 200,
+        message: "New administrator account created successfully"
+      })
+      
+    } else {
+      return res.status(400).json({
+        code: 400,
+        message: "Email is empty"
+      })
+    }
 
   } catch (error) {
     console.log('Error occurred while creating administrator account:', error);

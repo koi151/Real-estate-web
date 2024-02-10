@@ -3,16 +3,16 @@ import bcrypt from 'bcrypt';
 
 import AdminAccount from "../../models/adminAccount.model";
 import { processAdminAccountLogData } from "../../../../helpers/processData";
-import { AdminAccountLogType } from "../../../../commonTypes";
+import { AdminAccountLogType, AdminAccountType } from "../../../../commonTypes";
+import { generateRandomString } from "../../../../helpers/generateString";
+import { generateToken } from "../../../../helpers/auth.methods";
 
 // [POST] /admin/auth/login
 export const loginPost = async (req: Request, res: Response) => {
   try {
-    console.log('login')
-
     const userInfo: AdminAccountLogType = await processAdminAccountLogData(req);
 
-    const user = await AdminAccount.findOne({ 
+    const user: AdminAccountType = await AdminAccount.findOne({ 
       email: userInfo.email,
       deleted: false
     });
@@ -25,28 +25,64 @@ export const loginPost = async (req: Request, res: Response) => {
       return;
     }
 
-    const passwordMatch = await bcrypt.compare(userInfo.password, user.password);
+    const passwordMatch = bcrypt.compareSync(userInfo.password, user.password);
 
     if (!passwordMatch) {
-      res.json({
+      return res.json({
         code: 401,
         message: "Incorrect email or password"
       });
-      return;
     }
 
     if (user.status === 'inactive') {
-      res.json({
+      return res.json({
         code: 403,
         message: "Account has been blocked"
       });
-      return;
     }
 
-    res.cookie("token", user.token);
+    const accessTokenLife = process.env.ACCESS_TOKEN_LIFE;
+    const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
+
+    const dataForAccessToken = {
+      username: user._id
+    };
+
+    const accessToken = await generateToken(
+      dataForAccessToken,
+      accessTokenSecret,
+      accessTokenLife,
+    );
+
+    if (!accessToken) {
+      return res.status(401).json({
+        message: "Login failed, please try again."
+      });
+    }
+  
+    // let refreshToken = generateRandomString(jwtVariable.refreshTokenSize);
+    let refreshToken = generateRandomString(30);
+
+    if (!user.token) {
+      await AdminAccount.updateOne({
+        _id: user._id,
+        refreshToken: refreshToken
+      })
+    } else {
+      refreshToken = user.token;
+    }
+
+    console.log("accessToken:", accessToken)
+    console.log("refreshToken:", refreshToken)
+    console.log("user:", user)
+
+
     res.status(200).json({
       code: 200,
-      message: "Success"
+      message: 'Success',
+      accessToken,
+      refreshToken,
+      user,
     });
 
   } catch (error) {
