@@ -3,7 +3,7 @@ import { Badge, Button, Card, Col, Form, Input, InputNumber,
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { Editor } from '@tinymce/tinymce-react';
 import { SegmentedValue } from "antd/es/segmented";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import dayjs, { Dayjs } from "dayjs";
 
 import propertiesService from "../../services/admin/properties.service";
@@ -16,6 +16,7 @@ import { DefaultOptionType } from "antd/es/select";
 import './create.scss'
 
 const CreateProperty: React.FC = () => {
+  const navigate = useNavigate();
 
   const [postType, setPostType] = useState<string>('sell');
   const [price, setPrice] = useState<number | null>(null);
@@ -39,13 +40,19 @@ const CreateProperty: React.FC = () => {
         } else {
           message.error(response.error, 3);
         }
-      } catch (error) {
-        console.error('Error fetching category tree:', error);
+      } catch (err: any) {
+        if (err.response && err.response.status === 401) {
+          message.error('Unauthorized - Please log in to access this feature.', 3);
+          navigate('/admin/auth/login');
+        } else {
+          message.error('Error occurred while fetching property categories data', 2);
+          console.log('Error occurred:', err);
+        }
       }
     };
 
     fetchData();
-  }, []);
+  }, [navigate]);
 
   const handlePriceChange = (event: ChangeEvent<HTMLInputElement>) => {
     const inputValue = parseFloat(event.target.value);

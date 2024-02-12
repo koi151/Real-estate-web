@@ -58,7 +58,7 @@ const EditProperty: React.FC = () => {
       }
     };
     fetchData();
-  }, [id])
+  }, [id, navigate])
   
   const propertyCategoryOptions = [
     { value: 'townHouse', label: 'Town house' },

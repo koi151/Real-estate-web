@@ -2,12 +2,13 @@ import { Breadcrumb, Button, message, Popconfirm, Table, Tooltip, type TableProp
 import React, { useEffect, useState } from "react"
 import { RolesType } from '../../../../backend/commonTypes';
 import AdminRolesService from '../../services/admin/roles.service';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { DeleteOutlined, EditOutlined, SolutionOutlined } from '@ant-design/icons';
 import { FaPlus } from 'react-icons/fa';
 
 const AdminRoles: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
   const [roles, setRoles] = useState<RolesType[]>([]);
@@ -86,13 +87,18 @@ const AdminRoles: React.FC = () => {
           message.error(response.message, 2);
         }
 
-      } catch (error) {
-        message.error('No role found', 2);
-        console.log('Error occurred:', error);
+      } catch (err: any) {
+        if (err.response && err.response.status === 401) {
+          message.error('Unauthorized - Please log in to access this feature.', 3);
+          navigate('/admin/auth/login');
+        } else {
+          message.error('Error occurred while fetching administrator roles', 2);
+          console.log('Error occurred:', err);
+        }
       }
     };
     fetchData();
-  }, [])
+  }, [navigate])
 
   const confirmDelete = async (id?: string) => {
     if (!id) {

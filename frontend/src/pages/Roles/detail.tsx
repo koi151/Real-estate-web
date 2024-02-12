@@ -30,13 +30,18 @@ const AdminRoleDetail: React.FC = () => {
           setLoading(false);
         }
 
-      } catch (error) {
-        message.error('No role found', 2);
-        console.log('Error occurred:', error);
+      } catch (err: any) {
+        if (err.response && err.response.status === 401) {
+          message.error('Unauthorized - Please log in to access this feature.', 3);
+          navigate('/admin/auth/login');
+        } else {
+          message.error('Error occurred while fetching administrator role data', 2);
+          console.log('Error occurred:', err);
+        }
       }
     };
     fetchData();
-  }, [id])
+  }, [id, navigate])
 
   return (
     <>

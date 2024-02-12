@@ -46,7 +46,7 @@ const EditPropertyCategories: React.FC = () => {
       }
     };
     fetchData();
-  }, [id])
+  }, [id, navigate])
 
   const handleEditorChange = (content: any) => {
     const contentString = typeof content === 'string' ? content : '';

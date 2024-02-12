@@ -85,7 +85,7 @@ const Properties: React.FC = () => {
       }
     };
     fetchData();
-  }, [keyword, status, sorting, currentPage, listingType]); 
+  }, [keyword, status, sorting, currentPage, listingType, navigate]); 
 
   const buildURL = () => {
     const params: { [key: string]: string } = {};

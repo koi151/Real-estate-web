@@ -53,7 +53,7 @@ const PropertyDetail: React.FC = () => {
       }
     };
     fetchData();
-  }, [id])
+  }, [id, navigate])
 
 
   const handleExpireTimeChange = (dateTime: Dayjs | null) => {

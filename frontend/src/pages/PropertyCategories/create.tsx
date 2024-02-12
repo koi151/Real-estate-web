@@ -41,7 +41,7 @@ const CreatePropertyCategory: React.FC = () => {
     };
 
     fetchData();
-  }, []);
+  }, [navigate]);
 
   const handleEditorChange = (content: any) => {
     const contentString = typeof content === 'string' ? content : '';

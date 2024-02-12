@@ -77,7 +77,7 @@ const PropertyCategories: React.FC = () => {
       }
     };
     fetchData();
-  }, [keyword, status, sorting, currentPage]);
+  }, [keyword, status, sorting, currentPage, navigate]);
 
   
   const buildURL = () => {

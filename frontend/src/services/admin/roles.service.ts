@@ -8,50 +8,61 @@ class RolesServiceAdmin {
     this.api = createApi(baseUrl);
   }
 
-  async getRoleTitles() {
-    return (await this.api.get("/titles")).data;
+  private getAuthHeaders() {
+    const accessToken = localStorage.getItem('accessToken');
+
+    if (!accessToken) {
+      throw new Error('Access token not found in localStorage');
+    }
+    return {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    };
   }
 
-  async getRoles() {
+  private async handleRequest(request: Promise<any>) {
     try {
-      const accessToken = localStorage.getItem('accessToken');
-  
-      if (!accessToken) {
-        throw new Error('Access token not found in localStorage');
-      }
-  
-      const response = await this.api.get("/", { 
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
-      });
-  
+      const response = await request;
       return response.data;
-  
     } catch (error: any) {
       if (error.status === 401) {
-        throw error;
+        throw new Error('Unauthorized: Please log in to access this feature.');
       } else {
-        console.error('Error while fetching administrator roles:', error);
-        throw error;
+        console.error('An error occurred:', error);
+        throw new Error('An unexpected error occurred. Please try again later.');
       }
     }
   }
 
-  async deleteRole(id: string) {
-    return (await this.api.delete(`/delete/${id}`)).data;
+  async getRoleTitles() {
+    const request = this.api.get(`/titles`, this.getAuthHeaders());
+    return this.handleRequest(request);
+  }
+
+  async getRoles() { 
+    const request = this.api.get("/", this.getAuthHeaders());
+    return this.handleRequest(request);
   }
 
   async getSingleRole(id: string) {
-    return (await this.api.get(`/detail/${id}`)).data;
+    const request = this.api.get(`/detail/${id}`, this.getAuthHeaders());
+    return this.handleRequest(request);
   }
 
-  async createRole(role: RolesType) {
-    return (await this.api.post(`/create`, role)).data;
+  async createRole(role: any) {
+    const request = this.api.post('/create', role, this.getAuthHeaders());
+    return this.handleRequest(request);
   }
 
   async updateRole(role: RolesType, id: string) {
-    return (await this.api.patch(`/edit/${id}`, role)).data;
+    const request = this.api.patch(`/edit/${id}`, role, this.getAuthHeaders());
+    return this.handleRequest(request);
+  }
+
+  async deleteRole(id: string) {
+    const request = this.api.delete(`/delete/${id}`, this.getAuthHeaders());
+    return this.handleRequest(request);
   }
 }
 

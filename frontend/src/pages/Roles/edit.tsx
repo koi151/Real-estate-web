@@ -18,7 +18,7 @@ const EditAdminRole: React.FC = () => {
     const fetchData = async () => {
       try {
         if (!id) {
-          message.error('Cannot find role, redirecting to previous page...', 3);
+          message.error('Can not find role, redirecting to previous page...', 3);
           navigate(-1);
           return;
         }
@@ -33,18 +33,18 @@ const EditAdminRole: React.FC = () => {
           setLoading(false);
         }
 
-      } catch (error: any) {
-        if (error.response && error.response.status === 401) {
+      } catch (err: any) {
+        if (err.response && err.response.status === 401) {
           message.error('Unauthorized - Please log in to access this feature.', 3);
           navigate('/admin/auth/login');
         } else {
-          message.error('Error occurred while fetching property', 2);
-          console.log('Error occurred:', error);
+          message.error('Error occurred while fetching administrator role data', 2);
+          console.log('Error occurred:', err);
         }
       }
     };
     fetchData();
-  }, [id]);
+  }, [id, navigate]);
 
   const roleOptions = ['Properties', 'Property categories', 'Administrator roles', 'Administrator accounts'].flatMap(label => ({
     label,
