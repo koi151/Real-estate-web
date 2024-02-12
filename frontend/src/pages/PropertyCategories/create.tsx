@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { PropertyCategoryType } from "../../../../backend/commonTypes";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Badge, Button, Card, Col, Form, Input, InputNumber, Radio, Row, Spin, TreeSelect, message } from "antd";
 import propertyCategoriesService from "../../services/admin/property-categories.service";
 import UploadMultipleFile from "../../components/admin/UploadMultipleFile/uploadMultipleFile";
@@ -8,6 +8,7 @@ import { Editor } from '@tinymce/tinymce-react';
 import { DefaultOptionType } from "antd/es/select";
 
 const CreatePropertyCategory: React.FC = () => {
+  const navigate = useNavigate();
 
   const [ loading, setLoading ] = useState<boolean>(true);
   const [ editorContent, setEditorContent ] = useState<string>("");
@@ -28,9 +29,14 @@ const CreatePropertyCategory: React.FC = () => {
         }
         setLoading(false);
 
-      } catch (error) {
-        console.error('Error fetching category tree:', error);
-        message.error("Error occurred, can not get categories", 3);
+      } catch (err: any) {
+        if (err.response && err.response.status === 401) {
+          message.error('Unauthorized - Please log in to access this feature.', 3);
+          navigate('/admin/auth/login');
+        } else {
+          message.error('Error occurred while fetching category data', 2);
+          console.log('Error occurred:', err);
+        }
       }
     };
 
