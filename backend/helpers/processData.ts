@@ -34,11 +34,12 @@ export const processPropertyData = (req: Request): PropertyType => {
     propertyDetails: {
       propertyCategory: req.body.propertyDetails?.propertyCategory && String(req.body.propertyDetails.propertyCategory),
       subType: req.body.propertyDetails?.subType && String(req.body.propertyDetails.subType),
-      features: 
-        Array.isArray(req.body.propertyDetails?.features) && req.body.propertyDetails.features.length > 0 
-          ? req.body.propertyDetails.features 
-          : [req.body.propertyDetails.features].filter(Boolean)
-    },
+      features: req.body.propertyDetails?.features && Array.isArray(req.body.propertyDetails.features)
+        ? req.body.propertyDetails.features.filter(Boolean)
+        : req.body.propertyDetails?.features 
+        ? [req.body.propertyDetails.features]
+        : undefined
+    },    
   };
 };
 

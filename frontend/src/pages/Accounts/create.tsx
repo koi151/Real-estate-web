@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Select from "antd/es/select";
 import { Badge, Button, Card, Col, 
         Form, Input, Radio, Row, Spin, message } from "antd";
@@ -10,6 +10,7 @@ import AdminRolesService from "../../services/admin/roles.service";
 import { RoleTitleType } from "../../../../backend/commonTypes";
 
 const CreateAdminAccounts: React.FC = () => {
+  const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
   const [roleTitles, setRoleTitles] = useState<any>([]);
@@ -29,13 +30,18 @@ const CreateAdminAccounts: React.FC = () => {
           message.error(response.message, 2);
         }
 
-      } catch (error) {
-        message.error('No role found', 2);
-        console.log('Error occurred:', error);
+      } catch (err: any) {
+        if (err.response && err.response.status === 401) {
+          message.error('Unauthorized - Please log in to access this feature.', 3);
+          navigate('/admin/auth/login');
+        } else {
+          message.error('Error occurred while fetching administrator account data', 2);
+          console.log('Error occurred:', err);
+        }
       }
     };
     fetchData();
-  }, [])
+  }, [navigate])
 
   /* eslint-disable no-template-curly-in-string */
   const validateMessages = {
@@ -87,9 +93,14 @@ const CreateAdminAccounts: React.FC = () => {
         message.error('Error occurred', 3);
       }
   
-    } catch (err) {
-      console.log(err);
-      message.error("Error occurred while creating account.");
+    } catch (err: any) {
+      if (err.response && err.response.status === 401) {
+        message.error('Unauthorized - Please log in to access this feature.', 3);
+        navigate('/admin/auth/login');
+      } else {
+        message.error('Error occurred while creating administrator account', 2);
+        console.log('Error occurred:', err);
+      }
     }
   }
 

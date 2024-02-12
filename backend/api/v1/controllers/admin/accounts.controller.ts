@@ -106,7 +106,7 @@ export const detail = async (req: Request, res: Response) => {
 
 
 // [POST] /admin/accounts/register
-export const registerPost = async (req: Request, res: Response) => {
+export const createPost = async (req: Request, res: Response) => {
   try {    
     if (req.body.email) {
       const userExisted = AdminAccount.find({

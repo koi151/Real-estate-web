@@ -13,6 +13,7 @@ import adminAccountsService from '../../services/admin/accounts.service';
 import { FaPlus } from 'react-icons/fa';
 
 const AdminAccounts: React.FC = () => {
+  const navigate = useNavigate();
   const location = useLocation();
 
   const [loading, setLoading] = useState(true);
@@ -56,14 +57,19 @@ const AdminAccounts: React.FC = () => {
           message.error(response.message, 2);
         }
 
-      } catch (error) {
-        message.error('No account found', 2);
-        setError('No account found.');
-        console.log('Error occurred:', error);
+      } catch (error: any) {
+        if (error.response && error.response.status === 401) {
+          message.error('Unauthorized - Please log in to access this feature.', 3);
+          navigate('/admin/auth/login');
+        } else {
+          message.error('Error occurred while fetching properties data', 2);
+          setError('No property found.');
+          console.log('Error occurred:', error);
+        }
       }
     };
     fetchData();
-  }, []);
+  }, [navigate]);
   // keyword, status, sorting, currentPage
 
   // const onChangePosition = (id: string | undefined, position: number | null) => {

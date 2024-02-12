@@ -31,9 +31,14 @@ const AdminAccountsDetail: React.FC = () => {
           setLoading(false);
         }
 
-      } catch (error) {
-        message.error('Could not found administrator account information', 3);
-        console.log('Error occurred:', error);
+      } catch (err: any) {
+        if (err.response && err.response.status === 401) {
+          message.error('Unauthorized - Please log in to access this feature.', 3);
+          navigate('/admin/auth/login');
+        } else {
+          message.error('Error occurred while fetching administrator account data', 2);
+          console.log('Error occurred:', err);
+        }
       }
     };
     fetchData();

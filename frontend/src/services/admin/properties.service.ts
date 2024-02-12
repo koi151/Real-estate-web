@@ -25,11 +25,11 @@ class PropertiesServiceAdmin {
     try {
       const response = await request;
       return response.data;
-    } catch (error: any) {
-      if (error.status === 401) {
+    } catch (err: any) {
+      if (err.status === 401) {
         throw new Error('Unauthorized: Please log in to access this feature.');
       } else {
-        console.error('An error occurred:', error);
+        console.error('An error occurred:', err);
         throw new Error('An unexpected error occurred. Please try again later.');
       }
     }

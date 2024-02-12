@@ -8,18 +8,46 @@ class AccountsServiceAdmin {
     this.api = createApi(baseUrl);
   }
 
-  // options: AdminAccountType
-  // , { params: options }
+  private getAuthHeaders() {
+    const accessToken = localStorage.getItem('accessToken');
+
+    if (!accessToken) {
+      throw new Error('Access token not found in localStorage');
+    }
+    return {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    };
+  }
+
+  private async handleRequest(request: Promise<any>) {
+    try {
+      const response = await request;
+      return response.data;
+    } catch (err: any) {
+      if (err.status === 401) {
+        throw new Error('Unauthorized: Please log in to access this feature.');
+      } else {
+        console.error('An error occurred:', err);
+        throw new Error('An unexpected error occurred. Please try again later.');
+      }
+    }
+  }
+
   async getAccounts() {
-    return (await this.api.get("/")).data;
+    const request = this.api.get("/", this.getAuthHeaders());
+    return this.handleRequest(request);
   }
 
   async getSingleAccount(id: string) {
-    return (await this.api.get(`/detail/${id}`)).data;
+    const request = this.api.get(`/detail/${id}`, this.getAuthHeaders());
+    return this.handleRequest(request);
   }
 
   async changeAccountStatus(id: string, status: ValidStatus) {
-    return (await this.api.patch(`/change-status/${status}/${id}`)).data;
+    const request = this.api.patch(`/change-status/${status}/${id}`, {}, this.getAuthHeaders());
+    return this.handleRequest(request);
   }
 
   // async multiChangeProperties(ids: string[], type: ValidMultiChangeType) {
@@ -27,25 +55,32 @@ class AccountsServiceAdmin {
   // }
 
   async createAccount(info: any) {
+    const authHeaders = this.getAuthHeaders();
     const config = {
       headers: {
+        ...authHeaders.headers,
         'Content-Type': 'multipart/form-data',
       },
     };
-    return (await this.api.post('/register', info, config)).data;
+    const request = this.api.post('/create', info, config);
+    return this.handleRequest(request);
   }
 
   async updateAccount(info: any, id: string) {
+    const authHeaders = this.getAuthHeaders();
     const config = {
       headers: {
+        ...authHeaders.headers,
         'Content-Type': 'multipart/form-data',
       },
     };
-    return (await this.api.patch(`/edit/${id}`, info, config)).data;
+    const request = this.api.patch(`/edit/${id}`, info, config);
+    return this.handleRequest(request);
   }
 
   async deleteAccount(id: string) {
-    return (await this.api.delete(`/delete/${id}`)).data;
+    const request = this.api.delete(`/delete/${id}`, this.getAuthHeaders());
+    return this.handleRequest(request);
   }
 }
 

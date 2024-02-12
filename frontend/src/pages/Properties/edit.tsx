@@ -52,7 +52,7 @@ const EditProperty: React.FC = () => {
           message.error('Unauthorized - Please log in to access this feature.', 3);
           navigate('/admin/auth/login');
         } else {
-          message.error('Error occurred while editing property', 2);
+          message.error('Error occurred while fetching property data', 2);
           console.log('Error occurred:', err);
         }
       }

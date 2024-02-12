@@ -51,9 +51,14 @@ const EditAdminAccounts: React.FC = () => {
   
         setLoading(false);
         
-      } catch (error) {
-        message.error('Error occurred while fetching data', 3);
-        console.log('Error occurred:', error);
+      } catch (err: any) {
+        if (err.response && err.response.status === 401) {
+          message.error('Unauthorized - Please log in to access this feature.', 3);
+          navigate('/admin/auth/login');
+        } else {
+          message.error('Error occurred while feaching administrator role', 2);
+          console.log('Error occurred:', err);
+        }
       }
     };
     
@@ -104,8 +109,6 @@ const EditAdminAccounts: React.FC = () => {
         message.error('Error occurred', 3);
         return;
       }
-
-      console.log("data", data)
       
       const formData = new FormData();
 
@@ -141,9 +144,14 @@ const EditAdminAccounts: React.FC = () => {
         message.error('Error occurred', 3);
       }
   
-    } catch (err) {
-      console.log(err);
-      message.error("Error occurred while updating account.");
+    } catch (err: any) {
+      if (err.response && err.response.status === 401) {
+        message.error('Unauthorized - Please log in to access this feature.', 3);
+        navigate('/admin/auth/login');
+      } else {
+        message.error('Error occurred while updating administrator account', 2);
+        console.log('Error occurred:', err);
+      }
     }
   }
 
