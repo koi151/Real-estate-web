@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { Breadcrumb, Button, Checkbox, Col, Image, InputNumber, Pagination, 
          PaginationProps, Popconfirm, Row, Skeleton, Space, Tag,  Tooltip,  message } from 'antd';
@@ -16,25 +16,27 @@ import FilterBox from '../../components/admin/FilterBox/filterBox';
 import StatusButton from '../../components/admin/StatusButton/statusButton';
 import './properties.scss';
 
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../redux/stores';
+import { setListingType, setKeyword, setStatus, setSorting, resetFilters } from '../../redux/reduxSlices/filtersSlice';
+
+
 const Properties: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const dispatch = useDispatch();
+  const filters = useSelector((state: RootState) => state.filters);
 
   const [loading, setLoading] = useState(true);
   const [propertyList, setPropertyList] = useState<PropertyType[]>([]);
   const [error, setError] = useState<string | null>(null); 
   const [propertyCount, setPropertyCount] = useState<number>(0);
 
-  // Searching and filtering
+  const { listingType, keyword, status, sorting } = filters;
+
   const [checkedList, setCheckedList] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   
-  const [listingType, setListingType] = useState<string | null>(null);
-  const [status, setStatus] = useState<string | null>(null);
-  const [keyword, setKeyword] = useState<string | null>(null); 
-  const [sorting, setSorting] = useState<SortingQuery>(
-    { sortKey: '', sortValue: '' }
-  )
-
   const [paginationObj, setPaginationObj] = useState<PaginationObject>({
     currentPage: null,
     limitItems: 4,
@@ -48,9 +50,9 @@ const Properties: React.FC = () => {
   };
 
   useEffect(() => {
+    setLoading(true);
     const fetchData = async () => {
       try {
-        setLoading(true);
         const response = await propertiesService.getProperties({ 
           ...(keyword && { keyword }), 
           ...(status && { status }), 
@@ -60,8 +62,9 @@ const Properties: React.FC = () => {
           currentPage: currentPage,
           pageSize: 2
         });
-
+  
         if(response?.code === 200) {
+          console.log('success')
           setPropertyList(response.properties);
           setPaginationObj(response.paginationObject);
           setPropertyCount(response.propertyCount);
@@ -69,38 +72,37 @@ const Properties: React.FC = () => {
         } else {
           message.error(response.message, 2);
         }
-
-      } catch (error) {
-        message.error('No property found', 2);
-        setError('No property found.');
-        console.log('Error occurred:', error);
+  
+      } catch (error: any) {
+        if (error.response && error.response.status === 401) {
+          message.error('Unauthorized - Please log in to access this feature.', 3);
+          navigate('/admin/auth/login');
+        } else {
+          message.error('Error occurred while fetching properties data', 2);
+          setError('No property found.');
+          console.log('Error occurred:', error);
+        }
       }
     };
     fetchData();
-  }, [keyword, status, sorting, currentPage, listingType]);  
+  }, [keyword, status, sorting, currentPage, listingType]); 
 
-  const handleListingTypeChange = (newType: string | null) => {
-    setListingType(newType);
-  }
+  const buildURL = () => {
+    const params: { [key: string]: string } = {};
+    if (keyword) params['keyword'] = keyword;
+    if (listingType) params['listingType'] = listingType;
+    if (status) params['status'] = status;
+    if (sorting.sortKey && sorting.sortValue) {
+      params['sortKey'] = sorting.sortKey;
+      params['sortValue'] = sorting.sortValue;
+    }
 
-  const handleKeywordChange = (newKeyword: string | null) => {
-    setKeyword(newKeyword);
+    return `${location.pathname}${Object.keys(params).length > 0 ? `?${new URLSearchParams(params)}` : ''}`;
   };
 
-  const handleStatusChange = (newStatus: string | null) => {
-    setStatus(newStatus);
-  };
-
-  const handleSortingChange = (newSorting: any) => {
-    setSorting(newSorting);
-  }
-
-  const resetFilters = () => {
-    setKeyword(null);
-    setStatus(null);
-    setSorting({sortKey: '', sortValue: ''});
-    navigate('/admin/properties');
-  }
+  useEffect(() => {
+    navigate(buildURL());
+  }, [status, listingType, keyword, sorting])
   
   const handleCheckboxChange = (id: string | undefined) => (e: CheckboxChangeEvent) => {
     if (id === undefined) {
@@ -166,14 +168,7 @@ const Properties: React.FC = () => {
         />
       </div>
 
-      <FilterBox
-        onListingTypeChange={handleListingTypeChange} 
-        onKeywordChange={handleKeywordChange}
-        onStatusChange={handleStatusChange}
-        onSortingChange={handleSortingChange}
-        checkedList={checkedList}
-        resetFilters={resetFilters}
-      />
+      <FilterBox />
 
       {error ? (
         <div>{error}</div>
@@ -284,7 +279,7 @@ const Properties: React.FC = () => {
                     >
                       <div style={{marginLeft: "2rem"}}>
                         {property.status && property._id ? (
-                          <StatusButton typeofChange='changePropertyStatus' itemId={property._id} status={property.status} />
+                          <StatusButton typeofChange='changePropertyStatus' itemId={property._id} status={property.status || undefined} />
                         ) : (
                           <Tooltip title='Please add property status or id'>No data</Tooltip>
                         )}

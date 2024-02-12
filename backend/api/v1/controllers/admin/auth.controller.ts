@@ -72,11 +72,6 @@ export const loginPost = async (req: Request, res: Response) => {
       refreshToken = user.token;
     }
 
-    console.log("accessToken:", accessToken)
-    console.log("refreshToken:", refreshToken)
-    console.log("user:", user)
-
-
     res.status(200).json({
       code: 200,
       message: 'Success',

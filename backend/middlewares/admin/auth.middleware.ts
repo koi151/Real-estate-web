@@ -1,42 +1,43 @@
 import { Request, Response, NextFunction } from 'express';
 import AdminAccount from '../../api/v1/models/adminAccount.model';
-import Role from '../../api/v1/models/roles.model';
-import { AdminAccountType, RolesType } from '../../commonTypes';
+import { verifyToken } from '../../helpers/auth.methods';
 
 export const authRequire = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const token = req.cookies.token;
-    console.log("token:", token)
+      // Get access token from header
+      const accessTokenFromHeader = req.headers['authorization'];
 
-    if (!token) {
-      res.clearCookie('token');
-      return res.redirect('http://localhost:3001/admin/auth/login');
-    }
+      if (!accessTokenFromHeader) {
+          return res.status(401).json({
+            code: 401,
+            message: 'Can not found access token!'
+          });
+      }
 
-    const user: AdminAccountType | null = await AdminAccount.findOne({
-      token,
-      deleted: false
+      const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
+
+      const verified: any = await verifyToken(
+        accessTokenFromHeader,
+        accessTokenSecret,
+      );
+
+      if (!verified) {
+        return res.status(401).json({
+          code: 401,
+          message: "You don't have permission to access this feature"
+        });
+      }
+
+      const user = await AdminAccount.findOne({ _id: verified.payload.username });
+      req["user"] = user;
+
+      return next();
+
+  } catch (error) {
+    console.error('Error in isAuth middleware:', error);
+    return res.status(401).json({
+      code: 401,
+      message: 'Authorization failed'
     });
-
-    console.log("user:", user)
-
-    if (!user) {
-      res.clearCookie('token');
-      return res.redirect('http://localhost:3001/admin/auth/login');
-    }
-
-    const role: RolesType | null = await Role.findOne({
-      _id: user.role_id 
-    }).select('title permissions');
-
-    console.log("role:", role)
-
-    res.locals.user = user;
-    res.locals.role = role;
-    next();
-
-  } catch (err) {
-    console.error('Error in authRequire middleware:', err);
-    res.status(500).json({ error: 'Internal Server Error' });
   }
 };

@@ -13,7 +13,29 @@ class RolesServiceAdmin {
   }
 
   async getRoles() {
-    return (await this.api.get("/")).data;
+    try {
+      const accessToken = localStorage.getItem('accessToken');
+  
+      if (!accessToken) {
+        throw new Error('Access token not found in localStorage');
+      }
+  
+      const response = await this.api.get("/", { 
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      });
+  
+      return response.data;
+  
+    } catch (error: any) {
+      if (error.status === 401) {
+        throw error;
+      } else {
+        console.error('Error while fetching administrator roles:', error);
+        throw error;
+      }
+    }
   }
 
   async deleteRole(id: string) {

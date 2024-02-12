@@ -1,127 +1,66 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Col, Row, Segmented, Select, SelectProps, Slider, message } from 'antd';
+import { Button, Col, Row, Segmented, Select, Slider, message } from 'antd';
 import { FaPlus } from "react-icons/fa6";
-import Search, { SearchProps } from 'antd/es/input/Search';
+import Search from 'antd/es/input/Search';
 import { IoFilter } from 'react-icons/io5';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../../redux/stores';
+import { setListingType, setKeyword, setStatus, setSorting, resetFilters } from '../../../redux/reduxSlices/filtersSlice';
 import propertiesService from '../../../services/admin/properties.service';
 import { ValidMultiChangeType } from '../../../../../backend/commonTypes';
 
 import './filterBox.scss';
 import { reverseListingType } from '../../../helpers/standardizeData';
+import { SegmentedValue } from 'antd/es/segmented';
 
-interface FilterBoxProps {
-  onListingTypeChange: (newType: string | null) => void;
-  onKeywordChange: (newKeyword: string | null) => void;
-  onStatusChange: (newStatus: string | null) => void;
-  onSortingChange: (newSorting: {
-    sortKey: string | null,
-    sortValue: string | null
-  }) => void;
-  checkedList: string[]; 
-  resetFilters: () => void;
-}
-
-const FilterBox: React.FC<FilterBoxProps> = ({ onListingTypeChange, onKeywordChange, onStatusChange, onSortingChange, checkedList, resetFilters }) => {
-  
-  const navigate = useNavigate();
+const FilterBox: React.FC = () => {
+  const dispatch = useDispatch();
   const location = useLocation();
+  const navigate = useNavigate();
 
-  // Sorting & Filtering
-  const [listingType, setListingType] = useState<string | null>(null);
-  const [keyword, setKeyword] = useState<string | null>(null);
-  const [status, setStatus] = useState<string>('');
-  const [sorting, setSorting] = useState<{
-    sortKey: string | null;
-    sortValue: string | null;
-  }>({
-    sortKey: '',
-    sortValue: '',
-  });
-  // End Sorting & Filtering
+  // Redux state selectors
+  const { listingType, keyword, status, sorting } = useSelector((state: RootState) => state.filters);
 
   const [isFilterDetailVisible, setIsFilterDetailVisible] = useState<boolean>(true);
 
-  const buildURL = () => {
-    const params: { [key: string]: string } = {};
-    if (keyword) params['keyword'] = keyword;
-    if (listingType) params['listingType'] = listingType;
-    if (status) params['status'] = status;
-    if (sorting.sortKey && sorting.sortValue) {
-      params['sortKey'] = sorting.sortKey;
-      params['sortValue'] = sorting.sortValue;
-    }
-
-    return `${location.pathname}${Object.keys(params).length > 0 ? `?${new URLSearchParams(params)}` : ''}`;
+  const onSearch = (value: string) => {
+    dispatch(setKeyword(value));
   };
-  
-  const onSearch: SearchProps['onSearch'] = (value) => {
-    setKeyword(value);
-  };
-
-  useEffect(() => {
-    onListingTypeChange(listingType);
-    onStatusChange(status);
-    onSortingChange(sorting);
-    onKeywordChange(keyword);
-    navigate(buildURL());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status, sorting, keyword, listingType]);  
 
   const handleStatusClick = (value: string) => {
-    setStatus(value);
+    dispatch(setStatus(value));
   };
 
   const handleSortingChange = (value: string) => {
     const [sortKey, sortValue] = value.split('-');
-    setSorting({ sortKey, sortValue });
-  }
+    dispatch(setSorting({ sortKey, sortValue }));
+  };
 
   const handleResetFilters = () => {
-    onKeywordChange(null);
-    onStatusChange(null);
-    onSortingChange({ sortKey: null, sortValue: null });
-    resetFilters();
+    dispatch(resetFilters());
+    navigate('/admin/properties');
   };
 
   const handleMultipleChange = async (type: ValidMultiChangeType) => {
-    const response = await propertiesService.multiChangeProperties(checkedList, type);
+    const response = await propertiesService.multiChangeProperties([], type);
     if (response?.code === 200) {
-      if (type === 'active' || type === 'inactive') {
-        response.idList?.forEach((id: string) => {
-          const statusButton = document.querySelector(`.item-wrapper__upper-content--status button[data-id="${id}"]`);
-          if (statusButton) {
-            const oppositeType = type === 'active' ? 'inactive' : 'active';
-            statusButton.classList.remove(`${oppositeType}-btn`);
-            statusButton.classList.add(`${type}-btn`);
-            statusButton.innerHTML = type;
-          }
-        })
-      } else if (type === 'delete') {
-        response.idList?.forEach((id: string) => {
-          const statusButton = document.querySelector(`.item-wrapper[data-id="${id}"]`);
-          if (statusButton) statusButton.remove();
-        })
-      }
-
       message.success(response.message, 3);
-
     } else {
-      message.error("Error occurred, can not do multiple updates", 3)
+      message.error("Error occurred, can not do multiple updates", 3);
     }
-  }
+  };
 
-  const sortingOptions: SelectProps['options'] = [
-    { label: 'Descending position', value: 'position-desc'},
-    { label: 'Ascending position', value: 'position-asc'},
-    { label: 'Descending price', value: 'price-desc'},
-    { label: 'Ascending price', value: 'price-asc'},
-    { label: 'Descending view', value: 'view-desc'},
-    { label: 'Ascending view', value: 'view-asc'},
+  const sortingOptions = [
+    { label: 'Descending position', value: 'position-desc' },
+    { label: 'Ascending position', value: 'position-asc' },
+    { label: 'Descending price', value: 'price-desc' },
+    { label: 'Ascending price', value: 'price-asc' },
+    { label: 'Descending view', value: 'view-desc' },
+    { label: 'Ascending view', value: 'view-asc' },
   ];
 
-  const multipleChangeOptions: SelectProps['options'] = [
+  const multipleChangeOptions = [
     { label: 'Active status', value: 'active' },
     { label: 'Inactive status', value: 'inactive' },
     { label: 'Position change', value: 'position' },
@@ -132,60 +71,58 @@ const FilterBox: React.FC<FilterBoxProps> = ({ onListingTypeChange, onKeywordCha
     <>
       <div className='filter-box'>
         <div className='d-flex justify-content-between align-items-center'>
-          <div className='filter-box__button-wrapper--left'>
-          </div>
           <div className='filter-box__button-wrapper--right'>
             <Search
               className='search-box'
-              placeholder="Search by title..." 
+              placeholder="Search by title..."
               onSearch={onSearch}
             />
-            <Button 
+            <Button
               className='filter-button d-flex align-items-center justify-content-center ml-1'
-              onClick={() => setIsFilterDetailVisible((prev) => !prev)}
+              onClick={() => setIsFilterDetailVisible(prev => !prev)}
             >
-              Filters <IoFilter style={{marginLeft: '.75rem'}}/>
+              Filters <IoFilter style={{ marginLeft: '.75rem' }} />
             </Button>
             <Link to={`${location.pathname}/create`} className='custom-link'>
               <Button className='add-new-button'>
-                Add new <FaPlus/>
+                Add new <FaPlus />
               </Button>
             </Link>
           </div>
         </div>
-      </div>  
-      
-      {onListingTypeChange.toString() !== '() => {}' && (
-        <Segmented 
-          options={['All', 'For rent', 'For sale']} 
-          onChange={value => setListingType(value === 'All' ? '' : reverseListingType(value as string))} 
-          className={`listing-type ${isFilterDetailVisible ? '' : 'fade-out'}`}
-        />
-      )}  
+      </div>
+
+      <Segmented 
+        options={['All', 'For rent', 'For sale']} 
+        onChange={(value: SegmentedValue) => {
+          if (typeof value === 'string') {
+            dispatch(setListingType(value === 'All' ? '' : reverseListingType(value)));
+          }
+        }}
+        className={`listing-type ${isFilterDetailVisible ? '' : 'fade-out'}`}
+      />
 
       <div className={`filter-box__detail ${isFilterDetailVisible ? '' : 'fade-out'} ${listingType ? '' : 'mt-3'}`}>
         <Row className='custom-row'>
-          <Col
-            xxl={8} xl={8} lg={8}
-          >
+          <Col xxl={8} xl={8} lg={8}>
             <div className='status-filter'>
               <span>Filter by status:</span>
               <span className='status-filter__status-wrap mr-2'>
-                <br/>
-                <Button 
-                  onClick={() => handleStatusClick('')} 
+                <br />
+                <Button
+                  onClick={() => handleStatusClick('')}
                   className={`custom-btn ${!status ? 'active' : ''}`}
                 >
                   All
                 </Button>
-                <Button 
-                  onClick={() => handleStatusClick('active')} 
+                <Button
+                  onClick={() => handleStatusClick('active')}
                   className={`custom-btn ${status === 'active' ? 'active' : ''}`}
                 >
                   Active
                 </Button>
                 <Button
-                  onClick={() => handleStatusClick('inactive')} 
+                  onClick={() => handleStatusClick('inactive')}
                   className={`custom-btn ${status === 'inactive' ? 'active' : ''}`}
                 >
                   Inactive
@@ -193,12 +130,10 @@ const FilterBox: React.FC<FilterBoxProps> = ({ onListingTypeChange, onKeywordCha
               </span>
             </div>
           </Col>
-          <Col
-            xxl={8} xl={8} lg={8}
-          >
+          <Col xxl={8} xl={8} lg={8}>
             <div className='sorting-items'>
               <span>Sorting by: </span>
-              <br/>
+              <br />
               <Select
                 placement='bottomLeft'
                 placeholder="Choose sorting method"
@@ -209,23 +144,19 @@ const FilterBox: React.FC<FilterBoxProps> = ({ onListingTypeChange, onKeywordCha
               />
             </div>
           </Col>
-          <Col
-            xxl={8} xl={8} lg={8}
-          >
+          <Col xxl={8} xl={8} lg={8}>
             <div className='multiple-change'>
               <span>Multiple change: </span>
               <Select
                 placement='bottomLeft'
                 placeholder="Choose change to apply"
-                onChange={handleMultipleChange}
+                onChange={(value: string) => handleMultipleChange(value as ValidMultiChangeType)}
                 options={multipleChangeOptions}
                 className='multiple-change__select'
               />
             </div>
           </Col>
-          <Col
-            xxl={8} xl={8} lg={8}
-          >
+          <Col xxl={8} xl={8} lg={8}>
             <Slider
               className='custom-slider'
               range
@@ -235,12 +166,10 @@ const FilterBox: React.FC<FilterBoxProps> = ({ onListingTypeChange, onKeywordCha
               // onChangeComplete={onChangeComplete}
             />
           </Col>
-          <Col
-            xxl={8} xl={8} lg={8}
-          >
+          <Col xxl={8} xl={8} lg={8}>
             <Button
-              onClick={handleResetFilters}  
-              className='clear-filters' 
+              onClick={handleResetFilters}
+              className='clear-filters'
               danger type='primary'>
               Clear filters
             </Button>

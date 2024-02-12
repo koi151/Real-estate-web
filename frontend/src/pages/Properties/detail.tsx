@@ -42,9 +42,14 @@ const PropertyDetail: React.FC = () => {
           setLoading(false);
         }
 
-      } catch (error) {
-        message.error('No property found', 2);
-        console.log('Error occurred:', error);
+      } catch (error: any) {
+        if (error.response && error.response.status === 401) {
+          message.error('Unauthorized - Please log in to access this feature.', 3);
+          navigate('/admin/auth/login');
+        } else {
+          message.error('Error occurred while fetching property data', 2);
+          console.log('Error occurred:', error);
+        }
       }
     };
     fetchData();

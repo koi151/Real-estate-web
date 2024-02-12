@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Breadcrumb, Button, Checkbox, Col, Image, InputNumber, Pagination, PaginationProps, Popconfirm, Row, Skeleton, Tooltip, message } from 'antd';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 
 import propertyCategoriesService from '../../services/admin/property-categories.service';
@@ -14,6 +14,7 @@ import FilterBox from '../../components/admin/FilterBox/filterBox';
 
 const PropertyCategories: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [loading, setLoading] = useState(true);
   const [categoryList, setCategoryList] = useState<PropertyCategoryType[]>([]);
@@ -23,7 +24,7 @@ const PropertyCategories: React.FC = () => {
   // Searching and filtering
   const [checkedList, setCheckedList] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [status, setStatus] = useState<string | null>(null);
+  const [status, setStatus] = useState<string | undefined>(undefined);
   const [keyword, setKeyword] = useState<string | null>(null); 
 
   const [sorting, setSorting] = useState<SortingQuery>(
@@ -64,14 +65,36 @@ const PropertyCategories: React.FC = () => {
           message.error(response.message, 2);
         }
 
-      } catch (error) {
-        message.error('No category found', 2);
-        setError('No property found.');
-        console.log('Error occurred:', error);
+      } catch (error: any) {
+        if (error.response && error.response.status === 401) {
+          message.error('Unauthorized - Please log in to access this feature.', 3);
+          navigate('/admin/auth/login');
+        } else {
+          message.error('Error occurred while fetching property categories', 2);
+          setError('No property category found.');
+          console.log('Error occurred:', error);
+        }
       }
     };
     fetchData();
   }, [keyword, status, sorting, currentPage]);
+
+  
+  const buildURL = () => {
+    const params: { [key: string]: string } = {};
+    if (keyword) params['keyword'] = keyword;
+    if (status) params['status'] = status;
+    if (sorting.sortKey && sorting.sortValue) {
+      params['sortKey'] = sorting.sortKey;
+      params['sortValue'] = sorting.sortValue;
+    }
+
+    return `${location.pathname}${Object.keys(params).length > 0 ? `?${new URLSearchParams(params)}` : ''}`;
+  };
+
+  useEffect(() => {
+    navigate(buildURL());
+  }, [status, keyword, sorting])
 
   const onChangePosition = (id: string | undefined, position: number | null) => {
     if (position === null || id === undefined){
@@ -98,25 +121,6 @@ const PropertyCategories: React.FC = () => {
       setCheckedList(checkedList.filter((itemId) => itemId !== id));
     }
   };
-
-  const handleKeywordChange = (newKeyword: string | null) => {
-    setKeyword(newKeyword);
-  };
-
-  const handleStatusChange = (newStatus: string | null) => {
-    setStatus(newStatus);
-  };
-
-  const handleSortingChange = (newSorting: any) => {
-    setSorting(newSorting);
-  }
-
-  const resetFilters = () => {
-    setKeyword(null);
-    setStatus(null);
-    setSorting({sortKey: '', sortValue: ''});
-    navigate('/admin/property-categories');
-  }
 
   // Delete item
   const confirmDelete = async (id?: string) => {
@@ -151,14 +155,7 @@ const PropertyCategories: React.FC = () => {
         />
       </div>
 
-      <FilterBox
-        onListingTypeChange={() => {}}
-        onKeywordChange={handleKeywordChange}
-        onStatusChange={handleStatusChange}
-        onSortingChange={handleSortingChange}
-        checkedList={checkedList}
-        resetFilters={resetFilters}
-      />
+      <FilterBox />
 
       { error ? (
         <div>{error}</div>

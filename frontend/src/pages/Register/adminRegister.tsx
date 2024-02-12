@@ -24,6 +24,8 @@ const AdminRegister: React.FC<AdminRegisterProps> = ({ isRegisterPage }) => {
             message.error(response.message, 3);
             break;
           case 200:
+              localStorage.setItem('accessToken', response.accessToken);
+              localStorage.setItem('refreshToken', response.refreshToken);
               message.success(`${isRegisterPage ? "Register" : "Login"} successful. Welcome to administrator page !`);
               navigate('/admin/properties');
             break;

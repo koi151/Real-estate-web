@@ -24,3 +24,14 @@ export const generateToken = async (
     return null;
   }
 };
+
+export const verifyToken = async (token: string, secretKey: string): Promise<any | null> => {
+  try {
+    const tokenWithoutBearer = token.split('Bearer ')[1];
+    return jwt.verify(tokenWithoutBearer, secretKey);
+  } catch (error) {
+    console.log(`Error in verify access token: ${error}`);
+    throw new Error('Authorization failed');
+  }
+};
+

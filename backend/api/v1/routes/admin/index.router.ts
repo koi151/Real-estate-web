@@ -14,31 +14,31 @@ const v1AdminRoutes = (app: Express): void => {
 
   app.use(
     `${version}/${ADMIN_PATH}/properties`, 
-    // authRequire,
+    authRequire,
     propertiesRoutes
   );
 
   app.use(
     `${version}/${ADMIN_PATH}/property-categories`, 
-    // authRequire,
+    authRequire,
     propertyCategoriesRoutes
   );
 
   app.use(
     `${version}/${ADMIN_PATH}/roles`, 
-    // authRequire,
+    authRequire,
     rolesRoutes
   );
 
   app.use(
     `${version}/${ADMIN_PATH}/accounts`, 
-    // authRequire,
+    authRequire,
     accountsRoutes
   );
 
   app.use(
     `${version}/${ADMIN_PATH}/accounts`, 
-    // authRequire,
+    authRequire,
     accountsRoutes
   );
 

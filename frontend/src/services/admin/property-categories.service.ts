@@ -9,7 +9,30 @@ class PropertyCategoriesServiceAdmin {
   }
 
   async getPropertyCategories(options: GetPropertiesOptions) {
-    return (await this.api.get("/", { params: options })).data;
+    try {
+      const accessToken = localStorage.getItem('accessToken');
+  
+      if (!accessToken) {
+        throw new Error('Access token not found in localStorage');
+      }
+  
+      const response = await this.api.get("/", { 
+        params: options,
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      });
+  
+      return response.data;
+  
+    } catch (error: any) {
+      if (error.status === 401) {
+        throw error;
+      } else {
+        console.error('Error fetching property categories:', error);
+        throw error;
+      }
+    }
   }
 
   async getCategoryTree() {
