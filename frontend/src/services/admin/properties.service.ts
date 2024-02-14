@@ -12,7 +12,7 @@ class PropertiesServiceAdmin {
     const accessToken = localStorage.getItem('accessToken');
 
     if (!accessToken) {
-      throw new Error('Access token not found in localStorage');
+      throw new Error('Access token not found');
     }
     return {
       headers: {
@@ -21,19 +21,40 @@ class PropertiesServiceAdmin {
     };
   }
 
-  private async handleRequest(request: Promise<any>) {
+  private async handleRequest(request: Promise<any>): Promise<any> {
     try {
       const response = await request;
       return response.data;
+
     } catch (err: any) {
-      if (err.status === 401) {
-        throw new Error('Unauthorized: Please log in to access this feature.');
+      console.log('err handle req')
+      if (err.response && err.response.status === 401) {
+
+        // Attempt to refresh the token
+        try {
+          const refreshToken = localStorage.getItem('refreshToken');
+          if (!refreshToken) {
+            throw new Error('Refresh token not found in localStorage');
+          }
+  
+          const refreshResponse = await this.api.post('/refresh', { refreshToken });
+          const newAccessToken = refreshResponse.data.accessToken;
+          localStorage.setItem('accessToken', newAccessToken);
+  
+          return await this.handleRequest(request);
+
+        } catch (refreshError) {
+          throw new Error('Unauthorized: Please log in to access this feature.');
+        }
+
       } else {
         console.error('An error occurred:', err);
         throw new Error('An unexpected error occurred. Please try again later.');
       }
     }
   }
+  
+  
 
   async getProperties(options: GetPropertiesOptions) {
     const request = this.api.get("/", { 
@@ -64,7 +85,7 @@ class PropertiesServiceAdmin {
       headers: {
         ...authHeaders.headers,
         'Content-Type': 'multipart/form-data',
-      },
+      }
     };
     const request = this.api.post('/create', property, config);
     return this.handleRequest(request);

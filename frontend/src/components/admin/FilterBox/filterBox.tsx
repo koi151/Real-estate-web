@@ -70,7 +70,7 @@ const FilterBox: React.FC = () => {
   return (
     <>
       <div className='filter-box'>
-        <div className='d-flex justify-content-between align-items-center'>
+        <div className='d-flex justify-content-end align-items-center'>
           <div className='filter-box__button-wrapper--right'>
             <Search
               className='search-box'

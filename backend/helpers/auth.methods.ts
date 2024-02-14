@@ -35,3 +35,13 @@ export const verifyToken = async (token: string, secretKey: string): Promise<any
   }
 };
 
+export const decodeToken = async (token: string, secretKey: string) => {
+	try {
+		return jwt.verify(token, secretKey, {
+			ignoreExpiration: true,
+		});
+	} catch (error) {
+		console.log(`Error in decode access token: ${error}`);
+		return null;
+	}
+};

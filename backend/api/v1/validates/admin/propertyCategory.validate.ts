@@ -40,7 +40,6 @@ export const createPropertyCategory = (req: Request, res: Response, next: NextFu
   }
 
   for (const field of requiredFields) {
-    console.log(field)
     if (!validateField(req.body, field, res)) {
       return;
     }

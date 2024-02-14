@@ -1,6 +1,7 @@
 import express, { Express } from 'express';
 import * as database from './configs/database';
 import { systemConfig } from './configs/system';
+// import { agenda } from './configs/agenda';
 
 import methodOverride from 'method-override';
 import cors from "cors";
@@ -41,3 +42,26 @@ v1AdminRoutes(app);
 app.listen(port, () => {
   console.log(`App listening on port ${port}`);
 });
+
+// Start Agenda
+import Agenda from 'agenda';
+import mongoose from 'mongoose';
+
+const agenda = new Agenda({db: {address: process.env.MONGO_URL}});
+
+// check expireTime of properties
+agenda.define('setDeleteFlag', async () => {
+  const collection = mongoose.connection.collection('properties');
+  const now = new Date();
+
+  await collection.updateMany(
+    { expireTime: { $lt: now } },
+    { $set: { deleted: true } }
+  );
+});
+
+(async function() {
+  await agenda.start();
+  console.log('Agenda started')
+  await agenda.every('1 minute', 'setDeleteFlag');
+})();

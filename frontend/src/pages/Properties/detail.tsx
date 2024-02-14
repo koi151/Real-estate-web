@@ -249,7 +249,7 @@ const PropertyDetail: React.FC = () => {
                 <Col span={24}>
                   <ExpireTimePicker 
                     onExpireDateTimeChange={handleExpireTimeChange} 
-                    expireTimeGiven={property?.expireAt}
+                    expireTimeGiven={property?.expireTime}
                   />
                 </Col>
 

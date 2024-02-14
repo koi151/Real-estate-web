@@ -27,6 +27,7 @@
   "homepage": "https://github.com/koi151/Real-Estate-Trading-Web#readme",
   "dependencies": {
     "@types/cors": "^2.8.17",
+    "agenda": "^5.0.0",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",
     "cloudinary": "^1.41.3",
@@ -41,6 +42,7 @@
     "mongoose": "^8.0.3",
     "mongoose-slug-updater": "^3.3.0",
     "multer": "^1.4.5-lts.1",
+    "pm2": "^5.3.1",
     "streamifier": "^0.1.1",
     "unidecode": "^0.1.8"
   },

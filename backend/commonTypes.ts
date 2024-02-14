@@ -43,7 +43,7 @@ export interface PropertyType {
   propertyDetails?: PropertyDetails;
   slug?: string;
   createdAt?: Date;
-  expireAt?: Date;
+  expireTime?: Date;
   deleted?: boolean;
 }
 

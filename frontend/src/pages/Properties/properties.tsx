@@ -326,7 +326,7 @@ const Properties: React.FC = () => {
                         Created: {property.createdAt ? new Date(property.createdAt).toLocaleString() : 'No data'}
                       </div>
                       <div className='item-wrapper__lower-content--date-created'>
-                        Expire: {property.expireAt ? new Date(property.expireAt).toLocaleString() : 'No data'}
+                        Expire: {property.expireTime ? new Date(property.expireTime).toLocaleString() : 'No data'}
                       </div>
                     </div>
                   </Col>

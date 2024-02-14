@@ -49,7 +49,7 @@ const propertySchema = new mongoose.Schema(
       type: Boolean,
       default: false
     },
-    expireAt: Date
+    expireTime: Date
   },
   {
     timestamps: true,
@@ -57,5 +57,17 @@ const propertySchema = new mongoose.Schema(
 );
 
 const Property = mongoose.model("Property", propertySchema, "properties");
+
+// Luồng thay đổi
+Property.watch().on('change', async (change) => {
+  if (change.operationType === 'update' && change.updateDescription.updatedFields.expireTime) {
+    // Nếu thời gian hết hạn đã được cập nhật
+    const doc = await Property.findOne({ _id: change.documentKey._id });
+    if (doc.expireTime < new Date()) {
+      // Nếu thời gian hết hạn đã qua, cập nhật trường deleted thành true
+      await Property.updateOne({ _id: change.documentKey._id }, { $set: { deleted: true } });
+    }
+  }
+});
 
 export default Property;

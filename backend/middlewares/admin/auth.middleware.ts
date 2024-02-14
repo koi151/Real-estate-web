@@ -6,12 +6,11 @@ export const authRequire = async (req: Request, res: Response, next: NextFunctio
   try {
       // Get access token from header
       const accessTokenFromHeader = req.headers['authorization'];
-
       if (!accessTokenFromHeader) {
-          return res.status(401).json({
-            code: 401,
-            message: 'Can not found access token!'
-          });
+        return res.status(400).json({
+          code: 400,
+          message: 'No access token found.'
+        });
       }
 
       const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;

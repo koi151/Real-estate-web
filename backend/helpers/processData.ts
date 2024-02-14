@@ -39,7 +39,8 @@ export const processPropertyData = (req: Request): PropertyType => {
         : req.body.propertyDetails?.features 
         ? [req.body.propertyDetails.features]
         : undefined
-    },    
+    },
+    expireTime: req.body.expireTime && new Date(req.body.expireTime)
   };
 };
 

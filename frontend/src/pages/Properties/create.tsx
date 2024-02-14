@@ -135,11 +135,11 @@ const CreateProperty: React.FC = () => {
   
       // Append expireAt
       if (expireDateTime) {
-        formData.append('expireAt', expireDateTime.toISOString());
-      } else if (data.expireAt === 'day' || data.expireAt === 'week' || data.expireAt === 'month') {
-        const duration = data.expireAt === 'day' ? 1 : (data.expireAt === 'week' ? 7 : 30);
+        formData.append('expireTime', expireDateTime.toISOString());
+      } else if (data.expireTime === 'day' || data.expireTime === 'week' || data.expireTime === 'month') {
+        const duration = data.expireTime === 'day' ? 1 : (data.expireTime === 'week' ? 7 : 30);
         const expirationDate = dayjs().add(duration, 'day');
-        formData.append('expireAt', expirationDate.toISOString());
+        formData.append('expireTime', expirationDate.toISOString());
       }
   
       if (data.images && data.images.length > 0) {

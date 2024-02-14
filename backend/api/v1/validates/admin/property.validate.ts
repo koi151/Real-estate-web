@@ -89,7 +89,6 @@ export const createProperty = (req: Request, res: Response, next: NextFunction) 
   }
 
   for (const field of requiredFields) {
-    console.log(field)
     if (!validateField(req.body, field, res)) {
       return;
     }
