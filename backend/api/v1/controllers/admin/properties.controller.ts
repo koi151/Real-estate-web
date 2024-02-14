@@ -14,6 +14,13 @@ import { processImagesData, processPropertyData } from "../../../../helpers/proc
 // [GET] /admin/properties
 export const index = async (req: Request, res: Response) => {
   try {
+    if (!res.locals.currentUser.permissions.includes('properties_view')) {
+      return res.json({
+        code: 403,
+        message: "Account does not have access rights"
+      })
+    }
+
     interface Find {
       deleted?: boolean | null,
       listingType?: string | null
@@ -80,7 +87,7 @@ export const index = async (req: Request, res: Response) => {
         propertyCount: propertyCount
       });
     } else {
-      res.status(404).json({
+      res.json({
         code: 404,
         message: 'No properties found',
       });

@@ -10,9 +10,10 @@ class PropertiesServiceAdmin {
 
   private getAuthHeaders() {
     const accessToken = localStorage.getItem('accessToken');
-
+    
     if (!accessToken) {
-      throw new Error('Access token not found');
+      console.log("Access token not found");
+      throw new Error('Unauthorized');
     }
     return {
       headers: {
@@ -27,8 +28,11 @@ class PropertiesServiceAdmin {
       return response.data;
 
     } catch (err: any) {
-      console.log('err handle req')
-      if (err.response && err.response.status === 401) {
+      console.log('Error occurred in handleRequest:', err)
+      if (err.message === 'Access token not found') {
+        throw new Error('Unauthorized')
+
+      } else if (err.response && err.response.status === 401) {
 
         // Attempt to refresh the token
         try {
@@ -44,7 +48,7 @@ class PropertiesServiceAdmin {
           return await this.handleRequest(request);
 
         } catch (refreshError) {
-          throw new Error('Unauthorized: Please log in to access this feature.');
+          throw new Error('Unauthorized');
         }
 
       } else {
@@ -53,8 +57,6 @@ class PropertiesServiceAdmin {
       }
     }
   }
-  
-  
 
   async getProperties(options: GetPropertiesOptions) {
     const request = this.api.get("/", { 
