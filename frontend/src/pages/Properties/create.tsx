@@ -5,18 +5,32 @@ import { Editor } from '@tinymce/tinymce-react';
 import { SegmentedValue } from "antd/es/segmented";
 import { Link, useNavigate } from "react-router-dom";
 import dayjs, { Dayjs } from "dayjs";
+import { DefaultOptionType } from "antd/es/select";
+import { useDispatch, useSelector } from "react-redux";
 
+// Services
 import propertiesService from "../../services/admin/properties.service";
 import propertyCategoriesService from "../../services/admin/property-categories.service";
 
+// Components
 import GetAddress from "../../components/admin/getAddress/getAddress";
 import ExpireTimePicker from "../../components/admin/ExpireTimePicker/expireTimePicker";
 import UploadMultipleFile from "../../components/admin/UploadMultipleFile/uploadMultipleFile";
-import { DefaultOptionType } from "antd/es/select";
+
+// Redux && helpers, scss
+import { RootState } from "../../redux/stores";
+import AdminRolesService from "../../services/admin/roles.service";
+import { setPermissions } from "../../redux/reduxSlices/permissionsSlice";
 import './create.scss'
+import NoPermission from "../../components/admin/NoPermission/noPermission";
 
 const CreateProperty: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const currentUserPermissions = useSelector((state: RootState) => state.currentUserPermissions.permissions);
+
+  const [viewAllowed, setViewAllowed] = useState(true);
 
   const [postType, setPostType] = useState<string>('sell');
   const [price, setPrice] = useState<number | null>(null);
@@ -31,6 +45,7 @@ const CreateProperty: React.FC = () => {
   // data from child component
   const [expireDateTime, setExpireDateTime] = useState<Dayjs | null>(null);
 
+  // fetch categories data 
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -53,6 +68,37 @@ const CreateProperty: React.FC = () => {
 
     fetchData();
   }, [navigate]);
+
+  // if permission in redux not existed => fetch permissions
+  useEffect(() =>  {
+    if (currentUserPermissions?.propertiesCreate)
+      return;
+
+    const fetchData = async () => {
+      try {
+        const response = await AdminRolesService.getPermissions();
+        if (response.code === 200) {
+          if (response.permissions) {
+            dispatch(setPermissions(response.permissions));
+          }
+
+          if (!response.permissions.propertiesCreate) {
+            setViewAllowed(false)
+          }
+
+        } else {
+          setViewAllowed(false);
+        }
+
+      } catch (err) {
+        console.log("Error occurred while fetching permissions:", err);
+        message.error('Error occurred, redirect to previous page', 3)
+        navigate(-1);
+        setViewAllowed(false);
+      }
+    }
+    fetchData();
+  }, []);
 
   const handlePriceChange = (event: ChangeEvent<HTMLInputElement>) => {
     const inputValue = parseFloat(event.target.value);
@@ -161,189 +207,195 @@ const CreateProperty: React.FC = () => {
   }
   
   return (
-    <div className="d-flex flex-column align-items-center justify-content-center"> 
-      <Form 
-        layout="vertical" 
-        onFinish={onFinishForm}
-        method="POST"
-        encType="multipart/form-data"
-        className="custom-form" 
-      >
-        <Badge.Ribbon text={<Link to="/admin/properties">Back</Link>} color="purple" className="custom-ribbon">
-          <Card 
-            title="Basic information"
-            className="custom-card" 
-          >
+    <>
+    {currentUserPermissions?.propertiesCreate || viewAllowed ? (
+      <div className="d-flex flex-column align-items-center justify-content-center"> 
+        <Form 
+          layout="vertical" 
+          onFinish={onFinishForm}
+          method="POST"
+          encType="multipart/form-data"
+          className="custom-form" 
+        >
+          <Badge.Ribbon text={<Link to="/admin/properties">Back</Link>} color="purple" className="custom-ribbon">
+            <Card 
+              title="Basic information"
+              className="custom-card" 
+            >
+              <Row gutter={16}>
+                <Col span={24} className="mb-5">
+                  <Form.Item 
+                    label='Choose listing type' 
+                    name='listingType' 
+                    initialValue={'For sale'}
+                    style={{height: "4.5rem"}}
+                  >
+                    <Segmented 
+                      options={['For sale', 'For rent']} 
+                      block 
+                      className="custom-segmented"
+                      onChange={handleChangeListingType}
+                    />
+                  </Form.Item>
+                </Col>
+                <Col span={24}>
+                  <Form.Item 
+                    label='Select property category' 
+                    name='category' 
+                  >
+                    <TreeSelect
+                      style={{ width: '100%' }}
+                      value={category}
+                      dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                      treeData={categoryTree}
+                      placeholder="Please select"
+                      treeDefaultExpandAll
+                      onChange={handleTreeSelectChange}
+                      treeLine
+                    />
+                  </Form.Item>
+                </Col>
+                <Col span={24}>
+                  <GetAddress />
+                </Col>
+              </Row>
+            </Card>
+          </Badge.Ribbon>
+
+          <Card title="Property information" className="custom-card" style={{marginTop: '2rem'}}>
             <Row gutter={16}>
-              <Col span={24} className="mb-5">
-                <Form.Item 
-                  label='Choose listing type' 
-                  name='listingType' 
-                  initialValue={'For sale'}
-                  style={{height: "4.5rem"}}
-                >
-                  <Segmented 
-                    options={['For sale', 'For rent']} 
-                    block 
-                    className="custom-segmented"
-                    onChange={handleChangeListingType}
+              <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
+                <Form.Item label='Property length' name='propertyLength'>
+                  <InputNumber 
+                    type="number" min={0} 
+                    onChange={handlePropertyLengthChange}
+                    className="custom-number-input" 
+                    placeholder="Enter length of property"
+                  />
+                </Form.Item>
+              </Col>
+              <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
+                <Form.Item label='Property width' name='propertyWidth'>
+                  <InputNumber 
+                    type="number" min={0} 
+                    className="custom-number-input" 
+                    onChange={handlePropertyWidthChange}
+                    placeholder="Enter width of property"
+                  />
+                </Form.Item>
+              </Col>
+              <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
+                <Form.Item label='Area'>
+                  <InputNumber 
+                    disabled 
+                    type="number" min={0} 
+                    className="custom-number-input" 
+                    placeholder="Enter width and height"
+                    value={propertyLength && propertyWidth && propertyLength * propertyWidth}
+                  />
+                </Form.Item>
+              </Col>
+              <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                <Form.Item label={`Property ${postType} price`} name='price'>
+                  <Input
+                    type='number'
+                    addonAfter={selectPriceUnit} 
+                    placeholder={`Please select property ${postType} price`}
+                    onChange={handlePriceChange}
+                  />
+                </Form.Item>
+              </Col>
+              <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                <Form.Item label={`Price per meter square`}>
+                  <Input
+                    disabled 
+                    placeholder={`Select property ${postType} price and area to view`} 
+                    style={{width: "100%"}}
+                    value={`${propertyLength && propertyWidth && price && (priceMultiplier * price / (propertyLength * propertyWidth)).toFixed(2)} million`}
                   />
                 </Form.Item>
               </Col>
               <Col span={24}>
-                <Form.Item 
-                  label='Select property category' 
-                  name='category' 
-                >
-                  <TreeSelect
-                    style={{ width: '100%' }}
-                    value={category}
-                    dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-                    treeData={categoryTree}
-                    placeholder="Please select"
-                    treeDefaultExpandAll
-                    onChange={handleTreeSelectChange}
-                    treeLine
-                  />
-                </Form.Item>
-              </Col>
-              <Col span={24}>
-                <GetAddress />
+                <UploadMultipleFile />
               </Col>
             </Row>
           </Card>
-        </Badge.Ribbon>
 
-        <Card title="Property information" className="custom-card" style={{marginTop: '2rem'}}>
-          <Row gutter={16}>
-            <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
-              <Form.Item label='Property length' name='propertyLength'>
-                <InputNumber 
-                  type="number" min={0} 
-                  onChange={handlePropertyLengthChange}
-                  className="custom-number-input" 
-                  placeholder="Enter length of property"
-                />
-              </Form.Item>
-            </Col>
-            <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
-              <Form.Item label='Property width' name='propertyWidth'>
-                <InputNumber 
-                  type="number" min={0} 
-                  className="custom-number-input" 
-                  onChange={handlePropertyWidthChange}
-                  placeholder="Enter width of property"
-                />
-              </Form.Item>
-            </Col>
-            <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
-              <Form.Item label='Area'>
-                <InputNumber 
-                  disabled 
-                  type="number" min={0} 
-                  className="custom-number-input" 
-                  placeholder="Enter width and height"
-                  value={propertyLength && propertyWidth && propertyLength * propertyWidth}
-                />
-              </Form.Item>
-            </Col>
-            <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
-              <Form.Item label={`Property ${postType} price`} name='price'>
-                <Input
-                  type='number'
-                  addonAfter={selectPriceUnit} 
-                  placeholder={`Please select property ${postType} price`}
-                  onChange={handlePriceChange}
-                />
-              </Form.Item>
-            </Col>
-            <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
-              <Form.Item label={`Price per meter square`}>
-                <Input
-                  disabled 
-                  placeholder={`Select property ${postType} price and area to view`} 
-                  style={{width: "100%"}}
-                  value={`${propertyLength && propertyWidth && price && (priceMultiplier * price / (propertyLength * propertyWidth)).toFixed(2)} million`}
-                />
-              </Form.Item>
-            </Col>
-            <Col span={24}>
-              <UploadMultipleFile />
-            </Col>
-          </Row>
-        </Card>
+          <Card title="Post information" className="custom-card" style={{marginTop: '2rem'}}>
+            <Row gutter={16}>
+              <Col span={24}>
+                <Form.Item 
+                  label={<span>Post title <b className="required-txt">- required:</b></span>}
+                  name='title'
+                  required
+                >
+                  <Input type="text" id="title" required />
+                </Form.Item>
+              </Col>
+              <Col span={24}>
+                <Form.Item label={`Property ${postType} description:`}>
+                  <Editor
+                    id="description" 
+                    value={editorContent}
+                    onEditorChange={handleEditorChange}
+                    apiKey='zabqr76pjlluyvwebi3mqiv72r4vyshj6g0u07spd34wk1t2' // hide
+                    init={{
+                      toolbar_mode: 'sliding', 
+                      plugins: ' anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount', 
+                      toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat', 
+                      tinycomments_mode: 'embedded', tinycomments_author: 'Author name', mergetags_list: [ { value: 'First.Name', title: 'First Name' }, { value: 'Email', title: 'Email' }, ], 
+                    }}
+                  />
+                </Form.Item>
+              </Col>
+              <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
+                <Form.Item label="Post type:" name='postType' initialValue={'default'}>
+                  <Radio.Group>
+                    <Radio value="default" className="label-light"> Default </Radio>
+                    <Radio value="preminum"> Preminum </Radio>
+                    <Radio value="featured"> Featured </Radio>
+                  </Radio.Group>
+                </Form.Item>
+              </Col>
+              <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
+                <Form.Item label="Property status:" name='status' initialValue={'active'}>
+                  <Radio.Group>
+                    <Radio value="active">Active</Radio>
+                    <Radio value="inactive">Inactive</Radio>
+                  </Radio.Group>
+                </Form.Item>
+              </Col>
 
-        <Card title="Post information" className="custom-card" style={{marginTop: '2rem'}}>
-          <Row gutter={16}>
-            <Col span={24}>
-              <Form.Item 
-                label={<span>Post title <b className="required-txt">- required:</b></span>}
-                name='title'
-                required
-              >
-                <Input type="text" id="title" required />
-              </Form.Item>
-            </Col>
-            <Col span={24}>
-              <Form.Item label={`Property ${postType} description:`}>
-                <Editor
-                  id="description" 
-                  value={editorContent}
-                  onEditorChange={handleEditorChange}
-                  apiKey='zabqr76pjlluyvwebi3mqiv72r4vyshj6g0u07spd34wk1t2' // hide
-                  init={{
-                    toolbar_mode: 'sliding', 
-                    plugins: ' anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount', 
-                    toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat', 
-                    tinycomments_mode: 'embedded', tinycomments_author: 'Author name', mergetags_list: [ { value: 'First.Name', title: 'First Name' }, { value: 'Email', title: 'Email' }, ], 
-                  }}
-                />
-              </Form.Item>
-            </Col>
-            <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
-              <Form.Item label="Post type:" name='postType' initialValue={'default'}>
-                <Radio.Group>
-                  <Radio value="default" className="label-light"> Default </Radio>
-                  <Radio value="preminum"> Preminum </Radio>
-                  <Radio value="featured"> Featured </Radio>
-                </Radio.Group>
-              </Form.Item>
-            </Col>
-            <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
-              <Form.Item label="Property status:" name='status' initialValue={'active'}>
-                <Radio.Group>
-                  <Radio value="active">Active</Radio>
-                  <Radio value="inactive">Inactive</Radio>
-                </Radio.Group>
-              </Form.Item>
-            </Col>
+              <Col span={24}>
+                <ExpireTimePicker onExpireDateTimeChange={handleExpireTimeChange} />
+              </Col>
 
-            <Col span={24}>
-              <ExpireTimePicker onExpireDateTimeChange={handleExpireTimeChange} />
-            </Col>
-
-            <Col sm={24} md={24}  lg={12} xl={12} xxl={12}>
-              <Form.Item label="Post position:" name='position'>
-                <InputNumber 
-                  type="number"
-                  id="position" 
-                  min={0} 
-                  className="custom-number-input position-input"
-                  placeholder='Auto increase by default'
-                />
-              </Form.Item>
-            </Col>
-            <Col span={24}>
-              <Form.Item>
-                <Button className='custom-btn-main' type="primary" htmlType="submit">
-                  Submit
-                </Button>
-              </Form.Item>
-            </Col>
-          </Row>
-        </Card>
-      </Form>
-    </div>
+              <Col sm={24} md={24}  lg={12} xl={12} xxl={12}>
+                <Form.Item label="Post position:" name='position'>
+                  <InputNumber 
+                    type="number"
+                    id="position" 
+                    min={0} 
+                    className="custom-number-input position-input"
+                    placeholder='Auto increase by default'
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={24}>
+                <Form.Item>
+                  <Button className='custom-btn-main' type="primary" htmlType="submit">
+                    Submit
+                  </Button>
+                </Form.Item>
+              </Col>
+            </Row>
+          </Card>
+        </Form>
+      </div>
+    ) : (
+      <NoPermission permissionType='access' />
+    )}
+  </>
   )
 }
 

@@ -26,6 +26,7 @@ const EditProperty: React.FC = () => {
 
   const [viewAllowed, setViewAllowed] = useState(true);
   const [loading, setLoading] = useState(true);
+
   const [postType, setPostType] = useState<string>('sell');
   const [propertyWidth, setPropertyWidth] = useState<number | null>(null);
   const [propertyLength, setPropertyLength] = useState<number | null>(null);
@@ -222,11 +223,6 @@ const EditProperty: React.FC = () => {
       setImageUrlToRemove(prevImages => [...prevImages, imageUrl]);
     }
   }
-
-  useEffect(() => {
-    console.log("viewAllowed:", viewAllowed)
-    console.log('currentUserPermissions?.editAllowed:', currentUserPermissions?.propertiesEdit)
-  }, [currentUserPermissions, viewAllowed])
 
   return (
     <>
@@ -450,11 +446,11 @@ const EditProperty: React.FC = () => {
             </Form>
           </div>
         )}
-      </>
-    ) : (
-      <NoPermission permissionType='access' />
-    )}
-  </>
+        </>
+      ) : (
+        <NoPermission permissionType='access' />
+      )}
+    </>
   )
 }
 
