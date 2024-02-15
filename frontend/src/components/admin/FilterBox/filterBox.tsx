@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Button, Col, Row, Segmented, Select, Slider, message } from 'antd';
 import { FaPlus } from "react-icons/fa6";
 import Search from 'antd/es/input/Search';
@@ -14,7 +14,11 @@ import './filterBox.scss';
 import { reverseListingType } from '../../../helpers/standardizeData';
 import { SegmentedValue } from 'antd/es/segmented';
 
-const FilterBox: React.FC = () => {
+interface Props {
+  createAllowed?: boolean;
+}
+
+const FilterBox: React.FC<Props> = ({createAllowed = false}) => {
   const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
@@ -83,11 +87,13 @@ const FilterBox: React.FC = () => {
             >
               Filters <IoFilter style={{ marginLeft: '.75rem' }} />
             </Button>
-            <Link to={`${location.pathname}/create`} className='custom-link'>
-              <Button className='add-new-button'>
-                Add new <FaPlus />
-              </Button>
-            </Link>
+            {createAllowed && (
+              <Link to={`${location.pathname}/create`} className='custom-link'>
+                <Button className='add-new-button'>
+                  Add new <FaPlus />
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </div>

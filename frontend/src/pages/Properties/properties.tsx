@@ -16,15 +16,21 @@ import FilterBox from '../../components/admin/FilterBox/filterBox';
 import StatusButton from '../../components/admin/StatusButton/statusButton';
 import './properties.scss';
 
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../redux/stores';
+import NoPermission from '../../components/admin/NoPermission/noPermission';
+import { setPermissions } from '../../redux/reduxSlices/permissionsSlice';
 
 const Properties: React.FC = () => {
+
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const filters = useSelector((state: RootState) => state.filters);
 
-  const [acessAllowed, setAcessAllowed] = useState(false);
+  const filters = useSelector((state: RootState) => state.filters);
+  const currentUserPermissions = useSelector((state: RootState) => state.currentUserPermissions.permissions);
+
+  const [accessAllowed, setAccessAllowed] = useState(true);
   const [loading, setLoading] = useState(true);
   const [propertyList, setPropertyList] = useState<PropertyType[]>([]);
   const [error, setError] = useState<string | null>(null); 
@@ -41,7 +47,6 @@ const Properties: React.FC = () => {
     skip: null,
     totalPage: null,
   })
-  // 
 
   const onPageChange: PaginationProps['onChange'] = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -62,12 +67,17 @@ const Properties: React.FC = () => {
         });
   
         if(response?.code === 200) {
-          setAcessAllowed(true);
           setPropertyList(response.properties);
           setPaginationObj(response.paginationObject);
           setPropertyCount(response.propertyCount);
           setLoading(false);
+
+          if (response.permissions) {
+            dispatch(setPermissions(response.permissions));
+          }
+
         } else {
+          setAccessAllowed(false);
           message.error(response.message, 4);
         }
   
@@ -76,7 +86,6 @@ const Properties: React.FC = () => {
           message.error('Unauthorized - Please log in to access this feature.', 3);
           navigate('/admin/auth/login');
         } else {
-          console.log('RUN HERE KJDNDK')
           message.error('Error occurred while fetching properties data', 2);
           setError('No property found.');
           console.log('Error occurred:', error);
@@ -153,10 +162,9 @@ const Properties: React.FC = () => {
     }
   };
   
-
   return (
     <>
-      {acessAllowed ? (
+      {accessAllowed ? (
         <>
           <div className='title-wrapper'>
             <h1 className="main-content-title">Property:</h1>
@@ -169,7 +177,7 @@ const Properties: React.FC = () => {
             />
           </div>
     
-          <FilterBox />
+          <FilterBox createAllowed={currentUserPermissions?.createAllowed}/>
     
           {error ? (
             <div>{error}</div>
@@ -303,18 +311,22 @@ const Properties: React.FC = () => {
                             <Link to={`/admin/properties/detail/${property._id}`}> 
                               <Button className='detail-btn'>Detail</Button> 
                             </Link>
-                            <Link to={`/admin/properties/edit/${property._id}`}> 
-                              <Button className='edit-btn'>Edit</Button> 
-                            </Link>
-                            <Popconfirm
-                              title="Delete the task"
-                              description="Are you sure to delete this property?"
-                              onConfirm={() => confirmDelete(property._id)}
-                              okText="Yes"
-                              cancelText="No"
-                            >
-                              <Button type="primary" danger>Delete</Button> 
-                            </Popconfirm>
+                            {currentUserPermissions?.editAllowed && (
+                              <Link to={`/admin/properties/edit/${property._id}`}> 
+                                <Button className='edit-btn'>Edit</Button> 
+                              </Link>
+                            )}
+                            {currentUserPermissions?.deleteAllowed && (
+                              <Popconfirm
+                                title="Delete the task"
+                                description="Are you sure to delete this property?"
+                                onConfirm={() => confirmDelete(property._id)}
+                                okText="Yes"
+                                cancelText="No"
+                              >
+                                <Button type="primary" danger>Delete</Button> 
+                              </Popconfirm>
+                            )}
                           </div>
                         </Col>
                       </div>
@@ -353,7 +365,7 @@ const Properties: React.FC = () => {
           />
         </>
       ) : (
-        <>No access</>
+        <NoPermission permissionType='view' />
       )}
     </>
   );

@@ -6,6 +6,7 @@ import { processAdminAccountLogData } from "../../../../helpers/processData";
 import { AdminAccountLogType, AdminAccountType } from "../../../../commonTypes";
 import { generateRandomString } from "../../../../helpers/generateString";
 import { decodeToken, generateToken } from "../../../../helpers/auth.methods";
+import Role from "../../models/roles.model";
 
 // [POST] /admin/auth/login
 export const loginPost = async (req: Request, res: Response) => {
@@ -60,7 +61,6 @@ export const loginPost = async (req: Request, res: Response) => {
       });
     }
   
-    // let refreshToken = generateRandomString(jwtVariable.refreshTokenSize);
     let refreshToken = generateRandomString(30);
 
     if (!user.token) {
@@ -77,7 +77,6 @@ export const loginPost = async (req: Request, res: Response) => {
       message: 'Success',
       accessToken,
       refreshToken,
-      user,
     });
 
   } catch (error) {
@@ -90,7 +89,6 @@ export const loginPost = async (req: Request, res: Response) => {
 };
 
 export const refreshToken = async (req: Request, res: Response) => {
-  console.log('akjjdkadbka')
 
 	// Get access token from header
 	const accessTokenFromHeader = req.headers.authorization;

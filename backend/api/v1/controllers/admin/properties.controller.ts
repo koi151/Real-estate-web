@@ -84,8 +84,14 @@ export const index = async (req: Request, res: Response) => {
         message: 'Success',
         properties: properties,
         paginationObject: paginationObject,
-        propertyCount: propertyCount
+        propertyCount: propertyCount,
+        permissions: {
+          editAllowed: res.locals.currentUser.permissions.includes('properties_edit'),
+          createAllowed: res.locals.currentUser.permissions.includes('properties_create'),
+          deleteAllowed: res.locals.currentUser.permissions.includes('properties_delete')
+        }
       });
+
     } else {
       res.json({
         code: 404,
@@ -105,6 +111,13 @@ export const index = async (req: Request, res: Response) => {
 // [GET] /admin/properties/detail/:propertyId
 export const detail = async (req: Request, res: Response) => {
   try {
+    if (!res.locals.currentUser.permissions.includes('properties_view')) {
+      return res.json({
+        code: 403,
+        message: "Account does not have access rights"
+      })
+    }
+
     const id: string | undefined = req.params.propertyId;
     if (!id) {
       return res.status(400).json({
@@ -143,6 +156,13 @@ export const detail = async (req: Request, res: Response) => {
 // [DELETE] /admin/properties/delete/:propertyId
 export const singleDelete = async (req: Request, res: Response) => {
   try {
+    if (!res.locals.currentUser.permissions.includes('properties_delete')) {
+      return res.json({
+        code: 403,
+        message: "Account does not have access rights"
+      })
+    }
+
     const id: string | undefined = req.params.propertyId;
     if (!id) {
       return res.status(400).json({
@@ -180,6 +200,13 @@ export const singleDelete = async (req: Request, res: Response) => {
 // [POST] /admin/properties/create
 export const createPost = async (req: any, res: Response) => {
   try {
+    if (!res.locals.currentUser.permissions.includes('properties_create')) {
+      return res.json({
+        code: 403,
+        message: "Account does not have access rights"
+      })
+    }
+
     const property: PropertyType = processPropertyData(req);
 
     if (!property.position) {
@@ -207,6 +234,13 @@ export const createPost = async (req: any, res: Response) => {
 // [PATCH] /admin/properties/edit/:propertyId
 export const editPatch = async (req: Request, res: Response) => {
   try {    
+    if (!res.locals.currentUser.permissions.includes('properties_edit')) {
+      return res.json({
+        code: 403,
+        message: "Account does not have access rights"
+      })
+    }
+
     const id: string | undefined = req.params.propertyId;
     if (!id) {
       return res.status(400).json({
@@ -250,6 +284,13 @@ export const editPatch = async (req: Request, res: Response) => {
 
 // [PATCH] /admin/properties/change-status/:status/:id
 export const changeStatus = async (req: Request, res: Response) => {
+  if (!res.locals.currentUser.permissions.includes('properties_edit')) {
+    return res.json({
+      code: 403,
+      message: "Account does not have access rights"
+    })
+  }
+
   try {
     const status = req.params.status;
 
@@ -285,6 +326,13 @@ export const changeStatus = async (req: Request, res: Response) => {
 // [PATCH] /admin/properties/multi-change
 export const multiChange = async (req: Request, res: Response) => {
   try {
+    if (!res.locals.currentUser.permissions.includes('properties_edit')) {
+      return res.json({
+        code: 403,
+        message: "Account does not have access rights"
+      })
+    }
+
     const idsAndPos: string[] | undefined = req.body.ids;
     if (!idsAndPos) {
       return res.status(400).json({

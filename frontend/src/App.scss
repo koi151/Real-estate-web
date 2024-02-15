@@ -234,3 +234,19 @@ label {
     }
   }
 }
+
+// No permission - component
+.no-permission-div {
+  width: calc(100% - 20rem);
+  height: calc(100% - 7rem);
+  position: absolute;
+  top: 7rem;
+  left: 20rem;
+  background-color: $main-content-bg;
+  font-size: 2.4rem;
+  font-weight: bold;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

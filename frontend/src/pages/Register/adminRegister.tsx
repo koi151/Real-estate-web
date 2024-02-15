@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { Form, Col, Row, Input, Button, message } from "antd";
 import './adminRegister.scss'
 import adminAuthorizationService from "../../services/admin/authorization.service";
+import { setPermissions } from "../../redux/reduxSlices/permissionsSlice";
+import { useDispatch } from "react-redux";
 
 interface AdminRegisterProps {
   isRegisterPage: boolean;
@@ -24,11 +26,13 @@ const AdminRegister: React.FC<AdminRegisterProps> = ({ isRegisterPage }) => {
             message.error(response.message, 3);
             break;
           case 200:
-              localStorage.setItem('accessToken', response.accessToken);
-              localStorage.setItem('refreshToken', response.refreshToken);
-              message.success(`${isRegisterPage ? "Register" : "Login"} successful. Welcome to administrator page !`);
-              navigate('/admin/properties');
+            localStorage.setItem('accessToken', response.accessToken);
+            localStorage.setItem('refreshToken', response.refreshToken);
+
+            message.success(`${isRegisterPage ? "Register" : "Login"} successful. Welcome to administrator page !`);
+            navigate('/admin/properties');
             break;
+
           default:
             break;
         }
