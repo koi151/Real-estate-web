@@ -110,6 +110,7 @@ const Properties: React.FC = () => {
     return `${location.pathname}${Object.keys(params).length > 0 ? `?${new URLSearchParams(params)}` : ''}`;
   };
 
+  // update url
   useEffect(() => {
     navigate(buildURL());
   }, [status, listingType, keyword, sorting])

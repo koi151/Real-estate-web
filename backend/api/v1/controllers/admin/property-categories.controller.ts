@@ -17,6 +17,13 @@ const processImagesData = (imageUrls: string[] | string | undefined): string[] =
 // [GET] /admin/property-categories
 export const index = async (req: Request, res: Response) => {
   try {
+    if (!res.locals.currentUser.permissions.includes('property-categories_view')) {
+      return res.json({
+        code: 403,
+        message: "Account does not have access rights"
+      })
+    }
+
     interface Find {
       deleted?: boolean | null,
       listingType?: string | null
@@ -78,8 +85,14 @@ export const index = async (req: Request, res: Response) => {
         message: 'Success',
         categories: categories,
         paginationObject: paginationObject,
-        categoryCount: categoryCount
+        categoryCount: categoryCount,
+        permissions: {
+          propertyCategoriesEdit: res.locals.currentUser.permissions.includes('property-categories_edit'),
+          propertyCategoriesCreate: res.locals.currentUser.permissions.includes('property-categories_create'),
+          propertyCategoriesDelete: res.locals.currentUser.permissions.includes('property-categories_delete')
+        }
       });
+
     } else {
       res.status(404).json({
         code: 404,
@@ -99,6 +112,13 @@ export const index = async (req: Request, res: Response) => {
 // [GET] /admin/property-categories/detail/:categoryId
 export const detail = async (req: Request, res: Response) => {
   try {
+    if (!res.locals.currentUser.permissions.includes('property-categories_view')) {
+      return res.json({
+        code: 403,
+        message: "Account does not have access rights"
+      })
+    }
+
     const id: string | undefined = req.params.categoryId;
     if (!id) {
       return res.status(400).json({
@@ -137,6 +157,13 @@ export const detail = async (req: Request, res: Response) => {
 // [GET] /admin/property-category/category-tree
 export const categoryTree = async (req: Request, res: Response) => {
   try {
+    if (!res.locals.currentUser.permissions.includes('property-categories_view')) {
+      return res.json({
+        code: 403,
+        message: "Account does not have access rights"
+      })
+    }
+
     const categories: Document<PropertyCategoryType>[] = await PropertyCategory.find(
       { deleted: false },
       'id title parent_id'
@@ -170,6 +197,13 @@ export const categoryTree = async (req: Request, res: Response) => {
 // [PATCH] /admin/property-categories/change-status/:status/:id
 export const changeStatus = async (req: Request, res: Response) => {
   try {
+    if (!res.locals.currentUser.permissions.includes('property-categories_edit')) {
+      return res.json({
+        code: 403,
+        message: "Account does not have access rights"
+      })
+    }
+
     const status = req.params.status;
 
     if (!isValidStatus(status)) {
@@ -204,6 +238,13 @@ export const changeStatus = async (req: Request, res: Response) => {
 // [PATCH] /admin/property-categories/edit/:propertyId
 export const editPatch = async (req: Request, res: Response) => {
   try { 
+    if (!res.locals.currentUser.permissions.includes('property-categories_edit')) {
+      return res.json({
+        code: 403,
+        message: "Account does not have access rights"
+      })
+    }
+
     const id: string | undefined = req.params.categoryId;
     if (!id) {
       return res.status(400).json({
@@ -247,6 +288,13 @@ export const editPatch = async (req: Request, res: Response) => {
 // [POST] /admin/property-categories/create
 export const createPost = async (req: Request, res: Response) => {
   try {    
+    if (!res.locals.currentUser.permissions.includes('property-categories_create')) {
+      return res.json({
+        code: 403,
+        message: "Account does not have access rights"
+      })
+    }
+
     const category: PropertyCategoryType = processCategoryData(req);
 
     if (!category.position) {
@@ -274,6 +322,13 @@ export const createPost = async (req: Request, res: Response) => {
 // [DELETE] /admin/property-categories/delete/:propertyId
 export const singleDelete = async (req: Request, res: Response) => {
   try {
+    if (!res.locals.currentUser.permissions.includes('property-categories_delete')) {
+      return res.json({
+        code: 403,
+        message: "Account does not have access rights"
+      })
+    }
+
     const id: string | undefined = req.params.categoryId;
     if (!id) {
       return res.status(400).json({

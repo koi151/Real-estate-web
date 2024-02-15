@@ -3,21 +3,26 @@ import { PropertyCategoryType } from "../../../../backend/commonTypes";
 import { Badge, Button, Card, Col, Form, Input, InputNumber, Radio, Row, Spin, message } from "antd";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Editor } from '@tinymce/tinymce-react';
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import propertyCategoriesService from "../../services/admin/property-categories.service";
 import UploadMultipleFile from "../../components/admin/UploadMultipleFile/uploadMultipleFile";
 import { RootState } from "../../redux/stores";
 import NoPermission from "../../components/admin/NoPermission/noPermission";
+import AdminRolesService from "../../services/admin/roles.service";
+import { setPermissions } from "../../redux/reduxSlices/permissionsSlice";
 
 const EditPropertyCategories: React.FC = () => {
   
   const { id } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const currentUserPermissions = useSelector((state: RootState) => state.currentUserPermissions.permissions);
 
+  const [viewAllowed, setViewAllowed] = useState(true);
   const [loading, setLoading] = useState<boolean>(true);
+
   const [editorContent, setEditorContent] = useState<string>("");
   const [category, setCategory] = useState<PropertyCategoryType | undefined>(undefined);
 
@@ -54,6 +59,37 @@ const EditPropertyCategories: React.FC = () => {
     };
     fetchData();
   }, [id, navigate])
+
+  // if permission in redux not existed => fetch permissions
+  useEffect(() =>  {
+    if (currentUserPermissions?.propertyCategoriesEdit)
+      return;
+
+    const fetchData = async () => {
+      try {
+        const response = await AdminRolesService.getPermissions();
+        if (response.code === 200) {
+          if (response.permissions) {
+            dispatch(setPermissions(response.permissions));
+          }
+
+          if (!response.permissions.propertyCategoriesEdit) {
+            setViewAllowed(false)
+          }
+
+        } else {
+          setViewAllowed(false);
+        }
+
+      } catch (err) {
+        console.log("Error occurred while fetching permissions:", err);
+        message.error('Error occurred, redirect to previous page', 3)
+        navigate(-1);
+        setViewAllowed(false);
+      }
+    }
+    fetchData();
+  }, []);
 
   const handleEditorChange = (content: any) => {
     const contentString = typeof content === 'string' ? content : '';
@@ -118,7 +154,7 @@ const EditPropertyCategories: React.FC = () => {
 
   return (
     <>
-      {currentUserPermissions?.editAllowed ? (
+      {currentUserPermissions?.propertyCategoriesEdit || viewAllowed ? (
         <>
           {loading ? (
               <div className='d-flex justify-content-center' style={{width: "100%", height: "100vh"}}>
@@ -209,7 +245,7 @@ const EditPropertyCategories: React.FC = () => {
           )}
         </>
       ) : (
-        <NoPermission permissionType='view' />
+        <NoPermission permissionType='access' />
       )}
     </>
   )
