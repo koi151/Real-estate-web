@@ -10,6 +10,13 @@ import { isValidStatus } from "../../../../helpers/dataTypeCheck";
 // [GET] /admin/accounts
 export const index = async (req: Request, res: Response) => {
   try {
+    if (!res.locals.currentUser.permissions.includes('administrator-accounts_view')) {
+      return res.json({
+        code: 403,
+        message: "Account does not have access rights"
+      })
+    }
+
     const accounts = await AdminAccount.find(
       { deleted: false }
     ).select('-password -token');
@@ -30,7 +37,13 @@ export const index = async (req: Request, res: Response) => {
       res.status(200).json({
         code: 200,
         message: "Success",
-        accounts: accountsWithRole
+        accounts: accountsWithRole,
+        permissions: {
+          administratorAccountsView: res.locals.currentUser.permissions.includes('administrator-accounts_view'),
+          administratorAccountsEdit: res.locals.currentUser.permissions.includes('administrator-accounts_edit'),
+          administratorAccountsCreate: res.locals.currentUser.permissions.includes('administrator-accounts_create'),
+          administratorAccountsDelete: res.locals.currentUser.permissions.includes('administrator-accounts_delete')
+        }
       })
 
     } else {
@@ -52,6 +65,13 @@ export const index = async (req: Request, res: Response) => {
 // [GET] /admin/accounts/detail/:accountId
 export const detail = async (req: Request, res: Response) => {
   try {
+    if (!res.locals.currentUser.permissions.includes('administrator-accounts_view')) {
+      return res.json({
+        code: 403,
+        message: "Account does not have access rights"
+      })
+    }
+
     const id: string | undefined = req.params.accountId;
     if (!id) {
       return res.status(400).json({
@@ -104,10 +124,16 @@ export const detail = async (req: Request, res: Response) => {
   }
 };
 
-
 // [POST] /admin/accounts/register
 export const createPost = async (req: Request, res: Response) => {
-  try {    
+  try {   
+    if (!res.locals.currentUser.permissions.includes('administrator-accounts_create')) {
+      return res.json({
+        code: 403,
+        message: "Account does not have access rights"
+      })
+    }
+
     if (req.body.email) {
       const userExisted = AdminAccount.find({
         email: req.body.email,
@@ -149,6 +175,13 @@ export const createPost = async (req: Request, res: Response) => {
 // [PATCH] /admin/accounts/change-status/:status/:id
 export const changeStatus = async (req: Request, res: Response) => {
   try {
+    if (!res.locals.currentUser.permissions.includes('administrator-accounts_edit')) {
+      return res.json({
+        code: 403,
+        message: "Account does not have access rights"
+      })
+    }
+
     const id: string | undefined = req.params.accountId;
     if (!id) {
       return res.status(400).json({
@@ -190,6 +223,13 @@ export const changeStatus = async (req: Request, res: Response) => {
 // [PATCH] /admin/accounts/edit/:accountId
 export const editPatch = async (req: Request, res: Response) => {
   try {    
+    if (!res.locals.currentUser.permissions.includes('administrator-accounts_edit')) {
+      return res.json({
+        code: 403,
+        message: "Account does not have access rights"
+      })
+    }
+
     const id: string | undefined = req.params.accountId;
     if (!id) {
       return res.status(400).json({
@@ -235,10 +275,16 @@ export const editPatch = async (req: Request, res: Response) => {
   }
 }
 
-
 // [DELETE] /admin/accounts/delete/:accountID
 export const singleDelete = async (req: Request, res: Response) => {
   try {
+    if (!res.locals.currentUser.permissions.includes('administrator-accounts_delete')) {
+      return res.json({
+        code: 403,
+        message: "Account does not have access rights"
+      })
+    }
+  
     const id: string | undefined = req.params.accountId;
     if (!id) {
       return res.status(400).json({

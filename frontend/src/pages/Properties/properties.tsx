@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { Link, useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { Breadcrumb, Button, Checkbox, Col, Image, InputNumber, Pagination, 
          PaginationProps, Popconfirm, Row, Skeleton, Space, Tag,  Tooltip,  message } from 'antd';
 
@@ -9,17 +10,17 @@ import * as standardizeData from '../../helpers/standardizeData'
 import getPriceUnit from '../../helpers/getPriceUnit';
 
 import propertiesService from '../../services/admin/properties.service';
+
 import { PropertyType, PaginationObject } from '../../../../backend/commonTypes';
 import ViewCount from '../../components/admin/Counters/ViewCount/viewCount';
 import RoomCountTooltip from '../../components/admin/Counters/RoomCounter/roomCount';
 import FilterBox from '../../components/admin/FilterBox/filterBox';
 import StatusButton from '../../components/admin/StatusButton/statusButton';
-import './properties.scss';
-
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../redux/stores';
 import NoPermission from '../../components/admin/NoPermission/noPermission';
+
+import { RootState } from '../../redux/stores';
 import { setPermissions } from '../../redux/reduxSlices/permissionsSlice';
+import './properties.scss';
 
 const Properties: React.FC = () => {
 
@@ -52,6 +53,7 @@ const Properties: React.FC = () => {
     setCurrentPage(pageNumber);
   };
 
+  // fetch properties data
   useEffect(() => {
     setLoading(true);
     const fetchData = async () => {
@@ -97,6 +99,11 @@ const Properties: React.FC = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [keyword, status, sorting, currentPage, listingType, navigate]); 
 
+  // update url
+  useEffect(() => {
+    navigate(buildURL());
+  }, [status, listingType, keyword, sorting])
+
   const buildURL = () => {
     const params: { [key: string]: string } = {};
     if (keyword) params['keyword'] = keyword;
@@ -109,11 +116,6 @@ const Properties: React.FC = () => {
 
     return `${location.pathname}${Object.keys(params).length > 0 ? `?${new URLSearchParams(params)}` : ''}`;
   };
-
-  // update url
-  useEffect(() => {
-    navigate(buildURL());
-  }, [status, listingType, keyword, sorting])
   
   const handleCheckboxChange = (id: string | undefined) => (e: CheckboxChangeEvent) => {
     if (id === undefined) {
