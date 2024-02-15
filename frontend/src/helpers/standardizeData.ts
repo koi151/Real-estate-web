@@ -32,3 +32,17 @@ export const getRoomCount = (roomList: string[], type: RoomType) => {
     console.log('Error occurred in getRoomCount helper function:', error);
   }
 }
+
+export const convertLabelToPermission = (label: string): string => {
+  const parts = label.toLowerCase().split(' ');
+  const basePermission = parts.slice(0, -1).join('-');
+  const action = parts[parts.length - 1].toLowerCase();
+  return `${basePermission}_${action}`;
+};
+
+export const convertPermissionToLabels = (label: string): string => {
+  const parts = label.toLowerCase().split(/[-_]/);
+  const basePermission = parts.slice(0, -1).map((word, index) => index === 0 ? word.charAt(0).toUpperCase() + word.slice(1) : word).join(' ');
+  const action = parts[parts.length - 1];
+  return `${basePermission} ${action}`;
+};  

@@ -40,6 +40,11 @@ class RolesServiceAdmin {
     return this.handleRequest(request);
   }
 
+  async getPermissions() { // redux
+    const request = this.api.get(`/permissions`, this.getAuthHeaders());
+    return this.handleRequest(request);
+  }
+
   async getRoles() { 
     const request = this.api.get("/", this.getAuthHeaders());
     return this.handleRequest(request);

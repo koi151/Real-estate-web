@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Badge, Button, Card, Col, Form, Input, Row, Spin, message, Select } from "antd";
 import TextArea from "antd/es/input/TextArea";
+
 import AdminRolesService from "../../services/admin/roles.service";
 import { RolesType } from "../../../../backend/commonTypes";
 import { AiFillEye, AiOutlineEdit, AiOutlineDelete, AiOutlinePlusSquare } from 'react-icons/ai';
-
+import { convertLabelToPermission, convertPermissionToLabels } from '../../helpers/standardizeData'
+ 
 const EditAdminRole: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -59,21 +61,6 @@ const EditAdminRole: React.FC = () => {
       }[action],
     })),
   }));
-
-  const convertLabelToPermission = (label: string): string => {
-    const parts = label.toLowerCase().split(' ');
-    const basePermission = parts.slice(0, -1).join('-');
-    const action = parts[parts.length - 1].toLowerCase();
-    return `${basePermission}_${action}`;
-  };
-
-  const convertPermissionToLabels = (label: string): string => {
-    const parts = label.toLowerCase().split(/[-_]/);
-    const basePermission = parts.slice(0, -1).map((word, index) => index === 0 ? word.charAt(0).toUpperCase() + word.slice(1) : word).join(' ');
-    const action = parts[parts.length - 1];
-    return `${basePermission} ${action}`;
-  };  
-  
 
   const onFinishForm = async (data: any) => {
     try {

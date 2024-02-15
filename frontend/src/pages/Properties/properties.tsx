@@ -93,6 +93,8 @@ const Properties: React.FC = () => {
       }
     };
     fetchData();
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [keyword, status, sorting, currentPage, listingType, navigate]); 
 
   const buildURL = () => {
@@ -177,7 +179,7 @@ const Properties: React.FC = () => {
             />
           </div>
     
-          <FilterBox createAllowed={currentUserPermissions?.createAllowed}/>
+          <FilterBox createAllowed={currentUserPermissions?.propertiesCreate}/>
     
           {error ? (
             <div>{error}</div>
@@ -311,12 +313,12 @@ const Properties: React.FC = () => {
                             <Link to={`/admin/properties/detail/${property._id}`}> 
                               <Button className='detail-btn'>Detail</Button> 
                             </Link>
-                            {currentUserPermissions?.editAllowed && (
+                            {currentUserPermissions?.propertiesEdit && (
                               <Link to={`/admin/properties/edit/${property._id}`}> 
                                 <Button className='edit-btn'>Edit</Button> 
                               </Link>
                             )}
-                            {currentUserPermissions?.deleteAllowed && (
+                            {currentUserPermissions?.propertiesDelete && (
                               <Popconfirm
                                 title="Delete the task"
                                 description="Are you sure to delete this property?"

@@ -11,11 +11,20 @@ import * as standardizeData from '../../helpers/standardizeData'
 import GetAddress from "../../components/admin/getAddress/getAddress";
 import UploadMultipleFile from "../../components/admin/UploadMultipleFile/uploadMultipleFile";
 import ExpireTimePicker from "../../components/admin/ExpireTimePicker/expireTimePicker";
+import { RootState } from "../../redux/stores";
+import { useDispatch, useSelector } from "react-redux";
+import NoPermission from "../../components/admin/NoPermission/noPermission";
+import AdminRolesService from "../../services/admin/roles.service";
+import { setPermissions } from "../../redux/reduxSlices/permissionsSlice";
 
 const EditProperty: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
+  const currentUserPermissions = useSelector((state: RootState) => state.currentUserPermissions.permissions);
+
+  const [viewAllowed, setViewAllowed] = useState(true);
   const [loading, setLoading] = useState(true);
   const [postType, setPostType] = useState<string>('sell');
   const [propertyWidth, setPropertyWidth] = useState<number | null>(null);
@@ -29,6 +38,7 @@ const EditProperty: React.FC = () => {
   const [expireDateTime, setExpireDateTime] = useState<Dayjs | null>(null);
   const [imageUrlToRemove, setImageUrlToRemove] = useState<string[]>([]);
 
+  // fetch existed data of properties
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -59,6 +69,37 @@ const EditProperty: React.FC = () => {
     };
     fetchData();
   }, [id, navigate])
+
+  // if permission in redux not existed => fetch permissions
+  useEffect(() =>  {
+    if (currentUserPermissions?.propertiesEdit)
+      return;
+
+    const fetchData = async () => {
+      try {
+        const response = await AdminRolesService.getPermissions();
+        if (response.code === 200) {
+          if (response.permissions) {
+            dispatch(setPermissions(response.permissions));
+          }
+
+          if (!response.permissions.propertiesEdit) {
+            setViewAllowed(false)
+          }
+
+        } else {
+          setViewAllowed(false);
+        }
+
+      } catch (err) {
+        console.log("Error occurred while fetching permissions:", err);
+        message.error('Error occurred, redirect to previous page', 3)
+        navigate(-1);
+        setViewAllowed(false);
+      }
+    }
+    fetchData();
+  }, []);
   
   const propertyCategoryOptions = [
     { value: 'townHouse', label: 'Town house' },
@@ -182,227 +223,238 @@ const EditProperty: React.FC = () => {
     }
   }
 
+  useEffect(() => {
+    console.log("viewAllowed:", viewAllowed)
+    console.log('currentUserPermissions?.editAllowed:', currentUserPermissions?.propertiesEdit)
+  }, [currentUserPermissions, viewAllowed])
+
   return (
-    <div>
-      { loading ? (
-          <div className='d-flex justify-content-center' style={{width: "100%", height: "100vh"}}>
-            <Spin tip='Loading...' size="large">
-              <div className="content" />
-            </Spin>
-          </div>
-      ) : (
-        <div className="d-flex align-items-center justify-content-center"> 
-          <Form 
-            layout="vertical" 
-            onFinish={onFinishForm}
-            method="POST"
-            encType="multipart/form-data"
-            className="custom-form" 
-          >
-            <Badge.Ribbon text={<Link to="/admin/properties">Back</Link>} color="purple" className="custom-ribbon">
-              <Card 
-                title="Basic information"
-                className="custom-card" 
-              >
-                <Row gutter={16}>
-                  <Col span={24} className="mb-5">
-                      <Form.Item 
-                        label='Listing type:' 
-                        name='listingType' 
-                        style={{height: "4.5rem"}}
-                        initialValue={standardizeData.listingType(property?.listingType || "")}
-                      >
-                        <Segmented 
-                          options={['For Sale', 'For Rent']} 
-                          block 
-                          className="custom-segmented"
-                          onChange={handleChangeListingType}
+    <>
+      {currentUserPermissions?.propertiesEdit || viewAllowed ? (
+        <>
+        {loading ? (
+            <div className='d-flex justify-content-center' style={{width: "100%", height: "100vh"}}>
+              <Spin tip='Loading...' size="large">
+                <div className="content" />
+              </Spin>
+            </div>
+        ) : (
+          <div className="d-flex align-items-center justify-content-center"> 
+            <Form 
+              layout="vertical" 
+              onFinish={onFinishForm}
+              method="POST"
+              encType="multipart/form-data"
+              className="custom-form" 
+            >
+              <Badge.Ribbon text={<Link to="/admin/properties">Back</Link>} color="purple" className="custom-ribbon">
+                <Card 
+                  title="Basic information"
+                  className="custom-card" 
+                >
+                  <Row gutter={16}>
+                    <Col span={24} className="mb-5">
+                        <Form.Item 
+                          label='Listing type:' 
+                          name='listingType' 
+                          style={{height: "4.5rem"}}
+                          initialValue={standardizeData.listingType(property?.listingType || "")}
+                        >
+                          <Segmented 
+                            options={['For Sale', 'For Rent']} 
+                            block 
+                            className="custom-segmented"
+                            onChange={handleChangeListingType}
+                          />
+                        </Form.Item>
+                    </Col>
+                    <Col sm={24}>
+                      <Form.Item label='Property type' name='propertyCategory' initialValue={property?.propertyDetails?.propertyCategory}>
+                        <Select
+                          value={property?.propertyDetails?.propertyCategory}
+                          placeholder='Please select property type'
+                          style={{ width: "100%" }}
+                          options={propertyCategoryOptions}
                         />
-                      </Form.Item>
-                  </Col>
-                  <Col sm={24}>
-                    <Form.Item label='Property type' name='propertyCategory' initialValue={property?.propertyDetails?.propertyCategory}>
-                      <Select
-                        value={property?.propertyDetails?.propertyCategory}
-                        placeholder='Please select property type'
-                        style={{ width: "100%" }}
-                        options={propertyCategoryOptions}
+                      </Form.Item> 
+                    </Col>
+
+                    <Col span={24}>
+                      <GetAddress initialValues={property?.location}/>
+                    </Col>
+                  </Row>
+                </Card>
+              </Badge.Ribbon>
+
+              <Card title="Property information" className="custom-card" style={{marginTop: '2rem'}}>
+                <Row gutter={16}>
+                  <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
+                    <Form.Item 
+                      label='Property length' 
+                      name='propertyLength' 
+                      initialValue={property?.area?.propertyLength}
+                    >
+                      <InputNumber 
+                        type="number" min={0} 
+                        onChange={handlePropertyLengthChange}
+                        className="custom-number-input" 
+                        placeholder="Enter length of property"
                       />
-                    </Form.Item> 
+                    </Form.Item>
+                  </Col>
+                  <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
+                    <Form.Item 
+                      label='Property width' 
+                      name='propertyWidth'
+                      initialValue={property?.area?.propertyWidth}
+                    >
+                      <InputNumber 
+                        type="number" min={0} 
+                        className="custom-number-input" 
+                        onChange={handlePropertyWidthChange}
+                        placeholder="Enter width of property"
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
+                    <Form.Item 
+                      label='Area'
+                      initialValue={property?.area?.propertyLength && property?.area?.propertyWidth 
+                        ? property?.area?.propertyLength * property?.area?.propertyWidth 
+                        : undefined}
+                    >
+                      <InputNumber 
+                        disabled 
+                        type="number" 
+                        min={0} 
+                        className="custom-number-input" 
+                        placeholder="Enter width and height"
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                    <Form.Item
+                      label={`Property ${postType} price`} 
+                      name='price'
+                      initialValue={property?.price && property.price >= 1000 ? property.price / 1000 : property?.price}
+                    >
+                      <Input 
+                        value={property?.price}
+                        type='number'
+                        addonAfter={
+                          <Select 
+                            value={property?.price && property.price >= 1000 ? "billion" : "million"} 
+                            onChange={handlePriceUnitChange}
+                          >
+                            <Select.Option value="million">million</Select.Option>
+                            <Select.Option value="billion">billion</Select.Option>
+                          </Select>
+                        } 
+                        placeholder={`Please select property ${postType} price`} 
+                      />
+                    </Form.Item>
+                  </Col>
+
+                  <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                    <Form.Item label={`Price per meter square`}>
+                      <Input
+                        disabled 
+                        placeholder={`Select property ${postType} price and area to view`} 
+                        style={{width: "100%"}}
+                        value={`${property?.area?.propertyLength && property?.area?.propertyWidth && property?.price 
+                          && (priceMultiplier * property.price / (property.area.propertyLength * property.area.propertyWidth)).toFixed(2)} million`}
+                      />
+                    </Form.Item>
                   </Col>
 
                   <Col span={24}>
-                    <GetAddress initialValues={property?.location}/>
+                    <UploadMultipleFile uploadedImages={property?.images} setImageUrlRemove={handleImageUrlRemove}/>
                   </Col>
                 </Row>
               </Card>
-            </Badge.Ribbon>
 
-            <Card title="Property information" className="custom-card" style={{marginTop: '2rem'}}>
-              <Row gutter={16}>
-                <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
-                  <Form.Item 
-                    label='Property length' 
-                    name='propertyLength' 
-                    initialValue={property?.area?.propertyLength}
-                  >
-                    <InputNumber 
-                      type="number" min={0} 
-                      onChange={handlePropertyLengthChange}
-                      className="custom-number-input" 
-                      placeholder="Enter length of property"
-                    />
-                  </Form.Item>
-                </Col>
-                <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
-                  <Form.Item 
-                    label='Property width' 
-                    name='propertyWidth'
-                    initialValue={property?.area?.propertyWidth}
-                  >
-                    <InputNumber 
-                      type="number" min={0} 
-                      className="custom-number-input" 
-                      onChange={handlePropertyWidthChange}
-                      placeholder="Enter width of property"
-                    />
-                  </Form.Item>
-                </Col>
-                <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
-                  <Form.Item 
-                    label='Area'
-                    initialValue={property?.area?.propertyLength && property?.area?.propertyWidth 
-                      ? property?.area?.propertyLength * property?.area?.propertyWidth 
-                      : undefined}
-                  >
-                    <InputNumber 
-                      disabled 
-                      type="number" 
-                      min={0} 
-                      className="custom-number-input" 
-                      placeholder="Enter width and height"
-                    />
-                  </Form.Item>
-                </Col>
-                <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
-                  <Form.Item
-                    label={`Property ${postType} price`} 
-                    name='price'
-                    initialValue={property?.price && property.price >= 1000 ? property.price / 1000 : property?.price}
-                  >
-                    <Input 
-                      value={property?.price}
-                      type='number'
-                      addonAfter={
-                        <Select 
-                          value={property?.price && property.price >= 1000 ? "billion" : "million"} 
-                          onChange={handlePriceUnitChange}
-                        >
-                          <Select.Option value="million">million</Select.Option>
-                          <Select.Option value="billion">billion</Select.Option>
-                        </Select>
-                      } 
-                      placeholder={`Please select property ${postType} price`} 
-                    />
-                  </Form.Item>
-                </Col>
+              <Card title="Post information" className="custom-card" style={{marginTop: '2rem'}}>
+                <Row gutter={16}>
+                  <Col span={24}>
+                    <Form.Item 
+                      label={<span>Post title <b className="required-txt">- required:</b></span>}
+                      name='title'
+                      required
+                      initialValue={property?.title}
+                    >
+                      <Input type="text" id="title" required />
+                    </Form.Item>
+                  </Col>
+                  <Col span={24}>
+                    <Form.Item label={`Property ${postType}ing description:`}>
+                      <Editor
+                        id="description" 
+                        initialValue={property?.description}               
+                        onEditorChange={handleEditorChange}
+                        apiKey='zabqr76pjlluyvwebi3mqiv72r4vyshj6g0u07spd34wk1t2' // hide
+                        init={{
+                          toolbar_mode: 'sliding', 
+                          plugins: ' anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount', 
+                          toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat', 
+                          tinycomments_mode: 'embedded', tinycomments_author: 'Author name', mergetags_list: [ { value: 'First.Name', title: 'First Name' }, { value: 'Email', title: 'Email' }, ], 
+                        }}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
+                    <Form.Item label="Post type:" name='postType' initialValue={property?.postType}>
+                      <Radio.Group>
+                        <Radio value="default" className="label-light"> Default </Radio>
+                        <Radio value="preminum"> Preminum </Radio>
+                        <Radio value="featured"> Featured </Radio>
+                      </Radio.Group>
+                    </Form.Item>
+                  </Col>
+                  <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
+                    <Form.Item label="Property status:" name='status' initialValue={property?.status}>
+                      <Radio.Group>
+                        <Radio value="active">Active</Radio>
+                        <Radio value="inactive">Inactive</Radio>
+                      </Radio.Group>
+                    </Form.Item>
+                  </Col>
 
-                <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
-                  <Form.Item label={`Price per meter square`}>
-                    <Input
-                      disabled 
-                      placeholder={`Select property ${postType} price and area to view`} 
-                      style={{width: "100%"}}
-                      value={`${property?.area?.propertyLength && property?.area?.propertyWidth && property?.price 
-                        && (priceMultiplier * property.price / (property.area.propertyLength * property.area.propertyWidth)).toFixed(2)} million`}
+                  <Col span={24}>
+                    <ExpireTimePicker 
+                      onExpireDateTimeChange={handleExpireTimeChange} 
+                      expireTimeGiven={property?.expireTime}
                     />
-                  </Form.Item>
-                </Col>
+                  </Col>
 
-                <Col span={24}>
-                  <UploadMultipleFile uploadedImages={property?.images} setImageUrlRemove={handleImageUrlRemove}/>
-                </Col>
-              </Row>
-            </Card>
-
-            <Card title="Post information" className="custom-card" style={{marginTop: '2rem'}}>
-              <Row gutter={16}>
-                <Col span={24}>
-                  <Form.Item 
-                    label={<span>Post title <b className="required-txt">- required:</b></span>}
-                    name='title'
-                    required
-                    initialValue={property?.title}
-                  >
-                    <Input type="text" id="title" required />
-                  </Form.Item>
-                </Col>
-                <Col span={24}>
-                  <Form.Item label={`Property ${postType}ing description:`}>
-                    <Editor
-                      id="description" 
-                      initialValue={property?.description}               
-                      onEditorChange={handleEditorChange}
-                      apiKey='zabqr76pjlluyvwebi3mqiv72r4vyshj6g0u07spd34wk1t2' // hide
-                      init={{
-                        toolbar_mode: 'sliding', 
-                        plugins: ' anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount', 
-                        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat', 
-                        tinycomments_mode: 'embedded', tinycomments_author: 'Author name', mergetags_list: [ { value: 'First.Name', title: 'First Name' }, { value: 'Email', title: 'Email' }, ], 
-                      }}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
-                  <Form.Item label="Post type:" name='postType' initialValue={property?.postType}>
-                    <Radio.Group>
-                      <Radio value="default" className="label-light"> Default </Radio>
-                      <Radio value="preminum"> Preminum </Radio>
-                      <Radio value="featured"> Featured </Radio>
-                    </Radio.Group>
-                  </Form.Item>
-                </Col>
-                <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
-                  <Form.Item label="Property status:" name='status' initialValue={property?.status}>
-                    <Radio.Group>
-                      <Radio value="active">Active</Radio>
-                      <Radio value="inactive">Inactive</Radio>
-                    </Radio.Group>
-                  </Form.Item>
-                </Col>
-
-                <Col span={24}>
-                  <ExpireTimePicker 
-                    onExpireDateTimeChange={handleExpireTimeChange} 
-                    expireTimeGiven={property?.expireTime}
-                  />
-                </Col>
-
-                <Col sm={24} md={24}  lg={12} xl={12} xxl={12}>
-                  <Form.Item label="Post position:" name='position' initialValue={property?.position}>
-                    <InputNumber 
-                      // value={property?.position}               
-                      type="number"
-                      id="position" 
-                      min={0} 
-                      className="custom-number-input position-input"
-                      placeholder='Auto increase by default'
-                    />
-                  </Form.Item>
-                </Col>
-                <Col span={24}>
-                  <Form.Item>
-                    <Button className='custom-btn-main' type="primary" htmlType="submit">
-                      Update
-                    </Button>
-                  </Form.Item>
-                </Col>
-              </Row>
-            </Card>
-          </Form>
-        </div>
-      )}
-    </div>
+                  <Col sm={24} md={24}  lg={12} xl={12} xxl={12}>
+                    <Form.Item label="Post position:" name='position' initialValue={property?.position}>
+                      <InputNumber 
+                        // value={property?.position}               
+                        type="number"
+                        id="position" 
+                        min={0} 
+                        className="custom-number-input position-input"
+                        placeholder='Auto increase by default'
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col span={24}>
+                    <Form.Item>
+                      <Button className='custom-btn-main' type="primary" htmlType="submit">
+                        Update
+                      </Button>
+                    </Form.Item>
+                  </Col>
+                </Row>
+              </Card>
+            </Form>
+          </div>
+        )}
+      </>
+    ) : (
+      <NoPermission permissionType='access' />
+    )}
+  </>
   )
 }
 

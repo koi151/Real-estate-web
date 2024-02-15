@@ -3,6 +3,7 @@ import { Request, Response } from "express"
 import Role from "../../models/roles.model";
 import { RolesType } from "../../../../commonTypes";
 import { processRoleData } from "../../../../helpers/processData";
+import { formattedPermissions } from "../../../../helpers/formatData";
 
 // [GET] /admin/roles
 export const index = async (req: Request, res: Response) => {
@@ -85,6 +86,39 @@ export const detail = async (req: Request, res: Response) => {
       res.status(400).json({
         code: 400,
         message: "Role not found"
+      })
+    }
+
+  } catch (error) {
+    console.log('Error occurred while fetching role data:', error);
+    return res.status(500).json({
+      code: 500,
+      message: 'Internal Server Error'
+    });
+  }
+}
+
+// [GET] /admin/roles/permissions
+export const currentAccPermissions = async (req: Request, res: Response) => {
+  try {
+    const permissions = res.locals.currentUser.permissions;
+    const permissionsObject = permissions.reduce((acc: any, item: string) => {
+      const permission = formattedPermissions(item);
+      acc[permission] = true;
+      return acc;
+    }, {});
+
+    if (permissionsObject) {
+      res.status(200).json({
+        code: 200,
+        message: 'Success',
+        permissions: permissionsObject
+      })
+    } else {
+      res.json({
+        code: 400,
+        message: 'No permission found',
+        permissions: permissionsObject
       })
     }
 

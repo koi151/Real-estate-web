@@ -86,9 +86,9 @@ export const index = async (req: Request, res: Response) => {
         paginationObject: paginationObject,
         propertyCount: propertyCount,
         permissions: {
-          editAllowed: res.locals.currentUser.permissions.includes('properties_edit'),
-          createAllowed: res.locals.currentUser.permissions.includes('properties_create'),
-          deleteAllowed: res.locals.currentUser.permissions.includes('properties_delete')
+          propertiesEdit: res.locals.currentUser.permissions.includes('properties_edit'),
+          propertiesCreate: res.locals.currentUser.permissions.includes('properties_create'),
+          propertiesDelete: res.locals.currentUser.permissions.includes('properties_delete')
         }
       });
 
@@ -233,9 +233,9 @@ export const createPost = async (req: any, res: Response) => {
 
 // [PATCH] /admin/properties/edit/:propertyId
 export const editPatch = async (req: Request, res: Response) => {
-  try {    
+  try {  
     if (!res.locals.currentUser.permissions.includes('properties_edit')) {
-      return res.json({
+      return res.status(403).json({
         code: 403,
         message: "Account does not have access rights"
       })

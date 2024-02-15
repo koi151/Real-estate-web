@@ -2,10 +2,12 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface PermissionsState {
   permissions: Record<string, boolean> | null;
+  isLoading: boolean;
 }
 
 const initialState: PermissionsState = {
   permissions: null,
+  isLoading: false,
 };
 
 const permissionsSlice = createSlice({
