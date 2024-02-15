@@ -4,10 +4,20 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import AdminRolesService from "../../services/admin/roles.service";
 import { RolesType } from "../../../../backend/commonTypes";
 import TextArea from "antd/es/input/TextArea";
+import NoPermission from "../../components/admin/NoPermission/noPermission";
+import { RootState } from "../../redux/stores";
+import { useDispatch, useSelector } from "react-redux";
+import { setPermissions } from "../../redux/reduxSlices/permissionsSlice";
 
 const AdminRoleDetail: React.FC = () => {
+
   const { id } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const currentUserPermissions = useSelector((state: RootState) => state.currentUserPermissions.permissions);
+
+  const [viewAllowed, setViewAllowed] = useState(true);
 
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState<RolesType | undefined>(undefined);
@@ -43,53 +53,90 @@ const AdminRoleDetail: React.FC = () => {
     fetchData();
   }, [id, navigate])
 
+  // if permission in redux not existed => fetch permissions
+  useEffect(() =>  {
+    if (currentUserPermissions?.administratorRolesView)
+      return;
+
+    const fetchData = async () => {
+      try {
+        const response = await AdminRolesService.getPermissions();
+        if (response.code === 200) {
+          if (response.permissions) {
+            dispatch(setPermissions(response.permissions));
+          }
+
+          if (!response.permissions.administratorRolesView) {
+            setViewAllowed(false)
+          }
+
+        } else {
+          setViewAllowed(false);
+        }
+
+      } catch (err) {
+        console.log("Error occurred while fetching permissions:", err);
+        message.error('Error occurred, redirect to previous page', 3)
+        navigate(-1);
+        setViewAllowed(false);
+      }
+    }
+    fetchData();
+  }, []);
+
   return (
     <>
-      { loading ? (
-          <div className='d-flex justify-content-center' style={{width: "100%", height: "100vh"}}>
-            <Spin tip='Loading...' size="large">
-              <div className="content" />
-            </Spin>
-          </div>
-      ) : (
-        <div className="d-flex align-items-center justify-content-center"> 
-          <Form
-            layout="vertical" 
-            disabled
-            className="custom-form" 
-          >
-            <Badge.Ribbon text={<Link to="/admin/roles">Back</Link>} color="purple" className="custom-ribbon">
-              <Card 
-                title="Property role information" 
-                className="custom-card" 
-                style={{marginTop: '2rem'}}
+      {currentUserPermissions?.administratorRolesView || viewAllowed ? (
+        <>
+          { loading ? (
+              <div className='d-flex justify-content-center' style={{width: "100%", height: "100vh"}}>
+                <Spin tip='Loading...' size="large">
+                  <div className="content" />
+                </Spin>
+              </div>
+          ) : (
+            <div className="d-flex align-items-center justify-content-center"> 
+              <Form
+                layout="vertical" 
+                disabled
+                className="custom-form" 
               >
-                <Row gutter={16}>
-                  <Col span={24}>
-                    <Form.Item 
-                      label={<span>Role title <b className="required-txt">- required:</b></span>}
-                      name='title'
-                      initialValue={role?.title}
-                    >
-                      <Input type="text" id="title" required disabled/>
-                    </Form.Item>
-                  </Col>
-                  <Col span={24}>
-                    <Form.Item 
-                      label={`Role description:`} 
-                      initialValue={role?.description}
-                      name='description'  
-                    >
-                      <TextArea rows={5} placeholder="Enter role descripton here" disabled />
-                    </Form.Item>
-                  </Col>
-                </Row>
-              </Card>
-            </Badge.Ribbon>
-          </Form>
-        </div>
+                <Badge.Ribbon text={<Link to="/admin/roles">Back</Link>} color="purple" className="custom-ribbon">
+                  <Card 
+                    title="Property role information" 
+                    className="custom-card" 
+                    style={{marginTop: '2rem'}}
+                  >
+                    <Row gutter={16}>
+                      <Col span={24}>
+                        <Form.Item 
+                          label={<span>Role title <b className="required-txt">- required:</b></span>}
+                          name='title'
+                          initialValue={role?.title}
+                        >
+                          <Input type="text" id="title" required disabled/>
+                        </Form.Item>
+                      </Col>
+                      <Col span={24}>
+                        <Form.Item 
+                          label={`Role description:`} 
+                          initialValue={role?.description}
+                          name='description'  
+                        >
+                          <TextArea rows={5} placeholder="Enter role descripton here" disabled />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                  </Card>
+                </Badge.Ribbon>
+              </Form>
+            </div>
+          )}
+        </>
+      ) : (
+        <NoPermission permissionType='access' />
       )}
-  </>
+    </>
   )
 }
 

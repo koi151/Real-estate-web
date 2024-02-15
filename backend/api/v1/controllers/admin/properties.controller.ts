@@ -86,6 +86,7 @@ export const index = async (req: Request, res: Response) => {
         paginationObject: paginationObject,
         propertyCount: propertyCount,
         permissions: {
+          propertiesView: res.locals.currentUser.permissions.includes('properties_view'),
           propertiesEdit: res.locals.currentUser.permissions.includes('properties_edit'),
           propertiesCreate: res.locals.currentUser.permissions.includes('properties_create'),
           propertiesDelete: res.locals.currentUser.permissions.includes('properties_delete')

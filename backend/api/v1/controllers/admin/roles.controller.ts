@@ -8,13 +8,26 @@ import { formattedPermissions } from "../../../../helpers/formatData";
 // [GET] /admin/roles
 export const index = async (req: Request, res: Response) => {
   try {
+    if (!res.locals.currentUser.permissions.includes('administrator-roles_view')) {
+      return res.json({
+        code: 403,
+        message: "Account does not have access rights"
+      })
+    }
+
     const roles = await Role.find({ deleted: false });
     
     if (roles.length > 0) {
       res.status(200).json({
         code: 200,
         message: 'Success',
-        roles: roles
+        roles: roles,
+        permissions: {
+          administratorRolesView: res.locals.currentUser.permissions.includes('administrator-roles_view'),
+          administratorRolesEdit: res.locals.currentUser.permissions.includes('administrator-roles_edit'),
+          administratorRolesCreate: res.locals.currentUser.permissions.includes('administrator-roles_create'),
+          administratorRolesDelete: res.locals.currentUser.permissions.includes('administrator-roles_delete')
+        }
       })
     } else {
       res.status(400).json({
@@ -35,6 +48,13 @@ export const index = async (req: Request, res: Response) => {
 // [GET] /admin/roles/titles
 export const roleTitles = async (req: Request, res: Response) => {
   try {
+    if (!res.locals.currentUser.permissions.includes('administrator-roles_view')) {
+      return res.json({
+        code: 403,
+        message: "Account does not have access rights"
+      })
+    }
+
     const roleTitles = await Role.find({ deleted: false }).select('title');
 
     if (roleTitles.length > 0) {
@@ -59,10 +79,16 @@ export const roleTitles = async (req: Request, res: Response) => {
   }
 }
 
-
 // [GET] /admin/roles/detail/:roleId
 export const detail = async (req: Request, res: Response) => {
   try {
+    if (!res.locals.currentUser.permissions.includes('administrator-roles_view')) {
+      return res.json({
+        code: 403,
+        message: "Account does not have access rights"
+      })
+    }
+
     const id: string | undefined = req.params.roleId;
     if (!id) {
       return res.status(400).json({
@@ -134,6 +160,13 @@ export const currentAccPermissions = async (req: Request, res: Response) => {
 // [POST] /admin/roles/create
 export const createPost = async (req: Request, res: Response) => {
   try {    
+    if (!res.locals.currentUser.permissions.includes('administrator-roles_create')) {
+      return res.json({
+        code: 403,
+        message: "Account does not have access rights"
+      })
+    }
+
     const role: RolesType = processRoleData(req);
     
     const newRole = new Role(role);
@@ -156,6 +189,13 @@ export const createPost = async (req: Request, res: Response) => {
 // [PATCH] /admin/roles/edit/:roleId
 export const editPatch = async (req: Request, res: Response) => {
   try {    
+    if (!res.locals.currentUser.permissions.includes('administrator-roles_edit')) {
+      return res.json({
+        code: 403,
+        message: "Account does not have access rights"
+      })
+    }
+
     const id: string | undefined = req.params.roleId;
     if (!id) {
       return res.status(400).json({
@@ -195,6 +235,13 @@ export const editPatch = async (req: Request, res: Response) => {
 // [DELETE] /admin/roles/delete/:roleId
 export const singleDelete = async (req: Request, res: Response) => {
   try {
+    if (!res.locals.currentUser.permissions.includes('administrator-roles_delete')) {
+      return res.json({
+        code: 403,
+        message: "Account does not have access rights"
+      })
+    }
+  
     const id: string | undefined = req.params.roleId;
     if (!id) {
       return res.status(400).json({
