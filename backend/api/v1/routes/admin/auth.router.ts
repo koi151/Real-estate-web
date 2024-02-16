@@ -8,6 +8,4 @@ router.post('/login', controller.loginPost);
 
 router.post('/refresh', controller.refreshToken);
 
-// router.get("/logout", controller.logout);
-
 export const authRoutes: Router = router;

@@ -6,7 +6,6 @@ import { processAdminAccountLogData } from "../../../../helpers/processData";
 import { AdminAccountLogType, AdminAccountType } from "../../../../commonTypes";
 import { generateRandomString } from "../../../../helpers/generateString";
 import { decodeToken, generateToken } from "../../../../helpers/auth.methods";
-import Role from "../../models/roles.model";
 
 // [POST] /admin/auth/login
 export const loginPost = async (req: Request, res: Response) => {
@@ -134,7 +133,7 @@ export const refreshToken = async (req: Request, res: Response) => {
 	}
   console.log('decoded["payload"]', decoded["payload"])
 
-	const id = decoded['payload']._id; // Lấy username từ payload
+	const id = decoded['payload']._id; // Get username from payload
 
 	const user = await AdminAccount.findOne({
     _id: id
@@ -165,4 +164,4 @@ export const refreshToken = async (req: Request, res: Response) => {
 	return res.json({
 		accessToken,
 	});
-};
+}; // !

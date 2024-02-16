@@ -1,0 +1,51 @@
+.navigation {
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 20rem;
+  background-color: #fff;
+  flex: 1;
+}
+
+img {
+  width: 40px;
+  height: auto;
+  border-radius: 50%;
+  float: left;
+}
+
+.logout {
+  font-size: 1.8rem;
+  color: #000;
+  font-weight: 700;
+	position: relative;
+  right: -18px;
+  bottom: -4px;
+  overflow: hidden;
+  letter-spacing: 2.75px;
+  opacity: 0;
+  transition: opacity .4s;
+  -webkit-transition: opacity .6s;
+}
+
+.button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 2rem;
+  color: white;
+  width: 7rem;
+  transition: width .5s;
+  -webkit-transition: width .5s;
+  overflow: hidden;
+  text-decoration: none;
+
+  &:hover {
+    width: 200px;
+    .logout{
+      opacity: .9;
+    }
+  }
+}

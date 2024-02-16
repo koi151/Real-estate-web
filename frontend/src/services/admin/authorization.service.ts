@@ -11,10 +11,6 @@ class AdminAuthorizationService {
   async submitLogin(data: AdminAccountLogType) {
     return (await this.api.post("/login", data)).data;
   }
-
-  async logOut(data: AdminAccountLogType) {
-    return (await this.api.get("/logout", data)).data;
-  }
 }
 
 const adminAuthorizationService = new AdminAuthorizationService();

@@ -4,10 +4,12 @@ import { Layout } from 'antd';
 import { Content } from "antd/es/layout/layout";
 import Sider from "antd/es/layout/Sider";
 import { Outlet } from 'react-router-dom';
-// import MiniNotification from "../../MiniNotification/miniNotification";
-import SiderMenu from "../SiderMenu/siderMenu";
+import { MenuUnfoldOutlined } from '@ant-design/icons';
 
-import { MenuUnfoldOutlined, SearchOutlined } from '@ant-design/icons'
+import AccountHeader from '../AccountHeader/accountHeader';
+import SiderMenu from "../SiderMenu/siderMenu";
+// import MiniNotification from "../../MiniNotification/miniNotification";
+
 import logo from '../../../assets/images/logo.png';
 import logoFold from '../../../assets/images/logo-fold.png';
 import './layoutDefault.scss';
@@ -27,22 +29,21 @@ const LayOutDefault: React.FC = () => {
               <span className="nav-left__icon-collapse" onClick={() => setCollapsed(!collapsed)}>
                 <MenuUnfoldOutlined />
               </span>
-              <span className="nav-left__icon-search">
-                <SearchOutlined />
-              </span>
             </ul>
-            <ul className="nav-right">
+            <ul className="nav-right d-flex align-items-center">
               <span className="nav-right__icon-notify">
-              {/* <MiniNotification /> */}
+                {/* <MiniNotification /> */}
               </span>
+              <AccountHeader />
             </ul>
           </div>
         </header>
       </Layout>
       <Layout>
-        <Sider className="layout__sider" collapsed={collapsed}
-               breakpoint="lg" onBreakpoint={(broken) => setCollapsed(broken)}
-               style={{overflowY: 'auto'}}
+        <Sider 
+          className="layout__sider" collapsed={collapsed}
+          breakpoint="lg" onBreakpoint={(broken) => setCollapsed(broken)}
+          style={{overflowY: 'auto'}}
         >
           <SiderMenu />
         </Sider>
