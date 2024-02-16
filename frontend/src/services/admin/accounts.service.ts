@@ -40,6 +40,11 @@ class AccountsServiceAdmin {
     return this.handleRequest(request);
   }
 
+  async getAvatar(id: string) {
+    const request = this.api.get(`/avatar/${id}`, this.getAuthHeaders());
+    return this.handleRequest(request);
+  }
+
   async getSingleAccount(id: string) {
     const request = this.api.get(`/detail/${id}`, this.getAuthHeaders());
     return this.handleRequest(request);

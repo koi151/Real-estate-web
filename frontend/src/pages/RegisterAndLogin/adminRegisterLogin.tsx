@@ -1,36 +1,42 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Form, Col, Row, Input, Button, message } from "antd";
-import './adminRegister.scss'
-import adminAuthorizationService from "../../services/admin/authorization.service";
-import { setPermissions } from "../../redux/reduxSlices/permissionsSlice";
 import { useDispatch } from "react-redux";
 
-interface AdminRegisterProps {
+import adminAuthorizationService from "../../services/admin/authorization.service";
+import { setUser } from "../../redux/reduxSlices/userSlice";
+import './adminRegisterLogin.scss'
+
+
+interface AdminRegisterLoginProps {
   isRegisterPage: boolean;
 }
 
-const AdminRegister: React.FC<AdminRegisterProps> = ({ isRegisterPage }) => {
+const AdminRegisterLogin: React.FC<AdminRegisterLoginProps> = ({ isRegisterPage }) => {
 
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const onFinishForm = async (data: any) => {
     try {
       const response = await adminAuthorizationService.submitLogin(data);
-
         switch (response.code) {
-          case 401:
-            message.error(`${response.message}, please try again`, 3);
-            break;
-          case 403:
-            message.error(response.message, 3);
-            break;
           case 200:
             localStorage.setItem('accessToken', response.accessToken);
             localStorage.setItem('refreshToken', response.refreshToken);
 
+            if (response.user) {
+              dispatch(setUser(response.user))
+              localStorage.setItem('adminUserId', response.user._id);
+            }
+
             message.success(`${isRegisterPage ? "Register" : "Login"} successful. Welcome to administrator page !`);
             navigate('/admin/properties');
+            break;
+
+          case 401:
+          case 403:
+            message.error(`${response.message}, please try again`, 3);
             break;
 
           default:
@@ -132,4 +138,4 @@ const AdminRegister: React.FC<AdminRegisterProps> = ({ isRegisterPage }) => {
   )
 }
 
-export default AdminRegister;
+export default AdminRegisterLogin;

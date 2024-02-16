@@ -1,11 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit';
 import filtersReducer from '../reduxSlices/filtersSlice';
 import permissionsReducer from '../reduxSlices/permissionsSlice'
+import administratorUser from '../reduxSlices/userSlice'
 
 export const store = configureStore({
   reducer: {
     filters: filtersReducer,
     currentUserPermissions: permissionsReducer,
+    user: administratorUser
   },
 });
 

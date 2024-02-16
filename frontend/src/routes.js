@@ -21,7 +21,7 @@ import AdminAccounts from "./pages/Accounts/accounts";
 import AdminAccountsDetail from "./pages/Accounts/detail";
 import CreateAdminAccounts from "./pages/Accounts/create";
 import EditAdminAccounts from "./pages/Accounts/edit";
-import AdminRegister from "./pages/Register/adminRegister";
+import AdminRegister from "./pages/RegisterAndLogin/adminRegisterLogin";
 
 
 export const routes = [

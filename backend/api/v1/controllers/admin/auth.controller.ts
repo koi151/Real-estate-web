@@ -6,6 +6,7 @@ import { processAdminAccountLogData } from "../../../../helpers/processData";
 import { AdminAccountLogType, AdminAccountType } from "../../../../commonTypes";
 import { generateRandomString } from "../../../../helpers/generateString";
 import { decodeToken, generateToken } from "../../../../helpers/auth.methods";
+import Role from "../../models/roles.model";
 
 // [POST] /admin/auth/login
 export const loginPost = async (req: Request, res: Response) => {
@@ -71,12 +72,37 @@ export const loginPost = async (req: Request, res: Response) => {
       refreshToken = user.token;
     }
 
-    res.status(200).json({
-      code: 200,
-      message: 'Success',
-      accessToken,
-      refreshToken,
-    });
+    const userPermissions = await Role.findOne({
+      _id: user.role_id,
+      deleted: false
+    }).select('permissions')
+
+    if (userPermissions) {
+
+      // convert document to JSON
+      const regularUserObj = { ...user['_doc'] };
+
+      delete regularUserObj['password'];
+      delete regularUserObj["accessToken"];
+      delete regularUserObj["refreshToken"];
+      delete regularUserObj["token"];    
+
+      regularUserObj['permissions'] = userPermissions.permissions;
+
+      res.status(200).json({
+        code: 200,
+        message: 'Success',
+        accessToken,
+        refreshToken,
+        user: regularUserObj
+      });
+
+    } else {
+      res.json({
+        code: 400,
+        message: 'Can not get permissions of account',
+      });
+    }
 
   } catch (error) {
     console.log('Error occurred while verifying account:', error);
