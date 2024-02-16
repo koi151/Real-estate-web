@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { PropertyCategoryType } from "../../../../backend/commonTypes";
-import { Link, useNavigate } from "react-router-dom";
-import { Badge, Button, Card, Col, Form, Input, InputNumber, Radio, Row, Spin, TreeSelect, message } from "antd";
-import propertyCategoriesService from "../../services/admin/property-categories.service";
-import UploadMultipleFile from "../../components/admin/UploadMultipleFile/uploadMultipleFile";
 import { Editor } from '@tinymce/tinymce-react';
-import { DefaultOptionType } from "antd/es/select";
-import NoPermission from "../../components/admin/NoPermission/noPermission";
 import { RootState } from "../../redux/stores";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";import { DefaultOptionType } from "antd/es/select";import { Link, useNavigate } from "react-router-dom";
+import { Badge, Button, Card, Col, Form, Input, InputNumber, 
+         Radio, Row, Spin, TreeSelect, message } from "antd";
+
 import AdminRolesService from "../../services/admin/roles.service";
+import propertyCategoriesService from "../../services/admin/property-categories.service";
+
+import { PropertyCategoryType } from "../../../../backend/commonTypes";
+
+import UploadMultipleFile from "../../components/admin/UploadMultipleFile/uploadMultipleFile";
+import NoPermission from "../../components/admin/NoPermission/noPermission";
+
 import { setPermissions } from "../../redux/reduxSlices/permissionsSlice";
 
 const CreatePropertyCategory: React.FC = () => {

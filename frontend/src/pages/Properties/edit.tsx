@@ -1,4 +1,4 @@
-import { Badge, Button, Card, Col, Form, Input, InputNumber, Radio, Row, Segmented, Select, Spin, message } from "antd";
+import { Badge, Button, Card, Col, Form, Input, InputNumber, Radio, Row, Segmented, Select, Spin, TreeSelect, message } from "antd";
 import { SegmentedValue } from "antd/es/segmented";
 import React, { useEffect, useState } from "react";
 import { Editor } from '@tinymce/tinymce-react';
@@ -16,6 +16,8 @@ import { useDispatch, useSelector } from "react-redux";
 import NoPermission from "../../components/admin/NoPermission/noPermission";
 import AdminRolesService from "../../services/admin/roles.service";
 import { setPermissions } from "../../redux/reduxSlices/permissionsSlice";
+import propertyCategoriesService from "../../services/admin/property-categories.service";
+import { DefaultOptionType } from "antd/es/select";
 
 const EditProperty: React.FC = () => {
   const { id } = useParams();
@@ -35,41 +37,54 @@ const EditProperty: React.FC = () => {
 
   const [property, setProperty] = useState<PropertyType | undefined>(undefined);
 
+  const [category, setCategory] = useState<string>();
+  const [categoryTree, setCategoryTree] = useState<DefaultOptionType[] | undefined>(undefined);
+  const [categoryTitle, setCategoryTitle] = useState<string>();
+
   // data from child component
   const [expireDateTime, setExpireDateTime] = useState<Dayjs | null>(null);
   const [imageUrlToRemove, setImageUrlToRemove] = useState<string[]>([]);
 
-  // fetch existed data of properties
   useEffect(() => {
     const fetchData = async () => {
       try {
-        if (!id) {
-          message.error('Error occurred while searching property information, redirect to previous page', 3);
-          navigate(-1);
-          return;
-        }
-        const response = await propertiesService.getSingleProperty(id);
-
-        if(response?.code === 200 && response.property) {
-          setProperty(response.property);
-          setLoading(false);
+        // Fetch category tree
+        const categoryTreeResponse = await propertyCategoriesService.getCategoryTree();
+        if (categoryTreeResponse.code === 200) {
+          setCategoryTree(categoryTreeResponse.categoryTree);
         } else {
-          message.error(response.message, 2);
-          setLoading(false);
+          message.error(categoryTreeResponse.error || 'Error occurred while fetching property categories data', 3);
         }
-
+  
+        // Fetch single property data if ID is provided
+        if (id) {
+          const propertyResponse = await propertiesService.getSingleProperty(id);
+          if (propertyResponse.code === 200 && propertyResponse.property) {
+            setProperty(propertyResponse.property);
+          } else {
+            message.error(propertyResponse.message || 'Error occurred while fetching property data', 2);
+          }
+        } else {
+          message.error('ID not provided, unable to fetch property data', 3);
+        }
+  
+        setLoading(false);
+        
       } catch (err: any) {
         if (err.response && err.response.status === 401) {
           message.error('Unauthorized - Please log in to access this feature.', 3);
           navigate('/admin/auth/login');
         } else {
-          message.error('Error occurred while fetching property data', 2);
-          console.log('Error occurred:', err);
+          message.error('Error occurred while fetching data', 2);
+          console.error('Error occurred:', err);
         }
+        setLoading(false);
       }
     };
+  
     fetchData();
-  }, [id, navigate])
+  }, []);
+  
 
   // if permission in redux not existed => fetch permissions
   useEffect(() =>  {
@@ -101,12 +116,6 @@ const EditProperty: React.FC = () => {
     }
     fetchData();
   }, []);
-  
-  const propertyCategoryOptions = [
-    { value: 'townHouse', label: 'Town house' },
-    { value: 'apartment', label: 'Apartment' },
-    { value: 'villa', label: 'Villa' },
-  ]
 
   const handlePropertyLengthChange = (value: number | null) => {
     setPropertyLength(value);
@@ -133,6 +142,19 @@ const EditProperty: React.FC = () => {
   const handleExpireTimeChange = (dateTime: Dayjs | null) => {
     setExpireDateTime(dateTime);
   }
+
+  const handleTreeSelectChange = (newValue: string) => {
+    setCategory(newValue);
+  };
+
+  // Child component functions  
+  const handleImageUrlRemove = (imageUrl: string | undefined) => {
+    // Check if imageUrl is not undefined and not already in the array
+    if (imageUrlToRemove !== undefined && imageUrl !== undefined) {
+      setImageUrlToRemove(prevImages => [...prevImages, imageUrl]);
+    }
+  }
+  //
 
   const onFinishForm = async (data: any) => {
     try {
@@ -216,13 +238,7 @@ const EditProperty: React.FC = () => {
     }
   }
 
-  // Child component functions  
-  const handleImageUrlRemove = (imageUrl: string | undefined) => {
-    // Check if imageUrl is not undefined and not already in the array
-    if (imageUrlToRemove !== undefined && imageUrl !== undefined) {
-      setImageUrlToRemove(prevImages => [...prevImages, imageUrl]);
-    }
-  }
+
 
   return (
     <>
@@ -264,16 +280,24 @@ const EditProperty: React.FC = () => {
                           />
                         </Form.Item>
                     </Col>
-                    <Col sm={24}>
-                      <Form.Item label='Property type' name='propertyCategory' initialValue={property?.propertyDetails?.propertyCategory}>
-                        <Select
-                          value={property?.propertyDetails?.propertyCategory}
-                          placeholder='Please select property type'
-                          style={{ width: "100%" }}
-                          options={propertyCategoryOptions}
-                        />
-                      </Form.Item> 
-                    </Col>
+                    <Col span={24}>
+                        <Form.Item 
+                          label='Select parent category' 
+                          name='parent_id' 
+                          initialValue={property?.propertyDetails?.propertyCategory}
+                        >
+                          <TreeSelect
+                            style={{ width: '100%' }}
+                            value={categoryTitle}
+                            dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                            treeData={categoryTree}
+                            placeholder="None by default"
+                            treeDefaultExpandAll
+                            onChange={handleTreeSelectChange}
+                            treeLine
+                          />
+                        </Form.Item>
+                      </Col>
 
                     <Col span={24}>
                       <GetAddress initialValues={property?.location}/>
