@@ -7,10 +7,17 @@ import { rolesRoutes } from "./roles.router";
 import { accountsRoutes } from "./accounts.router";
 import { authRoutes } from "./auth.router";
 import { authRequire } from "../../../../middlewares/admin/auth.middleware";
+import { dashboardRoutes } from "./dashboard.router";
 
 const v1AdminRoutes = (app: Express): void => {
   const ADMIN_PATH: string = systemConfig.adminPrefix;
   const version: string = "/api/v1";
+
+  app.use(
+    `${version}/${ADMIN_PATH}/dashboard`, 
+    authRequire,
+    dashboardRoutes
+  );
 
   app.use(
     `${version}/${ADMIN_PATH}/properties`, 

@@ -1,0 +1,58 @@
+@import '../../../App.scss';
+
+.statistic-title {
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 1.4rem;
+  margin-left: 1rem;
+}
+
+.statistic {
+  margin-top: 1.25rem;
+  display: flex;
+  align-items: center;
+
+  &__icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.2rem;
+    background-color: #dddddd8b;
+    width: 5rem;
+    height: 5rem;
+    border-radius: 50%;
+    margin-right: 1rem;
+
+    &--blue {
+      color: #3f87f5;
+      background: rgba(63,135,245,.1);
+    } 
+
+    &--green {
+      color: #00c9a7;
+      background: rgba(0,201,167,.1);   
+    }
+
+    &--yellow {
+      color: #ffc107;
+      background: rgba(255,193,7,.1);
+    } 
+
+    &--purple {
+      color: #886cff;
+      background: rgba(136,108,255,.1);
+    } 
+  }
+
+  &__info {
+    &--value {
+      margin-bottom: 0.15rem;
+      font-size: 2.4rem;
+      font-weight: 600;
+    }
+
+    &--label {
+      color: #999;
+    }
+  }
+}

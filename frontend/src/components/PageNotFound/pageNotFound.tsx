@@ -58,14 +58,13 @@ const PageNotFound: React.FC = () => {
     <>
       <Helmet>
         <title>Space | tsParticles 404</title>
-        <link type="text/css" rel="stylesheet" href="css/404.css" />
         <link rel="icon" type="image/x-icon" href="../images/tsParticles-64.png" />
       </Helmet>
       <div className="permission_denied">
         <canvas id="stars-canvas" style={{ position: 'fixed', width: '100%', height: '100%', top: 0, left: 0 }}></canvas>
         <div className="denied__wrapper">
           <h1>404</h1>
-          <h3>LOST IN <span>SPACE</span> Administrator page? Hmm, looks like that page doesn't exist.</h3>
+          <h3>Hmm, looks like that page doesn't exist.</h3>
           <img id="astronaut" src={astronautSvg} alt="Astronaut" />
           <img id="planet" src={planetSvg} alt="Planet" />
           <Link to="/admin/dashboard"><button className="denied__link">Go Home</button></Link>

@@ -6,6 +6,19 @@ export const postTypeValues = ["default", "preminum", "featured"];
 export const listingTypeValues = ["forSale", "forRent"];
 export const statusValues = ["active", "inactive"];
 
+// STATISTICS
+export interface Statistics {
+  total?: number;
+  active?: number;
+  inactive?: number;
+}
+
+export interface DashboardStatistics {
+  adminAccounts: Statistics;
+  properties: Statistics;
+  categories: Statistics;
+}
+
 // PROPERTY INFO
 export interface Location {
   city?: string;

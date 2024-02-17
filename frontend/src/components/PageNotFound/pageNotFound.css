@@ -15,7 +15,9 @@
 }
 
 .permission_denied {
-  background: #24344c !important;
+  /* background: #24344c !important;*/
+  background: #6259ca !important;
+
 }
 
 .permission_denied a {
