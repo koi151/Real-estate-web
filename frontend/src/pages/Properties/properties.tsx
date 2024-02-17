@@ -37,7 +37,7 @@ const Properties: React.FC = () => {
   const [error, setError] = useState<string | null>(null); 
   const [propertyCount, setPropertyCount] = useState<number>(0);
 
-  const { listingType, keyword, status, sorting } = filters;
+  const { listingType, keyword, status, priceRange, sorting } = filters;
 
   const [checkedList, setCheckedList] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -62,6 +62,7 @@ const Properties: React.FC = () => {
           ...(keyword && { keyword }), 
           ...(status && { status }), 
           ...(listingType && { listingType }), 
+          ...(priceRange && { priceRange }),
           ...(sorting?.sortKey && { sortKey: sorting.sortKey }), 
           ...(sorting?.sortValue && { sortValue: sorting.sortValue }), 
           currentPage: currentPage,
@@ -97,11 +98,12 @@ const Properties: React.FC = () => {
     fetchData();
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [keyword, status, sorting, currentPage, listingType, navigate]); 
+  }, [keyword, status, sorting, currentPage, listingType, priceRange]); 
 
   // update url
   useEffect(() => {
     navigate(buildURL());
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status, listingType, keyword, sorting])
 
   const buildURL = () => {
@@ -145,7 +147,7 @@ const Properties: React.FC = () => {
 
   const renderTag = (value: string, colorMap: Record<string, string>) => (
     <Tag className="listing-type-tag" color={colorMap[value]}>
-      {standardizeData.listingType(value)}
+      {standardizeData.listingTypeFormatted(value)}
     </Tag>
   );
 
@@ -182,7 +184,10 @@ const Properties: React.FC = () => {
             />
           </div>
     
-          <FilterBox createAllowed={currentUserPermissions?.propertiesCreate}/>
+          <FilterBox 
+            createAllowed={currentUserPermissions?.propertiesCreate} 
+            priceRangeFilter
+          />
     
           {error ? (
             <div>{error}</div>

@@ -23,7 +23,8 @@ export const index = async (req: Request, res: Response) => {
 
     interface Find {
       deleted?: boolean | null,
-      listingType?: string | null
+      listingType?: string | null,
+      price?: { $gte: number; $lte: number } | null;
       status?: string | null,
       title?: RegExp | null,
       slug?: RegExp | null
@@ -31,11 +32,13 @@ export const index = async (req: Request, res: Response) => {
     
     let status: string | undefined = req.query.status?.toString();
     let listingType: string | undefined = req.query.listingType?.toString();
-
+    let priceRange: number[] | undefined = (req.query.priceRange as string[])?.map(Number);
+    
     const find: Find = {
       deleted: false,
       ...(status && { status }),
       ...(listingType && { listingType }),
+      ...(priceRange && { price: { $gte: priceRange[0], $lte: priceRange[1] } }), // Use price instead of priceRange
     };
 
     // Searching

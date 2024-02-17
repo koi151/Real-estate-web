@@ -1,3 +1,7 @@
+@import '../../../App.scss';
+
+$filter-box-height: 20rem;
+
 @keyframes fadeIn {
   0% {
     opacity: 0;
@@ -7,7 +11,7 @@
   }
   100% {
     opacity: 1;
-    height: 15rem;
+    height: $filter-box-height;
     padding: 2rem 3rem;
   }
 }
@@ -15,7 +19,7 @@
 @keyframes fadeOut {
   0% {
     opacity: 1;
-    height: 15rem;
+    height: $filter-box-height;
     padding: 2rem 3rem;
   }
   100% {
@@ -87,15 +91,14 @@
 
   &__detail {
     display: flex;
-    height: 15rem;
+    height: $filter-box-height;
     width: 100%;
     background-color: #fff;
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
     margin: .5rem 0;
     margin-top: 0;
     border-radius: .8rem;
-    max-height: 15rem;
-    overflow: hidden;
+    max-height: $filter-box-height;
     animation: fadeIn .3s ease-in-out forwards;
 
     .sorting-items {
@@ -109,25 +112,66 @@
     
     .multiple-change {
       margin-left: 2rem;
+
       &__select {
         width: 25rem;
         margin-top: .75rem;
       }
     }
 
+    .price-range {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      margin-top: 2rem;
+
+      &__btn {
+        width: 80%; 
+        z-index: 9;
+      }
+    }
+
     .clear-filters {
       margin-top: 2rem;
     }
+  }
+}
 
-    .custom-slider {
-      max-width: 25rem;
+.price-range__box {
+  margin-top: 1.5rem;
+
+  .ant-input-number {
+    margin: 1rem 0;
+    margin-bottom: .5rem;
+
+    .ant-input-number-input-wrap {
+      input {          
+        text-align: center !important;
+      }
     }
+  }
+
+  b {
+    font-size: 1.6rem;
+  }
+
+  &--txt {
+    margin-left: .3rem;
+    color: $color-highlight;
+    font-weight: 700;
+    font-size: 1.6rem;
+    z-index: 99 !important;
   }
 }
 
 .custom-btn {
   margin-right: 1rem;
   margin-top: .75rem;
+}
+
+.custom-slider {
+  width: 90% !important;
+  margin: 2rem 0;
 }
 
 .active {

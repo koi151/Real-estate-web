@@ -1,32 +1,42 @@
-import React, { useState } from 'react';
-import { Button, Col, Row, Segmented, Select, Slider, message } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Button, Col, InputNumber, Modal, Row, Segmented, Select, Slider, message } from 'antd';
+import { FaArrowRightLong } from "react-icons/fa6";
 import { FaPlus } from "react-icons/fa6";
 import Search from 'antd/es/input/Search';
 import { IoFilter } from 'react-icons/io5';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../redux/stores';
-import { setListingType, setKeyword, setStatus, setSorting, resetFilters } from '../../../redux/reduxSlices/filtersSlice';
+import { SegmentedValue } from 'antd/es/segmented';
+
+import { listingTypeFormatted, reverseListingType } from '../../../helpers/standardizeData';
+import { setListingType, setKeyword, setStatus, setSorting, resetFilters, setPriceRange } from '../../../redux/reduxSlices/filtersSlice';
 import propertiesService from '../../../services/admin/properties.service';
 import { ValidMultiChangeType } from '../../../../../backend/commonTypes';
 
 import './filterBox.scss';
-import { reverseListingType } from '../../../helpers/standardizeData';
-import { SegmentedValue } from 'antd/es/segmented';
 
 interface Props {
   createAllowed?: boolean;
+  priceRangeFilter?: boolean;
 }
 
-const FilterBox: React.FC<Props> = ({createAllowed = false}) => {
+const FilterBox: React.FC<Props> = ({createAllowed = false, priceRangeFilter = false}) => {
   const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
 
   // Redux state selectors
-  const { listingType, keyword, status, sorting } = useSelector((state: RootState) => state.filters);
+  const { listingType, status } = useSelector((state: RootState) => state.filters);
 
   const [isFilterDetailVisible, setIsFilterDetailVisible] = useState<boolean>(true);
+  const [sliderValue, setSliderValue] = useState<[number, number]>([0, listingType === 'forRent' ? 500 : 10000]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    // Update the slider value when listingType changes
+    setSliderValue([0, listingType === 'forRent' ? 1000 : 10000]);
+  }, [listingType]);
 
   const onSearch = (value: string) => {
     dispatch(setKeyword(value));
@@ -54,6 +64,32 @@ const FilterBox: React.FC<Props> = ({createAllowed = false}) => {
       message.error("Error occurred, can not do multiple updates", 3);
     }
   };
+
+  const handleSliderChange = (newValue: number | number[]) => {
+    if (Array.isArray(newValue)) {
+      setSliderValue(newValue as [number, number]);
+    }
+  };
+
+  const handleInputChange = (index: number, value: number | undefined) => {
+    const newSliderValue: [number, number] = [...sliderValue];
+    newSliderValue[index] = value || 0;
+    setSliderValue(newSliderValue);
+  };
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleModalOk = () => {
+    setIsModalOpen(false);
+    dispatch(setPriceRange(sliderValue));
+  };
+
+  const handleModalCancel = () => {
+    setIsModalOpen(false);
+  };
+
 
   const sortingOptions = [
     { label: 'Descending position', value: 'position-desc' },
@@ -109,7 +145,7 @@ const FilterBox: React.FC<Props> = ({createAllowed = false}) => {
       />
 
       <div className={`filter-box__detail ${isFilterDetailVisible ? '' : 'fade-out'} ${listingType ? '' : 'mt-3'}`}>
-        <Row className='custom-row'>
+        <Row className='custom-row d-flex align-items-center'>
           <Col xxl={8} xl={8} lg={8}>
             <div className='status-filter'>
               <span>Filter by status:</span>
@@ -162,16 +198,69 @@ const FilterBox: React.FC<Props> = ({createAllowed = false}) => {
               />
             </div>
           </Col>
-          <Col xxl={8} xl={8} lg={8}>
-            <Slider
-              className='custom-slider'
-              range
-              step={10}
-              defaultValue={[20, 50]}
-              // onChange={onChange}
-              // onChangeComplete={onChangeComplete}
-            />
-          </Col>
+          {priceRangeFilter && (
+            <Col xxl={8} xl={8} lg={8}>
+              <div className='price-range'>
+                <span>Price range: </span>
+                <Button
+                  onClick={showModal}
+                  className='price-range__btn'
+                >
+                  Select to apply
+                </Button>
+              </div>
+              <Modal 
+                title={`Select price range - ${listingType ? listingTypeFormatted(listingType) : 'for all'}`} 
+                open={isModalOpen} 
+                onOk={handleModalOk} 
+                onCancel={handleModalCancel}
+              >
+                <hr />
+                <div className='price-range__box'>
+                  <Row gutter={16}>
+                    <Col span={10} className='d-flex flex-column align-items-center'>
+                      <div className='d-flex'>
+                        <b>From: </b>
+                        <span className='price-range__box--txt'>
+                          {sliderValue[0] >= 100 ? `${sliderValue[0] / 1000} billion` : `${sliderValue[0]} million`}
+                        </span>
+                      </div>
+                      <InputNumber
+                        value={sliderValue[0]}
+                        onChange={(value) => handleInputChange(0, value ?? undefined)}                    
+                      />
+                    </Col>
+                    <Col span={4} className="d-flex align-items-center justify-content-center">
+                      <FaArrowRightLong style={{fontSize: "2rem", color: "#666"}}/>
+                    </Col>
+                    <Col span={10} className='d-flex flex-column align-items-center'>
+                      <div className='d-flex'>
+                        <b>To: </b>
+                        <span className='price-range__box--txt'>
+                          {sliderValue[1] >= 100 ? `${sliderValue[1] / 1000} billion` : `${sliderValue[1]} million`}
+                        </span>
+                      </div>
+                      <InputNumber
+                        value={sliderValue[1]}
+                        onChange={(value) => handleInputChange(1, value ?? undefined)}
+                        />
+                    </Col>
+                    <Col span={24} className='d-flex justify-content-center'>
+                      <Slider
+                        className='custom-slider'
+                        range
+                        min={0}
+                        max={listingType === 'forRent' ? 1000 : 10000}
+                        step={listingType === 'forRent' ? undefined : 100}
+                        value={sliderValue}
+                        onChange={handleSliderChange}
+                      />
+                    </Col>
+                  </Row>
+                </div>
+              </Modal>
+            </Col>
+          )}
           <Col xxl={8} xl={8} lg={8}>
             <Button
               onClick={handleResetFilters}

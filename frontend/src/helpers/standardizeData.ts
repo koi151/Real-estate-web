@@ -1,7 +1,7 @@
 import { RoomType } from "../../../backend/commonTypes";
 
 // forSale => For Sale.  house => House
-export const listingType = (word: string): string => {
+export const listingTypeFormatted = (word: string): string => {
   return word ? word.toLowerCase().startsWith('for') ? 
     `For ${word.slice(3)}` 
     : word.charAt(0).toUpperCase() + word.slice(1) : word;

@@ -270,7 +270,7 @@ const EditProperty: React.FC = () => {
                           label='Listing type:' 
                           name='listingType' 
                           style={{height: "4.5rem"}}
-                          initialValue={standardizeData.listingType(property?.listingType || "")}
+                          initialValue={standardizeData.listingTypeFormatted(property?.listingType || "")}
                         >
                           <Segmented 
                             options={['For Sale', 'For Rent']} 
