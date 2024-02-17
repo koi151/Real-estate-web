@@ -1,4 +1,4 @@
-import LayoutDefault from "./components/admin/LayoutDefault/layoutDefault";
+import LayoutDefault from "./components/admin/Layouts/layoutDefault";
 
 import DashBoard from "./pages/Home/dashboard";
 
@@ -23,6 +23,7 @@ import CreateAdminAccounts from "./pages/Accounts/create";
 import EditAdminAccounts from "./pages/Accounts/edit";
 import AdminRegister from "./pages/RegisterAndLogin/adminRegisterLogin";
 
+import PageNotFound from "./components/PageNotFound/pageNotFound";
 
 export const routes = [
   {
@@ -30,7 +31,7 @@ export const routes = [
     element: <LayoutDefault />,
     children: [
       {
-        index: true,
+        path: "dashboard",
         element: <DashBoard />
       },
       {
@@ -106,5 +107,9 @@ export const routes = [
         element: <AdminRegister isRegisterPage/>
       }
     ]
+  }, 
+  {
+    path: '*',
+    element: <PageNotFound />,
   }
 ]
