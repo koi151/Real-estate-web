@@ -3,7 +3,6 @@ import { Request, Response } from "express";
 import Property from "../../models/property.model";
 
 import { searchHelper } from "../../../../helpers/search";
-import { createTreeHelper } from "../../../../helpers/createTree";
 import { paginationHelper } from '../../../../helpers/pagination';
 import { isValidStatus } from "../../../../helpers/dataTypeCheck";
 
@@ -26,11 +25,14 @@ export const index = async (req: Request, res: Response) => {
       listingType?: string | null,
       price?: { $gte: number; $lte: number } | null;
       status?: string | null,
+      'propertyDetails.propertyCategory'?: string | null;
       title?: RegExp | null,
       slug?: RegExp | null
     }
     
     let status: string | undefined = req.query.status?.toString();
+    let category: string | undefined = req.query.category?.toString();
+
     let listingType: string | undefined = req.query.listingType?.toString();
     let priceRange: number[] | undefined = (req.query.priceRange as string[])?.map(Number);
     
@@ -38,7 +40,8 @@ export const index = async (req: Request, res: Response) => {
       deleted: false,
       ...(status && { status }),
       ...(listingType && { listingType }),
-      ...(priceRange && { price: { $gte: priceRange[0], $lte: priceRange[1] } }), // Use price instead of priceRange
+      ...(category && { 'propertyDetails.propertyCategory': category }),
+      ...(priceRange && { price: { $gte: priceRange[0], $lte: priceRange[1] } }),
     };
 
     // Searching
@@ -98,8 +101,17 @@ export const index = async (req: Request, res: Response) => {
 
     } else {
       res.json({
-        code: 404,
+        code: 200,
         message: 'No properties found',
+        properties: properties,
+        paginationObject: paginationObject,
+        propertyCount: propertyCount,
+        permissions: {
+          propertiesView: res.locals.currentUser.permissions.includes('properties_view'),
+          propertiesEdit: res.locals.currentUser.permissions.includes('properties_edit'),
+          propertiesCreate: res.locals.currentUser.permissions.includes('properties_create'),
+          propertiesDelete: res.locals.currentUser.permissions.includes('properties_delete')
+        }
       });
     }
 

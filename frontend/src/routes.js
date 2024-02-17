@@ -99,11 +99,11 @@ export const routes = [
       },
       {
         path: '/admin/auth/login',
-        element: <AdminRegister isRegisterPage={false} />
+        element: <AdminRegister />
       },
       {
         path: '/admin/auth/register',
-        element: <AdminRegister/>
+        element: <AdminRegister isRegisterPage/>
       }
     ]
   }

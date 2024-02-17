@@ -25,67 +25,56 @@ const CreatePropertyCategory: React.FC = () => {
   const [ loading, setLoading ] = useState<boolean>(true);
 
   const [ editorContent, setEditorContent ] = useState<string>("");
-  const [ category, setCategory ] = useState<PropertyCategoryType | undefined>(undefined);
+  const [ category ] = useState<PropertyCategoryType | undefined>(undefined);
   const [categoryTree, setCategoryTree] = useState<DefaultOptionType[] | undefined>(undefined);
   const [categoryTitle, setCategoryTitle] = useState<string>();
 
-  // fetch categories data
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await propertyCategoriesService.getCategoryTree();
-        if (response.code === 200) {
-          setCategoryTree(response.categoryTree);
+  
+        // Fetch categories data
+        const categoryResponse = await propertyCategoriesService.getCategoryTree();
+        if (categoryResponse.code === 200) {
+          setCategoryTree(categoryResponse.categoryTree);
         } else {
-          message.error(response.error, 3);
+          message.error(categoryResponse.error, 3);
+          setLoading(false);
+          return;
         }
-        setLoading(false);
-
+  
+        // Check and fetch permissions if necessary
+        if (!currentUserPermissions?.propertyCategoriesCreate) {
+          const permissionsResponse = await AdminRolesService.getPermissions();
+          if (permissionsResponse.code === 200) {
+            if (permissionsResponse.permissions) {
+              dispatch(setPermissions(permissionsResponse.permissions));
+            }
+  
+            if (!permissionsResponse.permissions.propertyCategoriesCreate) {
+              setViewAllowed(false);
+            }
+          } else {
+            setViewAllowed(false);
+          }
+        }
+  
       } catch (err: any) {
         if (err.response && err.response.status === 401) {
           message.error('Unauthorized - Please log in to access this feature.', 3);
           navigate('/admin/auth/login');
         } else {
-          message.error('Error occurred while fetching category data', 2);
+          message.error('Error occurred while fetching data', 2);
           console.log('Error occurred:', err);
         }
+      } finally {
+        setLoading(false);
       }
     };
-
+  
     fetchData();
-  }, [navigate]);
-
-  // if permission in redux not existed => fetch permissions
-  useEffect(() =>  {
-    if (currentUserPermissions?.propertyCategoriesCreate)
-      return;
-
-    const fetchData = async () => {
-      try {
-        const response = await AdminRolesService.getPermissions();
-        if (response.code === 200) {
-          if (response.permissions) {
-            dispatch(setPermissions(response.permissions));
-          }
-
-          if (!response.permissions.propertyCategoriesCreate) {
-            setViewAllowed(false)
-          }
-
-        } else {
-          setViewAllowed(false);
-        }
-
-      } catch (err) {
-        console.log("Error occurred while fetching permissions:", err);
-        message.error('Error occurred, redirect to previous page', 3)
-        navigate(-1);
-        setViewAllowed(false);
-      }
-    }
-    fetchData();
-  }, []);
+  }, [currentUserPermissions, dispatch, navigate]);
 
   const handleEditorChange = (content: any) => {
     const contentString = typeof content === 'string' ? content : '';

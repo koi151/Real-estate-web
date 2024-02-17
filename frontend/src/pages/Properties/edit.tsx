@@ -143,8 +143,8 @@ const EditProperty: React.FC = () => {
     setExpireDateTime(dateTime);
   }
 
-  const handleTreeSelectChange = (newValue: string) => {
-    setCategory(newValue);
+  const handleTreeSelectChange = (selectedNode: any) => {
+    setCategory(selectedNode.label);
   };
 
   // Child component functions  
@@ -183,7 +183,7 @@ const EditProperty: React.FC = () => {
       data.propertyLength && formData.append('area[propertyLength]', data.propertyLength);
   
       // Append propertyDetails 
-      data.propertyCategory && formData.append('propertyDetails[propertyCategory]', data.propertyCategory);
+      category && formData.append('propertyDetails[propertyCategory]', category);
   
       // Append description
       editorContent && formData.append('description', editorContent);
@@ -294,6 +294,7 @@ const EditProperty: React.FC = () => {
                             placeholder="None by default"
                             treeDefaultExpandAll
                             onChange={handleTreeSelectChange}
+                            labelInValue
                             treeLine
                           />
                         </Form.Item>

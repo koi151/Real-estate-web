@@ -37,7 +37,7 @@ const Properties: React.FC = () => {
   const [error, setError] = useState<string | null>(null); 
   const [propertyCount, setPropertyCount] = useState<number>(0);
 
-  const { listingType, keyword, status, priceRange, sorting } = filters;
+  const { listingType, keyword, status, category, priceRange, sorting } = filters;
 
   const [checkedList, setCheckedList] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -55,13 +55,14 @@ const Properties: React.FC = () => {
 
   // fetch properties data
   useEffect(() => {
-    setLoading(true);
     const fetchData = async () => {
       try {
+        setLoading(true);
         const response = await propertiesService.getProperties({ 
           ...(keyword && { keyword }), 
           ...(status && { status }), 
           ...(listingType && { listingType }), 
+          ...(category && { category }), 
           ...(priceRange && { priceRange }),
           ...(sorting?.sortKey && { sortKey: sorting.sortKey }), 
           ...(sorting?.sortValue && { sortValue: sorting.sortValue }), 
@@ -98,7 +99,7 @@ const Properties: React.FC = () => {
     fetchData();
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [keyword, status, sorting, currentPage, listingType, priceRange]); 
+  }, [keyword, status, sorting, currentPage, listingType, priceRange, category]); 
 
   // update url
   useEffect(() => {
@@ -187,6 +188,7 @@ const Properties: React.FC = () => {
           <FilterBox 
             createAllowed={currentUserPermissions?.propertiesCreate} 
             priceRangeFilter
+            categoryFilter
           />
     
           {error ? (
@@ -368,9 +370,9 @@ const Properties: React.FC = () => {
           <Pagination
             // showSizeChanger
             showQuickJumper
-            pageSize={paginationObj.limitItems || 4}
+            pageSize={paginationObj?.limitItems || 4}
             onChange={onPageChange}
-            defaultCurrent={paginationObj.currentPage || 1}
+            defaultCurrent={paginationObj?.currentPage || 1}
             total={propertyCount}
           />
         </>

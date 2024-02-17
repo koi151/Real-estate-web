@@ -1,6 +1,6 @@
 import { Badge, Button, Card, Col, Form, Input, InputNumber, 
          Radio, Row, Segmented, Select, TreeSelect, message } from "antd";
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, ReactNode, useEffect, useState } from "react";
 import { Editor } from '@tinymce/tinymce-react';
 import { SegmentedValue } from "antd/es/segmented";
 import { Link, useNavigate } from "react-router-dom";
@@ -16,13 +16,13 @@ import propertyCategoriesService from "../../services/admin/property-categories.
 import GetAddress from "../../components/admin/getAddress/getAddress";
 import ExpireTimePicker from "../../components/admin/ExpireTimePicker/expireTimePicker";
 import UploadMultipleFile from "../../components/admin/UploadMultipleFile/uploadMultipleFile";
+import NoPermission from "../../components/admin/NoPermission/noPermission";
 
 // Redux && helpers, scss
 import { RootState } from "../../redux/stores";
 import AdminRolesService from "../../services/admin/roles.service";
 import { setPermissions } from "../../redux/reduxSlices/permissionsSlice";
 import './create.scss'
-import NoPermission from "../../components/admin/NoPermission/noPermission";
 
 const CreateProperty: React.FC = () => {
   const navigate = useNavigate();
@@ -121,8 +121,8 @@ const CreateProperty: React.FC = () => {
     setPriceMultiplier(value === 'million' ? 1 : 1000);
   };
 
-  const handleTreeSelectChange = (newValue: string) => {
-    setCategory(newValue);
+  const handleTreeSelectChange = (selectedNode: any) => {
+    setCategory(selectedNode.label);
   };
 
   const selectPriceUnit = (
@@ -162,8 +162,8 @@ const CreateProperty: React.FC = () => {
       data.propertyWidth && formData.append('area[propertyWidth]', data.propertyWidth);
       data.propertyLength && formData.append('area[propertyLength]', data.propertyLength);
   
-      // Append propertyDetails data
-      data.propertyCategory && formData.append('propertyDetails[propertyCategory]', data.propertyCategory);
+      // Append propertyDetails
+      category && formData.append('propertyDetails[propertyCategory]', category);
   
       // Append description
       editorContent && formData.append('description', editorContent);
@@ -241,17 +241,18 @@ const CreateProperty: React.FC = () => {
                 <Col span={24}>
                   <Form.Item 
                     label='Select property category' 
-                    name='category' 
+                    name='propertyCategory' 
                   >
-                    <TreeSelect
-                      style={{ width: '100%' }}
-                      value={category}
-                      dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-                      treeData={categoryTree}
-                      placeholder="Please select"
-                      treeDefaultExpandAll
-                      onChange={handleTreeSelectChange}
-                      treeLine
+                    <TreeSelect 
+                      style={{ width: '100%' }} 
+                      value={category} 
+                      dropdownStyle={{ maxHeight: 400, overflow: 'auto' }} 
+                      treeData={categoryTree} 
+                      placeholder="Please select" 
+                      treeDefaultExpandAll 
+                      onChange={handleTreeSelectChange} 
+                      treeLine 
+                      labelInValue
                     />
                   </Form.Item>
                 </Col>

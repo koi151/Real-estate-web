@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Form, Col, Row, Input, Button, message } from "antd";
 import { useDispatch } from "react-redux";
@@ -12,7 +12,7 @@ interface AdminRegisterLoginProps {
   isRegisterPage: boolean;
 }
 
-const AdminRegisterLogin: React.FC<AdminRegisterLoginProps> = ({ isRegisterPage }) => {
+const AdminRegisterLogin: React.FC<AdminRegisterLoginProps> = ({ isRegisterPage = false }) => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -48,6 +48,10 @@ const AdminRegisterLogin: React.FC<AdminRegisterLoginProps> = ({ isRegisterPage 
       message.error(`Error occurred, can not ${isRegisterPage ? "register" : "login"}`)
     }
   }
+
+  useEffect(() => { //test
+    console.log("isRegisterPage:", isRegisterPage)
+  }, [isRegisterPage])
 
   return (
     <>

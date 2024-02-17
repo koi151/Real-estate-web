@@ -102,7 +102,6 @@ $filter-box-height: 20rem;
     animation: fadeIn .3s ease-in-out forwards;
 
     .sorting-items {
-      margin-left: 2rem;
 
       &__select {
         width: 25rem;
@@ -111,19 +110,16 @@ $filter-box-height: 20rem;
     }
     
     .multiple-change {
-      margin-left: 2rem;
-
       &__select {
         width: 25rem;
         margin-top: .75rem;
       }
     }
 
-    .price-range {
+    .price-range, .category-filter {
       position: relative;
       display: flex;
       flex-direction: column;
-      margin-top: 2rem;
 
       &__btn {
         width: 80%; 
