@@ -3,18 +3,19 @@ import { Breadcrumb, Button, Checkbox, Col, Image, InputNumber, Pagination, Pagi
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 
-import propertyCategoriesService from '../../services/admin/property-categories.service';
-import { PaginationObject, PropertyCategoryType } from '../../../../backend/commonTypes';
-import { SortingQuery } from '../../../../backend/commonTypes';
-import StatusButton from '../../components/admin/StatusButton/statusButton';
+import propertyCategoriesService from '../../../services/admin/property-categories.service';
+import { PaginationObject, PropertyCategoryType } from '../../../../../backend/commonTypes';
+import { SortingQuery } from '../../../../../backend/commonTypes';
+import StatusButton from '../../../components/admin/StatusButton/statusButton';
 
 import sanitizeHtml from 'sanitize-html';
-import '../Properties/properties.scss';
-import FilterBox from '../../components/admin/FilterBox/filterBox';
-import NoPermission from '../../components/admin/NoPermission/noPermission';
+import FilterBox from '../../../components/admin/FilterBox/filterBox';
+import NoPermission from '../../../components/admin/NoPermission/noPermission';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../redux/stores';
-import { setPermissions } from '../../redux/reduxSlices/permissionsSlice';
+import { RootState } from '../../../redux/stores';
+import { setPermissions } from '../../../redux/reduxSlices/permissionsSlice';
+
+import '../Properties/properties.scss'
 
 const PropertyCategories: React.FC = () => {
 
@@ -172,7 +173,10 @@ const PropertyCategories: React.FC = () => {
           />
         </div>
 
-        <FilterBox createAllowed={currentUserPermissions?.propertyCategoriesCreate}/>
+        <FilterBox 
+          createAllowed={currentUserPermissions?.propertyCategoriesCreate}
+          statusFilter
+        />
 
         { error ? (
           <div>{error}</div>

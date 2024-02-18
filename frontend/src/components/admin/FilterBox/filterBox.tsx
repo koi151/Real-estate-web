@@ -22,12 +22,13 @@ import { setListingType, setKeyword, setStatus, setSorting,
 import './filterBox.scss';
 
 interface Props {
+  statusFilter?: boolean;
   createAllowed?: boolean;
   priceRangeFilter?: boolean;
   categoryFilter?: boolean;
 }
 
-const FilterBox: React.FC<Props> = ({createAllowed = false, priceRangeFilter = false, categoryFilter = false}) => {
+const FilterBox: React.FC<Props> = ({statusFilter = false, createAllowed = false, priceRangeFilter = false, categoryFilter = false}) => {
   const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
@@ -194,32 +195,34 @@ const FilterBox: React.FC<Props> = ({createAllowed = false, priceRangeFilter = f
 
         <div className={`filter-box__detail ${isFilterDetailVisible ? '' : 'fade-out'} ${listingType ? '' : 'mt-3'}`}>
           <Row className='custom-row d-flex align-items-center'>
-            <Col xxl={8} xl={8} lg={8}>
-              <div className='status-filter'>
-                <span>Filter by status:</span>
-                <span className='status-filter__status-wrap mr-2'>
-                  <br />
-                  <Button
-                    onClick={() => handleStatusClick('')}
-                    className={`custom-btn ${!status ? 'active' : ''}`}
-                  >
-                    All
-                  </Button>
-                  <Button
-                    onClick={() => handleStatusClick('active')}
-                    className={`custom-btn ${status === 'active' ? 'active' : ''}`}
-                  >
-                    Active
-                  </Button>
-                  <Button
-                    onClick={() => handleStatusClick('inactive')}
-                    className={`custom-btn ${status === 'inactive' ? 'active' : ''}`}
-                  >
-                    Inactive
-                  </Button>
-                </span>
-              </div>
-            </Col>
+            {statusFilter && (
+              <Col xxl={8} xl={8} lg={8}>
+                <div className='status-filter'>
+                  <span>Filter by status:</span>
+                  <span className='status-filter__status-wrap mr-2'>
+                    <br />
+                    <Button
+                      onClick={() => handleStatusClick('')}
+                      className={`custom-btn ${!status ? 'active' : ''}`}
+                    >
+                      All
+                    </Button>
+                    <Button
+                      onClick={() => handleStatusClick('active')}
+                      className={`custom-btn ${status === 'active' ? 'active' : ''}`}
+                    >
+                      Active
+                    </Button>
+                    <Button
+                      onClick={() => handleStatusClick('inactive')}
+                      className={`custom-btn ${status === 'inactive' ? 'active' : ''}`}
+                    >
+                      Inactive
+                    </Button>
+                  </span>
+                </div>
+              </Col>
+            )}
             <Col xxl={8} xl={8} lg={8}>
               <div className='sorting-items'>
                 <span>Sorting by: </span>

@@ -6,22 +6,22 @@ import { Dayjs } from "dayjs";
 import { useDispatch, useSelector } from "react-redux";
 
 // Services
-import propertiesService from "../../services/admin/properties.service";
-import AdminRolesService from "../../services/admin/roles.service";
+import propertiesService from "../../../services/admin/properties.service";
+import AdminRolesService from "../../../services/admin/roles.service";
 
 // Data types
-import { PropertyType } from "../../../../backend/commonTypes";
-import * as standardizeData from '../../helpers/standardizeData'
+import { PropertyType } from "../../../../../backend/commonTypes";
+import * as standardizeData from '../../../helpers/standardizeData'
 
 // Components
-import GetAddress from "../../components/admin/getAddress/getAddress";
-import UploadMultipleFile from "../../components/admin/UploadMultipleFile/uploadMultipleFile";
-import ExpireTimePicker from "../../components/admin/ExpireTimePicker/expireTimePicker";
-import NoPermission from "../../components/admin/NoPermission/noPermission";
+import GetAddress from "../../../components/admin/getAddress/getAddress";
+import UploadMultipleFile from "../../../components/admin/UploadMultipleFile/uploadMultipleFile";
+import ExpireTimePicker from "../../../components/admin/ExpireTimePicker/expireTimePicker";
+import NoPermission from "../../../components/admin/NoPermission/noPermission";
 
 // Redux
-import { RootState } from "../../redux/stores";
-import { setPermissions } from "../../redux/reduxSlices/permissionsSlice";
+import { RootState } from "../../../redux/stores";
+import { setPermissions } from "../../../redux/reduxSlices/permissionsSlice";
 
 
 const PropertyDetail: React.FC = () => {

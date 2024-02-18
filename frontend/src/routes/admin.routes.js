@@ -1,31 +1,31 @@
-import LayoutDefault from "./components/admin/Layouts/layoutDefault";
+import LayoutDefault from "../components/admin/Layouts/layoutDefault";
 
-import DashBoard from "./pages/Home/dashboard";
+import DashBoard from "../pages/admin/Home/dashboard";
 
-import Properties from "./pages/Properties/properties";
-import PropertyDetail from "./pages/Properties/detail";
-import CreateProperty from "./pages/Properties/create";
-import EditProperty from "./pages/Properties/edit";
+import Properties from "../pages/admin/Properties/properties";
+import PropertyDetail from "../pages/admin/Properties/detail";
+import CreateProperty from "../pages/admin/Properties/create";
+import EditProperty from "../pages/admin/Properties/edit";
 
-import PropertyCategories from "./pages/PropertyCategories/propertyCategories.tsx";
-import PropertyCategoriesDetail from "./pages/PropertyCategories/detail";
-import EditPropertyCategories from "./pages/PropertyCategories/edit";
-import CreatePropertyCategory from "./pages/PropertyCategories/create";
+import PropertyCategories from "../pages/admin/PropertyCategories/propertyCategories";
+import PropertyCategoriesDetail from "../pages/admin/PropertyCategories/detail";
+import EditPropertyCategories from "../pages/admin/PropertyCategories/edit";
+import CreatePropertyCategory from "../pages/admin/PropertyCategories/create";
 
-import AdminRoles from "./pages/Roles/roles";
-import AdminRoleDetail from "./pages/Roles/detail";
-import CreateAdminRole from "./pages/Roles/create";
-import EditAdminRole from "./pages/Roles/edit";
+import AdminRoles from "../pages/Roles/roles";
+import AdminRoleDetail from "../pages/Roles/detail";
+import CreateAdminRole from "../pages/Roles/create";
+import EditAdminRole from "../pages/Roles/edit";
 
-import AdminAccounts from "./pages/Accounts/accounts";
-import AdminAccountsDetail from "./pages/Accounts/detail";
-import CreateAdminAccounts from "./pages/Accounts/create";
-import EditAdminAccounts from "./pages/Accounts/edit";
-import AdminRegister from "./pages/RegisterAndLogin/adminRegisterLogin";
+import AdminAccounts from "../pages/admin/Accounts/accounts";
+import AdminAccountsDetail from "../pages/admin/Accounts/detail";
+import CreateAdminAccounts from "../pages/admin/Accounts/create";
+import EditAdminAccounts from "../pages/admin/Accounts/edit";
+import AdminRegister from "../pages/admin/RegisterAndLogin/adminRegisterLogin";
 
-import PageNotFound from "./components/PageNotFound/pageNotFound";
+import PageNotFound from "../components/PageNotFound/pageNotFound";
 
-export const routes = [
+export const adminRoutes = [
   {
     path: '/admin',
     element: <LayoutDefault />,

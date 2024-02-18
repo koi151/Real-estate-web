@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { PropertyCategoryType } from "../../../../backend/commonTypes";
+import { PropertyCategoryType } from "../../../../../backend/commonTypes";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Editor } from '@tinymce/tinymce-react';
 import { Badge, Card, Col, Form, Input, InputNumber, 
         Radio, Row, Spin, message } from "antd";
 
-import propertyCategoriesService from "../../services/admin/property-categories.service";
-import UploadMultipleFile from "../../components/admin/UploadMultipleFile/uploadMultipleFile";
-import NoPermission from "../../components/admin/NoPermission/noPermission";
+import propertyCategoriesService from "../../../services/admin/property-categories.service";
+import UploadMultipleFile from "../../../components/admin/UploadMultipleFile/uploadMultipleFile";
+import NoPermission from "../../../components/admin/NoPermission/noPermission";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../redux/stores";
-import AdminRolesService from "../../services/admin/roles.service";
-import { setPermissions } from "../../redux/reduxSlices/permissionsSlice";
+import { RootState } from "../../../redux/stores";
+import AdminRolesService from "../../../services/admin/roles.service";
+import { setPermissions } from "../../../redux/reduxSlices/permissionsSlice";
 
 const PropertyCategoriesDetail: React.FC = () => {
   

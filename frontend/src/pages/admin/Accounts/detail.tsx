@@ -2,16 +2,16 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Badge, Card, Col, Form, Input, Radio, Row, Spin, message } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../redux/stores";
+import { RootState } from "../../../redux/stores";
 
-import AdminRolesService from "../../services/admin/roles.service";
-import adminAccountsService from "../../services/admin/accounts.service";
+import AdminRolesService from "../../../services/admin/roles.service";
+import adminAccountsService from "../../../services/admin/accounts.service";
 
-import { AdminAccountType } from "../../../../backend/commonTypes";
-import NoPermission from "../../components/admin/NoPermission/noPermission";
-import UploadMultipleFile from "../../components/admin/UploadMultipleFile/uploadMultipleFile";
+import { AdminAccountType } from "../../../../../backend/commonTypes";
+import NoPermission from "../../../components/admin/NoPermission/noPermission";
+import UploadMultipleFile from "../../../components/admin/UploadMultipleFile/uploadMultipleFile";
 
-import { setPermissions } from "../../redux/reduxSlices/permissionsSlice";
+import { setPermissions } from "../../../redux/reduxSlices/permissionsSlice";
 
 const AdminAccountsDetail: React.FC = () => {
 

@@ -32,6 +32,7 @@ export const index = async (req: Request, res: Response) => {
     
     let status: string | undefined = req.query.status?.toString();
     let category: string | undefined = req.query.category?.toString();
+    const pageSize: number | null = req.query.pageSize ? parseInt(req.query.pageSize as string) : null;
 
     let listingType: string | undefined = req.query.listingType?.toString();
     let priceRange: number[] | undefined = (req.query.priceRange as string[])?.map(Number);
@@ -58,7 +59,7 @@ export const index = async (req: Request, res: Response) => {
     let paginationObject = paginationHelper(
       {
         currentPage: typeof(req.query.currentPage) == "string" ? parseInt(req.query.currentPage) : 1,
-        limitItems: 3,
+        limitItems: pageSize,
         skip: null, // helper return skip, totalPage value, do not change
         totalPage: null,
       },

@@ -9,19 +9,19 @@ import { DefaultOptionType } from "antd/es/select";
 import { useDispatch, useSelector } from "react-redux";
 
 // Services
-import propertiesService from "../../services/admin/properties.service";
-import propertyCategoriesService from "../../services/admin/property-categories.service";
+import propertiesService from "../../../services/admin/properties.service";
+import propertyCategoriesService from "../../../services/admin/property-categories.service";
 
 // Components
-import GetAddress from "../../components/admin/getAddress/getAddress";
-import ExpireTimePicker from "../../components/admin/ExpireTimePicker/expireTimePicker";
-import UploadMultipleFile from "../../components/admin/UploadMultipleFile/uploadMultipleFile";
-import NoPermission from "../../components/admin/NoPermission/noPermission";
+import GetAddress from "../../../components/admin/getAddress/getAddress";
+import ExpireTimePicker from "../../../components/admin/ExpireTimePicker/expireTimePicker";
+import UploadMultipleFile from "../../../components/admin/UploadMultipleFile/uploadMultipleFile";
+import NoPermission from "../../../components/admin/NoPermission/noPermission";
 
 // Redux && helpers, scss
-import { RootState } from "../../redux/stores";
-import AdminRolesService from "../../services/admin/roles.service";
-import { setPermissions } from "../../redux/reduxSlices/permissionsSlice";
+import { RootState } from "../../../redux/stores";
+import AdminRolesService from "../../../services/admin/roles.service";
+import { setPermissions } from "../../../redux/reduxSlices/permissionsSlice";
 import './create.scss'
 
 const CreateProperty: React.FC = () => {

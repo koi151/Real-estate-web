@@ -1,13 +1,13 @@
 import { Breadcrumb, Col, Row, message } from 'antd';
 import React, { useEffect, useState } from 'react';
-import CardItem from '../../components/admin/CardItem/cardItem';
+import CardItem from '../../../components/admin/CardItem/cardItem';
 import { Link, useNavigate } from 'react-router-dom';
 import { AiOutlineLineChart } from 'react-icons/ai';
-import Statistic from '../../components/admin/Statistic/statistic';
+import Statistic from '../../../components/admin/Statistic/statistic';
 import { FaUsersCog } from "react-icons/fa";
-import NoPermission from '../../components/admin/NoPermission/noPermission';
-import dashboardService from '../../services/admin/dashboard.service';
-import { DashboardStatistics, Statistics } from '../../../../backend/commonTypes';
+import NoPermission from '../../../components/admin/NoPermission/noPermission';
+import dashboardService from '../../../services/admin/dashboard.service';
+import { DashboardStatistics, Statistics } from '../../../../../backend/commonTypes';
 
 
 const DashBoard: React.FC = () => {

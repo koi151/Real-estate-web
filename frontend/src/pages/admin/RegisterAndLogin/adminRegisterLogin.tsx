@@ -3,8 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { Form, Col, Row, Input, Button, message } from "antd";
 import { useDispatch } from "react-redux";
 
-import adminAuthorizationService from "../../services/admin/authorization.service";
-import { setUser } from "../../redux/reduxSlices/userSlice";
+import adminAuthorizationService from "../../../services/admin/authorization.service";
+import { setUser } from "../../../redux/reduxSlices/userSlice";
 import './adminRegisterLogin.scss'
 
 

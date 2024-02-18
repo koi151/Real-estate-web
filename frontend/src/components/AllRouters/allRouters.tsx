@@ -1,8 +1,9 @@
-import { useRoutes } from 'react-router'
-import { routes } from '../../routes.js';
+import { useRoutes } from 'react-router'; 
+import { adminRoutes } from '../../routes/admin.routes.js';
+import { clientRoutes } from '../../routes/client.routes.js';
 
 const AllRouter = () => {
-  const elements = useRoutes(routes)
+  const elements = useRoutes(adminRoutes.concat(clientRoutes));
   return elements;
 }
 

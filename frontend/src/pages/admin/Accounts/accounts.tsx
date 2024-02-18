@@ -5,14 +5,14 @@ import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { FaPlus } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { RootState } from '../../redux/stores';
-import { AdminAccountType } from '../../../../backend/commonTypes';
-import StatusButton from '../../components/admin/StatusButton/statusButton';
+import { RootState } from '../../../redux/stores';
+import { AdminAccountType } from '../../../../../backend/commonTypes';
+import StatusButton from '../../../components/admin/StatusButton/statusButton';
 
-import adminAccountsService from '../../services/admin/accounts.service';
+import adminAccountsService from '../../../services/admin/accounts.service';
 import '../Properties/properties.scss';
-import { setPermissions } from '../../redux/reduxSlices/permissionsSlice';
-import NoPermission from '../../components/admin/NoPermission/noPermission';
+import { setPermissions } from '../../../redux/reduxSlices/permissionsSlice';
+import NoPermission from '../../../components/admin/NoPermission/noPermission';
 
 const AdminAccounts: React.FC = () => {
 

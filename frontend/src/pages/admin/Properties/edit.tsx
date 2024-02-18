@@ -5,18 +5,18 @@ import { Editor } from '@tinymce/tinymce-react';
 import { Link, useNavigate, useParams } from "react-router-dom";
 import dayjs, { Dayjs } from "dayjs";
 
-import propertiesService from "../../services/admin/properties.service";
-import { PropertyType } from "../../../../backend/commonTypes";
-import * as standardizeData from '../../helpers/standardizeData'
-import GetAddress from "../../components/admin/getAddress/getAddress";
-import UploadMultipleFile from "../../components/admin/UploadMultipleFile/uploadMultipleFile";
-import ExpireTimePicker from "../../components/admin/ExpireTimePicker/expireTimePicker";
-import { RootState } from "../../redux/stores";
+import propertiesService from "../../../services/admin/properties.service";
+import { PropertyType } from "../../../../../backend/commonTypes";
+import * as standardizeData from '../../../helpers/standardizeData'
+import GetAddress from "../../../components/admin/getAddress/getAddress";
+import UploadMultipleFile from "../../../components/admin/UploadMultipleFile/uploadMultipleFile";
+import ExpireTimePicker from "../../../components/admin/ExpireTimePicker/expireTimePicker";
+import { RootState } from "../../../redux/stores";
 import { useDispatch, useSelector } from "react-redux";
-import NoPermission from "../../components/admin/NoPermission/noPermission";
-import AdminRolesService from "../../services/admin/roles.service";
-import { setPermissions } from "../../redux/reduxSlices/permissionsSlice";
-import propertyCategoriesService from "../../services/admin/property-categories.service";
+import NoPermission from "../../../components/admin/NoPermission/noPermission";
+import AdminRolesService from "../../../services/admin/roles.service";
+import { setPermissions } from "../../../redux/reduxSlices/permissionsSlice";
+import propertyCategoriesService from "../../../services/admin/property-categories.service";
 import { DefaultOptionType } from "antd/es/select";
 
 const EditProperty: React.FC = () => {

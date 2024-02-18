@@ -1,7 +1,6 @@
 import express, { Express } from 'express';
 import * as database from './configs/database';
 import { systemConfig } from './configs/system';
-// import { agenda } from './configs/agenda';
 
 import methodOverride from 'method-override';
 import cors from "cors";
@@ -13,6 +12,8 @@ dotenv.config();
 database.connect();
 
 import v1AdminRoutes from "./api/v1/routes/admin/index.router";
+import v1ClientRoutes from './api/v1/routes/client/index.router';
+
 
 const app: Express = express();
 const port: number | string = process.env.PORT || 3000;
@@ -37,13 +38,13 @@ app.locals.moment = moment;
 v1AdminRoutes(app);
 
 // Client routes
-// clientRoutes(app);
+v1ClientRoutes(app);
 
 app.listen(port, () => {
   console.log(`App listening on port ${port}`);
 });
 
-// Start Agenda
+// Start Agenda --------------------------------
 import Agenda from 'agenda';
 import mongoose from 'mongoose';
 

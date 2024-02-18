@@ -1,0 +1,153 @@
+@import '../../../App.scss'; 
+
+.item-wrapper {
+  background-color: #fff;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  border-radius: .8rem;
+  margin: 1.5rem 0;
+
+  &--check-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__custom-row {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__custom-col {
+    margin-left: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-right: 1px solid #e3dfdfca;
+  }
+
+  &__custom-col-two {
+    margin-left: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__upper-content {
+    display: flex;
+    padding: 2rem;
+
+    &--position {
+      max-width: 3.5rem;
+      margin-bottom: 1rem;
+      color:#999;
+      border: none;
+
+      .ant-input-number-handler-wrap {
+        width: 1.2rem;
+      }
+    }
+
+    .ant-image {
+      height: 100%;
+
+      img {
+        height: 12rem;
+        width: 100%;
+        max-width: 16rem;
+        object-fit: cover;
+        vertical-align: middle;
+        border-radius: .8rem;
+      }
+      .ant-image-mask {
+        height: 12rem;
+        width: 100%;
+        max-width: 16rem;
+        border-radius: .8rem;
+      }
+    }
+
+    &--title {
+      max-width: 100%;
+      font-size: 1.8rem;
+      font-family: $roboto;
+    }
+
+    &--location {
+      margin-top: .75rem;
+    }
+    
+    &--price .price-number, &--area .area-number {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-right: .4rem;
+      color: $color-highlight-two;
+    }
+
+    &--rooms {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center; 
+      align-items: center;
+      color: #999;     
+      font-size: 1.6rem;   
+      border-right: 1px solid #e3dfdfca;
+
+      svg {
+        margin-right: .3rem;
+        font-size: 2rem;
+      }
+    }
+
+    &--status {
+      .status-text {
+        margin: 0;
+      }
+      font-weight: 600;
+      .small-btn {
+        margin: .75rem 0;
+      }
+    }
+
+    &--listing-type {
+      .tag-text {
+        margin: 0;
+      }
+      font-weight: 500;
+      .listing-type-tag {
+        margin-top: .75rem;
+      }
+    }
+
+    .button-wrapper {
+      display: flex;
+      justify-content: space-around;
+      flex-direction: column;
+      width: 7rem;
+    }
+  }
+
+  .line {
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    height: 1px;
+    background-color: #e3dfdfca;
+  }
+
+  &__lower-content {
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+
+    &--date-created {
+      font-size: 1.2rem;
+      color: #999;
+      font-weight: 600;
+      font-family: $open-sans;
+      margin-right: 4rem;
+    }
+  }
+}
+

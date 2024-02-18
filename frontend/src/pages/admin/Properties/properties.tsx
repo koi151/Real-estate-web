@@ -6,20 +6,20 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Breadcrumb, Button, Checkbox, Col, Image, InputNumber, Pagination, 
          PaginationProps, Popconfirm, Row, Skeleton, Space, Tag,  Tooltip,  message } from 'antd';
 
-import * as standardizeData from '../../helpers/standardizeData'
-import getPriceUnit from '../../helpers/getPriceUnit';
+import * as standardizeData from '../../../helpers/standardizeData'
+import getPriceUnit from '../../../helpers/getPriceUnit';
 
-import propertiesService from '../../services/admin/properties.service';
+import propertiesService from '../../../services/admin/properties.service';
 
-import { PropertyType, PaginationObject } from '../../../../backend/commonTypes';
-import ViewCount from '../../components/admin/Counters/ViewCount/viewCount';
-import RoomCountTooltip from '../../components/admin/Counters/RoomCounter/roomCount';
-import FilterBox from '../../components/admin/FilterBox/filterBox';
-import StatusButton from '../../components/admin/StatusButton/statusButton';
-import NoPermission from '../../components/admin/NoPermission/noPermission';
+import { PropertyType, PaginationObject } from '../../../../../backend/commonTypes';
+import ViewCount from '../../../components/admin/Counters/ViewCount/viewCount';
+import RoomCountTooltip from '../../../components/admin/Counters/RoomCounter/roomCount';
+import FilterBox from '../../../components/admin/FilterBox/filterBox';
+import StatusButton from '../../../components/admin/StatusButton/statusButton';
+import NoPermission from '../../../components/admin/NoPermission/noPermission';
 
-import { RootState } from '../../redux/stores';
-import { setPermissions } from '../../redux/reduxSlices/permissionsSlice';
+import { RootState } from '../../../redux/stores';
+import { setPermissions } from '../../../redux/reduxSlices/permissionsSlice';
 import './properties.scss';
 
 const Properties: React.FC = () => {
@@ -67,7 +67,7 @@ const Properties: React.FC = () => {
           ...(sorting?.sortKey && { sortKey: sorting.sortKey }), 
           ...(sorting?.sortValue && { sortValue: sorting.sortValue }), 
           currentPage: currentPage,
-          pageSize: 2
+          pageSize: 4
         });
   
         if(response?.code === 200) {
@@ -189,6 +189,7 @@ const Properties: React.FC = () => {
             createAllowed={currentUserPermissions?.propertiesCreate} 
             priceRangeFilter
             categoryFilter
+            statusFilter
           />
     
           {error ? (

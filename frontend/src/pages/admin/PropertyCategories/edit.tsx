@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { PropertyCategoryType } from "../../../../backend/commonTypes";
+import { PropertyCategoryType } from "../../../../../backend/commonTypes";
 import { Badge, Button, Card, Col, Form, Input, InputNumber, Radio, Row, Spin, message } from "antd";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Editor } from '@tinymce/tinymce-react';
 import { useDispatch, useSelector } from "react-redux";
 
-import propertyCategoriesService from "../../services/admin/property-categories.service";
-import UploadMultipleFile from "../../components/admin/UploadMultipleFile/uploadMultipleFile";
-import { RootState } from "../../redux/stores";
-import NoPermission from "../../components/admin/NoPermission/noPermission";
-import AdminRolesService from "../../services/admin/roles.service";
-import { setPermissions } from "../../redux/reduxSlices/permissionsSlice";
+import propertyCategoriesService from "../../../services/admin/property-categories.service";
+import UploadMultipleFile from "../../../components/admin/UploadMultipleFile/uploadMultipleFile";
+import { RootState } from "../../../redux/stores";
+import NoPermission from "../../../components/admin/NoPermission/noPermission";
+import AdminRolesService from "../../../services/admin/roles.service";
+import { setPermissions } from "../../../redux/reduxSlices/permissionsSlice";
 
 const EditPropertyCategories: React.FC = () => {
   

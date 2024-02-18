@@ -4,14 +4,14 @@ import Select from "antd/es/select";
 import { Badge, Button, Card, Col, 
         Form, Input, Radio, Row, Spin, message } from "antd";
 
-import UploadMultipleFile from "../../components/admin/UploadMultipleFile/uploadMultipleFile";
-import adminAccountsService from "../../services/admin/accounts.service";
-import AdminRolesService from "../../services/admin/roles.service";
-import { RoleTitleType } from "../../../../backend/commonTypes";
+import UploadMultipleFile from "../../../components/admin/UploadMultipleFile/uploadMultipleFile";
+import adminAccountsService from "../../../services/admin/accounts.service";
+import AdminRolesService from "../../../services/admin/roles.service";
+import { RoleTitleType } from "../../../../../backend/commonTypes";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../redux/stores";
-import NoPermission from "../../components/admin/NoPermission/noPermission";
-import { setPermissions } from "../../redux/reduxSlices/permissionsSlice";
+import { RootState } from "../../../redux/stores";
+import NoPermission from "../../../components/admin/NoPermission/noPermission";
+import { setPermissions } from "../../../redux/reduxSlices/permissionsSlice";
 
 const CreateAdminAccounts: React.FC = () => {
 
