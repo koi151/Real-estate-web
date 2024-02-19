@@ -3,7 +3,7 @@ import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { Link, useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Breadcrumb, Button, Checkbox, Col, Image, InputNumber, Pagination, 
+import { Badge, Breadcrumb, Button, Checkbox, Col, Image, InputNumber, Pagination, 
          PaginationProps, Popconfirm, Row, Skeleton, Space, Tag,  Tooltip,  message } from 'antd';
 
 import * as standardizeData from '../../../helpers/standardizeData'
@@ -201,25 +201,69 @@ const Properties: React.FC = () => {
               {propertyList?.length > 0 ? (
                 propertyList.map((property, index) => {
                   return (
-                    <div className='post-wrapper' key={index}>
-                      <div className='post-wrapper__images'>
-                        <div className='image-primary-wrap'>
-                          <img src={property.images?.[0] ?? ""} alt='1st property img'/>
-                        </div>
-                        <div className='images-group'>
-                          <div className='images-group__secondary-wrap'>
-                            <img src={property.images?.[1] ?? ""} alt='2nd property img'/>
-                          </div>
-                          <div className='images-group__smaller-group'>
-                            <div className='images-group__smaller-group--image-wrap'>
-                              <img src={property.images?.[2] ?? ""} alt='3rd property img'/>
+                    <div 
+                      className='post-wrapper' 
+                      onClick={() => navigate(`/properties/detail/${property._id}`)}
+                      key={index}
+                    >
+                      {property.postType === 'premium' || property.postType === 'exclusive' ? (
+                        <Badge.Ribbon 
+                          text={
+                            <Tooltip title={property.postType ? `${property.postType.charAt(0).toUpperCase() + property.postType.slice(1)} post` : ''}>
+                              {property.postType && (
+                                <div style={{ display: 'inline-block', transform: 'scaleX(-1)' }}>
+                                  {property.postType.charAt(0).toUpperCase() + property.postType.slice(1)}
+                                </div>
+                              )}
+                            </Tooltip>
+                          } 
+                          color={property.postType === 'premium' ? "purple" : "gold"} 
+                          className="custom-ribbon-2"
+                          style={{ position: 'absolute', top: '.5rem', left: "-.5rem", right: 'auto', transform: 'scaleX(-1)' }}
+                        >
+                          <div className='post-wrapper__images'>
+                            <div className='image-primary-wrap'>
+                              <img src={property.images?.[0] ?? ""} alt='1st property img'/>
                             </div>
-                            <div className='images-group__smaller-group--image-wrap'>
-                              <img src={property.images?.[3] ?? ""} alt='4th property img'/>
+                            <div className='images-group'>
+                              <div className='images-group__secondary-wrap'>
+                                <img src={property.images?.[1] ?? ""} alt='2nd property img'/>
+                              </div>
+                              <div className='images-group__smaller-group'>
+                                <div className='images-group__smaller-group--image-wrap'>
+                                  <img src={property.images?.[2] ?? ""} alt='3rd property img'/>
+                                </div>
+                                <div className='images-group__smaller-group--image-wrap'>
+                                  <img src={property.images?.[3] ?? ""} alt='4th property img'/>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </Badge.Ribbon>
+                      ) : (
+                        <div 
+                          className='post-wrapper__images' 
+                          onClick={() => navigate(`/properties/detail/${property._id}`)}
+                        >
+                          <div className='image-primary-wrap'>
+                            <img src={property.images?.[0] ?? ""} alt='1st property img'/>
+                          </div>
+                          <div className='images-group'>
+                            <div className='images-group__secondary-wrap'>
+                              <img src={property.images?.[1] ?? ""} alt='2nd property img'/>
+                            </div>
+                            <div className='images-group__smaller-group'>
+                              <div className='images-group__smaller-group--image-wrap'>
+                                <img src={property.images?.[2] ?? ""} alt='3rd property img'/>
+                              </div>
+                              <div className='images-group__smaller-group--image-wrap'>
+                                <img src={property.images?.[3] ?? ""} alt='4th property img'/>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
+                      )}
+
                       <div className='post-wrapper__content'>
                         <div className='post-wrapper__content--title'>
                           {property.title}

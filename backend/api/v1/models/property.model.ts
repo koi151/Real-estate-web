@@ -14,7 +14,7 @@ const propertySchema = new mongoose.Schema(
     },
     postType: {
       type: String,
-      default: "default",
+      default: "standard",
       enum: postTypeValues,
     },
     description: String,
@@ -37,7 +37,6 @@ const propertySchema = new mongoose.Schema(
     },
     propertyDetails: {
       propertyCategory: String,
-      subType: String,
       features: Array,
     },
     slug: { 

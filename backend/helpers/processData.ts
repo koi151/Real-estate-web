@@ -16,7 +16,7 @@ export const processPropertyData = (req: Request): PropertyType => {
   return {
     title: req.body.title && String(req.body.title),
     status: req.body.status,
-    postType: req.body.postType,
+    postType: req.body.postType && String(req.body.postType),
     position: parseToValidNumber(req.body.position),
     description: req.body.description || '',
     area: {

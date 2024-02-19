@@ -283,9 +283,9 @@ const PropertyDetail: React.FC = () => {
                     <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
                       <Form.Item label="Post type:" name='postType' initialValue={property?.postType}>
                         <Radio.Group disabled>
-                          <Radio value="default" className="label-light"> Default </Radio>
-                          <Radio value="preminum"> Preminum </Radio>
-                          <Radio value="featured"> Featured </Radio>
+                          <Radio className="label-light"> Standard </Radio>
+                          <Radio> Preminum </Radio>
+                          <Radio> Exclusive </Radio>
                         </Radio.Group>
                       </Form.Item>
                     </Col>

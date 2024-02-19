@@ -236,6 +236,18 @@ label {
   }
 }
 
+.custom-ribbon-2 {
+  @extend .custom-ribbon;
+  font-size: 1.4rem;
+  padding: 0.2rem 1rem;
+  text-transform: uppercase;
+  position: absolute;
+  top: 0.5rem;
+  left: -0.5rem;
+  right: auto;
+  transform: scaleX(-1);
+}
+
 // No permission - component
 .no-permission-div {
   width: calc(100% - 20rem);

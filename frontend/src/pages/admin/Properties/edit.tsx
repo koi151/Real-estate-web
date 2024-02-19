@@ -169,7 +169,8 @@ const EditProperty: React.FC = () => {
       data.title && formData.append('title', data.title);
       data.position && formData.append('position', data.position);
   
-      formData.append('postType', data.postType || 'default');
+      formData.append('postType', data.postType || 'standard');
+
       data.status && formData.append('status', data.status);
   
       // Append location 
@@ -183,8 +184,12 @@ const EditProperty: React.FC = () => {
       data.propertyLength && formData.append('area[propertyLength]', data.propertyLength);
   
       // Append propertyDetails 
-      category && formData.append('propertyDetails[propertyCategory]', category);
-  
+      if (category || property?.propertyDetails?.propertyCategory) {
+        const propertyCategory = category || property?.propertyDetails?.propertyCategory || '';
+        formData.append('propertyDetails[propertyCategory]', propertyCategory);
+      }
+      
+        
       // Append description
       editorContent && formData.append('description', editorContent);
   
@@ -283,7 +288,7 @@ const EditProperty: React.FC = () => {
                     <Col span={24}>
                         <Form.Item 
                           label='Select parent category' 
-                          name='parent_id' 
+                          name='category' 
                           initialValue={property?.propertyDetails?.propertyCategory}
                         >
                           <TreeSelect
@@ -425,9 +430,9 @@ const EditProperty: React.FC = () => {
                   <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
                     <Form.Item label="Post type:" name='postType' initialValue={property?.postType}>
                       <Radio.Group>
-                        <Radio value="default" className="label-light"> Default </Radio>
-                        <Radio value="preminum"> Preminum </Radio>
-                        <Radio value="featured"> Featured </Radio>
+                        <Radio value="standard" className="label-light"> Standard </Radio>
+                        <Radio value="premium"> Premium </Radio>
+                        <Radio value="exclusive"> Exclusive </Radio>
                       </Radio.Group>
                     </Form.Item>
                   </Col>

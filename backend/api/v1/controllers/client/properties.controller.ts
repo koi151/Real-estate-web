@@ -139,3 +139,48 @@ export const index = async (req: Request, res: Response) => {
     });
   }
 }
+
+// [GET] /admin/properties/detail/:id
+export const detail = async (req: Request, res: Response) => {
+  try {
+    // if (!res.locals.currentUser.permissions.includes('properties_view')) {
+    //   return res.json({
+    //     code: 403,
+    //     message: "Account does not have access rights"
+    //   })
+    // }
+
+    const id: string | undefined = req.params.id;
+    if (!id) {
+      return res.status(400).json({
+        code: 400,
+        message: 'Invalid property ID'
+      });
+    }
+
+    const property = await Property.findOne(
+      { _id: id }, 
+      { deleted: false }
+    )
+
+    if (property) {
+      res.status(200).json({
+        code: 200,
+        message: "Success",
+        property: property
+      })
+    } else {
+      res.status(400).json({
+        code: 400,
+        message: "Property not found"
+      })
+    }
+
+  } catch (error) {
+    console.log('Error occurred while fetching property data:', error);
+    return res.status(500).json({
+      code: 500,
+      message: 'Internal Server Error'
+    });
+  }
+}
