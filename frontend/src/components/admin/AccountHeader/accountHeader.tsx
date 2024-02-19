@@ -67,6 +67,7 @@ const AccountHeader: React.FC = () => {
     <div className="navigation">
       <div className="button" onClick={handleProfileClick}>
         <img 
+          className="avatar-header"
           src={avatarUrl ? avatarUrl : ''}
           alt='avatar-header'
         />

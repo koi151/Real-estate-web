@@ -1,15 +1,29 @@
 import React from 'react';
-import { Breadcrumb, Layout, Menu, theme } from 'antd';
-import { Outlet } from 'react-router-dom';
+import { Layout, Menu, theme } from 'antd';
+import { Outlet, useLocation } from 'react-router-dom';
 
 const { Header, Content, Footer } = Layout;
 
-const items = new Array(3).fill(null).map((_, index) => ({
-  key: String(index + 1),
-  label: `nav ${index + 1}`,
-}));
+const menuItems = [
+  {
+    key: 'home',
+    label: 'Home'
+  },
+  {
+    key: 'properties',
+    label: 'Properties'
+  },
+  {
+    key: 'property-categories',
+    label: 'Categories'
+  }
+]
 
 const LayOutDefaultClient: React.FC = () => {
+
+  const location = useLocation();
+  const matchedMenuKey = menuItems.find(item => location.pathname.includes(item.key))?.key;
+
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -30,19 +44,15 @@ const LayOutDefaultClient: React.FC = () => {
         <Menu
           theme="dark"
           mode="horizontal"
-          defaultSelectedKeys={['2']}
-          items={items}
+          defaultSelectedKeys={[matchedMenuKey || 'home']}
+          items={menuItems}
           style={{ flex: 1, minWidth: 0 }}
         />
       </Header>
-      <Content style={{ padding: '0 48px' }}>
-        <Breadcrumb style={{ margin: '16px 0' }}>
-          <Breadcrumb.Item>Home</Breadcrumb.Item>
-          <Breadcrumb.Item>Property</Breadcrumb.Item>
-        </Breadcrumb>
+      <Content style={{ padding: '0 3rem' }}>
         <div
           style={{
-            padding: 24,
+            padding: "3rem",
             minHeight: 380,
             background: colorBgContainer,
             borderRadius: borderRadiusLG,

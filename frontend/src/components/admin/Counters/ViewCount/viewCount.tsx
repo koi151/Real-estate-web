@@ -9,17 +9,11 @@ interface ViewCountProps {
 const ViewCount: React.FC<ViewCountProps> = ({ propertyView }) => {
   return (
     <>
-      {propertyView ? (
+      {propertyView && (
         <Tooltip title={`${propertyView} views`} placement="bottom">
           <div className='d-flex justify-content-center align-items-center'>
             <FaRegEye />
             {propertyView}
-          </div>
-        </Tooltip>
-      ) : (
-        <Tooltip title='No data of views' placement="bottom">
-          <div className='d-flex justify-content-center align-items-center'>
-            <FaRegEye />...
           </div>
         </Tooltip>
       )}

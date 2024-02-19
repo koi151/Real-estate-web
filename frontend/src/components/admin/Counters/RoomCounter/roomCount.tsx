@@ -6,11 +6,12 @@ import { getRoomCount } from '../../../../helpers/standardizeData';
 import { RoomType } from '../../../../../../backend/commonTypes';
 
 interface RoomCountTooltipProps {
+  tooltip?: boolean;
   roomList: string[] | null;
   type: RoomType;
 }
 
-const RoomCountTooltip: React.FC<RoomCountTooltipProps> = ({ roomList, type }) => {
+const RoomCountTooltip: React.FC<RoomCountTooltipProps> = ({ roomList, type, tooltip = true }) => {
   const roomCount = roomList ? getRoomCount(roomList, type) : null;
   const title = roomCount !== null ? `${roomCount} ${type}` : `No data of ${type.toLowerCase()}`;
 
@@ -33,12 +34,23 @@ const RoomCountTooltip: React.FC<RoomCountTooltipProps> = ({ roomList, type }) =
   }
 
   return (
-    <Tooltip title={title} className='d-flex align-items-center'>
-      <div style={{ marginBottom: "1rem" }}>
-        {icon}
-        {roomCount ? <span className='' >{roomCount}</span> : <>...</> }
-      </div>
-    </Tooltip>
+    <>
+      {tooltip ? (
+        <Tooltip title={title} className='d-flex align-items-center'>
+          {icon}
+          {roomCount ? <span className='mb-1'>{roomCount}</span> : <span>...</span>}
+        </Tooltip>
+      ) : (
+        <>
+        {roomCount && (
+          <div className='d-flex align-items-center justify-content-center mr-2'>
+            <span style={{fontSize: '1.4rem', color: '#666'}}>{roomCount}</span>
+            <span style={{marginLeft: ".5rem", fontSize: '1.8rem', color: '#666'}}>{icon}</span>
+          </div>
+        )}
+        </> 
+      )}
+    </>
   );
 };
 

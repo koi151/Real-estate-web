@@ -17,6 +17,7 @@ $main-content-title: #170c6b;
 $main-content-bg:#eaedf7;
 
 $fade-icon: #999;
+$grey-text: #333;
 
 $roboto: 'Roboto', sans-serif;
 $open-sans: 'Open Sans', sans-serif;
@@ -275,4 +276,11 @@ label {
 .red-icon {
   color: #de4436;
   background: rgba(222,68,54,.05);
+}
+
+// image mixins
+@mixin img-styles {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
 }

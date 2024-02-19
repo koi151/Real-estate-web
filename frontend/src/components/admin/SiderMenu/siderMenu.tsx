@@ -1,7 +1,8 @@
 import React from "react";
 import { Menu } from "antd";
-import { DashboardOutlined, SettingOutlined, LockOutlined, AuditOutlined, InboxOutlined, UsergroupAddOutlined } from '@ant-design/icons';
-import { Link } from "react-router-dom";
+import { DashboardOutlined, SettingOutlined, LockOutlined, AuditOutlined, 
+         InboxOutlined, UsergroupAddOutlined } from '@ant-design/icons';
+import { Link, useLocation } from "react-router-dom";
 
 import './siderMenu.scss';
 
@@ -13,14 +14,15 @@ interface MenuItem {
 }
 
 const SiderMenu: React.FC = () => {
+  const location = useLocation();
 
   const items: MenuItem[] = [
-    { key: 'Dashboard', label: <Link to={'/admin/dashboard'}>Dashboard</Link>, icon: <DashboardOutlined className="sider-icon" /> },
-    { key: 'Properties', label: <Link to={'/admin/properties'}>Properties</Link>, icon: <SettingOutlined className="sider-icon" /> },
-    { key: 'Categories', label: <Link to={'/admin/property-categories'}>Categories</Link>, icon: <InboxOutlined className="sider-icon" /> },
-    { key: 'Roles', label: <Link to={'/admin/roles'}>Roles</Link>, icon: <AuditOutlined className="sider-icon" /> },
-    { key: 'Accounts', label: <Link to={'/admin/accounts'}>Accounts</Link>, icon: <UsergroupAddOutlined className="sider-icon" />},
-    { key: 'Authentication', label: 'Authentication', icon: <LockOutlined className="sider-icon" />, children: [] },
+    { key: 'dashboard', label: <Link to={'/admin/dashboard'}>Dashboard</Link>, icon: <DashboardOutlined className="sider-icon" /> },
+    { key: 'properties', label: <Link to={'/admin/properties'}>Properties</Link>, icon: <SettingOutlined className="sider-icon" /> },
+    { key: 'property-categories', label: <Link to={'/admin/property-categories'}>Categories</Link>, icon: <InboxOutlined className="sider-icon" /> },
+    { key: 'roles', label: <Link to={'/admin/roles'}>Roles</Link>, icon: <AuditOutlined className="sider-icon" /> },
+    { key: 'accounts', label: <Link to={'/admin/accounts'}>Accounts</Link>, icon: <UsergroupAddOutlined className="sider-icon" />},
+    { key: 'authentication', label: 'Authentication', icon: <LockOutlined className="sider-icon" />, children: [] },
 
   ];
 
@@ -29,12 +31,18 @@ const SiderMenu: React.FC = () => {
     children: item.children && item.children.map(child => ({ ...child })),
   }));
 
+  console.log("pathname:", location.pathname)
+
+  const matchedMenuKey = menuItems.find(item => location.pathname.includes('/admin/' + item.key))?.key;
+
+  console.log("matchedMenuKey:", matchedMenuKey)
+
   return (
     <Menu
       className="sider-menu"
       theme='dark'
       mode="inline"
-      defaultSelectedKeys={['Properties']}
+      defaultSelectedKeys={[matchedMenuKey || 'dashboard']}
       style={{ overflowY: 'auto' }}
       items={menuItems}
     />
