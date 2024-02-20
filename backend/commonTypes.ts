@@ -28,9 +28,13 @@ export interface Location {
 }
 
 export interface PropertyDetails {
-  subType?: string;
-  features?: string[];
   propertyCategory?: string;
+  furnitures?: string;
+  houseDirection?: string;
+  balconyDirection?: string;
+  legalDocuments?: string[];
+  rooms?: string[];
+  totalFloors?: number;
 }
 
 export interface PropertyType {

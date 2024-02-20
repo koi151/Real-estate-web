@@ -4,7 +4,7 @@ import AdminAccount from "../../models/adminAccount.model";
 import Role from "../../models/roles.model";
 
 import { AdminAccountType } from "../../../../commonTypes";
-import { processAdminAccountData } from "../../../../helpers/processData";
+import { processAdminAccountData, processImagesData } from "../../../../helpers/processData";
 import { isValidStatus } from "../../../../helpers/dataTypeCheck";
 
 // [GET] /admin/accounts

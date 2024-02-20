@@ -2,7 +2,7 @@ import LayOutDefaultClient from "../components/client/Layouts/layoutDefault";
 
 import Properties from "../pages/client/Properties/properties";
 
-import PageNotFound from "../components/PageNotFound/pageNotFound";
+import PageNotFound from "../components/shared/PageNotFound/pageNotFound";
 import PropertyDetail from "../pages/client/Properties/detail";
 
 export const clientRoutes = [

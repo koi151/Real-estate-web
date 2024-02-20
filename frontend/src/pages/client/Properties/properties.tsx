@@ -291,10 +291,10 @@ const Properties: React.FC = () => {
                               <span style={{marginLeft: ".3rem"}}>{getPriceUnit(property.price).slice(0, 3)}/m²</span>
                             </span>
                           )}
-                          {property.propertyDetails?.features && (
+                          {property.propertyDetails?.rooms && (
                             <span className='post-wrapper__content--features'>
-                              <RoomCountTooltip tooltip={false} roomList={property.propertyDetails?.features} type="bedrooms" />
-                              <RoomCountTooltip tooltip={false} roomList={property.propertyDetails?.features} type="bathrooms" />
+                              <RoomCountTooltip tooltip={false} roomList={property.propertyDetails?.rooms} type="bedrooms" />
+                              <RoomCountTooltip tooltip={false} roomList={property.propertyDetails?.rooms} type="bathrooms" />
                             </span>
                           )}
                           {property.location ? (

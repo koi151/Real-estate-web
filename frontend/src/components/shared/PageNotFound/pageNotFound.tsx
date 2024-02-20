@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import astronautSvg from '../../assets/images/astronaut.svg';
-import planetSvg from '../../assets/images/planet.svg';
 import { Helmet } from 'react-helmet';
+
+import astronautSvg from '../../../assets/images/astronaut.svg';
+import planetSvg from '../../../assets/images/planet.svg';
+
 import './pageNotFound.css';
 
 const PageNotFound: React.FC = () => {

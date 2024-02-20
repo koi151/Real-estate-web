@@ -33,11 +33,13 @@ export const processPropertyData = (req: Request): PropertyType => {
     listingType: req.body.listingType && String(req.body.listingType),
     propertyDetails: {
       propertyCategory: req.body.propertyDetails?.propertyCategory && String(req.body.propertyDetails.propertyCategory),
-      subType: req.body.propertyDetails?.subType && String(req.body.propertyDetails.subType),
-      features: req.body.propertyDetails?.features && Array.isArray(req.body.propertyDetails.features)
-        ? req.body.propertyDetails.features.filter(Boolean)
-        : req.body.propertyDetails?.features 
-        ? [req.body.propertyDetails.features]
+      houseDirection: req.body.houseDirection && String(req.body.houseDirection),
+      balconyDirection: req.body.houseDirection && String(req.body.balconyDirection),
+      totalFloors: req.body.totalFloors && parseInt(req.body.totalFloors),
+      rooms: req.body.propertyDetails?.rooms && Array.isArray(req.body.propertyDetails.rooms)
+        ? req.body.propertyDetails.rooms.filter(Boolean)
+        : req.body.propertyDetails?.rooms 
+        ? [req.body.propertyDetails.rooms]
         : undefined
     },
     expireTime: req.body.expireTime && new Date(req.body.expireTime)
@@ -77,6 +79,7 @@ export const processAdminAccountData = async (req: Request): Promise<AdminAccoun
     status: req.body.status,
     phone: req.body.phone && String(req.body.phone),
     role_id: req.body.role_id && String(req.body.role_id),
+    avatar: req.body.avatar && String(req.body.avatar)
   };
 }
 

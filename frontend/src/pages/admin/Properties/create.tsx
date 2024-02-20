@@ -1,12 +1,18 @@
 import { Badge, Button, Card, Col, Form, Input, InputNumber, 
-         Radio, Row, Segmented, Select, TreeSelect, message } from "antd";
-import React, { ChangeEvent, ReactNode, useEffect, useState } from "react";
+         Radio, Row, Segmented, Select, Space, TreeSelect, message } from "antd";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import { Editor } from '@tinymce/tinymce-react';
 import { SegmentedValue } from "antd/es/segmented";
 import { Link, useNavigate } from "react-router-dom";
 import dayjs, { Dayjs } from "dayjs";
 import { DefaultOptionType } from "antd/es/select";
 import { useDispatch, useSelector } from "react-redux";
+
+// Icons
+import { SlDirections } from "react-icons/sl";
+import { IoBedOutline } from "react-icons/io5";
+import { LuBath } from "react-icons/lu";
+import { FaRegBuilding } from "react-icons/fa";
 
 // Services
 import propertiesService from "../../../services/admin/properties.service";
@@ -22,6 +28,8 @@ import NoPermission from "../../../components/admin/NoPermission/noPermission";
 import { RootState } from "../../../redux/stores";
 import AdminRolesService from "../../../services/admin/roles.service";
 import { setPermissions } from "../../../redux/reduxSlices/permissionsSlice";
+import { directionOptions, documentOptions, furnitureOptions } from "../../../helpers/propertyOptions";
+
 import './create.scss'
 
 const CreateProperty: React.FC = () => {
@@ -105,28 +113,8 @@ const CreateProperty: React.FC = () => {
     setPrice(isNaN(inputValue) ? null : inputValue);
   }
 
-  const handleExpireTimeChange = (dateTime: Dayjs | null) => {
-    setExpireDateTime(dateTime);
-  }
-  
-  const handlePropertyLengthChange = (value: number | null) => {
-    setPropertyLength(value);
-  };
-
-  const handlePropertyWidthChange  = (value: number | null) => {
-    setPropertyWidth(value);
-  };
-
-  const handlePriceUnitChange = (value: string) => {
-    setPriceMultiplier(value === 'million' ? 1 : 1000);
-  };
-
-  const handleTreeSelectChange = (selectedNode: any) => {
-    setCategory(selectedNode.label);
-  };
-
   const selectPriceUnit = (
-    <Select defaultValue="million" onChange={handlePriceUnitChange}>
+    <Select defaultValue="million" onChange={ (value) => setPriceMultiplier(value === 'million' ? 1 : 1000)}>
       <Select.Option value="million">million</Select.Option>
       <Select.Option value="billion">billion</Select.Option>
     </Select>
@@ -164,7 +152,17 @@ const CreateProperty: React.FC = () => {
   
       // Append propertyDetails
       category && formData.append('propertyDetails[propertyCategory]', category);
-  
+      data.houseDirection && formData.append('propertyDetails[houseDirection]', data.houseDirection);
+      data.balconyDirection && formData.append('propertyDetails[balconyDirection]', data.balconyDirection);
+      data.furnitures && formData.append('propertyDetails[furnitures]', data.furnitures);
+      data.legalDocuments && formData.append('propertyDetails[legalDocuments]', data.legalDocuments);
+      data.totalFloors && formData.append('propertyDetails[totalFloors]', data.totalFloors);
+
+      data.bathrooms && formData.append('propertyDetails[rooms]', `bathrooms-${data.bathrooms}`);
+      data.bedrooms && formData.append('propertyDetails[rooms]', `bedrooms-${data.bedrooms}`);
+      data.kitchens && formData.append('propertyDetails[rooms]', `kitchens-${data.kitchens}`);
+
+
       // Append description
       editorContent && formData.append('description', editorContent);
   
@@ -250,7 +248,7 @@ const CreateProperty: React.FC = () => {
                       treeData={categoryTree} 
                       placeholder="Please select" 
                       treeDefaultExpandAll 
-                      onChange={handleTreeSelectChange} 
+                      onChange={(selectedNode: any) => setCategory(selectedNode.label)} 
                       treeLine 
                       labelInValue
                     />
@@ -269,7 +267,7 @@ const CreateProperty: React.FC = () => {
                 <Form.Item label='Property length' name='propertyLength'>
                   <InputNumber 
                     type="number" min={0} 
-                    onChange={handlePropertyLengthChange}
+                    onChange={(value) => setPropertyLength(value)}
                     className="custom-number-input" 
                     placeholder="Enter length of property"
                   />
@@ -280,7 +278,7 @@ const CreateProperty: React.FC = () => {
                   <InputNumber 
                     type="number" min={0} 
                     className="custom-number-input" 
-                    onChange={handlePropertyWidthChange}
+                    onChange={(value) => setPropertyWidth(value)}
                     placeholder="Enter width of property"
                   />
                 </Form.Item>
@@ -316,6 +314,133 @@ const CreateProperty: React.FC = () => {
                   />
                 </Form.Item>
               </Col>
+              <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                <Form.Item label={`Legal documents:`} name='legalDocuments'>
+                <Select
+                  mode="tags"
+                  style={{ width: '100%' }}
+                  placeholder="Choose or add specific legal documents"
+                  options={documentOptions}
+                />
+                </Form.Item>
+              </Col>
+              <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                <Form.Item label={`Furnitures:`} name='furnitures'>
+                  <Select
+                    style={{ width: '100%' }}
+                    placeholder="Furniture"
+                    options={furnitureOptions}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={24}>
+                <div className="line-two"></div>
+              </Col>
+              <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                <Form.Item   
+                  label={
+                    <Space className="d-flex align-items-center">
+                      <span>Number of bedrooms:</span>
+                      <IoBedOutline />
+                    </Space>
+                  } 
+                  name='bedrooms'
+                >
+                  <InputNumber 
+                    min={0} type="number"
+                    placeholder="Enter the number of bedrooms" 
+                    style={{width: "100%"}} 
+                  />
+                </Form.Item>
+              </Col>
+              <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                <Form.Item   
+                  label={
+                    <Space className="d-flex align-items-center">
+                      <span>Number of kitchens:</span>
+                      <IoBedOutline />
+                    </Space>
+                  } 
+                  name='kitchens'
+                >
+                  <InputNumber 
+                    min={0} type="number"
+                    placeholder="Enter the number of kitchens" 
+                    style={{width: "100%"}} 
+                  />
+                </Form.Item>
+              </Col>
+              <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                <Form.Item 
+                  label={
+                    <Space className="d-flex align-items-center">
+                      <span>Number of bathrooms:</span>
+                      <LuBath />
+                    </Space>
+                  }
+                  name='bathrooms'
+                >
+                  <InputNumber 
+                    min={0} type="number"
+                    placeholder="Enter the number of bathrooms" 
+                    style={{width: "100%"}}
+                  />
+                </Form.Item>
+              </Col>
+              <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                <Form.Item 
+                  label={
+                    <Space className="d-flex align-items-center">
+                      <span>Number of floors:</span>
+                      <FaRegBuilding />
+                    </Space>
+                  }                  
+                  name='totalFloors'
+                >
+                  <InputNumber 
+                    min={0} type="number"
+                    placeholder="Enter the number of floors" 
+                    style={{width: "100%"}} 
+                  />
+                </Form.Item>
+              </Col>
+              <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                <Form.Item 
+                  label={
+                    <Space className="d-flex align-items-center">
+                      <span>House direction:</span>
+                      <SlDirections />
+                    </Space>
+                  }      
+                  name='houseDirection'
+                >
+                  <Select
+                    style={{ width: '100%' }}
+                    placeholder="House direction"
+                    options={directionOptions}
+                  ></Select>
+                </Form.Item>
+              </Col>
+              <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                <Form.Item 
+                  label={
+                    <Space className="d-flex align-items-center">
+                      <span>Balcony direction:</span>
+                      <SlDirections />
+                    </Space>
+                  }                  
+                  name='balconyDirection'
+                >
+                  <Select
+                    style={{ width: '100%' }}
+                    placeholder="Balcony direction"
+                    options={directionOptions}
+                  ></Select> 
+                </Form.Item>
+              </Col>
+              <Col span={24}>
+                <div className="line-two"></div>
+              </Col>
               <Col span={24}>
                 <UploadMultipleFile />
               </Col>
@@ -350,7 +475,7 @@ const CreateProperty: React.FC = () => {
                 </Form.Item>
               </Col>
               <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
-                <Form.Item label="Post type:" name='postType' initialValue={'default'}>
+                <Form.Item label="Post type:" name='postType' initialValue={'standard'}>
                   <Radio.Group>
                     <Radio value="standard" className="label-light"> Standard </Radio>
                     <Radio value="premium"> Premium </Radio>
@@ -368,7 +493,9 @@ const CreateProperty: React.FC = () => {
               </Col>
 
               <Col span={24}>
-                <ExpireTimePicker onExpireDateTimeChange={handleExpireTimeChange} />
+                <ExpireTimePicker 
+                  onExpireDateTimeChange={(value) => setExpireDateTime(value)} 
+                />
               </Col>
 
               <Col sm={24} md={24}  lg={12} xl={12} xxl={12}>

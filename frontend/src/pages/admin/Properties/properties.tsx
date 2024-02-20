@@ -280,16 +280,16 @@ const Properties: React.FC = () => {
                           </Col>
                           <Col xxl={3} xl={3} lg={3} md={3} sm={3}>
                             <div className='item-wrapper__upper-content--rooms'>
-                              {property.propertyDetails?.features ? (
+                              {property.propertyDetails?.rooms ? (
                                 <div className='d-flex flex-column justify-content-center'>
-                                  <RoomCountTooltip roomList={property.propertyDetails?.features} type="bedrooms" />
-                                  <RoomCountTooltip roomList={property.propertyDetails?.features} type="bathrooms" />
+                                  <RoomCountTooltip roomList={property.propertyDetails?.rooms} type="bedrooms" />
+                                  <RoomCountTooltip roomList={property.propertyDetails?.rooms} type="bathrooms" />
                                   <ViewCount propertyView={property.view} />
                                 </div>
                               ) : (
                                 <>
-                                  <RoomCountTooltip roomList={null} type="bedrooms" />
-                                  <RoomCountTooltip roomList={null} type="bathrooms" />
+                                  <RoomCountTooltip roomList={undefined} type="bedrooms" />
+                                  <RoomCountTooltip roomList={undefined} type="bathrooms" />
                                   <ViewCount propertyView={property.view} />
                                 </>
                               )}

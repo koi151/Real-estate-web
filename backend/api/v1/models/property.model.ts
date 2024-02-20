@@ -37,7 +37,12 @@ const propertySchema = new mongoose.Schema(
     },
     propertyDetails: {
       propertyCategory: String,
-      features: Array,
+      furnitures: String,
+      houseDirection: String,
+      balconyDirection: String,
+      legalDocuments: Array,
+      rooms: Array,
+      totalFloors: Number
     },
     slug: { 
       type: String, 

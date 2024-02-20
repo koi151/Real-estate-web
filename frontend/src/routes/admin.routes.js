@@ -23,7 +23,7 @@ import CreateAdminAccounts from "../pages/admin/Accounts/create";
 import EditAdminAccounts from "../pages/admin/Accounts/edit";
 import AdminRegister from "../pages/admin/RegisterAndLogin/adminRegisterLogin";
 
-import PageNotFound from "../components/PageNotFound/pageNotFound";
+import PageNotFound from "../components/shared/PageNotFound/pageNotFound";
 
 export const adminRoutes = [
   {

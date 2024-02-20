@@ -1,4 +1,4 @@
-import AllRoute from './components/AllRouters/allRouters';
+import AllRoute from './components/admin/AllRouters/allRouters';
 import './App.scss';
 
 const App = () => {

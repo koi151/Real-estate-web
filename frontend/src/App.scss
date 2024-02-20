@@ -296,3 +296,12 @@ label {
   height: auto;
   object-fit: cover;
 }
+
+// line sep
+.line {
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  height: 1px;
+  background-color: #e3dfdfca;
+}

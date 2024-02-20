@@ -7,7 +7,7 @@ import { RoomType } from '../../../../../../backend/commonTypes';
 
 interface RoomCountTooltipProps {
   tooltip?: boolean;
-  roomList: string[] | null;
+  roomList: string[] | undefined;
   type: RoomType;
 }
 
