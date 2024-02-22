@@ -466,8 +466,8 @@ const CreateProperty: React.FC = () => {
                 <Form.Item label="Post type:" name='postType' initialValue={'standard'}>
                   <Radio.Group>
                     <Radio value="standard" className="label-light"> Standard </Radio>
-                    <Radio value="premium"> Premium </Radio>
-                    <Radio value="exclusive"> Exclusive </Radio>
+                    <Radio value="premium" className="label-light"> Premium </Radio>
+                    <Radio value="exclusive" className="label-light"> Exclusive </Radio>
                   </Radio.Group>
                 </Form.Item>
               </Col>

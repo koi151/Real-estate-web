@@ -35,8 +35,8 @@ const PropertyDetail: React.FC = () => {
   const [viewAllowed, setViewAllowed] = useState(true);
   const [loading, setLoading] = useState(true);
 
-  const [postType, setPostType] = useState<string>('sell');
-  const [priceMultiplier, setPriceMultiplier] = useState<number>(1);
+  const [postType] = useState<string>('sell');
+  const [priceMultiplier] = useState<number>(1);
 
   const [property, setProperty] = useState<PropertyType | undefined>(undefined);
 
@@ -270,7 +270,7 @@ const PropertyDetail: React.FC = () => {
                           disabled
                           id="description" 
                           initialValue={property?.description}               
-                          apiKey='zabqr76pjlluyvwebi3mqiv72r4vyshj6g0u07spd34wk1t2' // hide
+                          apiKey='zabqr76pjlluyvwebi3mqiv72r4vyshj6g0u07spd34wk1t2'
                           init={{
                             toolbar_mode: 'sliding', 
                             plugins: ' anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount', 
@@ -283,9 +283,9 @@ const PropertyDetail: React.FC = () => {
                     <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
                       <Form.Item label="Post type:" name='postType' initialValue={property?.postType}>
                         <Radio.Group disabled>
-                          <Radio className="label-light"> Standard </Radio>
-                          <Radio> Preminum </Radio>
-                          <Radio> Exclusive </Radio>
+                          <Radio value="standard" className="label-light"> Standard </Radio>
+                          <Radio value="premium" className="label-light"> Preminum </Radio>
+                          <Radio value="exclusive" className="label-light"> Exclusive </Radio>
                         </Radio.Group>
                       </Form.Item>
                     </Col>

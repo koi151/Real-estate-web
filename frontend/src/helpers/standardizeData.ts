@@ -66,12 +66,12 @@ const buildFormData = (formData: FormData, data: any, parentKey?: string) => {
 
 
 export const objectToFormData = (data: any) => {
-  console.log('data:', data)
   const formData = new FormData();
   buildFormData(formData, data);
 
   if (data.images && data.images.length > 0) {
     data.images.forEach((imageFile: any) => {
+      console.log('img')
       formData.append('images', imageFile.originFileObj);
     });
   }

@@ -27,9 +27,6 @@ const EditAdminAccounts: React.FC = () => {
   const [account, setAccount] = useState<AdminAccountType | undefined>(undefined);
   const [roleTitles, setRoleTitles] = useState<any>([]);
 
-  // data from child component
-  const [imageUrlToRemove, setImageUrlToRemove] = useState<string[]>([]);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -134,13 +131,6 @@ const EditAdminAccounts: React.FC = () => {
   const filterOption = (input: string, option?: { label: string; value: string }) =>
   (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
  
-  const handleImageUrlRemove = (imageUrl: string | undefined) => {
-    // Check if imageUrl is not undefined and not already in the array
-    if (imageUrlToRemove !== undefined && imageUrl !== undefined) {
-      setImageUrlToRemove(prevImages => [...prevImages, imageUrl]);
-    }
-  }
-
   const onFinishForm = async (data: any) => {
     try {
       if (!id) {
@@ -164,13 +154,6 @@ const EditAdminAccounts: React.FC = () => {
           if (!imageFile.hasOwnProperty('uploaded') || (imageFile.hasOwnProperty('uploaded') && !imageFile.uploaded)) {
             formData.append('avatar', imageFile.originFileObj);
           }
-        });
-      }
-
-      // Append image urls that need to remove from db
-      if (imageUrlToRemove.length > 0) {
-        imageUrlToRemove.forEach((imageUrl) => {
-          formData.append(`images_remove`, imageUrl);
         });
       }
 
@@ -333,7 +316,6 @@ const EditAdminAccounts: React.FC = () => {
                       <Col span={24}>
                         <UploadMultipleFile 
                           uploadedImages={account?.avatar ? [account.avatar] : []} 
-                          setImageUrlRemove={handleImageUrlRemove}
                           singleImageMode={true} />
                       </Col>
                       
