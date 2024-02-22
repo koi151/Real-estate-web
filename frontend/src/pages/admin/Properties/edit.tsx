@@ -1,4 +1,4 @@
-import { Badge, Button, Card, Col, Form, Input, InputNumber, Radio, Row, Segmented, Select, Spin, TreeSelect, message } from "antd";
+import { Badge, Button, Card, Col, Form, Input, InputNumber, Radio, Row, Segmented, Select, Space, Spin, TreeSelect, message } from "antd";
 import { SegmentedValue } from "antd/es/segmented";
 import React, { useEffect, useState } from "react";
 import { Editor } from '@tinymce/tinymce-react';
@@ -18,6 +18,11 @@ import AdminRolesService from "../../../services/admin/roles.service";
 import { setPermissions } from "../../../redux/reduxSlices/permissionsSlice";
 import propertyCategoriesService from "../../../services/admin/property-categories.service";
 import { DefaultOptionType } from "antd/es/select";
+import { directionOptions, documentOptions, furnitureOptions } from "../../../helpers/propertyOptions";
+import { IoBedOutline } from "react-icons/io5";
+import { LuBath } from "react-icons/lu";
+import { FaRegBuilding } from "react-icons/fa";
+import { SlDirections } from "react-icons/sl";
 
 const EditProperty: React.FC = () => {
   const { id } = useParams();
@@ -39,7 +44,8 @@ const EditProperty: React.FC = () => {
 
   const [category, setCategory] = useState<string>();
   const [categoryTree, setCategoryTree] = useState<DefaultOptionType[] | undefined>(undefined);
-  const [categoryTitle, setCategoryTitle] = useState<string>();
+  const [categoryTitle] = useState<string>();
+  
 
   // data from child component
   const [expireDateTime, setExpireDateTime] = useState<Dayjs | null>(null);
@@ -164,37 +170,54 @@ const EditProperty: React.FC = () => {
         return;
       }      
 
-      const formData = new FormData();
+      // let formData = new FormData();
 
-      data.title && formData.append('title', data.title);
-      data.position && formData.append('position', data.position);
+      // data.title && formData.append('title', data.title);
+      // data.position && formData.append('position', data.position);
   
-      formData.append('postType', data.postType || 'standard');
+      // formData.append('postType', data.postType || 'standard');
 
-      data.status && formData.append('status', data.status);
+      // data.status && formData.append('status', data.status);
   
       // Append location 
-      data.city && formData.append('location[city]', data.city);
-      data.district && formData.append('location[district]', data.district);
-      data.ward && formData.append('location[ward]', data.ward);
-      data.address && formData.append('location[address]', data.address);
+      console.log("data:", data)
+
+      const formData = standardizeData.objectToFormData(data);
+
+      // data.city && formData.append('location[city]', data.city);
+      // data.district && formData.append('location[district]', data.district);
+      // data.ward && formData.append('location[ward]', data.ward);
+      // data.address && formData.append('location[address]', data.address);
   
-      // Append area 
-      data.propertyWidth && formData.append('area[propertyWidth]', data.propertyWidth);
-      data.propertyLength && formData.append('area[propertyLength]', data.propertyLength);
+      // // Append area 
+      // data.propertyWidth && formData.append('area[propertyWidth]', data.propertyWidth);
+      // data.propertyLength && formData.append('area[propertyLength]', data.propertyLength);
   
-      // Append propertyDetails 
-      if (category || property?.propertyDetails?.propertyCategory) {
-        const propertyCategory = category || property?.propertyDetails?.propertyCategory || '';
-        formData.append('propertyDetails[propertyCategory]', propertyCategory);
-      }
+      // // Append propertyDetails 
+      // if (category || property?.propertyDetails?.propertyCategory) {
+      //   const propertyCategory = category || property?.propertyDetails?.propertyCategory || '';
+      //   formData.append('propertyDetails[propertyCategory]', propertyCategory);
+      // }
+
+      // data.houseDirection && formData.append('propertyDetails[houseDirection]', data.houseDirection);
+      // data.balconyDirection && formData.append('propertyDetails[balconyDirection]', data.balconyDirection);
+
+
+      // data.furnitures && formData.append('propertyDetails[furnitures]', data.furnitures);
+
+
+      // data.legalDocuments && formData.append('propertyDetails[legalDocuments]', data.legalDocuments);
+      // data.totalFloors && formData.append('propertyDetails[totalFloors]', data.totalFloors);
+
+      // data.bathrooms && formData.append('propertyDetails[rooms]', `bathrooms-${data.bathrooms}`);
+      // data.bedrooms && formData.append('propertyDetails[rooms]', `bedrooms-${data.bedrooms}`);
+      // data.kitchens && formData.append('propertyDetails[rooms]', `kitchens-${data.kitchens}`);
       
-        
       // Append description
       editorContent && formData.append('description', editorContent);
   
       // Append calculated price
-      data.price && formData.append('price', String(priceMultiplier * data.price));
+      // data.price && formData.append('price', String(priceMultiplier * data.price));
   
       // Append listingType
       if (data.listingType) {
@@ -391,6 +414,140 @@ const EditProperty: React.FC = () => {
                           && (priceMultiplier * property.price / (property.area.propertyLength * property.area.propertyWidth)).toFixed(2)} million`}
                       />
                     </Form.Item>
+                  </Col>
+
+                  <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                    <Form.Item label={`Legal documents:`} name='legalDocuments' initialValue={property?.propertyDetails?.legalDocuments}>
+                      <Select
+                        mode="tags"
+                        style={{ width: '100%' }}
+                        placeholder="Choose or add specific legal documents"
+                        options={documentOptions}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                    <Form.Item label={`Furnitures:`} name='furnitures' initialValue={property?.propertyDetails?.furnitures}>
+                      <Select
+                        style={{ width: '100%' }}
+                        placeholder="Furniture"
+                        options={furnitureOptions}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col span={24}>
+                    <div className="line-two"></div>
+                  </Col>
+                  <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                    <Form.Item   
+                      label={
+                        <Space className="d-flex align-items-center">
+                          <span>Number of bedrooms:</span>
+                          <IoBedOutline />
+                        </Space>
+                      } 
+                      name='bedrooms'
+                      initialValue={property?.propertyDetails?.rooms && standardizeData.getRoomCount(property?.propertyDetails?.rooms, 'bedrooms')}
+                    >
+                      <InputNumber 
+                        min={0} type="number"
+                        placeholder="Enter the number of bedrooms" 
+                        style={{width: "100%"}} 
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                    <Form.Item   
+                      label={
+                        <Space className="d-flex align-items-center">
+                          <span>Number of kitchens:</span>
+                          <IoBedOutline />
+                        </Space>
+                      } 
+                      name='kitchens'
+                      initialValue={property?.propertyDetails?.rooms && standardizeData.getRoomCount(property?.propertyDetails?.rooms, 'kitchens')}
+                    >
+                      <InputNumber 
+                        min={0} type="number"
+                        placeholder="Enter the number of kitchens" 
+                        style={{width: "100%"}} 
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                    <Form.Item 
+                      label={
+                        <Space className="d-flex align-items-center">
+                          <span>Number of bathrooms:</span>
+                          <LuBath />
+                        </Space>
+                      }
+                      name='bathrooms'
+                      initialValue={property?.propertyDetails?.rooms && standardizeData.getRoomCount(property?.propertyDetails?.rooms, 'bathrooms')}
+                    >
+                      <InputNumber 
+                        min={0} type="number"
+                        placeholder="Enter the number of bathrooms" 
+                        style={{width: "100%"}}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                    <Form.Item 
+                      label={
+                        <Space className="d-flex align-items-center">
+                          <span>Number of floors:</span>
+                          <FaRegBuilding />
+                        </Space>
+                      }                  
+                      name='totalFloors'
+                      initialValue={property?.propertyDetails?.totalFloors}
+                    >
+                      <InputNumber 
+                        min={0} type="number"
+                        placeholder="Enter the number of floors" 
+                        style={{width: "100%"}} 
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                    <Form.Item 
+                      label={
+                        <Space className="d-flex align-items-center">
+                          <span>House direction:</span>
+                          <SlDirections />
+                        </Space>
+                      }      
+                      name='houseDirection'
+                      initialValue={property?.propertyDetails?.houseDirection}
+                    >
+                      <Select
+                        style={{ width: '100%' }}
+                        placeholder="House direction"
+                        options={directionOptions}
+                      ></Select>
+                    </Form.Item>
+                  </Col>
+                  <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                    <Form.Item 
+                      label={
+                        <Space className="d-flex align-items-center">
+                          <span>Balcony direction:</span>
+                          <SlDirections />
+                        </Space>
+                      }                  
+                      name='balconyDirection'
+                      initialValue={property?.propertyDetails?.balconyDirection}
+                    >
+                      <Select
+                        style={{ width: '100%' }}
+                        placeholder="Balcony direction"
+                        options={directionOptions}
+                      ></Select> 
+                    </Form.Item>
+                  </Col>
+                  <Col span={24}>
+                    <div className="line-two"></div>
                   </Col>
 
                   <Col span={24}>

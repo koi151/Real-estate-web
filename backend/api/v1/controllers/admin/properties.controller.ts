@@ -258,6 +258,8 @@ export const editPatch = async (req: Request, res: Response) => {
       })
     }
 
+    console.log("req.body:", req.body)
+
     const id: string | undefined = req.params.propertyId;
     if (!id) {
       return res.status(400).json({
@@ -267,6 +269,8 @@ export const editPatch = async (req: Request, res: Response) => {
     }
 
     const propertyUpdated: PropertyType = processPropertyData(req);
+    console.log("propertyUpdated:", propertyUpdated)
+
 
     const images = processImagesData(req.body.images);
     const imagesToRemove = processImagesData(req.body.images_remove);

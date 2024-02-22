@@ -105,7 +105,11 @@ const GetAddress: React.FC<{ initialValues?: any }> = ({ initialValues }) => {
   return (
     <Row gutter={16}>
       <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
-        <Form.Item label='City' name='city' initialValue={initialValues?.city}>
+        <Form.Item 
+          label='City' 
+          name={['location', 'city']}  
+          initialValue={initialValues?.city}
+        >
           <Select
             placeholder="Choose city"
             onChange={handleCityChange}
@@ -119,7 +123,11 @@ const GetAddress: React.FC<{ initialValues?: any }> = ({ initialValues }) => {
         </Form.Item>
       </Col>
       <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
-        <Form.Item label='District' name='district' initialValue={initialValues?.district}>
+        <Form.Item 
+          label='District' 
+          name={['location', 'district']}   
+          initialValue={initialValues?.district}
+        >
           <Select
             placeholder="Choose district"
             onChange={handleDistrictChange}
@@ -133,7 +141,11 @@ const GetAddress: React.FC<{ initialValues?: any }> = ({ initialValues }) => {
         </Form.Item>
       </Col>
       <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
-        <Form.Item label='Ward' name='ward' initialValue={initialValues?.ward}>
+        <Form.Item 
+          label='Ward' 
+          name={['location', 'ward']}  
+          initialValue={initialValues?.ward}
+        >
           <Select
             placeholder="Choose ward"
             onChange={handleWardChange}
@@ -147,7 +159,11 @@ const GetAddress: React.FC<{ initialValues?: any }> = ({ initialValues }) => {
         </Form.Item>
       </Col>
       <Col span={24}>
-        <Form.Item label='Address' name='address' initialValue={initialValues?.address}>
+        <Form.Item 
+          label='Address' 
+          name={['location', 'address']}  
+          initialValue={initialValues?.address}
+        >
           <Input placeholder={`Enter your address`} />
         </Form.Item>
       </Col>

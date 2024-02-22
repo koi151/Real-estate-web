@@ -61,7 +61,7 @@ const ExpireTimePicker: React.FC<ExpireTimePickerProps> = ({ onExpireDateTimeCha
   return (
     <Form.Item 
       label={`Post expire after:${expireDateTime ? ` ${dateTimeHelper.differenceInTime(expireDateTime.toDate())}` : ''}`}
-      name="expireAt" 
+      name="expireTime" 
       initialValue={'other'}>
       <div>
         <Radio.Group defaultValue={'other'} onChange={handleChangeExpireOption}>

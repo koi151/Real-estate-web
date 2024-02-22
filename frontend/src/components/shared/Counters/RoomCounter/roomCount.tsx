@@ -36,7 +36,7 @@ const RoomCountTooltip: React.FC<RoomCountTooltipProps> = ({ roomList, type, too
   return (
     <>
       {tooltip ? (
-        <Tooltip title={title} className='d-flex align-items-center'>
+        <Tooltip title={title} className='d-flex align-items-center mb-2'>
           {icon}
           {roomCount ? <span className='mb-1'>{roomCount}</span> : <span>...</span>}
         </Tooltip>

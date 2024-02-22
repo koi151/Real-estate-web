@@ -12,8 +12,8 @@ import getPriceUnit from '../../../helpers/getPriceUnit';
 import propertiesService from '../../../services/admin/properties.service';
 
 import { PropertyType, PaginationObject } from '../../../../../backend/commonTypes';
-import ViewCount from '../../../components/admin/Counters/ViewCount/viewCount';
-import RoomCountTooltip from '../../../components/admin/Counters/RoomCounter/roomCount';
+import ViewCount from '../../../components/shared/Counters/ViewCount/viewCount';
+import RoomCountTooltip from '../../../components/shared/Counters/RoomCounter/roomCount';
 import FilterBox from '../../../components/admin/FilterBox/filterBox';
 import StatusButton from '../../../components/admin/StatusButton/statusButton';
 import NoPermission from '../../../components/admin/NoPermission/noPermission';

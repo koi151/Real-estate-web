@@ -32,7 +32,7 @@ export interface PropertyDetails {
   furnitures?: string;
   houseDirection?: string;
   balconyDirection?: string;
-  legalDocuments?: string[];
+  legalDocuments?: string;
   rooms?: string[];
   totalFloors?: number;
 }

@@ -3,8 +3,8 @@ import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { Link, useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Badge, Breadcrumb, Button, Checkbox, Col, Image, InputNumber, Pagination, 
-         PaginationProps, Popconfirm, Row, Skeleton, Space, Tag,  Tooltip,  message } from 'antd';
+import { Badge, Breadcrumb, Pagination, 
+         PaginationProps, Skeleton, Tag,  Tooltip,  message } from 'antd';
 
 import * as standardizeData from '../../../helpers/standardizeData'
 import getPriceUnit from '../../../helpers/getPriceUnit';
@@ -12,11 +12,8 @@ import getPriceUnit from '../../../helpers/getPriceUnit';
 import propertiesService from '../../../services/admin/properties.service';
 
 import { PropertyType, PaginationObject } from '../../../../../backend/commonTypes';
-import ViewCount from '../../../components/admin/Counters/ViewCount/viewCount';
-import RoomCountTooltip from '../../../components/admin/Counters/RoomCounter/roomCount';
+import RoomCountTooltip from '../../../components/shared/Counters/RoomCounter/roomCount';
 import FilterBox from '../../../components/admin/FilterBox/filterBox';
-import StatusButton from '../../../components/admin/StatusButton/statusButton';
-import NoPermission from '../../../components/admin/NoPermission/noPermission';
 
 import { RootState } from '../../../redux/stores';
 import { setPermissions } from '../../../redux/reduxSlices/permissionsSlice';

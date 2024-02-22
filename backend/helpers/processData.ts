@@ -33,9 +33,15 @@ export const processPropertyData = (req: Request): PropertyType => {
     listingType: req.body.listingType && String(req.body.listingType),
     propertyDetails: {
       propertyCategory: req.body.propertyDetails?.propertyCategory && String(req.body.propertyDetails.propertyCategory),
-      houseDirection: req.body.houseDirection && String(req.body.houseDirection),
-      balconyDirection: req.body.houseDirection && String(req.body.balconyDirection),
-      totalFloors: req.body.totalFloors && parseInt(req.body.totalFloors),
+      houseDirection: req.body.propertyDetails?.houseDirection && String(req.body.propertyDetails?.houseDirection),
+      balconyDirection: req.body.propertyDetails?.balconyDirection && String(req.body.propertyDetails?.balconyDirection),
+      legalDocuments: req.body.propertyDetails?.legalDocuments && Array.isArray(req.body.propertyDetails.legalDocuments)
+        ? req.body.propertyDetails.legalDocuments.filter(Boolean)
+        : req.body.propertyDetails?.legalDocuments 
+        ? [req.body.propertyDetails.legalDocuments]
+        : undefined,
+      furnitures: req.body.propertyDetails?.furnitures && String(req.body.propertyDetails?.furnitures),
+      totalFloors: req.body.propertyDetails?.totalFloors && parseInt(req.body.propertyDetails?.totalFloors),
       rooms: req.body.propertyDetails?.rooms && Array.isArray(req.body.propertyDetails.rooms)
         ? req.body.propertyDetails.rooms.filter(Boolean)
         : req.body.propertyDetails?.rooms 

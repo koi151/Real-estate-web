@@ -46,3 +46,38 @@ export const convertPermissionToLabels = (label: string): string => {
   const action = parts[parts.length - 1];
   return `${basePermission} ${action}`;
 };  
+
+const buildFormData = (formData: FormData, data: any, parentKey?: string) => {
+  if (data && typeof data === 'object' && !(data instanceof Date) && !(data instanceof File) && !(data instanceof Blob)) {
+    if (Array.isArray(data) && parentKey === 'images') {
+      data.forEach((imageFile: any) => {
+        formData.append(parentKey!, imageFile.originFileObj); // Ensure parentKey is defined
+      });
+    } else {
+      Object.keys(data).forEach(key => {
+        buildFormData(formData, data[key], parentKey ? `${parentKey}[${key}]` : key);
+      });
+    }
+  } else {
+    const value = data == null ? '' : data;
+    formData.append(parentKey!, value);
+  }
+}
+
+
+export const objectToFormData = (data: any) => {
+  console.log('data:', data)
+  const formData = new FormData();
+  buildFormData(formData, data);
+
+  if (data.images && data.images.length > 0) {
+    data.images.forEach((imageFile: any) => {
+      formData.append('images', imageFile.originFileObj);
+    });
+  }
+
+  return formData;
+}
+
+
+export default objectToFormData
