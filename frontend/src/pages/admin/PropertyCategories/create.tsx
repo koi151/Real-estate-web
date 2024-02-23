@@ -9,6 +9,7 @@ import AdminRolesService from "../../../services/admin/roles.service";
 import propertyCategoriesService from "../../../services/admin/property-categories.service";
 
 import { PropertyCategoryType } from "../../../../../backend/commonTypes";
+import * as standardizeData from '../../../helpers/standardizeData'
 
 import UploadMultipleFile from "../../../components/admin/UploadMultipleFile/uploadMultipleFile";
 import NoPermission from "../../../components/admin/NoPermission/noPermission";
@@ -27,7 +28,6 @@ const CreatePropertyCategory: React.FC = () => {
   const [ editorContent, setEditorContent ] = useState<string>("");
   const [ category ] = useState<PropertyCategoryType | undefined>(undefined);
   const [categoryTree, setCategoryTree] = useState<DefaultOptionType[] | undefined>(undefined);
-  const [categoryTitle, setCategoryTitle] = useState<string>();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -81,34 +81,19 @@ const CreatePropertyCategory: React.FC = () => {
     setEditorContent(contentString);
   };
 
-  const handleTreeSelectChange = (newValue: string) => {
-    setCategoryTitle(newValue);
-  };
-
   const onFinishForm = async (data: any) => {
     try {
-      const formData = new FormData();
+      const transformedData = {
+        ...data,
+        description: editorContent,
+      };
 
-      data.title && formData.append('title', data.title);
-      data.position && formData.append('position', data.position);
-      data.status && formData.append('status', data.status);
-      data.parent_id && formData.append('parent_id', data.parent_id);
-  
-      // Append description
-      editorContent && formData.append('description', editorContent);
+      const formData = standardizeData.objectToFormData(transformedData);
 
-      // Append images
-      if (data.images?.length > 0) {
-        data.images.forEach((imageFile: any) => {
-          if (!imageFile.hasOwnProperty('uploaded') || (imageFile.hasOwnProperty('uploaded') && !imageFile.uploaded)) {
-            formData.append('images', imageFile.originFileObj);
-          }
-        });
-      }      
       const response = await propertyCategoriesService.createCategory(formData);
       
       if (response.code === 200) {
-        message.success('Property category craeted successfully!', 3);
+        message.success('Property category created successfully!', 3);
       } else {
         console.error(response.message);
         message.error('Error occurred', 3);
@@ -148,7 +133,7 @@ const CreatePropertyCategory: React.FC = () => {
                 <Row gutter={16}>
                   <Col span={24}>
                     <Form.Item 
-                      label={<span>Post title <b className="required-txt">- required:</b></span>}
+                      label={<span>Property category name <b className="required-txt">- required:</b></span>}
                       name='title'
                       required                  
                     >
@@ -157,17 +142,15 @@ const CreatePropertyCategory: React.FC = () => {
                   </Col>
                   <Col span={24}>
                     <Form.Item 
-                      label='Select parent category' 
+                      label='Parent category' 
                       name='parent_id' 
                     >
                       <TreeSelect
                         style={{ width: '100%' }}
-                        value={categoryTitle}
                         dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
                         treeData={categoryTree}
                         placeholder="None by default"
                         treeDefaultExpandAll
-                        onChange={handleTreeSelectChange}
                         treeLine
                       />
                     </Form.Item>

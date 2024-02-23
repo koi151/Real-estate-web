@@ -224,12 +224,10 @@ export const createPost = async (req: any, res: Response) => {
       })
     }
 
-    console.log("req.body:", req.body)
     const property: PropertyType = processPropertyData(req);
 
     const processedImages = processImagesData(req.body.images);
     property['images'] = processedImages || property.images;    
-    console.log("property:", property)
 
     if (!property.position) {
       const cntProperty = await Property.countDocuments();
@@ -263,8 +261,6 @@ export const editPatch = async (req: Request, res: Response) => {
       })
     }
 
-    console.log("req.body:", req.body)
-
     const id: string | undefined = req.params.propertyId;
     if (!id) {
       return res.status(400).json({
@@ -276,18 +272,12 @@ export const editPatch = async (req: Request, res: Response) => {
     const propertyUpdated: PropertyType = processPropertyData(req);
     const processedImages = processImagesData(req.body.images);
     const imagesToRemove = processImagesData(req.body.images_remove);
-    console.log("propertyUpdated:", propertyUpdated)
-
 
     if (!propertyUpdated.position) {
       const cntProperty = await Property.countDocuments();
       propertyUpdated.position = cntProperty + 1;
     }
-    console.log('processedImages:', processedImages)
-    console.log('imagesToRemove:', imagesToRemove)
 
-
-    // );
     await Property.findOneAndUpdate(
       { _id: id },
       { 
@@ -296,7 +286,7 @@ export const editPatch = async (req: Request, res: Response) => {
       }
     );
     
-    // Remove specified images // push && pull together causes CONFLICT 
+    // Remove specified images
     await Property.findOneAndUpdate(
       { _id: id },
       { $pull: { images: { $in: imagesToRemove }}} // Remove specified images

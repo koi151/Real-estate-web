@@ -144,7 +144,6 @@ const CreateProperty: React.FC = () => {
       if (data.expireTime === 'other' || !data.expireTime)
         delete data.expireTime
 
-      // Construct transformedData object
       const transformedData = {
         ...restData,
         description: editorContent,
@@ -153,7 +152,6 @@ const CreateProperty: React.FC = () => {
         propertyDetails: {
           ...restData.propertyDetails,
           rooms: rooms,
-          propertyCategory: data.propertyDetails.propertyCategory?.label,
         }
       };
       
@@ -215,7 +213,6 @@ const CreateProperty: React.FC = () => {
                       placeholder="Please select"
                       treeDefaultExpandAll
                       treeLine
-                      labelInValue
                     />
                   </Form.Item>
                 </Col>

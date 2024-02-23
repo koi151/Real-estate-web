@@ -69,8 +69,6 @@ export const objectToFormData = (data: any) => {
   const formData = new FormData();
   buildFormData(formData, data);
 
-  console.log('data check:', data)
-
   if (formData.has('images')) {
     formData.delete('images');
   }

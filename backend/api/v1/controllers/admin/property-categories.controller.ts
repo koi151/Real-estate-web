@@ -155,6 +155,52 @@ export const detail = async (req: Request, res: Response) => {
   }
 }
 
+// [GET] /admin/property-categories/parent
+export const parentCategory = async (req: Request, res: Response) => {
+  try {
+    if (!res.locals.currentUser.permissions.includes('property-categories_view')) {
+      return res.json({
+        code: 403,
+        message: "Account does not have access rights"
+      })
+    }
+
+    const id: string | undefined = req.params.parentId;
+
+    if (!id) {
+      return res.status(400).json({
+        code: 400,
+        message: 'Invalid parent category ID'
+      });
+    }
+  
+    const parentCategory = await PropertyCategory.findOne(
+      { _id: id }, 
+      { deleted: false }
+    ).select('title')
+
+    if (parentCategory) {
+      res.status(200).json({
+        code: 200,
+        message: "Success",
+        parentCategory: parentCategory.title
+      })
+    } else {
+      res.status(400).json({
+        code: 400,
+        message: "Parent category not found"
+      })
+    }
+
+  } catch (error) {
+    console.log('Error occurred while fetching properties data:', error);
+    return res.status(500).json({
+      code: 500,
+      message: 'Internal Server Error'
+    });
+  }
+}
+
 // [GET] /admin/property-category/category-tree
 export const categoryTree = async (req: Request, res: Response) => {
   try {
@@ -297,6 +343,9 @@ export const createPost = async (req: Request, res: Response) => {
     }
 
     const category: PropertyCategoryType = processCategoryData(req);
+
+    const processedImages = processImagesData(req.body.images);
+    category['images'] = processedImages || category.images;    
 
     if (!category.position) {
       const cntCategory = await Category.countDocuments();

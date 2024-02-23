@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { PropertyCategoryType } from "../../../../../backend/commonTypes";
-import { Badge, Button, Card, Col, Form, Input, InputNumber, Radio, Row, Spin, message } from "antd";
+import { Badge, Button, Card, Col, Form, Input, InputNumber, Radio, Row, Spin, TreeSelect, message } from "antd";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Editor } from '@tinymce/tinymce-react';
 import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../../redux/stores";
 
 import propertyCategoriesService from "../../../services/admin/property-categories.service";
-import UploadMultipleFile from "../../../components/admin/UploadMultipleFile/uploadMultipleFile";
-import { RootState } from "../../../redux/stores";
-import NoPermission from "../../../components/admin/NoPermission/noPermission";
 import AdminRolesService from "../../../services/admin/roles.service";
+
+import UploadMultipleFile from "../../../components/admin/UploadMultipleFile/uploadMultipleFile";
+import NoPermission from "../../../components/admin/NoPermission/noPermission";
 import { setPermissions } from "../../../redux/reduxSlices/permissionsSlice";
+import * as standardizeData from '../../../helpers/standardizeData'
+import { DefaultOptionType } from "antd/es/select";
 
 const EditPropertyCategories: React.FC = () => {
   
@@ -25,6 +28,9 @@ const EditPropertyCategories: React.FC = () => {
 
   const [editorContent, setEditorContent] = useState<string>("");
   const [category, setCategory] = useState<PropertyCategoryType | undefined>(undefined);
+  const [categoryTree, setCategoryTree] = useState<DefaultOptionType[] | undefined>(undefined);
+
+  const [parentCategory, setParentCategory] = useState<string | undefined>(undefined);
 
   // data from child component
   const [imageUrlToRemove, setImageUrlToRemove] = useState<string[]>([]);
@@ -37,11 +43,33 @@ const EditPropertyCategories: React.FC = () => {
           navigate(-1);
           return;
         }
+
+        // Fetch category tree
+        const categoryTreeResponse = await propertyCategoriesService.getCategoryTree();
+        if (categoryTreeResponse.code === 200) {
+          console.log("categoryTree:", categoryTreeResponse.categoryTree)
+          setCategoryTree(categoryTreeResponse.categoryTree);
+        } else {
+          message.error(categoryTreeResponse.error || 'Error occurred while fetching property categories data', 3);
+        }
+
         const response = await propertyCategoriesService.getSingleCategory(id);
 
         if(response?.code === 200 && response.category) {
           setCategory(response.category);
           setLoading(false);
+
+          if (response.category.parent_id && response.category.parent_id !== "") {
+            const parentCategoryResponse = await propertyCategoriesService.getParentCategory(response.category.parent_id);
+            if (parentCategoryResponse.code === 200) {
+              setParentCategory(parentCategoryResponse.parentCategory)
+            } else {
+              console.log('Error occurred, parent is invalid');
+            }
+          } else {
+            setParentCategory(`None`)
+          }
+
         } else {
           message.error(response.message, 2);
           setLoading(false);
@@ -91,6 +119,10 @@ const EditPropertyCategories: React.FC = () => {
     fetchData();
   }, []);
 
+  useEffect(() => { //test
+    console.log("parentCategoryId:", parentCategory)
+  }, [parentCategory])
+
   const handleEditorChange = (content: any) => {
     const contentString = typeof content === 'string' ? content : '';
     setEditorContent(contentString);
@@ -98,37 +130,21 @@ const EditPropertyCategories: React.FC = () => {
 
   const onFinishForm = async (data: any) => {
     try {
+      console.log('data:', data)
       if (!id) {
-        console.error('Cannot get property id');
+        console.error('Cannot get category id');
         message.error('Error occurred', 3);
         return;
       }
+      const transformedData = {
+        ...data,
+        description: editorContent,
+        ...(data.parent_id && {parent_id: data.parent_id.value}),
+        ...(imageUrlToRemove && { images_remove: imageUrlToRemove})
+      };
 
-      const formData = new FormData();
-
-      data.title && formData.append('title', data.title);
-      data.position && formData.append('position', data.position);
-      data.status && formData.append('status', data.status);
-      data.parent_id && formData.append('parent_id', data.parent_id);
-  
-      // Append description
-      editorContent && formData.append('description', editorContent);
-
-      // Append images
-      if (data.images?.length > 0) {
-        data.images.forEach((imageFile: any) => {
-          if (!imageFile.hasOwnProperty('uploaded') || (imageFile.hasOwnProperty('uploaded') && !imageFile.uploaded)) {
-            formData.append('images', imageFile.originFileObj);
-          }
-        });
-      }
-
-      // Append image urls that need to remove from db
-      if (imageUrlToRemove.length > 0) {
-        imageUrlToRemove.forEach((imageUrl) => {
-          formData.append(`images_remove`, imageUrl);
-        });
-      }
+      console.log("transformedData:", transformedData)
+      const formData = standardizeData.objectToFormData(transformedData);
       
       const response = await propertyCategoriesService.updateCategory(formData, id);
       
@@ -181,7 +197,7 @@ const EditPropertyCategories: React.FC = () => {
                     <Row gutter={16}>
                       <Col span={24}>
                         <Form.Item 
-                          label={<span>Post title <b className="required-txt">- required:</b></span>}
+                          label="Property category name"
                           name='title'
                           initialValue={category?.title}
                           required
@@ -190,12 +206,29 @@ const EditPropertyCategories: React.FC = () => {
                         </Form.Item>
                       </Col>
                       <Col span={24}>
+                        <Form.Item 
+                          label={(<span>Parent category: <b className="required-txt">{parentCategory}</b></span>)} 
+                          name='parent_id' 
+                        >
+                          <TreeSelect
+                            style={{ width: '100%' }}
+                            dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                            treeData={categoryTree}
+                            labelInValue
+                            onChange={(node) => setParentCategory(node.label)} 
+                            placeholder="Select new parent category if needed only"
+                            treeDefaultExpandAll
+                            treeLine
+                          />
+                        </Form.Item>
+                      </Col>
+                      <Col span={24}>
                         <Form.Item label={`Property category description:`}>
                           <Editor
                             id="description" 
                             initialValue={category?.description}             
                             onEditorChange={handleEditorChange}
-                            apiKey='zabqr76pjlluyvwebi3mqiv72r4vyshj6g0u07spd34wk1t2' // hide
+                            apiKey='zabqr76pjlluyvwebi3mqiv72r4vyshj6g0u07spd34wk1t2'
                             init={{
                               toolbar_mode: 'sliding', 
                               plugins: ' anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount', 

@@ -24,7 +24,7 @@ const PropertyCategoriesDetail: React.FC = () => {
   const [viewAllowed, setViewAllowed] = useState(true);
   const [loading, setLoading] = useState(true);
 
-  const [editorContent, setEditorContent] = useState<string>("");
+  const [parentCategory, setParentCategory] = useState<string | undefined>(undefined);
   const [category, setCategory] = useState<PropertyCategoryType | undefined>(undefined);
 
   useEffect(() => {
@@ -35,11 +35,22 @@ const PropertyCategoriesDetail: React.FC = () => {
           navigate(-1);
           return;
         }
+
         const response = await propertyCategoriesService.getSingleCategory(id);
 
         if(response?.code === 200 && response.category) {
           setCategory(response.category);
           setLoading(false);
+          if (response.category.parent_id) {
+            const parentResponse = await propertyCategoriesService.getParentCategory(response.category.parent_id);
+
+            if (parentResponse.code === 200) {
+              setParentCategory(parentResponse.parentCategory)
+            } else {
+              console.log('Error occurred, can not get parent category');
+            }
+          }
+
         } else {
           message.error(response.message, 2);
           setLoading(false);
@@ -89,10 +100,6 @@ const PropertyCategoriesDetail: React.FC = () => {
     fetchData();
   }, []);
 
-  const handleEditorChange = (content: any) => {
-    const contentString = typeof content === 'string' ? content : '';
-    setEditorContent(contentString);
-  };
 
   return (
     <>
@@ -121,11 +128,16 @@ const PropertyCategoriesDetail: React.FC = () => {
                   <Row gutter={16}>
                     <Col span={24}>
                       <Form.Item 
-                        label={<span>Post title <b className="required-txt">- required:</b></span>}
+                        label='Property category name'
                         name='title'
                         initialValue={category?.title}
                       >
                         <Input type="text" id="title" required />
+                      </Form.Item>
+                    </Col>
+                    <Col span={24}>
+                      <Form.Item label='Parent category:'>
+                        <Input value={parentCategory} disabled />
                       </Form.Item>
                     </Col>
                     <Col span={24}>
@@ -134,7 +146,6 @@ const PropertyCategoriesDetail: React.FC = () => {
                           disabled
                           id="description" 
                           initialValue={category?.description}             
-                          onEditorChange={handleEditorChange}
                           apiKey='zabqr76pjlluyvwebi3mqiv72r4vyshj6g0u07spd34wk1t2' // hide
                           init={{
                             toolbar_mode: 'sliding', 

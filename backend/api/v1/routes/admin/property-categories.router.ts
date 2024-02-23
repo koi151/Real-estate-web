@@ -10,6 +10,7 @@ import * as uploadCloud from '../../../../middlewares/admin/uploadCloud.middlewa
 const upload = multer();
 
 router.get('/', controller.index);
+router.get('/parent/:parentId', controller.parentCategory);
 router.get('/detail/:categoryId', controller.detail);
 router.get('/category-tree', controller.categoryTree);
 

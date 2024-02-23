@@ -30,15 +30,6 @@ export const createPropertyCategory = (req: Request, res: Response, next: NextFu
     return;
   }
 
-  if (req.body.title.length < 5) {
-    res.json({
-      code: 400,
-      error: true,
-      message: 'Title must be at least 5 characters long',
-    });
-    return;
-  }
-
   for (const field of requiredFields) {
     if (!validateField(req.body, field, res)) {
       return;

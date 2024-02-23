@@ -182,12 +182,10 @@ const EditProperty: React.FC = () => {
         propertyDetails: {
           ...restData.propertyDetails,
           rooms: rooms,
-          propertyCategory: data.propertyDetails.propertyCategory?.label,
         },
         ...(imageUrlToRemove && { images_remove: imageUrlToRemove})
       };
       
-      console.log("transformedData:", transformedData)
       const formData = standardizeData.objectToFormData(transformedData);
       
       const response = await propertiesService.updateProperty(formData, id);
@@ -256,7 +254,6 @@ const EditProperty: React.FC = () => {
                             treeData={categoryTree}
                             placeholder="None by default"
                             treeDefaultExpandAll
-                            labelInValue
                             treeLine
                           />
                         </Form.Item>

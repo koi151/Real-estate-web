@@ -46,7 +46,7 @@ const PropertyDetail: React.FC = () => {
   const [property, setProperty] = useState<PropertyType | undefined>(undefined);
 
   // data from child component
-  const [expireDateTime, setExpireDateTime] = useState<Dayjs | null>(null);
+  const [, setExpireDateTime] = useState<Dayjs | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -56,6 +56,7 @@ const PropertyDetail: React.FC = () => {
           navigate(-1);
           return;
         }
+
         const response = await propertiesService.getSingleProperty(id);
 
         if(response?.code === 200 && response.property) {
@@ -403,7 +404,7 @@ const PropertyDetail: React.FC = () => {
                   <Row gutter={16}>
                     <Col span={24}>
                       <Form.Item 
-                        label={<span>Post title <b className="required-txt">- required:</b></span>}
+                        label='Post title'
                         name='title'
                         initialValue={property?.title}
                       >

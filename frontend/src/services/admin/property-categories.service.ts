@@ -47,12 +47,17 @@ class PropertyCategoriesServiceAdmin {
     return this.handleRequest(request);
   };
 
-  async getSingleCategory(id: string) { //
+  async getParentCategory(id: string) {
+    const request = this.api.get(`/parent/${id}`, this.getAuthHeaders());
+    return this.handleRequest(request);
+  };
+
+  async getSingleCategory(id: string) { 
     const request = this.api.get(`/detail/${id}`, this.getAuthHeaders());
     return this.handleRequest(request);
   }
 
-  async changeCategoryStatus(id: string, status: ValidStatus) { //
+  async changeCategoryStatus(id: string, status: ValidStatus) { 
     const request = this.api.patch(`/change-status/${status}/${id}`, {}, this.getAuthHeaders());
     return this.handleRequest(request);
   }
