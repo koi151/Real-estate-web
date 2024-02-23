@@ -2,15 +2,23 @@ import { Request } from "express";
 import { AdminAccountLogType, AdminAccountType, PropertyCategoryType, PropertyType, RolesType } from "../commonTypes";
 import bcrypt from 'bcrypt';
 
-// formData replace undefined fields to '', reverse it
-export const processRequestBody = (body: any) => { 
-  Object.keys(body).forEach(key => {
-    if (body[key] === '') {
-      body[key] = undefined;
-    }
-  });
+/*  formData replace undefined fields to '' value,
+this function reverse recursively back to normal value in FE */
+export const processRequestBody = (body: any) => {
+  const processNested = (obj: any) => {
+    Object.keys(obj).forEach(key => {
+      if (typeof obj[key] === 'object' && obj[key] !== null) {
+        processNested(obj[key]);
+      } else if (obj[key] === '') {
+        obj[key] = undefined;
+      }
+    });
+  };
+
+  processNested(body);
   return body;
 };
+
 
 
 export const parseToValidNumber = (value?: string | null | undefined): number | undefined => {
@@ -24,6 +32,8 @@ export const processImagesData = (imageUrls: string[] | string | undefined): str
 
 // Property
 export const processPropertyData = (req: Request): PropertyType => {
+  req.body = processRequestBody(req.body);
+
   return {
     title: req.body.title && String(req.body.title),
     status: req.body.status,
@@ -65,6 +75,8 @@ export const processPropertyData = (req: Request): PropertyType => {
 
 // Category
 export const processCategoryData = (req: Request): PropertyCategoryType => {
+  req.body = processRequestBody(req.body);
+
   return {
     title: req.body.title && String(req.body.title),
     status: req.body.status,
@@ -85,6 +97,7 @@ export const processRoleData = (req: Request): RolesType => {
 
 // Admin account
 export const processAdminAccountData = async (req: Request): Promise<AdminAccountType> => {
+  req.body = processRequestBody(req.body);
   
   const hashedPassword = req.body.password 
     && await bcrypt.hash(String(req.body.password), parseInt(process.env.SALT_ROUNDS));

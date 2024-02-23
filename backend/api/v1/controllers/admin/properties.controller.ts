@@ -7,7 +7,7 @@ import { paginationHelper } from '../../../../helpers/pagination';
 import { isValidStatus } from "../../../../helpers/dataTypeCheck";
 
 import { PropertyType, ValidMultiChangeType } from "../../../../commonTypes";
-import { processImagesData, processPropertyData } from "../../../../helpers/processData";
+import { processImagesData, processPropertyData, processRequestBody } from "../../../../helpers/processData";
 
 
 // [GET] /admin/properties
@@ -225,9 +225,6 @@ export const createPost = async (req: any, res: Response) => {
     }
 
     const property: PropertyType = processPropertyData(req);
-
-    const processedImages = processImagesData(req.body.images);
-    property['images'] = processedImages || property.images;    
 
     if (!property.position) {
       const cntProperty = await Property.countDocuments();

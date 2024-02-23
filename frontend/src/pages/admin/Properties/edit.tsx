@@ -62,11 +62,11 @@ const EditProperty: React.FC = () => {
         // Fetch single property data if ID is provided
         if (id) {
           const propertyResponse = await propertiesService.getSingleProperty(id);
-          if (propertyResponse.code === 200 && propertyResponse.property) {
+          if (propertyResponse.code === 200 && propertyResponse.property) {            
             setProperty(propertyResponse.property);
             setPrice(propertyResponse.property.price);
-            setPropertyLength(propertyResponse.property.area.propertyLength);
-            setPropertyWidth(propertyResponse.property.area.propertyWidth);
+            propertyResponse.property.area?.propertyLength && setPropertyLength(propertyResponse.property.area.propertyLength);
+            propertyResponse.property.area?.propertyWidth && setPropertyWidth(propertyResponse.property.area.propertyWidth);
 
           } else {
             message.error(propertyResponse.message || 'Error occurred while fetching property data', 2);
@@ -308,7 +308,7 @@ const EditProperty: React.FC = () => {
                         placeholder="Enter width and height"
                         defaultValue={(propertyLength && propertyWidth) 
                           ? propertyLength * propertyWidth 
-                          : undefined}
+                          : 0}
                       />
                     </Form.Item>
                   </Col>

@@ -267,8 +267,6 @@ export const editPatch = async (req: Request, res: Response) => {
       })
     }
 
-    req.body = processRequestBody(req.body);
-
     const id: string | undefined = req.params.accountId;
     if (!id) {
       return res.status(400).json({

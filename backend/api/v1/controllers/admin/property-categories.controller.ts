@@ -344,8 +344,6 @@ export const createPost = async (req: Request, res: Response) => {
 
     const category: PropertyCategoryType = processCategoryData(req);
 
-    const processedImages = processImagesData(req.body.images);
-    category['images'] = processedImages || category.images;    
 
     if (!category.position) {
       const cntCategory = await Category.countDocuments();
