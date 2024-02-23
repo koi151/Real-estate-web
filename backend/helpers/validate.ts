@@ -37,3 +37,15 @@ export const validateArrayField = (value: any[], fieldName: string, res: Respons
   });
   return false;
 };
+
+export const validateDateField = (value: any[], fieldName: string, res: Response): boolean => {
+  if (!value || value instanceof Date) 
+    return true;
+
+  res.json({
+    code: 400,
+    error: true,
+    message: `${fieldName} must be date type`,
+  });
+  return false;
+};

@@ -1,5 +1,4 @@
 import { Badge, Button, Card, Col, Form, Input, InputNumber, Radio, Row, Segmented, Select, Space, Spin, TreeSelect, message } from "antd";
-import { SegmentedValue } from "antd/es/segmented";
 import React, { useEffect, useState } from "react";
 import { Editor } from '@tinymce/tinymce-react';
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -13,12 +12,12 @@ import UploadMultipleFile from "../../../components/admin/UploadMultipleFile/upl
 import ExpireTimePicker from "../../../components/admin/ExpireTimePicker/expireTimePicker";
 import { RootState } from "../../../redux/stores";
 import { useDispatch, useSelector } from "react-redux";
+import { directionOptions, documentOptions, furnitureOptions, listingTypeOptions } from "../../../helpers/propertyOptions";
 import NoPermission from "../../../components/admin/NoPermission/noPermission";
 import AdminRolesService from "../../../services/admin/roles.service";
 import { setPermissions } from "../../../redux/reduxSlices/permissionsSlice";
 import propertyCategoriesService from "../../../services/admin/property-categories.service";
 import { DefaultOptionType } from "antd/es/select";
-import { directionOptions, documentOptions, furnitureOptions } from "../../../helpers/propertyOptions";
 import { IoBedOutline } from "react-icons/io5";
 import { LuBath } from "react-icons/lu";
 import { FaRegBuilding } from "react-icons/fa";
@@ -34,18 +33,16 @@ const EditProperty: React.FC = () => {
   const [viewAllowed, setViewAllowed] = useState(true);
   const [loading, setLoading] = useState(true);
 
-  const [postType, setPostType] = useState<string>('sell');
+  const [postType] = useState<string>('sell');
   const [propertyWidth, setPropertyWidth] = useState<number | null>(null);
   const [propertyLength, setPropertyLength] = useState<number | null>(null);
-  const [priceMultiplier, setPriceMultiplier] = useState<number>(1);
+  const [priceMultiplier] = useState<number>(1);
   const [editorContent, setEditorContent] = useState<string>("");
+  const [price, setPrice] = useState<number | null>(null);
 
   const [property, setProperty] = useState<PropertyType | undefined>(undefined);
 
-  const [category, setCategory] = useState<string>();
-  const [categoryTree, setCategoryTree] = useState<DefaultOptionType[] | undefined>(undefined);
-  const [categoryTitle] = useState<string>();
-  
+  const [categoryTree, setCategoryTree] = useState<DefaultOptionType[] | undefined>(undefined);  
 
   // data from child component
   const [expireDateTime, setExpireDateTime] = useState<Dayjs | null>(null);
@@ -67,6 +64,10 @@ const EditProperty: React.FC = () => {
           const propertyResponse = await propertiesService.getSingleProperty(id);
           if (propertyResponse.code === 200 && propertyResponse.property) {
             setProperty(propertyResponse.property);
+            setPrice(propertyResponse.property.price);
+            setPropertyLength(propertyResponse.property.area.propertyLength);
+            setPropertyWidth(propertyResponse.property.area.propertyWidth);
+
           } else {
             message.error(propertyResponse.message || 'Error occurred while fetching property data', 2);
           }
@@ -123,34 +124,10 @@ const EditProperty: React.FC = () => {
     fetchData();
   }, []);
 
-  const handlePropertyLengthChange = (value: number | null) => {
-    setPropertyLength(value);
-  };
-
-  const handlePropertyWidthChange  = (value: number | null) => {
-    setPropertyWidth(value);
-  };
-
-  const handlePriceUnitChange = (value: string) => {
-    setPriceMultiplier(value === 'million' ? 1 : 1000);
-  };
-
-  const handleChangeListingType = (value: SegmentedValue) => {
-    const formatedValue = value = "For sale" ? 'sell' : "hire"
-    setPostType(formatedValue)
-  }
 
   const handleEditorChange = (content: any, editor: any) => {
     const contentString = typeof content === 'string' ? content : '';
     setEditorContent(contentString);
-  };
-
-  const handleExpireTimeChange = (dateTime: Dayjs | null) => {
-    setExpireDateTime(dateTime);
-  }
-
-  const handleTreeSelectChange = (selectedNode: any) => {
-    setCategory(selectedNode.label);
   };
 
   // Child component functions  
@@ -170,87 +147,48 @@ const EditProperty: React.FC = () => {
         return;
       }      
 
-      // let formData = new FormData();
-
-      // data.title && formData.append('title', data.title);
-      // data.position && formData.append('position', data.position);
-  
-      // formData.append('postType', data.postType || 'standard');
-
-      // data.status && formData.append('status', data.status);
-  
-      // Append location 
       console.log("data:", data)
 
-      const formData = standardizeData.objectToFormData(data);
+      const rooms = ['bedrooms', 'bathrooms', 'kitchens']
+       .filter(room => data[room])
+       .map(room => `${room}-${data[room]}`);
 
-      // data.city && formData.append('location[city]', data.city);
-      // data.district && formData.append('location[district]', data.district);
-      // data.ward && formData.append('location[ward]', data.ward);
-      // data.address && formData.append('location[address]', data.address);
-  
-      // // Append area 
-      // data.propertyWidth && formData.append('area[propertyWidth]', data.propertyWidth);
-      // data.propertyLength && formData.append('area[propertyLength]', data.propertyLength);
-  
-      // // Append propertyDetails 
-      // if (category || property?.propertyDetails?.propertyCategory) {
-      //   const propertyCategory = category || property?.propertyDetails?.propertyCategory || '';
-      //   formData.append('propertyDetails[propertyCategory]', propertyCategory);
-      // }
+      // update actual price with price unit
+      const parsedPrice = parseFloat(data.price);
+      const adjustedPrice = !isNaN(parsedPrice) ? String(priceMultiplier * parsedPrice) : '';
 
-      // data.houseDirection && formData.append('propertyDetails[houseDirection]', data.houseDirection);
-      // data.balconyDirection && formData.append('propertyDetails[balconyDirection]', data.balconyDirection);
+      const { bedrooms, bathrooms, kitchens, ...restData } = data;
 
-
-      // data.furnitures && formData.append('propertyDetails[furnitures]', data.furnitures);
-
-
-      // data.legalDocuments && formData.append('propertyDetails[legalDocuments]', data.legalDocuments);
-      // data.totalFloors && formData.append('propertyDetails[totalFloors]', data.totalFloors);
-
-      // data.bathrooms && formData.append('propertyDetails[rooms]', `bathrooms-${data.bathrooms}`);
-      // data.bedrooms && formData.append('propertyDetails[rooms]', `bedrooms-${data.bedrooms}`);
-      // data.kitchens && formData.append('propertyDetails[rooms]', `kitchens-${data.kitchens}`);
-      
-      // Append description
-      editorContent && formData.append('description', editorContent);
-  
-      // Append calculated price
-      // data.price && formData.append('price', String(priceMultiplier * data.price));
-  
-      // Append listingType
-      if (data.listingType) {
-        const words = data.listingType.split(' ');
-        const formattedListingType = `${words[0].charAt(0).toLowerCase()}${words[0].slice(1)}${words[1].charAt(0).toUpperCase()}${words[1].slice(1)}`;
-        formData.append('listingType', formattedListingType);
-      }
-  
-      // Append expireTime
+      let updatedExpireTime = null;
       if (expireDateTime) {
-        formData.append('expireTime', expireDateTime.toISOString());
+        updatedExpireTime = expireDateTime.toISOString();
         
-      } else if (data.expireTime === 'day' || data.expireTime === 'week' || data.expireTime === 'month') {
+      } else if (['day', 'week', 'month'].includes(data.expireTime)) {
         const duration = data.expireTime === 'day' ? 1 : (data.expireTime === 'week' ? 7 : 30);
         const expirationDate = dayjs().add(duration, 'day');
-        formData.append('expireTime', expirationDate.toISOString());
-      }
+        updatedExpireTime = expirationDate.toISOString();
+      };
 
-      // Append images
-      if (data.images?.length > 0) {
-        data.images.forEach((imageFile: any) => {
-          if (!imageFile.hasOwnProperty('uploaded') || (imageFile.hasOwnProperty('uploaded') && !imageFile.uploaded)) {
-            formData.append('images', imageFile.originFileObj);
-          }
-        });
-      }
 
-      // Append image urls that need to remove from db
-      if (imageUrlToRemove.length > 0) {
-        imageUrlToRemove.forEach((imageUrl) => {
-          formData.append(`images_remove`, imageUrl);
-        });
-      }
+      if (data.expireTime === 'other' || !data.expireTime)
+        delete data.expireTime
+
+      // Construct transformedData object
+      const transformedData = {
+        ...restData,
+        ...(updatedExpireTime && { expireTime: updatedExpireTime }),
+        description: editorContent,
+        price: adjustedPrice,
+        propertyDetails: {
+          ...restData.propertyDetails,
+          rooms: rooms,
+          propertyCategory: data.propertyDetails.propertyCategory?.label,
+        },
+        ...(imageUrlToRemove && { images_remove: imageUrlToRemove})
+      };
+      
+      console.log("transformedData:", transformedData)
+      const formData = standardizeData.objectToFormData(transformedData);
       
       const response = await propertiesService.updateProperty(formData, id);
 
@@ -265,8 +203,6 @@ const EditProperty: React.FC = () => {
       message.error("Error occurred while updating property.");
     }
   }
-
-
 
   return (
     <>
@@ -298,30 +234,28 @@ const EditProperty: React.FC = () => {
                           label='Listing type:' 
                           name='listingType' 
                           style={{height: "4.5rem"}}
-                          initialValue={standardizeData.listingTypeFormatted(property?.listingType || "")}
+                          initialValue={property?.listingType}
                         >
                           <Segmented 
-                            options={['For Sale', 'For Rent']} 
+                            options={listingTypeOptions}   
                             block 
                             className="custom-segmented"
-                            onChange={handleChangeListingType}
                           />
+                          
                         </Form.Item>
                     </Col>
                     <Col span={24}>
                         <Form.Item 
                           label='Select parent category' 
-                          name='category' 
+                          name={['propertyDetails', 'propertyCategory']}  
                           initialValue={property?.propertyDetails?.propertyCategory}
                         >
                           <TreeSelect
                             style={{ width: '100%' }}
-                            value={categoryTitle}
                             dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
                             treeData={categoryTree}
                             placeholder="None by default"
                             treeDefaultExpandAll
-                            onChange={handleTreeSelectChange}
                             labelInValue
                             treeLine
                           />
@@ -339,13 +273,13 @@ const EditProperty: React.FC = () => {
                 <Row gutter={16}>
                   <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
                     <Form.Item 
-                      label='Property length' 
-                      name='propertyLength' 
+                      label='Property length (m)' 
+                      name={['area', 'propertyLength']}
                       initialValue={property?.area?.propertyLength}
                     >
                       <InputNumber 
                         type="number" min={0} 
-                        onChange={handlePropertyLengthChange}
+                        onChange={(value) => setPropertyLength(value)}
                         className="custom-number-input" 
                         placeholder="Enter length of property"
                       />
@@ -353,14 +287,14 @@ const EditProperty: React.FC = () => {
                   </Col>
                   <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
                     <Form.Item 
-                      label='Property width' 
-                      name='propertyWidth'
+                      label='Property width (m)' 
+                      name={['area', 'propertyWidth']}
                       initialValue={property?.area?.propertyWidth}
                     >
                       <InputNumber 
                         type="number" min={0} 
                         className="custom-number-input" 
-                        onChange={handlePropertyWidthChange}
+                        onChange={(value) => setPropertyWidth(value)}
                         placeholder="Enter width of property"
                       />
                     </Form.Item>
@@ -368,9 +302,6 @@ const EditProperty: React.FC = () => {
                   <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
                     <Form.Item 
                       label='Area'
-                      initialValue={property?.area?.propertyLength && property?.area?.propertyWidth 
-                        ? property?.area?.propertyLength * property?.area?.propertyWidth 
-                        : undefined}
                     >
                       <InputNumber 
                         disabled 
@@ -378,22 +309,31 @@ const EditProperty: React.FC = () => {
                         min={0} 
                         className="custom-number-input" 
                         placeholder="Enter width and height"
+                        defaultValue={(propertyLength && propertyWidth) 
+                          ? propertyLength * propertyWidth 
+                          : undefined}
                       />
                     </Form.Item>
                   </Col>
+
                   <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
                     <Form.Item
                       label={`Property ${postType} price`} 
                       name='price'
                       initialValue={property?.price && property.price >= 1000 ? property.price / 1000 : property?.price}
                     >
-                      <Input 
+                      <InputNumber
                         value={property?.price}
                         type='number'
+                        style={{width: "100%"}}
                         addonAfter={
                           <Select 
                             value={property?.price && property.price >= 1000 ? "billion" : "million"} 
-                            onChange={handlePriceUnitChange}
+                            onChange={(value) => {
+                              if (typeof value === 'number') {
+                                setPrice(value);
+                              }
+                            }}
                           >
                             <Select.Option value="million">million</Select.Option>
                             <Select.Option value="billion">billion</Select.Option>
@@ -410,14 +350,20 @@ const EditProperty: React.FC = () => {
                         disabled 
                         placeholder={`Select property ${postType} price and area to view`} 
                         style={{width: "100%"}}
-                        value={`${property?.area?.propertyLength && property?.area?.propertyWidth && property?.price 
-                          && (priceMultiplier * property.price / (property.area.propertyLength * property.area.propertyWidth)).toFixed(2)} million`}
+                        value={`${property?.area?.propertyLength && property?.area?.propertyWidth && price 
+                          && (priceMultiplier * price / (property.area.propertyLength * property.area.propertyWidth)).toFixed(2)} million`}
                       />
                     </Form.Item>
                   </Col>
-
+                  <Col span={24}>
+                    <div className="line-two"></div>
+                  </Col>
                   <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
-                    <Form.Item label={`Legal documents:`} name='legalDocuments' initialValue={property?.propertyDetails?.legalDocuments}>
+                    <Form.Item 
+                      label={`Legal documents:`}                   
+                      name={['propertyDetails', 'legalDocuments']}  
+                      initialValue={property?.propertyDetails?.legalDocuments}
+                    >
                       <Select
                         mode="tags"
                         style={{ width: '100%' }}
@@ -427,16 +373,17 @@ const EditProperty: React.FC = () => {
                     </Form.Item>
                   </Col>
                   <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
-                    <Form.Item label={`Furnitures:`} name='furnitures' initialValue={property?.propertyDetails?.furnitures}>
+                    <Form.Item 
+                      label={`Furnitures:`} 
+                      name={['propertyDetails', 'furnitures']}  
+                      initialValue={property?.propertyDetails?.furnitures}
+                    >
                       <Select
                         style={{ width: '100%' }}
                         placeholder="Furniture"
                         options={furnitureOptions}
                       />
                     </Form.Item>
-                  </Col>
-                  <Col span={24}>
-                    <div className="line-two"></div>
                   </Col>
                   <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
                     <Form.Item   
@@ -500,7 +447,7 @@ const EditProperty: React.FC = () => {
                           <FaRegBuilding />
                         </Space>
                       }                  
-                      name='totalFloors'
+                      name={['propertyDetails', 'totalFloors']}
                       initialValue={property?.propertyDetails?.totalFloors}
                     >
                       <InputNumber 
@@ -518,7 +465,7 @@ const EditProperty: React.FC = () => {
                           <SlDirections />
                         </Space>
                       }      
-                      name='houseDirection'
+                      name={['propertyDetails', 'houseDirection']}
                       initialValue={property?.propertyDetails?.houseDirection}
                     >
                       <Select
@@ -536,7 +483,7 @@ const EditProperty: React.FC = () => {
                           <SlDirections />
                         </Space>
                       }                  
-                      name='balconyDirection'
+                      name={['propertyDetails', 'balconyDirection']}
                       initialValue={property?.propertyDetails?.balconyDirection}
                     >
                       <Select
@@ -588,8 +535,8 @@ const EditProperty: React.FC = () => {
                     <Form.Item label="Post type:" name='postType' initialValue={property?.postType}>
                       <Radio.Group>
                         <Radio value="standard" className="label-light"> Standard </Radio>
-                        <Radio value="premium"> Premium </Radio>
-                        <Radio value="exclusive"> Exclusive </Radio>
+                        <Radio value="premium" className="label-light"> Premium </Radio>
+                        <Radio value="exclusive" className="label-light"> Exclusive </Radio>
                       </Radio.Group>
                     </Form.Item>
                   </Col>
@@ -604,7 +551,7 @@ const EditProperty: React.FC = () => {
 
                   <Col span={24}>
                     <ExpireTimePicker 
-                      onExpireDateTimeChange={handleExpireTimeChange} 
+                      onExpireDateTimeChange={(value) => setExpireDateTime(value)} 
                       expireTimeGiven={property?.expireTime}
                     />
                   </Col>
@@ -612,7 +559,6 @@ const EditProperty: React.FC = () => {
                   <Col sm={24} md={24}  lg={12} xl={12} xxl={12}>
                     <Form.Item label="Post position:" name='position' initialValue={property?.position}>
                       <InputNumber 
-                        // value={property?.position}               
                         type="number"
                         id="position" 
                         min={0} 

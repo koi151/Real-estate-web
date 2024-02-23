@@ -28,7 +28,7 @@ import { RootState } from "../../../redux/stores";
 import AdminRolesService from "../../../services/admin/roles.service";
 import * as standardizeData from '../../../helpers/standardizeData'
 import { setPermissions } from "../../../redux/reduxSlices/permissionsSlice";
-import { directionOptions, documentOptions, furnitureOptions } from "../../../helpers/propertyOptions";
+import { directionOptions, documentOptions, furnitureOptions, listingTypeOptions } from "../../../helpers/propertyOptions";
 
 import './create.scss'
 
@@ -40,7 +40,6 @@ const CreateProperty: React.FC = () => {
 
   const [viewAllowed, setViewAllowed] = useState(true);
 
-  const [postType, setPostType] = useState<string>('sell');
   const [price, setPrice] = useState<number | null>(null);
   const [propertyWidth, setPropertyWidth] = useState<number | null>(null);
   const [propertyLength, setPropertyLength] = useState<number | null>(null);
@@ -122,8 +121,6 @@ const CreateProperty: React.FC = () => {
   const onFinishForm = async (data: any) => {
     try {  
 
-      console.log("data:", data)
-
       const rooms = ['bedrooms', 'bathrooms', 'kitchens']
       .filter(room => data[room])
       .map(room => `${room}-${data[room]}`);
@@ -134,21 +131,22 @@ const CreateProperty: React.FC = () => {
 
       const { bedrooms, bathrooms, kitchens, ...restData } = data;
 
-      let updatedExpireTime;
+      let updatedExpireTime = null;
       if (expireDateTime) {
         updatedExpireTime = expireDateTime.toISOString();
+        
       } else if (['day', 'week', 'month'].includes(data.expireTime)) {
         const duration = data.expireTime === 'day' ? 1 : (data.expireTime === 'week' ? 7 : 30);
         const expirationDate = dayjs().add(duration, 'day');
         updatedExpireTime = expirationDate.toISOString();
-      } else {
-        updatedExpireTime = null;
-      }
+      };
+
+      if (data.expireTime === 'other' || !data.expireTime)
+        delete data.expireTime
 
       // Construct transformedData object
       const transformedData = {
         ...restData,
-        postType: data.postType,
         description: editorContent,
         price: adjustedPrice,
         ...(updatedExpireTime && { expireTime: updatedExpireTime }),
@@ -159,11 +157,8 @@ const CreateProperty: React.FC = () => {
         }
       };
       
-
-      console.log("transformedData:", transformedData)
       const formData = standardizeData.objectToFormData(transformedData);
 
-  
       const response = await propertiesService.createProperty(formData);
   
       if (response.code === 200) {
@@ -202,10 +197,7 @@ const CreateProperty: React.FC = () => {
                     style={{height: "4.5rem"}}
                   >
                     <Segmented 
-                      options={[
-                        { value: 'forSale', label: 'For sale' }, 
-                        { value: 'forRent', label: 'For rent' }
-                      ]}                      
+                      options={listingTypeOptions}                      
                       block 
                       className="custom-segmented"
                     />
@@ -226,8 +218,6 @@ const CreateProperty: React.FC = () => {
                       labelInValue
                     />
                   </Form.Item>
-
-
                 </Col>
 
                 <Col span={24}>
@@ -240,7 +230,7 @@ const CreateProperty: React.FC = () => {
           <Card title="Property information" className="custom-card" style={{marginTop: '2rem'}}>
             <Row gutter={16}>
               <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
-                <Form.Item label='Property length' name={['area', 'propertyLength']}>
+                <Form.Item label='Property length (m)' name={['area', 'propertyLength']}>
                   <InputNumber 
                     type="number" min={0} 
                     onChange={(value) => setPropertyLength(value)}
@@ -250,7 +240,7 @@ const CreateProperty: React.FC = () => {
                 </Form.Item>
               </Col>
               <Col sm={24} md={12} lg={8} xl={8} xxl={8}>  
-                <Form.Item label='Property width' name={['area', 'propertyWidth']}>
+                <Form.Item label='Property width (m)' name={['area', 'propertyWidth']}>
                   <InputNumber 
                     type="number" min={0} 
                     className="custom-number-input" 
@@ -271,12 +261,12 @@ const CreateProperty: React.FC = () => {
                 </Form.Item>
               </Col>
               <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
-                <Form.Item label={`Property ${postType} price`} name='price'>
+                <Form.Item label={`Property price`} name='price'>
                   <InputNumber 
                     min={0}
                     type="number"
                     addonAfter={selectPriceUnit} 
-                    placeholder={`Please select property ${postType} price`}
+                    placeholder={`Please select property price`}
                     onChange={(value) => {
                       if (typeof value === 'number') {
                         setPrice(value);
@@ -290,11 +280,14 @@ const CreateProperty: React.FC = () => {
                 <Form.Item label={`Price per meter square`}>
                   <Input
                     disabled 
-                    placeholder={`Select property ${postType} price and area to view`} 
+                    placeholder={`Select property price and area to view`} 
                     style={{width: "100%"}}
                     value={`${propertyLength && propertyWidth && price && (priceMultiplier * price / (propertyLength * propertyWidth)).toFixed(2)} million`}
                   />
                 </Form.Item>
+              </Col>
+              <Col span={24}>
+                <div className="line-two"></div>
               </Col>
               <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
                 <Form.Item 
@@ -320,9 +313,6 @@ const CreateProperty: React.FC = () => {
                     options={furnitureOptions}
                   />
                 </Form.Item>
-              </Col>
-              <Col span={24}>
-                <div className="line-two"></div>
               </Col>
               <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
                 <Form.Item   
@@ -447,12 +437,12 @@ const CreateProperty: React.FC = () => {
                 </Form.Item>
               </Col>
               <Col span={24}>
-                <Form.Item label={`Property ${postType} description:`}>
+                <Form.Item label={`Property description:`}>
                   <Editor
                     id="description" 
                     value={editorContent}
                     onEditorChange={handleEditorChange}
-                    apiKey='zabqr76pjlluyvwebi3mqiv72r4vyshj6g0u07spd34wk1t2' // hide
+                    apiKey='zabqr76pjlluyvwebi3mqiv72r4vyshj6g0u07spd34wk1t2'
                     init={{
                       toolbar_mode: 'sliding', 
                       plugins: ' anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount', 

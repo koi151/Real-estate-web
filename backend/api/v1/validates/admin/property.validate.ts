@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { validateArrayField, validateNumberField, validateStringField } from "../../../../helpers/validate";
+import { validateArrayField, validateDateField, validateNumberField, validateStringField } from "../../../../helpers/validate";
 
 const validateLocationField = (value: any, res: Response): boolean => {
   if (value === undefined) return true;
@@ -61,6 +61,10 @@ const validateField = (data: any, field: string, res: Response): boolean => {
     case 'images':
       return validateArrayField(data[field]?.features, 'Property features', res);
 
+    case 'expireTime':
+      return validateDateField(data[field], 'Expire time', res)
+      
+
     default:
       return true;
   }
@@ -68,7 +72,7 @@ const validateField = (data: any, field: string, res: Response): boolean => {
 
 export const createProperty = (req: Request, res: Response, next: NextFunction) => {
   const requiredFields = 
-    ['title','status', 'postType', 'area', 'price', 'position', 
+    ['title','status', 'postType', 'area', 'price', 'position', 'expireTime',
     'description', 'listingType', 'location', 'propertyDetails', 'images'];
 
   if (!req.body.title) {

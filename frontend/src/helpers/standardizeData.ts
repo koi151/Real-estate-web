@@ -69,10 +69,18 @@ export const objectToFormData = (data: any) => {
   const formData = new FormData();
   buildFormData(formData, data);
 
+  console.log('data check:', data)
+
+  if (formData.has('images')) {
+    formData.delete('images');
+  }
+
+  // Append new images
   if (data.images && data.images.length > 0) {
     data.images.forEach((imageFile: any) => {
-      console.log('img')
-      formData.append('images', imageFile.originFileObj);
+      if (imageFile.originFileObj) {
+        formData.append('images', imageFile.originFileObj);
+      }
     });
   }
 

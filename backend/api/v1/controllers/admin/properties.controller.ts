@@ -224,7 +224,12 @@ export const createPost = async (req: any, res: Response) => {
       })
     }
 
+    console.log("req.body:", req.body)
     const property: PropertyType = processPropertyData(req);
+
+    const processedImages = processImagesData(req.body.images);
+    property['images'] = processedImages || property.images;    
+    console.log("property:", property)
 
     if (!property.position) {
       const cntProperty = await Property.countDocuments();
@@ -269,17 +274,25 @@ export const editPatch = async (req: Request, res: Response) => {
     }
 
     const propertyUpdated: PropertyType = processPropertyData(req);
+    const processedImages = processImagesData(req.body.images);
+    const imagesToRemove = processImagesData(req.body.images_remove);
     console.log("propertyUpdated:", propertyUpdated)
 
 
-    const images = processImagesData(req.body.images);
-    const imagesToRemove = processImagesData(req.body.images_remove);
+    if (!propertyUpdated.position) {
+      const cntProperty = await Property.countDocuments();
+      propertyUpdated.position = cntProperty + 1;
+    }
+    console.log('processedImages:', processedImages)
+    console.log('imagesToRemove:', imagesToRemove)
 
+
+    // );
     await Property.findOneAndUpdate(
       { _id: id },
       { 
         $set: propertyUpdated,  // Update non-image fields
-        $push: { images: { $each: images }} // Push new images
+        $push: { images: { $each: processedImages }} // Push new images
       }
     );
     

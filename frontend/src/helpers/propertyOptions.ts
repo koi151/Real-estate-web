@@ -1,4 +1,5 @@
 import { SelectProps } from "antd";
+import { SegmentedLabeledOption, SegmentedOptions } from "antd/es/segmented";
 
 export const documentOptions: SelectProps['options'] = [
   {value: "land use right certificate", label: "Land use right certificate"},
@@ -21,4 +22,9 @@ export const directionOptions: SelectProps['options'] = [
   {value: "southeast", label: "Southeast"},
   {value: "northwest", label: "Northwest"},
   {value: "southwest", label: "Southwest"},
+];
+
+export const listingTypeOptions: SegmentedOptions<string | number | SegmentedLabeledOption<string | number>> = [
+  { value: 'forSale', label: 'For sale' }, 
+  { value: 'forRent', label: 'For rent' }
 ];

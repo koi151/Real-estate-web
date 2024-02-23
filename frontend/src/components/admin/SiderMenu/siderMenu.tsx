@@ -31,11 +31,7 @@ const SiderMenu: React.FC = () => {
     children: item.children && item.children.map(child => ({ ...child })),
   }));
 
-  console.log("pathname:", location.pathname)
-
   const matchedMenuKey = menuItems.find(item => location.pathname.includes('/admin/' + item.key))?.key;
-
-  console.log("matchedMenuKey:", matchedMenuKey)
 
   return (
     <Menu

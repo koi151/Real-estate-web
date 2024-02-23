@@ -1,4 +1,4 @@
-import { Badge, Card, Col, Form, Input, InputNumber, Radio, Row, Segmented, Select, Spin, message } from "antd";
+import { Badge, Card, Col, Form, Input, InputNumber, Radio, Row, Segmented, Select, Space, Spin, message } from "antd";
 import React, { useEffect, useState } from "react";
 import { Editor } from '@tinymce/tinymce-react';
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -22,6 +22,11 @@ import NoPermission from "../../../components/admin/NoPermission/noPermission";
 // Redux
 import { RootState } from "../../../redux/stores";
 import { setPermissions } from "../../../redux/reduxSlices/permissionsSlice";
+import { directionOptions, documentOptions, furnitureOptions } from "../../../helpers/propertyOptions";
+import { IoBedOutline } from "react-icons/io5";
+import { LuBath } from "react-icons/lu";
+import { FaRegBuilding } from "react-icons/fa";
+import { SlDirections } from "react-icons/sl";
 
 
 const PropertyDetail: React.FC = () => {
@@ -170,7 +175,7 @@ const PropertyDetail: React.FC = () => {
                   <Row gutter={16}>
                     <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
                       <Form.Item 
-                        label='Property length' 
+                        label='Property length (m)' 
                         name='propertyLength' 
                         initialValue={property?.area?.propertyLength}
                       >
@@ -183,7 +188,7 @@ const PropertyDetail: React.FC = () => {
                     </Col>
                     <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
                       <Form.Item 
-                        label='Property width' 
+                        label='Property width (m)' 
                         name='propertyWidth'
                         initialValue={property?.area?.propertyWidth}
                       >
@@ -246,6 +251,147 @@ const PropertyDetail: React.FC = () => {
                         />
                       </Form.Item>
                     </Col>
+                    <Col span={24}>
+                      <div className="line-two"></div>
+                    </Col>
+                    <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                      <Form.Item 
+                        label={`Legal documents:`} 
+                        name={['propertyDetails', 'legalDocuments']}  
+                        initialValue={property?.propertyDetails?.legalDocuments}
+                      >
+                        <Select
+                          mode="tags"
+                          style={{ width: '100%' }}
+                          placeholder="Choose or add specific legal documents"
+                          options={documentOptions}
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                      <Form.Item 
+                        label={`Furnitures:`} 
+                        name={['propertyDetails', 'furnitures']}  
+                        initialValue={property?.propertyDetails?.furnitures}
+                      >
+                        <Select
+                          style={{ width: '100%' }}
+                          placeholder="Furniture"
+                          options={furnitureOptions}
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                      <Form.Item   
+                        label={
+                          <Space className="d-flex align-items-center">
+                            <span>Number of bedrooms:</span>
+                            <IoBedOutline />
+                          </Space>
+                        } 
+                        initialValue={property?.propertyDetails?.rooms && standardizeData.getRoomCount(property?.propertyDetails?.rooms, 'bedrooms')}
+                        name="bedrooms"
+                      >
+                        <InputNumber 
+                          min={0} type="number"
+                          placeholder="Enter the number of bedrooms" 
+                          style={{width: "100%"}} 
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                      <Form.Item   
+                        label={
+                          <Space className="d-flex align-items-center">
+                            <span>Number of kitchens:</span>
+                            <IoBedOutline />
+                          </Space>
+                        } 
+                        name='kitchens'
+                        initialValue={property?.propertyDetails?.rooms && standardizeData.getRoomCount(property?.propertyDetails?.rooms, 'kitchens')}
+                      >
+                        <InputNumber 
+                          min={0} type="number"
+                          placeholder="Enter the number of kitchens" 
+                          style={{width: "100%"}} 
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                      <Form.Item 
+                        label={
+                          <Space className="d-flex align-items-center">
+                            <span>Number of bathrooms:</span>
+                            <LuBath />
+                          </Space>
+                        }
+                        name='bathrooms'
+                        initialValue={property?.propertyDetails?.rooms && standardizeData.getRoomCount(property?.propertyDetails?.rooms, 'bathrooms')}
+                      >
+                        <InputNumber 
+                          min={0} type="number"
+                          placeholder="Enter the number of bathrooms" 
+                          style={{width: "100%"}}
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                      <Form.Item 
+                        label={
+                          <Space className="d-flex align-items-center">
+                            <span>Number of floors:</span>
+                            <FaRegBuilding />
+                          </Space>
+                        }                  
+                        name={['propertyDetails', 'totalFloors']}
+                        initialValue={property?.propertyDetails?.totalFloors}
+                      >
+                        <InputNumber 
+                          min={0} type="number"
+                          placeholder="Enter the number of floors" 
+                          style={{width: "100%"}} 
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                      <Form.Item 
+                        label={
+                          <Space className="d-flex align-items-center">
+                            <span>House direction:</span>
+                            <SlDirections />
+                          </Space>
+                        }      
+                        name={['propertyDetails', 'houseDirection']}
+                        initialValue={property?.propertyDetails?.houseDirection}
+                      >
+                        <Select
+                          style={{ width: '100%' }}
+                          placeholder="House direction"
+                          options={directionOptions}
+                        ></Select>
+                      </Form.Item>
+                    </Col>
+                    <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                      <Form.Item 
+                        label={
+                          <Space className="d-flex align-items-center">
+                            <span>Balcony direction:</span>
+                            <SlDirections />
+                          </Space>
+                        }                  
+                        name={['propertyDetails', 'balconyDirection']}
+                        initialValue={property?.propertyDetails?.balconyDirection}
+                      >
+                        <Select
+                          style={{ width: '100%' }}
+                          placeholder="Balcony direction"
+                          options={directionOptions}
+                        ></Select> 
+                      </Form.Item>
+                    </Col>
+                    <Col span={24}>
+                      <div className="line-two"></div>
+                    </Col>                    
 
                     <Col span={24}>
                       <UploadMultipleFile uploadedImages={property?.images}/>
