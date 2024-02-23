@@ -1,18 +1,19 @@
 import { Badge, Button, Card, Col, Form, Input, Row, Select, message } from "antd";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { RolesType } from "../../../../backend/commonTypes";
 import TextArea from "antd/es/input/TextArea";
-import AdminRolesService from "../../services/admin/roles.service";
 import { AiFillEye, AiOutlineEdit, AiOutlineDelete, AiOutlinePlusSquare } from 'react-icons/ai';
-import { convertLabelToPermission } from "../../helpers/standardizeData";
-import NoPermission from "../../components/admin/NoPermission/noPermission";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/stores";
+
+import AdminRolesService from "../../services/admin/roles.service";
+
+import { convertLabelToPermission } from "../../helpers/standardizeData";
+import NoPermission from "../../components/admin/NoPermission/noPermission";
 import { setPermissions } from "../../redux/reduxSlices/permissionsSlice";
 
-const CreateAdminRole: React.FC = () => {
 
+const CreateAdminRole: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 

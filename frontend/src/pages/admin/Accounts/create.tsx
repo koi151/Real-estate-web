@@ -3,14 +3,17 @@ import { Link, useNavigate } from "react-router-dom";
 import Select from "antd/es/select";
 import { Badge, Button, Card, Col, 
         Form, Input, Radio, Row, Spin, message } from "antd";
-
-import UploadMultipleFile from "../../../components/admin/UploadMultipleFile/uploadMultipleFile";
-import adminAccountsService from "../../../services/admin/accounts.service";
-import AdminRolesService from "../../../services/admin/roles.service";
-import { RoleTitleType } from "../../../../../backend/commonTypes";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/stores";
+
+import adminAccountsService from "../../../services/admin/accounts.service";
+import AdminRolesService from "../../../services/admin/roles.service";
+
+import UploadMultipleFile from "../../../components/admin/UploadMultipleFile/uploadMultipleFile";
 import NoPermission from "../../../components/admin/NoPermission/noPermission";
+import * as standardizeData from '../../../helpers/standardizeData'
+
+import { RoleTitleType } from "../../../../../backend/commonTypes";
 import { setPermissions } from "../../../redux/reduxSlices/permissionsSlice";
 
 const CreateAdminAccounts: React.FC = () => {
@@ -82,6 +85,8 @@ const CreateAdminAccounts: React.FC = () => {
       }
     }
     fetchData();
+    
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /* eslint-disable no-template-curly-in-string */
@@ -102,7 +107,6 @@ const CreateAdminAccounts: React.FC = () => {
 
   // Phone
   const prefixSelector = (
-    // name="prefix"
     <Form.Item noStyle>
       <Select defaultValue="84" style={{ width: "7rem" }}>
         <Select.Option value="84">+84</Select.Option>
@@ -110,20 +114,11 @@ const CreateAdminAccounts: React.FC = () => {
         <Select.Option value="86">+86</Select.Option>
       </Select>
     </Form.Item>
-  ); //
+  );
 
   const onFinishForm = async (data: any) => {
-    try {
-      const formData = new FormData();
-    
-      data.title && formData.append('title', data.title);
-      data.password && formData.append('password', data.password);
-      data.email && formData.append('email', data.email);
-      data.status && formData.append('status', data.status);
-      data.phone && formData.append('phone', data.phone);
-
-      // Append avatar
-      data.images && formData.append('avatar', data.images[0].originFileObj);   
+    try {            
+      const formData = standardizeData.objectToFormData(data);
 
       const response = await adminAccountsService.createAccount(formData);
       
@@ -190,7 +185,7 @@ const CreateAdminAccounts: React.FC = () => {
                       <Form.Item 
                         label='Email:' 
                         name='email' 
-                        rules={[{ type: 'email' }]}
+                        rules={[{ type: 'email', required: true }]}
                       >
                         <Input 
                           type='email' id="email" 

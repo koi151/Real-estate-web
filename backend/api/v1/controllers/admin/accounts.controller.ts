@@ -4,7 +4,7 @@ import AdminAccount from "../../models/adminAccount.model";
 import Role from "../../models/roles.model";
 
 import { AdminAccountType } from "../../../../commonTypes";
-import { processAdminAccountData, processImagesData } from "../../../../helpers/processData";
+import { processAdminAccountData, processImagesData, processRequestBody } from "../../../../helpers/processData";
 import { isValidStatus } from "../../../../helpers/dataTypeCheck";
 
 // [GET] /admin/accounts
@@ -161,7 +161,7 @@ export const getAvatar = async (req: Request, res: Response) => {
   }
 };
 
-// [POST] /admin/accounts/register
+// [POST] /admin/accounts/create
 export const createPost = async (req: Request, res: Response) => {
   try {   
     if (!res.locals.currentUser.permissions.includes('administrator-accounts_create')) {
@@ -172,7 +172,7 @@ export const createPost = async (req: Request, res: Response) => {
     }
 
     if (req.body.email) {
-      const userExisted = AdminAccount.find({
+      const userExisted = await AdminAccount.findOne({
         email: req.body.email,
       })
 
@@ -183,7 +183,7 @@ export const createPost = async (req: Request, res: Response) => {
         })
       }
 
-      const account: AdminAccountType = await processAdminAccountData(req);
+      const account: AdminAccountType = await processAdminAccountData(req); 
 
       const newAccount = new AdminAccount(account);
       await newAccount.save();
@@ -267,6 +267,8 @@ export const editPatch = async (req: Request, res: Response) => {
       })
     }
 
+    req.body = processRequestBody(req.body);
+
     const id: string | undefined = req.params.accountId;
     if (!id) {
       return res.status(400).json({
@@ -274,9 +276,10 @@ export const editPatch = async (req: Request, res: Response) => {
         message: 'Invalid account ID'
       });
     }
-
+    console.log("req.body:", req.body)
     const accountUpdates: AdminAccountType = await processAdminAccountData(req);
-    const avatar = String(req.body.avatar);
+    console.log("accountUpdates:", accountUpdates)
+    const avatar = req.body.images;
 
     const result = await AdminAccount.updateOne(
       { _id: id },

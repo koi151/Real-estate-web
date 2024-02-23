@@ -3,18 +3,21 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import Select from "antd/es/select";
 import { Badge, Button, Card, Col, 
         Form, Input, Radio, Row, Spin, message } from "antd";
-
-import UploadMultipleFile from "../../../components/admin/UploadMultipleFile/uploadMultipleFile";
-import adminAccountsService from "../../../services/admin/accounts.service";
-import { AdminAccountType, RoleTitleType } from "../../../../../backend/commonTypes";
-import AdminRolesService from "../../../services/admin/roles.service";
-import NoPermission from "../../../components/admin/NoPermission/noPermission";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/stores";
+
+import adminAccountsService from "../../../services/admin/accounts.service";
+import AdminRolesService from "../../../services/admin/roles.service";
+
+import NoPermission from "../../../components/admin/NoPermission/noPermission";
+import UploadMultipleFile from "../../../components/admin/UploadMultipleFile/uploadMultipleFile";
+import { AdminAccountType, RoleTitleType } from "../../../../../backend/commonTypes";
+import * as standardizeData from '../../../helpers/standardizeData'
 import { setPermissions } from "../../../redux/reduxSlices/permissionsSlice";
 
-const EditAdminAccounts: React.FC = () => {
 
+const EditAdminAccounts: React.FC = () => {
+  
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -70,6 +73,8 @@ const EditAdminAccounts: React.FC = () => {
     };
     
     fetchData();
+    
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   // if permission in redux not existed => fetch permissions
@@ -101,6 +106,7 @@ const EditAdminAccounts: React.FC = () => {
       }
     }
     fetchData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /* eslint-disable no-template-curly-in-string */
@@ -139,23 +145,8 @@ const EditAdminAccounts: React.FC = () => {
         return;
       }
       
-      const formData = new FormData();
-
-      data.fullName && formData.append('fullName', data.fullName);
-      data.password && formData.append('password', data.password);
-      data.role_id && formData.append('role_id', data.role_id);
-      data.email && formData.append('email', data.email);
-      data.status && formData.append('status', data.status);
-      data.phone && formData.append('phone', data.phone); 
-
-      // Append avatar
-      if (data.images?.length > 0) {
-        data.images.forEach((imageFile: any) => {
-          if (!imageFile.hasOwnProperty('uploaded') || (imageFile.hasOwnProperty('uploaded') && !imageFile.uploaded)) {
-            formData.append('avatar', imageFile.originFileObj);
-          }
-        });
-      }
+      const formData = standardizeData.objectToFormData(data);
+      console.log("data:", data)
 
       const response = await adminAccountsService.updateAccount(formData, id);
       
@@ -223,7 +214,7 @@ const EditAdminAccounts: React.FC = () => {
                         <Form.Item 
                           label='Email:' 
                           name='email' 
-                          rules={[{ type: 'email' }]}
+                          rules={[{ type: 'email', required: true }]}
                           initialValue={account?.email}
                         >
                           <Input 
@@ -276,7 +267,6 @@ const EditAdminAccounts: React.FC = () => {
                         <Form.Item
                           name="phone"
                           label="Phone number:"
-                          rules={[{ required: true, message: 'Please input your phone number!' }]}
                           initialValue={account?.phone}
                         >
                           <Input 

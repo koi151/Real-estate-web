@@ -2,6 +2,17 @@ import { Request } from "express";
 import { AdminAccountLogType, AdminAccountType, PropertyCategoryType, PropertyType, RolesType } from "../commonTypes";
 import bcrypt from 'bcrypt';
 
+// formData replace undefined fields to '', reverse it
+export const processRequestBody = (body: any) => { 
+  Object.keys(body).forEach(key => {
+    if (body[key] === '') {
+      body[key] = undefined;
+    }
+  });
+  return body;
+};
+
+
 export const parseToValidNumber = (value?: string | null | undefined): number | undefined => {
   return value ? parseFloat(value) || undefined : undefined;
 };
@@ -74,18 +85,18 @@ export const processRoleData = (req: Request): RolesType => {
 
 // Admin account
 export const processAdminAccountData = async (req: Request): Promise<AdminAccountType> => {
+  
   const hashedPassword = req.body.password 
     && await bcrypt.hash(String(req.body.password), parseInt(process.env.SALT_ROUNDS));
-
+  
   return {
     fullName: req.body.fullName && String(req.body.fullName),
     email: req.body.email && String(req.body.email),
     password: hashedPassword,
-    token: req.body.token && String(req.body.token),
     status: req.body.status,
     phone: req.body.phone && String(req.body.phone),
     role_id: req.body.role_id && String(req.body.role_id),
-    avatar: req.body.avatar && String(req.body.avatar)
+    avatar: req.body.images && String(req.body.images)
   };
 }
 

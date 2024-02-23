@@ -80,7 +80,7 @@ export interface AdminAccountType {
   _id?: string;
   fullName: string,
   password: string,
-  token: string,
+  token?: string,
   email?: string,
   role_id?: string,
   phone?: string,

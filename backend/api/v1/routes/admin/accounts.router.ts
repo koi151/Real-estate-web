@@ -15,7 +15,7 @@ router.get('/avatar/:accountId', controller.getAvatar)
 
 router.post(
   '/create',
-  upload.single('avatar'),
+  upload.single('images'),
   // validate.createProperty,
   uploadCloud.uploadSingle,
   controller.createPost
@@ -23,7 +23,7 @@ router.post(
 
 router.patch(
   '/edit/:accountId', 
-  upload.single('avatar'),
+  upload.single('images'),
   // validate.createProperty,
   uploadCloud.uploadSingle,
   controller.editPatch
