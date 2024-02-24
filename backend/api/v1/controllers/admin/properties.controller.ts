@@ -30,12 +30,15 @@ export const index = async (req: Request, res: Response) => {
       slug?: RegExp | null
     }
     
-    let status: string | undefined = req.query.status?.toString();
-    let category: string | undefined = req.query.category?.toString();
+    const status: string | undefined = req.query.status?.toString();
+    const category: string | undefined = req.query.category?.toString();
     const pageSize: number | null = req.query.pageSize ? parseInt(req.query.pageSize as string) : null;
 
-    let listingType: string | undefined = req.query.listingType?.toString();
-    let priceRange: number[] | undefined = (req.query.priceRange as string[])?.map(Number);
+    // Extracting area range from the request
+    const areaRange: number[] | undefined = (req.query.areaRange as string[])?.map(Number);
+    const priceRange: number[] | undefined = (req.query.priceRange as string[])?.map(Number);
+
+    const listingType: string | undefined = req.query.listingType?.toString();
     
     const find: Find = {
       deleted: false,
@@ -44,6 +47,15 @@ export const index = async (req: Request, res: Response) => {
       ...(category && { 'propertyDetails.propertyCategory': category }),
       ...(priceRange && { price: { $gte: priceRange[0], $lte: priceRange[1] } }),
     };
+
+    if (areaRange) {//
+      find['$expr'] = {
+        $and: [
+          { $gte: [{ $multiply: ['$area.propertyWidth', '$area.propertyLength'] }, areaRange[0]] },
+          { $lte: [{ $multiply: ['$area.propertyWidth', '$area.propertyLength'] }, areaRange[1]] }
+        ]
+      };
+    }
 
     // Searching
     const searchObject = searchHelper(req.query);

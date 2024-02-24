@@ -1,25 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { Link, useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Badge, Breadcrumb, Pagination, 
-         PaginationProps, Skeleton, Tag,  Tooltip,  message } from 'antd';
+         PaginationProps, Skeleton, Tooltip,  message } from 'antd';
 
-import * as standardizeData from '../../../helpers/standardizeData'
 import getPriceUnit from '../../../helpers/getPriceUnit';
 
 import propertiesService from '../../../services/admin/properties.service';
 
 import { PropertyType, PaginationObject } from '../../../../../backend/commonTypes';
 import RoomCountTooltip from '../../../components/shared/Counters/RoomCounter/roomCount';
-import FilterBox from '../../../components/admin/FilterBox/filterBox';
 
 import { RootState } from '../../../redux/stores';
 import { setPermissions } from '../../../redux/reduxSlices/permissionsSlice';
-import './properties.scss';
 import HTMLContent from '../../../components/client/HTMLContent/HTMLContent';
 import FilterBoxSlide from '../../../components/shared/FilterComponents/FilterBoxSlide/filterBoxSlide';
+import './properties.scss';
 
 const Properties: React.FC = () => {
 
@@ -28,7 +25,7 @@ const Properties: React.FC = () => {
   const location = useLocation();
 
   const filters = useSelector((state: RootState) => state.filters);
-  const currentUserPermissions = useSelector((state: RootState) => state.currentUserPermissions.permissions);
+  // const currentUserPermissions = useSelector((state: RootState) => state.currentUserPermissions.permissions);
 
   const [accessAllowed, setAccessAllowed] = useState(true);
   const [loading, setLoading] = useState(true);
@@ -36,7 +33,7 @@ const Properties: React.FC = () => {
   const [error, setError] = useState<string | null>(null); 
   const [propertyCount, setPropertyCount] = useState<number>(0);
 
-  const { listingType, keyword, status, category, priceRange, sorting } = filters;
+  const { listingType, keyword, status, category, priceRange, areaRange, sorting } = filters;
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   
@@ -62,6 +59,7 @@ const Properties: React.FC = () => {
           ...(listingType && { listingType }), 
           ...(category && { category }), 
           ...(priceRange && { priceRange }),
+          ...(areaRange && { areaRange }),
           ...(sorting?.sortKey && { sortKey: sorting.sortKey }), 
           ...(sorting?.sortValue && { sortValue: sorting.sortValue }), 
           currentPage: currentPage,
@@ -97,25 +95,43 @@ const Properties: React.FC = () => {
     fetchData();
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [keyword, status, sorting, currentPage, listingType, priceRange, category]); 
+  }, [keyword, status, sorting, currentPage, listingType, priceRange, areaRange, category, navigate]); 
 
   // update url
   useEffect(() => {
     navigate(buildURL());
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status, listingType, keyword, sorting])
+  }, [status, listingType, keyword, sorting, priceRange, areaRange, category])
 
   const buildURL = () => {
     const params: { [key: string]: string } = {};
+  
     if (keyword) params['keyword'] = keyword;
     if (listingType) params['listingType'] = listingType;
     if (status) params['status'] = status;
+    if (category) params['category'] = category;
+
     if (sorting.sortKey && sorting.sortValue) {
       params['sortKey'] = sorting.sortKey;
       params['sortValue'] = sorting.sortValue;
     }
+    
+    const [minPrice, maxPrice] = priceRange ?? [];
+    if (minPrice !== undefined && maxPrice !== undefined) {
+      params['minPrice'] = String(minPrice);
+      params['maxPrice'] = String(maxPrice);
+    }
 
-    return `${location.pathname}${Object.keys(params).length > 0 ? `?${new URLSearchParams(params)}` : ''}`;
+    const [minArea, maxArea] = areaRange ?? [];
+    if (minArea !== undefined && maxArea !== undefined) {
+      params['minArea'] = String(minArea);
+      params['maxArea'] = String(maxArea);
+    }
+  
+    // Short-circuiting for performance
+    const queryString = Object.keys(params).length > 0 ? `?${new URLSearchParams(params)}` : '';
+    
+    return `${location.pathname}${queryString}`;
   };
 
   
@@ -134,12 +150,7 @@ const Properties: React.FC = () => {
             />
           </div>
     
-          {/* <FilterBox 
-            priceRangeFilter
-            categoryFilter
-          /> */}
           <FilterBoxSlide />
-            
     
           {error ? (
             <div>{error}</div>

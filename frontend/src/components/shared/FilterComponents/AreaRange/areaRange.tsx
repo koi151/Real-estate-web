@@ -1,39 +1,41 @@
-import { Button, Col, InputNumber, Modal, Row, Slider } from "antd";
+import { Button, Col, InputNumber, Modal, Radio, RadioChangeEvent, Row, Slider, Space } from "antd";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../redux/stores";
-import { listingTypeFormatted } from "../../../helpers/standardizeData";
-import { setPriceRange } from "../../../redux/reduxSlices/filtersSlice";
+import { RootState } from "../../../../redux/stores";
+import { listingTypeFormatted } from "../../../../helpers/standardizeData";
+import { setAreaRange } from "../../../../redux/reduxSlices/filtersSlice";
 import { FaArrowRightLong } from "react-icons/fa6";
 
 
-interface PriceRangeProps {
+interface AreaRangeProps {
   label?: string;
   width?: string;
   text?: string;
 }
 
-const PriceRange: React.FC<PriceRangeProps> = ({
+const AreaRange: React.FC<AreaRangeProps> = ({
   label,
   text,
   width='100%', 
 }) => {
   const dispatch = useDispatch();
 
-  const { listingType, status } = useSelector((state: RootState) => state.filters);
+  const { listingType } = useSelector((state: RootState) => state.filters);
 
   const [ isModalOpen, setIsModalOpen ] = useState(false);
-  const [ sliderValue, setSliderValue ] = useState<[number, number]>([0, listingType === 'forRent' ? 500 : 10000]);
+
+  const [ sliderValue, setSliderValue ] = useState<[number, number]>([0, 500]);
+  const [ priceRangeString, setPriceRangeString ] = useState<string | undefined>(undefined)
+
 
   useEffect(() => {
-    // Update the slider value when listingType changes
-    setSliderValue([0, listingType === 'forRent' ? 1000 : 10000]);
-  }, [listingType]);
+    priceRangeString && dispatch(setAreaRange(JSON.parse(priceRangeString)));
+  }, [priceRangeString, dispatch])
 
 
   const handleModalOk = () => {
     setIsModalOpen(false);
-    dispatch(setPriceRange(sliderValue));
+    dispatch(setAreaRange(sliderValue));
   };
 
   const handleInputChange = (index: number, value: number | undefined) => {
@@ -48,6 +50,21 @@ const PriceRange: React.FC<PriceRangeProps> = ({
     }
   };
 
+  const handleRadioChange = (e: RadioChangeEvent) => {
+    setIsModalOpen(false);
+    setPriceRangeString(e.target.value);
+    setSliderValue(JSON.parse(e.target.value))
+  }
+
+  const priceRangeValue = [
+    { value: undefined, label: "All" },
+    { value: "[0, 29]", label: "Below 30 m²" },
+    { value: "[30, 50]", label: "30 - 50 m²" },
+    { value: "[50, 80]", label: "50 - 80 m²" },
+    { value: "[80, 100]", label: "80 - 100 m²" },
+    { value: "[100, 500]", label: "Above 100 m²" }
+  ]
+
   return (
     <div className='price-range'>
       {label && (
@@ -60,7 +77,7 @@ const PriceRange: React.FC<PriceRangeProps> = ({
         { text }
       </Button>
       <Modal 
-        title={`Select price range - ${listingType ? listingTypeFormatted(listingType) : 'for all'}`} 
+        title={`Select area range - ${listingType ? listingTypeFormatted(listingType) : 'for all'}`} 
         open={isModalOpen} 
         onOk={handleModalOk} 
         onCancel={() => setIsModalOpen(false)}
@@ -72,7 +89,7 @@ const PriceRange: React.FC<PriceRangeProps> = ({
               <div className='d-flex'>
                 <b>From: </b>
                 <span className='price-range__box--txt'>
-                  {sliderValue[0] >= 100 ? `${sliderValue[0] / 1000} billion` : `${sliderValue[0]} million`}
+                  {`${sliderValue[0]} m²`}
                 </span>
               </div>
               <InputNumber
@@ -87,7 +104,7 @@ const PriceRange: React.FC<PriceRangeProps> = ({
               <div className='d-flex'>
                 <b>To: </b>
                 <span className='price-range__box--txt'>
-                  {sliderValue[1] >= 100 ? `${sliderValue[1] / 1000} billion` : `${sliderValue[1]} million`}
+                  {`${sliderValue[1]} m²`}
                 </span>
               </div>
               <InputNumber
@@ -100,11 +117,30 @@ const PriceRange: React.FC<PriceRangeProps> = ({
                 className='custom-slider'
                 range
                 min={0}
-                max={listingType === 'forRent' ? 1000 : 10000}
-                step={listingType === 'forRent' ? undefined : 100}
+                max={500}
+                step={5}
                 value={sliderValue}
                 onChange={handleSliderChange}
               />
+            </Col>
+
+            <Col span={24} className="d-flex justify-content-center">
+              <Radio.Group 
+                onChange={handleRadioChange} 
+                value={priceRangeString}
+                className="custom-radio-group"
+              > 
+                <Space direction="vertical">
+                  {priceRangeValue.map((item, index) => (
+                    <Radio 
+                      key={index} value={item.value} 
+                      className="label-light custom-radio"
+                    >
+                      {item.label}
+                    </Radio>
+                  ))}
+                </Space>
+              </Radio.Group>
             </Col>
           </Row>
         </div>
@@ -113,4 +149,4 @@ const PriceRange: React.FC<PriceRangeProps> = ({
   )
 }
 
-export default PriceRange;
+export default AreaRange;

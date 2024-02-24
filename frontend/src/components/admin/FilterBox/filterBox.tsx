@@ -16,7 +16,7 @@ import { setListingType, setKeyword, setStatus, setSorting,
         resetFilters } from '../../../redux/reduxSlices/filtersSlice';
 
 import './filterBox.scss';
-import PriceRange from '../../shared/PriceRange/priceRange';
+import PriceRange from '../../shared/FilterComponents/PriceRange/priceRange';
 import CategoryTree from '../../shared/FilterComponents/CategoryTree/categoryTree';
 
 interface FilterBoxProps {

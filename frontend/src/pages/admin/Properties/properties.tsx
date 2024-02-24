@@ -64,6 +64,7 @@ const Properties: React.FC = () => {
           ...(listingType && { listingType }), 
           ...(category && { category }), 
           ...(priceRange && { priceRange }),
+          // ...(areaRange && { areaRange }),
           ...(sorting?.sortKey && { sortKey: sorting.sortKey }), 
           ...(sorting?.sortValue && { sortValue: sorting.sortValue }), 
           currentPage: currentPage,
@@ -105,10 +106,11 @@ const Properties: React.FC = () => {
   useEffect(() => {
     navigate(buildURL());
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status, listingType, keyword, sorting])
+  }, [status, listingType, keyword, sorting, priceRange])
 
   const buildURL = () => {
     const params: { [key: string]: string } = {};
+  
     if (keyword) params['keyword'] = keyword;
     if (listingType) params['listingType'] = listingType;
     if (status) params['status'] = status;
@@ -116,9 +118,19 @@ const Properties: React.FC = () => {
       params['sortKey'] = sorting.sortKey;
       params['sortValue'] = sorting.sortValue;
     }
-
-    return `${location.pathname}${Object.keys(params).length > 0 ? `?${new URLSearchParams(params)}` : ''}`;
+    
+    const [minPrice, maxPrice] = priceRange ?? [];
+    if (minPrice !== undefined && maxPrice !== undefined) {
+      params['minPrice'] = String(minPrice);
+      params['maxPrice'] = String(maxPrice);
+    }
+  
+    // Short-circuiting for performance
+    const queryString = Object.keys(params).length > 0 ? `?${new URLSearchParams(params)}` : '';
+    
+    return `${location.pathname}${queryString}`;
   };
+  
   
   const handleCheckboxChange = (id: string | undefined) => (e: CheckboxChangeEvent) => {
     if (id === undefined) {

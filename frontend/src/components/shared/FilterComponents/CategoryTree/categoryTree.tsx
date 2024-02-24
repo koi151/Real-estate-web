@@ -5,7 +5,8 @@ import { setCategory, setIsLoading } from "../../../../redux/reduxSlices/filters
 import { useDispatch } from "react-redux";
 import propertyCategoriesService from "../../../../services/admin/property-categories.service";
 import { useNavigate } from "react-router-dom";
-import './caetgoryTree.scss'
+
+import './categoryTree.scss'
 
 interface CategoryTreeProps {
   label?: string;

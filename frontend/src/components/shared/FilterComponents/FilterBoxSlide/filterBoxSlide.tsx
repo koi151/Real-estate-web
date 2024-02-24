@@ -6,8 +6,9 @@ import './filterBoxSlide.scss'
 import { Button } from 'antd';
 import { useDispatch } from 'react-redux';
 
-import PriceRange from '../../PriceRange/priceRange';
+import PriceRange from '../PriceRange/priceRange';
 import CategoryTree from '../CategoryTree/categoryTree';
+import AreaRange from '../AreaRange/areaRange';
 
 
 const FilterBoxSlide: React.FC = () => {
@@ -25,10 +26,11 @@ const FilterBoxSlide: React.FC = () => {
   return (
     <div className='slick-wrapper'>
       <div className="slick">
-        <PriceRange width='95%' text='Price range'/>
         <div className="text-center">
           <CategoryTree width='95%' text='Category' />
         </div>
+        <PriceRange width='95%' text='Price range'/>
+        <AreaRange width='95%' text='Area range'/>
         
         <Button>Slide 3</Button>
         <Button>Slide 4</Button>
