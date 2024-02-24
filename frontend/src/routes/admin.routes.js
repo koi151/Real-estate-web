@@ -12,10 +12,10 @@ import PropertyCategoriesDetail from "../pages/admin/PropertyCategories/detail";
 import EditPropertyCategories from "../pages/admin/PropertyCategories/edit";
 import CreatePropertyCategory from "../pages/admin/PropertyCategories/create";
 
-import AdminRoles from "../pages/Roles/roles";
-import AdminRoleDetail from "../pages/Roles/detail";
-import CreateAdminRole from "../pages/Roles/create";
-import EditAdminRole from "../pages/Roles/edit";
+import AdminRoles from "../pages/admin/Roles/roles";
+import AdminRoleDetail from "../pages/admin/Roles/detail";
+import CreateAdminRole from "../pages/admin/Roles/create";
+import EditAdminRole from "../pages/admin/Roles/edit";
 
 import AdminAccounts from "../pages/admin/Accounts/accounts";
 import AdminAccountsDetail from "../pages/admin/Accounts/detail";

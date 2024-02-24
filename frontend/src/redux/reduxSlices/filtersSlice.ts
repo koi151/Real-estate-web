@@ -1,15 +1,17 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface FiltersState {
-  listingType: string | undefined;
-  keyword: string | undefined;
+  isLoading: boolean;
   status: string | undefined;
   category: string | undefined;
   priceRange: number[] | undefined
   sorting: { sortKey: string | undefined; sortValue: string | undefined };
+  listingType: string | undefined;
+  keyword: string | undefined;
 }
 
 const initialState: FiltersState = {
+  isLoading: true,
   listingType: undefined,
   keyword: undefined,
   status: undefined,
@@ -22,6 +24,10 @@ const filtersSlice = createSlice({
   name: 'filters',
   initialState,
   reducers: {
+
+    setIsLoading: (state, action: PayloadAction<boolean>) => {
+      state.isLoading = action.payload;
+    },
 
     setListingType: (state, action: PayloadAction<string | undefined>) => {
       state.listingType = action.payload;
@@ -53,6 +59,14 @@ const filtersSlice = createSlice({
   },
 });
 
-export const { setListingType, setKeyword, setStatus, setCategory,
-               setPriceRange, setSorting, resetFilters } = filtersSlice.actions;
+export const { 
+  setIsLoading, 
+  setListingType, 
+  setKeyword, 
+  setStatus, 
+  setCategory,               
+  setPriceRange, 
+  setSorting, 
+  resetFilters
+ } = filtersSlice.actions;
 export default filtersSlice.reducer;

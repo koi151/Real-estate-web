@@ -1,0 +1,16 @@
+@import '../../../../App.scss';
+
+.slick-wrapper {
+  display: flex;
+  align-items: center;
+  width: 100%;
+
+  .slick {
+    width: 75%;
+    .slick-arrow {
+      &::before {
+        color: $color-highlight !important;
+      }
+    }
+  }
+}

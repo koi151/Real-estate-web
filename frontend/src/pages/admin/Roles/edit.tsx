@@ -2,15 +2,16 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Badge, Button, Card, Col, Form, Input, Row, Spin, message, Select } from "antd";
 import TextArea from "antd/es/input/TextArea";
-
-import AdminRolesService from "../../services/admin/roles.service";
-import { RolesType } from "../../../../backend/commonTypes";
-import { AiFillEye, AiOutlineEdit, AiOutlineDelete, AiOutlinePlusSquare } from 'react-icons/ai';
-import { convertLabelToPermission, convertPermissionToLabels } from '../../helpers/standardizeData'
-import NoPermission from "../../components/admin/NoPermission/noPermission";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../redux/stores";
-import { setPermissions } from "../../redux/reduxSlices/permissionsSlice";
+import { RootState } from "../../../redux/stores";
+import { AiFillEye, AiOutlineEdit, AiOutlineDelete, AiOutlinePlusSquare } from 'react-icons/ai';
+
+import AdminRolesService from "../../../services/admin/roles.service";
+
+import { RolesType } from "../../../../../backend/commonTypes";
+import { convertLabelToPermission, convertPermissionToLabels } from '../../../helpers/standardizeData'
+import NoPermission from "../../../components/admin/NoPermission/noPermission";
+import { setPermissions } from "../../../redux/reduxSlices/permissionsSlice";
  
 const EditAdminRole: React.FC = () => {
   const { id } = useParams();

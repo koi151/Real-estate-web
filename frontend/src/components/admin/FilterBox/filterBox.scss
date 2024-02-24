@@ -133,33 +133,6 @@ $filter-box-height: 20rem;
   }
 }
 
-.price-range__box {
-  margin-top: 1.5rem;
-
-  .ant-input-number {
-    margin: 1rem 0;
-    margin-bottom: .5rem;
-
-    .ant-input-number-input-wrap {
-      input {          
-        text-align: center !important;
-      }
-    }
-  }
-
-  b {
-    font-size: 1.6rem;
-  }
-
-  &--txt {
-    margin-left: .3rem;
-    color: $color-highlight;
-    font-weight: 700;
-    font-size: 1.6rem;
-    z-index: 99 !important;
-  }
-}
-
 .custom-btn {
   margin-right: 1rem;
   margin-top: .75rem;

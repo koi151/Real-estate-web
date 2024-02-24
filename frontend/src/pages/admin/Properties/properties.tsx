@@ -190,6 +190,7 @@ const Properties: React.FC = () => {
             priceRangeFilter
             categoryFilter
             statusFilter
+            multipleChange
           />
     
           {error ? (

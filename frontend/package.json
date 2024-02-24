@@ -32,6 +32,7 @@
     "redux": "^5.0.1",
     "sanitize-html": "^2.11.0",
     "sass": "^1.69.7",
+    "slick-carousel": "^1.8.1",
     "tinymce": "^6.8.2",
     "validator": "^13.11.0",
     "web-vitals": "^2.1.4"
@@ -68,8 +69,10 @@
     "@babel/preset-react": "^7.23.3",
     "@babel/preset-typescript": "^7.23.3",
     "@types/dompurify": "^3.0.5",
+    "@types/jquery": "^3.5.29",
     "@types/lodash.debounce": "^4.0.9",
     "@types/react-helmet": "^6.1.11",
+    "@types/slick-carousel": "^1.6.40",
     "dotenv": "^16.4.1",
     "exports-loader": "^5.0.0",
     "imports-loader": "^5.0.0",

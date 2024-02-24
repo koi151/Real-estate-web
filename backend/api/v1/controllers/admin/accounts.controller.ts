@@ -274,9 +274,7 @@ export const editPatch = async (req: Request, res: Response) => {
         message: 'Invalid account ID'
       });
     }
-    console.log("req.body:", req.body)
     const accountUpdates: AdminAccountType = await processAdminAccountData(req);
-    console.log("accountUpdates:", accountUpdates)
     const avatar = req.body.images;
 
     const result = await AdminAccount.updateOne(

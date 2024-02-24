@@ -1,5 +1,12 @@
+// Google font
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Open+Sans:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+
+// Bootstrap 5
 @import "../node_modules//bootstrap/scss/bootstrap";
+
+// Slick 
+@import 'slick-carousel/slick/slick.css';
+@import 'slick-carousel/slick/slick-theme.css';
 
 * {
   box-sizing: border-box;
@@ -195,6 +202,7 @@ label {
 	@include button-style(#f42024, #ff4d4f);
 }
 
+// filters
 .custom-link {
   text-decoration: none;
   .filter-button, .add-new-button {
@@ -207,6 +215,33 @@ label {
       margin-left: 1rem;
       font-weight: 400;
     }
+  }
+}
+
+.price-range__box {
+  margin-top: 1.5rem;
+
+  .ant-input-number {
+    margin: 1rem 0;
+    margin-bottom: .5rem;
+
+    .ant-input-number-input-wrap {
+      input {          
+        text-align: center !important;
+      }
+    }
+  }
+
+  b {
+    font-size: 1.6rem;
+  }
+
+  &--txt {
+    margin-left: .3rem;
+    color: $color-highlight;
+    font-weight: 700;
+    font-size: 1.6rem;
+    z-index: 99 !important;
   }
 }
 

@@ -6,11 +6,11 @@ import { DeleteOutlined, EditOutlined, SolutionOutlined } from '@ant-design/icon
 import { FaPlus } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { RolesType } from '../../../../backend/commonTypes';
-import AdminRolesService from '../../services/admin/roles.service';
-import NoPermission from '../../components/admin/NoPermission/noPermission';
-import { setPermissions } from '../../redux/reduxSlices/permissionsSlice';
-import { RootState } from '../../redux/stores';
+import { RolesType } from '../../../../../backend/commonTypes';
+import AdminRolesService from '../../../services/admin/roles.service';
+import NoPermission from '../../../components/admin/NoPermission/noPermission';
+import { setPermissions } from '../../../redux/reduxSlices/permissionsSlice';
+import { RootState } from '../../../redux/stores';
 
 const AdminRoles: React.FC = () => {
 

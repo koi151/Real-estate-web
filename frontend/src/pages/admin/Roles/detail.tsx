@@ -1,13 +1,15 @@
 import { Badge, Card, Col, Form, Input, Row, Spin, message } from "antd";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import AdminRolesService from "../../services/admin/roles.service";
-import { RolesType } from "../../../../backend/commonTypes";
 import TextArea from "antd/es/input/TextArea";
-import NoPermission from "../../components/admin/NoPermission/noPermission";
-import { RootState } from "../../redux/stores";
+import { RootState } from "../../../redux/stores";
 import { useDispatch, useSelector } from "react-redux";
-import { setPermissions } from "../../redux/reduxSlices/permissionsSlice";
+
+import AdminRolesService from "../../../services/admin/roles.service";
+
+import { RolesType } from "../../../../../backend/commonTypes";
+import NoPermission from "../../../components/admin/NoPermission/noPermission";
+import { setPermissions } from "../../../redux/reduxSlices/permissionsSlice";
 
 const AdminRoleDetail: React.FC = () => {
 

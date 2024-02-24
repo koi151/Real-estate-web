@@ -19,6 +19,7 @@ import { RootState } from '../../../redux/stores';
 import { setPermissions } from '../../../redux/reduxSlices/permissionsSlice';
 import './properties.scss';
 import HTMLContent from '../../../components/client/HTMLContent/HTMLContent';
+import FilterBoxSlide from '../../../components/shared/FilterComponents/FilterBoxSlide/filterBoxSlide';
 
 const Properties: React.FC = () => {
 
@@ -37,7 +38,6 @@ const Properties: React.FC = () => {
 
   const { listingType, keyword, status, category, priceRange, sorting } = filters;
 
-  const [checkedList, setCheckedList] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   
   const [paginationObj, setPaginationObj] = useState<PaginationObject>({
@@ -117,56 +117,7 @@ const Properties: React.FC = () => {
 
     return `${location.pathname}${Object.keys(params).length > 0 ? `?${new URLSearchParams(params)}` : ''}`;
   };
-  
-  const handleCheckboxChange = (id: string | undefined) => (e: CheckboxChangeEvent) => {
-    if (id === undefined) {
-      message.error('Error occurred', 3);
-      console.log('id parameter is undefined');
-      return;
-    }
-    if (e.target.checked) {
-      const position = document.querySelector(`.item-wrapper__upper-content--position input[data-id="${id}"]`) as HTMLInputElement;
-      setCheckedList([...checkedList, `${id}-${position.value}`]);
-    } else {
-      setCheckedList(checkedList.filter((itemId) => itemId !== id));
-    }
-  };
 
-  const onChangePosition = (id: string | undefined, position: number | null) => {
-    if (position === null || id === undefined){
-      message.error("Error occurred, can not change position of property");
-      console.log('id or value parameter is undefined')
-    }
-
-    const currentCheckBox = document.querySelector(`.item-wrapper__upper-content--checkbox span input[id="${id}"]`) as HTMLInputElement;
-    if (currentCheckBox?.checked) {
-      setCheckedList([...checkedList, `${id}-${position}`]);
-    }
-  }
-
-  const renderTag = (value: string, colorMap: Record<string, string>) => (
-    <Tag className="listing-type-tag" color={colorMap[value]}>
-      {standardizeData.listingTypeFormatted(value)}
-    </Tag>
-  );
-
-  // Delete item
-  const confirmDelete = async (id?: string) => {
-    if (!id) {
-      message.error('Error occurred, can not delete');
-      console.log('Can not get id')
-      return;
-    } 
-    const response = await propertiesService.deleteProperty(id);
-
-    if (response?.code === 200) {
-      message.success(response.message, 3);
-      setPropertyList(prevPropertyList => prevPropertyList.filter(property => property._id !== id));
-
-    } else {
-      message.error('Error occurred, can not delete');
-    }
-  };
   
   return (
     <>
@@ -183,12 +134,12 @@ const Properties: React.FC = () => {
             />
           </div>
     
-          <FilterBox 
-            createAllowed={currentUserPermissions?.propertiesCreate} 
+          {/* <FilterBox 
             priceRangeFilter
             categoryFilter
-            statusFilter
-          />
+          /> */}
+          <FilterBoxSlide />
+            
     
           {error ? (
             <div>{error}</div>
