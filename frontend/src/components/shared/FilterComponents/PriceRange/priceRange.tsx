@@ -6,6 +6,7 @@ import { listingTypeFormatted } from "../../../../helpers/standardizeData";
 import { setPriceRange } from "../../../../redux/reduxSlices/filtersSlice";
 import { FaArrowRightLong } from "react-icons/fa6";
 import './priceRange.scss'
+import { priceRangeValue } from "../../../../helpers/filterOptions";
 
 interface PriceRangeProps {
   label?: string;
@@ -59,15 +60,6 @@ const PriceRange: React.FC<PriceRangeProps> = ({
     setPriceRangeString(e.target.value);
     setSliderValue(JSON.parse(e.target.value))
   }
-
-  const priceRangeValue = [
-    { value: undefined, label: "All" },
-    { value: "[0, 499]", label: "Below 500 million" },
-    { value: "[500, 800]", label: "500 - 800 million" },
-    { value: "[800, 1000]", label: "800 million - 1 billion" },
-    { value: "[1000, 2000]", label: "1 billion - 2 billion" },
-    { value: "[2000, 999999]", label: "Above 2 billion" }
-  ]
 
   return (
     <div className='price-range'>

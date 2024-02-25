@@ -7,8 +7,8 @@ import { paginationHelper } from '../../../../helpers/pagination';
 import { isValidStatus } from "../../../../helpers/dataTypeCheck";
 
 import { PropertyType, ValidMultiChangeType } from "../../../../commonTypes";
-import { processImagesData, processPropertyData, processRequestBody } from "../../../../helpers/processData";
-import { generateBedroomsFilter, generatePriceRangeFilter } from "../../../../helpers/generateFilters";
+import { processImagesData, processPropertyData } from "../../../../helpers/processData";
+import { generateAreaRangeFilter, generateBedroomsFilter, generateFilterInRange  } from "../../../../helpers/generateFilters";
 
 
 // [GET] /admin/properties
@@ -39,7 +39,7 @@ export const index = async (req: Request, res: Response) => {
     const areaRange: number[] | undefined = (req.query.areaRange as string[])?.map(Number);
 
     const listingType: string | undefined = req.query.listingType?.toString();
-    
+  
     const find = {
       $and: [
         { deleted: false },
@@ -48,16 +48,9 @@ export const index = async (req: Request, res: Response) => {
         ...(category ? [{ 'propertyDetails.propertyCategory': category }] : []),
     
         ...generateBedroomsFilter(req.query.bedrooms),
-        ...generatePriceRangeFilter(req.query.priceRange),
+        ...generateFilterInRange(req.query.priceRange, 'price'),
 
-        ...(areaRange ? [{
-          $expr: {
-            $and: [
-              { $gte: [{ $multiply: ['$area.propertyWidth', '$area.propertyLength'] }, areaRange[0]] },
-              { $lte: [{ $multiply: ['$area.propertyWidth', '$area.propertyLength'] }, areaRange[1]] }
-            ]
-          }
-        }] : [])
+        ...generateAreaRangeFilter(req.query.areaRange, 'area.propertyLength', 'area.propertyWidth')
       ]
     };
     

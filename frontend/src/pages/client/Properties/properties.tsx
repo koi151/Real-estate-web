@@ -121,16 +121,12 @@ const Properties: React.FC = () => {
     }
     
     const [minPrice, maxPrice] = priceRange ?? [];
-    if (minPrice !== undefined && maxPrice !== undefined) {
-      params['minPrice'] = String(minPrice);
-      params['maxPrice'] = String(maxPrice);
-    }
+    if (minPrice) params['minPrice'] = String(minPrice);
+    if (maxPrice) params['maxPrice'] = String(maxPrice); 
 
     const [minArea, maxArea] = areaRange ?? [];
-    if (minArea !== undefined && maxArea !== undefined) {
-      params['minArea'] = String(minArea);
-      params['maxArea'] = String(maxArea);
-    }
+    if (minArea) params['minArea'] = String(minArea);
+    if (maxArea) params['maxArea'] = String(maxArea);    
   
     // Short-circuiting for performance
     const queryString = Object.keys(params).length > 0 ? `?${new URLSearchParams(params)}` : '';

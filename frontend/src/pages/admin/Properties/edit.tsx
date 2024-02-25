@@ -36,7 +36,7 @@ const EditProperty: React.FC = () => {
   const [postType] = useState<string>('sell');
   const [propertyWidth, setPropertyWidth] = useState<number | null>(null);
   const [propertyLength, setPropertyLength] = useState<number | null>(null);
-  const [priceMultiplier] = useState<number>(1);
+  const [priceMultiplier, setPriceMultiplier] = useState<number>(1);
   const [editorContent, setEditorContent] = useState<string>("");
   const [price, setPrice] = useState<number | null>(null);
 
@@ -65,6 +65,7 @@ const EditProperty: React.FC = () => {
           if (propertyResponse.code === 200 && propertyResponse.property) {            
             setProperty(propertyResponse.property);
             setPrice(propertyResponse.property.price);
+            propertyResponse.property.price >= 1000 && setPriceMultiplier(1000); 
             propertyResponse.property.area?.propertyLength && setPropertyLength(propertyResponse.property.area.propertyLength);
             propertyResponse.property.area?.propertyWidth && setPropertyWidth(propertyResponse.property.area.propertyWidth);
 
@@ -146,8 +147,6 @@ const EditProperty: React.FC = () => {
         message.error('Error occurred', 3);
         return;
       }      
-
-      console.log("data:", data)
 
       const rooms = ['bedrooms', 'bathrooms', 'kitchens']
        .filter(room => data[room])
@@ -325,7 +324,7 @@ const EditProperty: React.FC = () => {
                         style={{width: "100%"}}
                         addonAfter={
                           <Select 
-                            value={property?.price && property.price >= 1000 ? "billion" : "million"} 
+                            defaultValue={property?.price && property.price >= 1000 ? "billion" : "million"} 
                             onChange={(value) => {
                               if (typeof value === 'number') {
                                 setPrice(value);
