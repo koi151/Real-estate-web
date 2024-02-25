@@ -8,6 +8,7 @@ import { isValidStatus } from "../../../../helpers/dataTypeCheck";
 
 import { PropertyType, ValidMultiChangeType } from "../../../../commonTypes";
 import { processImagesData, processPropertyData, processRequestBody } from "../../../../helpers/processData";
+import { generateBedroomsFilter, generatePriceRangeFilter } from "../../../../helpers/generateFilters";
 
 
 // [GET] /admin/properties
@@ -36,26 +37,30 @@ export const index = async (req: Request, res: Response) => {
 
     // Extracting area range from the request
     const areaRange: number[] | undefined = (req.query.areaRange as string[])?.map(Number);
-    const priceRange: number[] | undefined = (req.query.priceRange as string[])?.map(Number);
 
     const listingType: string | undefined = req.query.listingType?.toString();
     
-    const find: Find = {
-      deleted: false,
-      ...(status && { status }),
-      ...(listingType && { listingType }),
-      ...(category && { 'propertyDetails.propertyCategory': category }),
-      ...(priceRange && { price: { $gte: priceRange[0], $lte: priceRange[1] } }),
-    };
+    const find = {
+      $and: [
+        { deleted: false },
+        ...(status ? [{ status }] : []),
+        ...(listingType ? [{ listingType }] : []),
+        ...(category ? [{ 'propertyDetails.propertyCategory': category }] : []),
+    
+        ...generateBedroomsFilter(req.query.bedrooms),
+        ...generatePriceRangeFilter(req.query.priceRange),
 
-    if (areaRange) {//
-      find['$expr'] = {
-        $and: [
-          { $gte: [{ $multiply: ['$area.propertyWidth', '$area.propertyLength'] }, areaRange[0]] },
-          { $lte: [{ $multiply: ['$area.propertyWidth', '$area.propertyLength'] }, areaRange[1]] }
-        ]
-      };
-    }
+        ...(areaRange ? [{
+          $expr: {
+            $and: [
+              { $gte: [{ $multiply: ['$area.propertyWidth', '$area.propertyLength'] }, areaRange[0]] },
+              { $lte: [{ $multiply: ['$area.propertyWidth', '$area.propertyLength'] }, areaRange[1]] }
+            ]
+          }
+        }] : [])
+      ]
+    };
+    
 
     // Searching
     const searchObject = searchHelper(req.query);
@@ -89,6 +94,8 @@ export const index = async (req: Request, res: Response) => {
     if (req.query.sortKey && req.query.sortValue) {
       sortingQuery[req.query.sortKey.toString()] = req.query.sortValue.toString() as 'asc' | 'desc';
     }
+
+    console.dir(find, {depth: null})
 
     const properties = await Property.find(find)
       .sort(sortingQuery || '')

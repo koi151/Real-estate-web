@@ -9,6 +9,7 @@ import { useDispatch } from 'react-redux';
 import PriceRange from '../PriceRange/priceRange';
 import CategoryTree from '../CategoryTree/categoryTree';
 import AreaRange from '../AreaRange/areaRange';
+import BedroomNumber from '../BedroomNumber/bedroomNumber';
 
 
 const FilterBoxSlide: React.FC = () => {
@@ -31,7 +32,7 @@ const FilterBoxSlide: React.FC = () => {
         </div>
         <PriceRange width='95%' text='Price range'/>
         <AreaRange width='95%' text='Area range'/>
-        
+        <BedroomNumber width='95%' text='Number of bedrooms'/>
         <Button>Slide 3</Button>
         <Button>Slide 4</Button>
         <Button>Slide 5</Button>

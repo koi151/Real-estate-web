@@ -4,11 +4,12 @@ interface FiltersState {
   isLoading: boolean;
   status: string | undefined;
   category: string | undefined;
+  bedrooms: string | undefined,
+  listingType: string | undefined;
+  keyword: string | undefined;
   priceRange: number[] | undefined;
   areaRange: number[] | undefined;
   sorting: { sortKey: string | undefined; sortValue: string | undefined };
-  listingType: string | undefined;
-  keyword: string | undefined;
 }
 
 const initialState: FiltersState = {
@@ -19,6 +20,7 @@ const initialState: FiltersState = {
   category: undefined,
   priceRange: undefined,
   areaRange: undefined,
+  bedrooms: undefined,
   sorting: { sortKey: undefined, sortValue: undefined },
 };
 
@@ -37,6 +39,10 @@ const filtersSlice = createSlice({
 
     setKeyword: (state, action: PayloadAction<string | undefined>) => {
       state.keyword = action.payload;
+    },
+
+    setBedrooms: (state, action: PayloadAction<string | undefined>) => {
+      state.bedrooms = action.payload;
     },
 
     setStatus: (state, action: PayloadAction<string | undefined>) => {
@@ -72,6 +78,7 @@ export const {
   setStatus, 
   setCategory,               
   setPriceRange, 
+  setBedrooms,
   setAreaRange,
   setSorting, 
   resetFilters
