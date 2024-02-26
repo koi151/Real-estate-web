@@ -29,6 +29,7 @@
     "react-redux": "^9.1.0",
     "react-router-dom": "^6.21.1",
     "react-scripts": "5.0.1",
+    "recharts": "^2.12.1",
     "redux": "^5.0.1",
     "sanitize-html": "^2.11.0",
     "sass": "^1.69.7",

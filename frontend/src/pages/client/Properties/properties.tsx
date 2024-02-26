@@ -33,7 +33,7 @@ const Properties: React.FC = () => {
   const [error, setError] = useState<string | null>(null); 
   const [propertyCount, setPropertyCount] = useState<number>(0);
 
-  const { listingType, keyword, status, category, 
+  const { listingType, keyword, status, category, direction, 
           priceRange, areaRange, sorting, bedrooms } = filters;
 
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -59,6 +59,7 @@ const Properties: React.FC = () => {
           ...(status && { status }), 
           ...(listingType && { listingType }), 
           ...(category && { category }), 
+          ...(direction && { direction }), 
           ...(bedrooms && { bedrooms }), 
           ...(priceRange && { priceRange }),
           ...(areaRange && { areaRange }),
@@ -98,13 +99,13 @@ const Properties: React.FC = () => {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [keyword, status, sorting, currentPage, listingType, bedrooms, 
-      priceRange, areaRange, category, navigate]); 
+      direction, priceRange, areaRange, category, navigate]); 
 
   // update url
   useEffect(() => {
     navigate(buildURL());
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status, listingType, keyword, sorting, priceRange, areaRange, category, bedrooms])
+  }, [status, listingType, keyword, sorting, priceRange, areaRange, category, bedrooms, direction])
 
   const buildURL = () => {
     const params: { [key: string]: string } = {};
@@ -114,6 +115,7 @@ const Properties: React.FC = () => {
     if (status) params['status'] = status;
     if (category) params['category'] = category;
     if (bedrooms) params['bedrooms'] = bedrooms;
+    if(direction) params['direction'] = direction;
 
     if (sorting.sortKey && sorting.sortValue) {
       params['sortKey'] = sorting.sortKey;

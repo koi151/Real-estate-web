@@ -10,6 +10,7 @@ import PriceRange from '../PriceRange/priceRange';
 import CategoryTree from '../CategoryTree/categoryTree';
 import AreaRange from '../AreaRange/areaRange';
 import BedroomNumber from '../BedroomNumber/bedroomNumber';
+import Direction from '../Direction/direction';
 
 
 const FilterBoxSlide: React.FC = () => {
@@ -33,7 +34,8 @@ const FilterBoxSlide: React.FC = () => {
         <PriceRange width='95%' text='Price range'/>
         <AreaRange width='95%' text='Area range'/>
         <BedroomNumber width='95%' text='Number of bedrooms'/>
-        <Button>Slide 3</Button>
+        <Direction width='95%' text='Property direction'/>
+
         <Button>Slide 4</Button>
         <Button>Slide 5</Button>
         <Button>Slide 6</Button>

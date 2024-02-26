@@ -15,3 +15,14 @@ export const areaRangeValue = [
   { value: "[80, 100]", label: "80 - 100 m²" },
   { value: "[100]", label: "Above 100 m²" }
 ]
+
+export const directionValues = [
+  { name: "North", value: 1 },
+  { name: "East", value: 1 },
+  { name: "South", value: 1 },
+  { name: "West", value: 1 },
+  { name: "Northeast", value: 1 },
+  { name: "Southeast", value: 1 },
+  { name: "Northwest", value: 1 },
+  { name: "Southwest", value: 1 }
+];

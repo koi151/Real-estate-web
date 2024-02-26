@@ -34,22 +34,19 @@ export const index = async (req: Request, res: Response) => {
     const status: string | undefined = req.query.status?.toString();
     const category: string | undefined = req.query.category?.toString();
     const pageSize: number | null = req.query.pageSize ? parseInt(req.query.pageSize as string) : null;
-
-    // Extracting area range from the request
-    const areaRange: number[] | undefined = (req.query.areaRange as string[])?.map(Number);
-
     const listingType: string | undefined = req.query.listingType?.toString();
+    const direction: string | undefined = req.query.direction?.toString();    
   
     const find = {
       $and: [
         { deleted: false },
         ...(status ? [{ status }] : []),
         ...(listingType ? [{ listingType }] : []),
+        ...(direction ? [{ 'propertyDetails.houseDirection': direction }] : []),
         ...(category ? [{ 'propertyDetails.propertyCategory': category }] : []),
     
         ...generateBedroomsFilter(req.query.bedrooms),
         ...generateFilterInRange(req.query.priceRange, 'price'),
-
         ...generateAreaRangeFilter(req.query.areaRange, 'area.propertyLength', 'area.propertyWidth')
       ]
     };

@@ -1,0 +1,22 @@
+.recharts-pie {
+  .recharts-pie-sector {
+    transition: all 0.1s;
+    &:hover {
+      filter: brightness(1.15);
+    }
+  }
+}
+
+// .recharts-pie-labels {
+//   .recharts-layer {
+//     text {
+//       &:hover {
+//         .recharts-pie {
+//           .recharts-pie-sector {
+//             filter: brightness(1.2);
+//           }
+//         }
+//       }
+//     }
+//   }
+// }
