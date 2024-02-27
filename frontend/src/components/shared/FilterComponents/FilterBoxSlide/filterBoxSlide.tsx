@@ -3,14 +3,13 @@ import $ from 'jquery';
 import 'slick-carousel';
 
 import './filterBoxSlide.scss'
-import { Button } from 'antd';
 import { useDispatch } from 'react-redux';
 
 import PriceRange from '../PriceRange/priceRange';
 import CategoryTree from '../CategoryTree/categoryTree';
 import AreaRange from '../AreaRange/areaRange';
-import BedroomNumber from '../BedroomNumber/bedroomNumber';
 import Direction from '../Direction/direction';
+import RoomFilter from '../Rooms/roomFilter';
 
 
 const FilterBoxSlide: React.FC = () => {
@@ -33,13 +32,11 @@ const FilterBoxSlide: React.FC = () => {
         </div>
         <PriceRange width='95%' text='Price range'/>
         <AreaRange width='95%' text='Area range'/>
-        <BedroomNumber width='95%' text='Number of bedrooms'/>
+
         <Direction width='95%' text='Property direction'/>
 
-        <Button>Slide 4</Button>
-        <Button>Slide 5</Button>
-        <Button>Slide 6</Button>
-        <Button>Slide 7</Button>
+        <RoomFilter roomType='bedrooms' width='95%' text='Number of bedrooms'/>
+        <RoomFilter roomType='bathrooms' width='95%' text='Number of bathrooms'/>
       </div>
     </div>
   );

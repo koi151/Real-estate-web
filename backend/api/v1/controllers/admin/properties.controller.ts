@@ -8,7 +8,7 @@ import { isValidStatus } from "../../../../helpers/dataTypeCheck";
 
 import { PropertyType, ValidMultiChangeType } from "../../../../commonTypes";
 import { processImagesData, processPropertyData } from "../../../../helpers/processData";
-import { generateAreaRangeFilter, generateBedroomsFilter, generateFilterInRange  } from "../../../../helpers/generateFilters";
+import { generateAreaRangeFilter, generateFilterInRange, generateRoomFilter  } from "../../../../helpers/generateFilters";
 
 
 // [GET] /admin/properties
@@ -45,7 +45,9 @@ export const index = async (req: Request, res: Response) => {
         ...(direction ? [{ 'propertyDetails.houseDirection': direction }] : []),
         ...(category ? [{ 'propertyDetails.propertyCategory': category }] : []),
     
-        ...generateBedroomsFilter(req.query.bedrooms),
+        ...generateRoomFilter(req.query.bedrooms, 'bedrooms'),
+        ...generateRoomFilter(req.query.bathrooms, 'bathrooms'),
+
         ...generateFilterInRange(req.query.priceRange, 'price'),
         ...generateAreaRangeFilter(req.query.areaRange, 'area.propertyLength', 'area.propertyWidth')
       ]
@@ -234,13 +236,14 @@ export const createPost = async (req: any, res: Response) => {
     }
 
     const property: PropertyType = processPropertyData(req);
+    const processedImages = processImagesData(req.body.images);
 
     if (!property.position) {
       const cntProperty = await Property.countDocuments();
       property.position = cntProperty + 1;
     }
 
-    const newProperty = new Property(property);
+    const newProperty = new Property(property, { images: processedImages });
     await newProperty.save();
     
     res.json({

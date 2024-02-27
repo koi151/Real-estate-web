@@ -1,9 +1,9 @@
 // bedrooms filter
-export const generateBedroomsFilter = (bedrooms: any): object[] => {
-  if (!bedrooms) return [];
+export const generateRoomFilter = (queryString: any, roomType: string): object[] => {
+  if (!queryString) return [];
 
-  const gte = bedrooms.includes('bedrooms-gte') ? bedrooms?.charAt(bedrooms.length - 1) : undefined;
-  const regexStringGTE = gte ? `^bedrooms-(?=.*[${gte}-99])\\d+$` : undefined;
+  const gte = queryString.includes(`${roomType}-gte`) ? queryString?.charAt(queryString.length - 1) : undefined;
+  const regexStringGTE = gte ? `^${roomType}-(?=.*[${gte}-99])\\d+$` : undefined;
 
   return regexStringGTE ?
     [{
@@ -15,7 +15,7 @@ export const generateBedroomsFilter = (bedrooms: any): object[] => {
     }]
     : [{
       "propertyDetails.rooms": {
-        $elemMatch: { $eq: bedrooms }
+        $elemMatch: { $eq: queryString }
       }
     }];
 }

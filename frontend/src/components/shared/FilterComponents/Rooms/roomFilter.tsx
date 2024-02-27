@@ -1,16 +1,17 @@
 import { Button, Modal } from "antd";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import './bedroomNumber.scss'
-import { setBedrooms } from "../../../../redux/reduxSlices/filtersSlice";
+import { setBathrooms, setBedrooms } from "../../../../redux/reduxSlices/filtersSlice";
 
-interface BedroomNumberProps {
+interface RoomFilterProps {
+  roomType: string;
   label?: string;
   width?: string;
   text?: string;
 }
 
-const BedroomNumber: React.FC<BedroomNumberProps> = ({
+const RoomFilter: React.FC<RoomFilterProps> = ({
+  roomType,
   label,
   text,
   width='100%', 
@@ -21,10 +22,16 @@ const BedroomNumber: React.FC<BedroomNumberProps> = ({
 
   const numbers = Array.from({ length: 4 }, (_, index) => index + 1);
 
-  const handleModalOk = () => {
+  const handleFilterClick = (number: any) => {
+    console.log("number:", number)
+    dispatch((roomType === 'bathrooms') ? setBathrooms(`${roomType}-${number}`) : setBedrooms(`${roomType}-${number}`));
     setIsModalOpen(false);
-    // dispatch(setPriceRange(sliderValue));
-  };
+  }
+
+  const handleFilterClickTwo = () => {
+    dispatch((roomType === 'bathrooms') ? setBathrooms(`${roomType}-gte-${5}`) : setBedrooms(`${roomType}-gte-${5}`));
+    setIsModalOpen(false);
+  }
 
   return (
     <div className='price-range'>
@@ -38,9 +45,9 @@ const BedroomNumber: React.FC<BedroomNumberProps> = ({
         { text }
       </Button>
       <Modal 
-        title={`Number of bedrooms`} 
+        title={`Number of ${roomType}`} 
         open={isModalOpen} 
-        onOk={handleModalOk} 
+        onOk={() => setIsModalOpen(false)} 
         onCancel={() => setIsModalOpen(false)}
       >
         <hr style={{marginTop: "1.5rem", marginBottom: "2.5rem"}}/>
@@ -48,14 +55,14 @@ const BedroomNumber: React.FC<BedroomNumberProps> = ({
           <Button 
             key={number} 
             className="mr-1"
-            onClick={() => dispatch(setBedrooms(`bedrooms-${number}`))}
-          >
+            onClick={() => handleFilterClick(number)}
+            >
             {number}
           </Button>
         ))}
         <Button 
           className="mr-1" 
-          onClick={() => dispatch(setBedrooms(`bedrooms-gte-${5}`))}
+          onClick={handleFilterClickTwo}
         >
           5+
         </Button>
@@ -64,4 +71,4 @@ const BedroomNumber: React.FC<BedroomNumberProps> = ({
   )
 }
 
-export default BedroomNumber;
+export default RoomFilter;
