@@ -130,7 +130,6 @@ const EditPropertyCategories: React.FC = () => {
 
   const onFinishForm = async (data: any) => {
     try {
-      console.log('data:', data)
       if (!id) {
         console.error('Cannot get category id');
         message.error('Error occurred', 3);
@@ -138,12 +137,11 @@ const EditPropertyCategories: React.FC = () => {
       }
       const transformedData = {
         ...data,
-        description: editorContent,
+        description: category?.description ? category?.description : editorContent,
         ...(data.parent_id && {parent_id: data.parent_id.value}),
         ...(imageUrlToRemove && { images_remove: imageUrlToRemove})
       };
 
-      console.log("transformedData:", transformedData)
       const formData = standardizeData.objectToFormData(transformedData);
       
       const response = await propertyCategoriesService.updateCategory(formData, id);

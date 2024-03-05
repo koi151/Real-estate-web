@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Badge, Breadcrumb, Pagination, 
+import { Badge, Breadcrumb, Button, Input, Pagination, 
          PaginationProps, Skeleton, Tooltip,  message } from 'antd';
+import { RiSearchLine } from "react-icons/ri";
+import { RootState } from '../../../redux/stores';
 
 import getPriceUnit from '../../../helpers/getPriceUnit';
 
@@ -12,13 +14,14 @@ import propertiesService from '../../../services/admin/properties.service';
 import { PropertyType, PaginationObject } from '../../../../../backend/commonTypes';
 import RoomCountTooltip from '../../../components/shared/Counters/RoomCounter/roomCount';
 
-import { RootState } from '../../../redux/stores';
 import { setPermissions } from '../../../redux/reduxSlices/permissionsSlice';
 import HTMLContent from '../../../components/client/HTMLContent/HTMLContent';
 import FilterBoxSlide from '../../../components/shared/FilterComponents/FilterBoxSlide/filterBoxSlide';
-import './properties.scss';
 import PriceRange from '../../../components/shared/FilterComponents/PriceRange/priceRange';
 import AreaRange from '../../../components/shared/FilterComponents/AreaRange/areaRange';
+import { setKeyword } from '../../../redux/reduxSlices/filtersSlice';
+
+import './properties.scss';
 
 const Properties: React.FC = () => {
 
@@ -146,21 +149,31 @@ const Properties: React.FC = () => {
     <>
       {/* {accessAllowed ? ( */}
         <>
-          <div className='title-wrapper'>
-            <h1 className="main-content-title">Property:</h1>
-            <Breadcrumb
-              className='mt-1 mb-1'
-              items={[
-                { title: <Link to="/admin">Admin</Link> },
-                { title: <Link to="/admin/properties">Properties</Link> },
-              ]}
-            />
-          </div>
-    
+          <Input
+            addonBefore={<RiSearchLine />}
+            className='search-box search-box-custom'
+            placeholder="Search by title..."
+            onChange={(e) => dispatch(setKeyword(e.target.value))}
+            suffix={<Button type="primary">Search</Button>}
+
+          />
           <FilterBoxSlide />
-    
-          <div className='d-flex' style={{width: "100%"}}>
-            <div style={{width: "72%"}}>
+            
+            <div className='line' style={{marginTop: "1.75rem"}} /> 
+
+            <div className='d-flex' style={{width: "100%"}}>
+              <div style={{width: "70%"}}>
+                <div className='title-wrapper mt-2 p-0 pt-3'>
+                  <Breadcrumb
+                    className='mt-1 mb-1'
+                    items={[
+                      { title: <Link to="/">Home</Link> },
+                      { title: <Link to="/properties">All real estate nationwide</Link> },
+                    ]}
+                  />
+                  <h1 className="main-content-title mt-2">Buy and sell real estate nationwide</h1>
+                </div>  
+
               {error ? (
                 <div>{error}</div>
               ) : (
@@ -292,11 +305,11 @@ const Properties: React.FC = () => {
                 </>
               )}            
             </div>
-            <div className='d-flex flex-column align-items-end' style={{ width: "28%" }}>
+            <div className='d-flex flex-column align-items-end' style={{ width: "30%" }}>
               <PriceRange width='100%' modelDisable/>
               <AreaRange width='100%' modelDisable/>
             </div>
-          </div>
+            </div>
 
           <Pagination
             // showSizeChanger

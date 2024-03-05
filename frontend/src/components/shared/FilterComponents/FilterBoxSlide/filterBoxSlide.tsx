@@ -3,7 +3,6 @@ import $ from 'jquery';
 import 'slick-carousel';
 
 import './filterBoxSlide.scss'
-import { useDispatch } from 'react-redux';
 
 import PriceRange from '../PriceRange/priceRange';
 import CategoryTree from '../CategoryTree/categoryTree';
@@ -13,7 +12,6 @@ import RoomFilter from '../Rooms/roomFilter';
 
 
 const FilterBoxSlide: React.FC = () => {
-  const dispatch = useDispatch();
 
   useEffect(() => {
     $('.slick').slick({
@@ -30,13 +28,19 @@ const FilterBoxSlide: React.FC = () => {
         <div className="text-center">
           <CategoryTree width='95%' text='Category' />
         </div>
-        <PriceRange width='95%' text='Price range'/>
-        <AreaRange width='95%' text='Area range'/>
+        <PriceRange width='95%' text='Price range' textColor='#999'/>
+        <AreaRange width='95%' text='Area range' textColor='#999'/>
 
-        <Direction width='95%' text='Property direction'/>
+        <Direction width='95%' text='Property direction' textColor='#999'/>
 
-        <RoomFilter roomType='bedrooms' width='95%' text='Number of bedrooms'/>
-        <RoomFilter roomType='bathrooms' width='95%' text='Number of bathrooms'/>
+        <RoomFilter 
+          roomType='bedrooms' width='95%' 
+          text='Filter by bedrooms' textColor='#999'
+        />
+        <RoomFilter 
+          roomType='bathrooms' width='95%' 
+          text='Filter by bathrooms' textColor='#999'
+        />
       </div>
     </div>
   );

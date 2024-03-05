@@ -8,12 +8,14 @@ interface RoomFilterProps {
   label?: string;
   width?: string;
   text?: string;
+  textColor?: string;
 }
 
 const RoomFilter: React.FC<RoomFilterProps> = ({
   roomType,
   label,
   text,
+  textColor,
   width='100%', 
 }) => {
   const dispatch = useDispatch();
@@ -23,7 +25,6 @@ const RoomFilter: React.FC<RoomFilterProps> = ({
   const numbers = Array.from({ length: 4 }, (_, index) => index + 1);
 
   const handleFilterClick = (number: any) => {
-    console.log("number:", number)
     dispatch((roomType === 'bathrooms') ? setBathrooms(`${roomType}-${number}`) : setBedrooms(`${roomType}-${number}`));
     setIsModalOpen(false);
   }
@@ -40,12 +41,12 @@ const RoomFilter: React.FC<RoomFilterProps> = ({
       )}
       <Button
         onClick={() => setIsModalOpen(true)}
-        style={{ width: `${width}` }}
+        style={{ width: `${width}`, color: `${textColor}` }}
       >
         { text }
       </Button>
       <Modal 
-        title={`Number of ${roomType}`} 
+        title={`Filter by ${roomType}`} 
         open={isModalOpen} 
         onOk={() => setIsModalOpen(false)} 
         onCancel={() => setIsModalOpen(false)}

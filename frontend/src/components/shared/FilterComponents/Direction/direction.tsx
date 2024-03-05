@@ -10,10 +10,11 @@ interface DirectionProps {
   label?: string;
   width?: string;
   text?: string;
+  textColor?: string;
 }
 
 
-const Direction: React.FC<DirectionProps> = ({ label, text, width = "100%" }) => {
+const Direction: React.FC<DirectionProps> = ({ label, text, width = "100%", textColor='#000' }) => {
 
   const dispatch = useDispatch();
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
@@ -52,7 +53,7 @@ const Direction: React.FC<DirectionProps> = ({ label, text, width = "100%" }) =>
   return (
     <div className="price-range">
       {label && <span style={{ marginBottom: ".5rem" }}>{label}</span>}
-      <Button onClick={() => setIsModalOpen(true)} style={{ width: `${width}` }}>
+      <Button onClick={() => setIsModalOpen(true)} style={{ width: `${width}`, color: `${textColor}` }}>
         {text}
       </Button>
       <Modal

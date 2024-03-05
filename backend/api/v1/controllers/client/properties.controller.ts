@@ -140,7 +140,7 @@ export const index = async (req: Request, res: Response) => {
   }
 }
 
-// [GET] /admin/properties/detail/:id
+// [GET] /properties/detail/:id
 export const detail = async (req: Request, res: Response) => {
   try {
     // if (!res.locals.currentUser.permissions.includes('properties_view')) {

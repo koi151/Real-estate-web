@@ -39,7 +39,7 @@ export const processPropertyData = (req: Request): PropertyType => {
     status: req.body.status,
     postType: req.body.postType && String(req.body.postType),
     position: parseToValidNumber(req.body.position),
-    description: req.body.description || '',
+    description: req.body.description && String(req.body.description),
     area: {
       propertyWidth: parseToValidNumber(req.body.area?.propertyWidth),
       propertyLength: parseToValidNumber(req.body.area?.propertyLength),
@@ -83,6 +83,7 @@ export const processCategoryData = (req: Request): PropertyCategoryType => {
     position: parseFloat(req.body.position),
     description: req.body.description && String(req.body.description),
     parent_id: req.body.parent_id && String(req.body.parent_id),
+    images: Array.isArray(req.body.images) ? req.body.images : [req.body.images]
   };
 }
 

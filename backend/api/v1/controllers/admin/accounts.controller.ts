@@ -305,8 +305,6 @@ export const editPatch = async (req: Request, res: Response) => {
   }
 }
 
-
-
 // [DELETE] /admin/accounts/delete/:accountID
 export const singleDelete = async (req: Request, res: Response) => {
   try {

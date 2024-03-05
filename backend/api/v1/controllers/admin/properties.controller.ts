@@ -243,10 +243,11 @@ export const createPost = async (req: any, res: Response) => {
       property.position = cntProperty + 1;
     }
 
-    const newProperty = new Property(property, { images: processedImages });
+    const propertyWithImages = processedImages ? { ...property, images: processedImages } : property;
+    const newProperty = new Property(propertyWithImages);
     await newProperty.save();
     
-    res.json({
+    res.status(200).json({
       code: 200,
       message: "Created new property successfully"
     })

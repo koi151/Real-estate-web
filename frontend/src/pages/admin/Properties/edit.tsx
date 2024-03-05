@@ -176,7 +176,7 @@ const EditProperty: React.FC = () => {
       const transformedData = {
         ...restData,
         ...(updatedExpireTime && { expireTime: updatedExpireTime }),
-        description: editorContent,
+        description: property?.description ? property?.description : editorContent,
         price: adjustedPrice,
         propertyDetails: {
           ...restData.propertyDetails,

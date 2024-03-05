@@ -34,7 +34,7 @@ const LayOutDefaultClient: React.FC = () => {
         style={{
           position: 'sticky',
           top: 0,
-          zIndex: 1,
+          zIndex: 999,
           width: '100%',
           display: 'flex',
           alignItems: 'center',
@@ -49,7 +49,7 @@ const LayOutDefaultClient: React.FC = () => {
           style={{ flex: 1, minWidth: 0 }}
         />
       </Header>
-      <Content style={{ padding: '0 3rem' }}>
+      <Content style={{ padding: '0 10rem' }}>
         <div
           style={{
             padding: "3rem",

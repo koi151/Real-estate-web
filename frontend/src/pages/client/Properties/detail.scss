@@ -1,0 +1,94 @@
+@import '../../../App.scss';
+
+$fade-color: #777;
+$fader-color: #999;
+
+.post-detail {
+  .slick-wrapper {
+    .slick {
+      .slick-list {
+        width: 115%;
+      }
+      .slick-next {
+        right: -19% !important;
+      }
+      .slick-img {
+        object-fit: cover;
+        width: 115%;
+        max-height: 35rem;
+      }
+    }
+  }
+
+  .info-wrapper {
+    font-family: $roboto;
+    margin-right: 5rem;
+
+    &__txt-one {
+      color: $fader-color;
+      font-size: 1.5rem;
+    }
+
+    &__txt-two {
+      font-weight: 600;
+      font-size: 2rem;
+      margin: .3rem 0;
+    }
+
+    &__txt-three {
+      font-size: 1.3rem;
+      color: $fade-color;
+    }
+  }
+
+  .tool-wrapper {
+    svg {
+      font-size: 2.5rem;
+      color: #2c2c2c;
+      margin: 1.5rem;
+      transition: all .2s;
+
+      &:hover {
+        transform: scale(1.2);
+      }
+    }
+  }
+
+  .desciption, .char {
+    &__title {
+      margin: 2.5rem 0 2rem 0;
+      font-size: 2rem;
+      font-weight: 600;
+      font-family: $lexend;
+    }    
+  }
+
+  .custom-row {
+    width: 90%;
+    padding: 1rem 0;
+    border-top: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+
+    svg {
+      font-size: 2.2rem;
+      margin-right: 1.5rem;
+    }
+
+  }
+
+  .custom-demo-img {
+    margin-right: 1rem !important;
+    min-height: 9rem;
+    max-height: 9rem;
+    object-fit: cover;
+  }
+
+  .detail-wrap {
+    .ant-card-body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+}

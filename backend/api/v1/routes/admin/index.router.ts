@@ -50,7 +50,6 @@ const v1AdminRoutes = (app: Express): void => {
   );
 
   app.use(`${version}/${ADMIN_PATH}/auth`, authRoutes);
-
 }
 
 export default v1AdminRoutes;

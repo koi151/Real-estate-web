@@ -15,6 +15,43 @@ $image-primary-wrap-max-height: 26rem;
   }
 }
 
+.search-box-custom {
+  margin-bottom: 2rem;
+
+  .ant-input-group-addon {
+    background-color: #f5f5f5 !important;
+    svg {
+      font-size: 2.1rem;
+    }
+  }
+
+  .ant-input-affix-wrapper {
+    background-color: #f5f5f5;
+
+    &:focus, &:hover, &:focus-within {
+      border: none;
+      box-shadow: none;
+    }
+
+    .ant-input {
+      padding: .75rem;
+      border: none;
+
+      &:focus, &:hover, &:focus-within {
+        border: none;
+        box-shadow: none;
+      }
+    }
+  }
+
+  .ant-input-suffix {
+    button {
+      background-color: $color-highlight;
+    }
+  }
+
+}
+
 .post-wrapper {
   font-family: "Lexend", sans-serif;
   width: 100%;

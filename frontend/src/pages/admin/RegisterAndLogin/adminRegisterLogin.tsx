@@ -49,10 +49,6 @@ const AdminRegisterLogin: React.FC<AdminRegisterLoginProps> = ({ isRegisterPage 
     }
   }
 
-  useEffect(() => { //test
-    console.log("isRegisterPage:", isRegisterPage)
-  }, [isRegisterPage])
-
   return (
     <>
       <div className="darken-layer"></div>

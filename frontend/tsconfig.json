@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "types": ["react", "react-dom", "googlemaps", "markerclustererplus"],
     "jsx": "react",
     "target": "ES6",
     "module": "commonjs",
@@ -17,5 +18,5 @@
     "isolatedModules": true,
     "noEmit": true
   },
-  "include": ["src", "../backend/commonTypes.ts"]
+  "include": ["src", "src/**/*.ts", "src/**/*.d.ts"]
 }

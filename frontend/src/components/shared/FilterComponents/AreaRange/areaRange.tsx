@@ -11,12 +11,14 @@ interface AreaRangeProps {
   label?: string;
   width?: string;
   text?: string;
+  textColor?: string;
   modelDisable?: boolean,
 }
 
 const AreaRange: React.FC<AreaRangeProps> = ({
   label,
   text,
+  textColor='#000',
   width='100%',
   modelDisable 
 }) => {
@@ -66,7 +68,7 @@ const AreaRange: React.FC<AreaRangeProps> = ({
         )}
         <Button
           onClick={() => setIsModalOpen(true)}
-          style={{ width: `${width}` }}
+          style={{ width: `${width}`, color: `${textColor}` }}
         >
           { text }
         </Button>
