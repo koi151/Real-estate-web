@@ -152,7 +152,7 @@ const PriceRange: React.FC<PriceRangeProps> = ({
           style={{width: "90%", boxShadow: "rgba(99, 99, 99, 0.1) 0px 2px 8px 0px", height: "fit-content"}}
           className="mt-5"
         >
-          <div className='price-range__box'>
+          <div className='price-range__box' style={{marginTop: 0}}>
             <Row gutter={16}>              
               <Col span={24} className="d-flex">
                 <Radio.Group 

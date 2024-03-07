@@ -11,6 +11,7 @@ import { IoWarningOutline, IoPricetagOutline, IoBedOutline, IoDocumentTextOutlin
 import { IoMdHeartEmpty } from "react-icons/io";
 import { BsTextareaResize } from "react-icons/bs";
 import { MdOutlineBathroom } from "react-icons/md";
+import ZaloIcon from '../../../assets/images/zalo-seeklogo.svg'
 
 import { PropertyType } from "../../../../../backend/commonTypes";
 
@@ -110,7 +111,7 @@ const PropertyDetail: React.FC = () => {
       ) : (
         <>
           <Row gutter={16} className='post-detail'>
-            <Col span={17}>
+            <Col span={18}>
               <Row gutter={16}>
                 <Col span={24}>
                   <div className='slick-wrapper'>
@@ -310,7 +311,7 @@ const PropertyDetail: React.FC = () => {
                 </Col>
               </Row>
             </Col>
-            <Col span={7}>
+            <Col span={6}>
               <Card className='detail-wrap'>
                 <Space wrap size={16}>
                   <Avatar size='large' icon={<UserOutlined />} />
@@ -327,10 +328,10 @@ const PropertyDetail: React.FC = () => {
                 <Button type="primary" className="detail-wrap__phone">
                   0334 324 434
                 </Button>
-                <Button type="primary" className="detail-wrap__social-view">
-                  Chat through Zalo
+                <Button className="detail-wrap__social">
+                  <img src={ZaloIcon} alt='zalo'></img>Chat through Zalo
                 </Button>
-                <Button type="primary" className="detail-wrap__email-send">
+                <Button className="detail-wrap__email-send">
                   Send email
                 </Button>
               </Card>

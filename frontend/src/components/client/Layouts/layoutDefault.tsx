@@ -1,27 +1,38 @@
 import React from 'react';
-import { Layout, Menu, theme } from 'antd';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Button, Layout, Menu, theme } from 'antd';
+import { Link, Outlet, useLocation } from 'react-router-dom';
+import HeaderLogo from '../../../assets/images/logo-dark.png'
+import { useDispatch } from 'react-redux';
+
+import { setListingType } from '../../../redux/reduxSlices/filtersSlice';
+
+import './layoutDefault.scss'
 
 const { Header, Content, Footer } = Layout;
 
-const menuItems = [
-  {
-    key: 'home',
-    label: 'Home'
-  },
-  {
-    key: 'properties',
-    label: 'Properties'
-  },
-  {
-    key: 'property-categories',
-    label: 'Categories'
-  }
-]
 
 const LayOutDefaultClient: React.FC = () => {
-
   const location = useLocation();
+  const dispatch = useDispatch();
+
+  const menuItems = [
+    {
+      key: '/properties',
+      label: 'Home',
+      action: () => dispatch(setListingType(undefined))
+    },
+    {
+      key: '/properties?listingType=forSale',
+      label: 'Real estate for sale',
+      action: () => dispatch(setListingType('forSale'))
+    },
+    {
+      key: '/properties?listingType=forRent',
+      label: 'Real estate for rent',
+      action: () => dispatch(setListingType('forRent'))
+    }
+  ];
+
   const matchedMenuKey = menuItems.find(item => location.pathname.includes(item.key))?.key;
 
   const {
@@ -29,7 +40,7 @@ const LayOutDefaultClient: React.FC = () => {
   } = theme.useToken();
 
   return (
-    <Layout>
+    <Layout className='client-layout'>
       <Header
         style={{
           position: 'sticky',
@@ -38,16 +49,34 @@ const LayOutDefaultClient: React.FC = () => {
           width: '100%',
           display: 'flex',
           alignItems: 'center',
+          background: "#fff"
         }}
       >
-        <div className="demo-logo" />
-        <Menu
-          theme="dark"
-          mode="horizontal"
-          defaultSelectedKeys={[matchedMenuKey || 'home']}
-          items={menuItems}
-          style={{ flex: 1, minWidth: 0 }}
-        />
+        <div className='menu-wrapper'>
+          <div className='menu-wrapper__left'>
+            <div className='logo-wrapper'>
+              <img className="logo-wrapper--logo" src={HeaderLogo} alt='header logo' />
+            </div>
+            <Menu
+              mode="horizontal"
+              defaultSelectedKeys={[matchedMenuKey || 'home']}
+              style={{ flex: 1, minWidth: 0 }}
+            >
+              {menuItems.map(item => (
+                <Menu.Item key={item.key} onClick={item.action}>
+                  <Link to={item.key}>{item.label}</Link>
+                </Menu.Item>
+              ))}
+            </Menu>
+          </div>
+          <div className='menu-wrapper__right'>
+            <Button className='menu-wrapper__right--create-post'>
+              <Link to='/properties/create'>
+                Create post
+              </Link>
+            </Button>
+          </div>
+        </div>
       </Header>
       <Content style={{ padding: '0 10rem' }}>
         <div
