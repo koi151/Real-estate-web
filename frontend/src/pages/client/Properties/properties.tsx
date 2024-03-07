@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Badge, Breadcrumb, Button, Input, Pagination, 
-         PaginationProps, Skeleton, Tooltip,  message } from 'antd';
+         PaginationProps, Select, Skeleton, Tooltip,  message } from 'antd';
 import { RiSearchLine } from "react-icons/ri";
 import { RootState } from '../../../redux/stores';
 
@@ -19,7 +19,8 @@ import HTMLContent from '../../../components/client/HTMLContent/HTMLContent';
 import FilterBoxSlide from '../../../components/shared/FilterComponents/FilterBoxSlide/filterBoxSlide';
 import PriceRange from '../../../components/shared/FilterComponents/PriceRange/priceRange';
 import AreaRange from '../../../components/shared/FilterComponents/AreaRange/areaRange';
-import { setKeyword } from '../../../redux/reduxSlices/filtersSlice';
+import { setKeyword, setSorting } from '../../../redux/reduxSlices/filtersSlice';
+import { sortingOptionsClient } from '../../../helpers/filterOptions';
 
 import './properties.scss';
 
@@ -144,6 +145,11 @@ const Properties: React.FC = () => {
     return `${location.pathname}${queryString}`;
   };
 
+  const handleSortingChange = (value: string) => {
+    const [sortKey, sortValue] = value.split('-');
+    dispatch(setSorting({ sortKey, sortValue }));
+  };
+
   
   return (
     <>
@@ -172,6 +178,20 @@ const Properties: React.FC = () => {
                     ]}
                   />
                   <h1 className="main-content-title mt-2">Buy and sell real estate nationwide</h1>
+                  <div className='d-flex justify-content-between mt-4'>
+                    <span>Currently have {propertyCount} properties</span>
+                    <div className='sorting-items'>
+                      <Select
+                        placement='bottomLeft'
+                        placeholder="Choose sorting method"
+                        defaultValue={'Sort by default'}
+                        onChange={handleSortingChange}
+                        options={sortingOptionsClient}
+                        className='sorting-items__select'
+                        style={{width: "20rem"}}
+                      />
+                    </div>
+                  </div>
                 </div>  
 
               {error ? (

@@ -68,7 +68,7 @@ export const sortingOptionsAdmin = [
 export const sortingOptionsClient = [
   { label: 'Descending price', value: 'price-desc' },
   { label: 'Ascending price', value: 'price-asc' },
+  { label: 'Descending area', value: 'area-desc' },
+  { label: 'Ascending area', value: 'area-asc' },
   { label: 'Most view', value: 'view-desc' },
-
-  //add new
 ];

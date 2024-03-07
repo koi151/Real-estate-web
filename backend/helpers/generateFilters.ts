@@ -60,12 +60,3 @@ export const generateAreaRangeFilter = (query: any, lengthPath: string, widthPat
     }]
   : [];
 }
-
-// ...(areaRange ? [{
-//   $expr: {
-//     $and: [
-//       { $gte: [{ $multiply: ['$area.propertyWidth', '$area.propertyLength'] }, areaRange[0]] },
-//       { $lte: [{ $multiply: ['$area.propertyWidth', '$area.propertyLength'] }, areaRange[1]] }
-//     ]
-//   }
-// }] : [])

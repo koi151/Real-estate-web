@@ -18,7 +18,7 @@ export const index = async (req: Request, res: Response) => {
       return res.json({
         code: 403,
         message: "Account does not have access rights"
-      })
+      });
     }
 
     const status = req.query.status?.toString() as string | undefined;
@@ -38,7 +38,6 @@ export const index = async (req: Request, res: Response) => {
       ...generateFilterInRange(req.query.priceRange, 'price'),
       ...generateAreaRangeFilter(req.query.areaRange, 'area.propertyLength', 'area.propertyWidth'),
     };
-    
 
     // Searching
     const searchObject = searchHelper(req.query);
@@ -47,13 +46,13 @@ export const index = async (req: Request, res: Response) => {
     if (regex) {
       const orClause = { $or: [{ title: regex }, { slug: slugRegex }] };
       Object.assign(find, orClause);
-    }    
+    }
 
     // Pagination
     const countRecords = await Property.countDocuments(find);
     let paginationObject = paginationHelper(
       {
-        currentPage: typeof(req.query.currentPage) == "string" ? parseInt(req.query.currentPage) : 1,
+        currentPage: typeof req.query.currentPage == "string" ? parseInt(req.query.currentPage) : 1,
         limitItems: pageSize,
         skip: null, // helper return skip, totalPage value, do not change
         totalPage: null,
@@ -68,50 +67,68 @@ export const index = async (req: Request, res: Response) => {
     } 
     
     const sortingQuery: SortingQuery = {};
-    
-    if (req.query.sortKey && req.query.sortValue) {
+
+    if (req.query.sortKey && req.query.sortValue && req.query.sortKey !== 'area') {
       sortingQuery[req.query.sortKey.toString()] = req.query.sortValue.toString() as 'asc' | 'desc';
     }
 
-    console.dir(find, {depth: null})
+    let properties = [];
+    let propertyCount: number = 0;
+    
+    // Calculate area and add it to sorting query
+    if (req.query.sortKey === 'area') {
+      const areaSortValue = sortingQuery['area'];
+    
+      const areaSortingPipeline: any[] = [
+        {
+          $addFields: {
+            newArea: { $multiply: ['$area.propertyWidth', '$area.propertyLength'] }
+          }
+        },
+        { $sort: { area: areaSortValue === 'asc' ? 1 : -1 } }
+      ];
 
-    const properties = await Property.find(find)
-      .sort(sortingQuery || '')
-      .limit(paginationObject.limitItems || 0)
-      .skip(paginationObject.skip || 0);
+      // console.dir(areaSortingPipeline, {depth: null})
+      
+      properties = await Property.aggregate([
+        { $match: find },
+        ...areaSortingPipeline,
+        { $limit: paginationObject.limitItems || 0 },
+        { $skip: paginationObject.skip || 0 }
+      ]);
 
-    const propertyCount = await Property.countDocuments(find);
-
-    if (properties.length > 0) {
-      res.status(200).json({
-        code: 200,
-        message: 'Success',
-        properties: properties,
-        paginationObject: paginationObject,
-        propertyCount: propertyCount,
-        permissions: {
-          propertiesView: res.locals.currentUser.permissions.includes('properties_view'),
-          propertiesEdit: res.locals.currentUser.permissions.includes('properties_edit'),
-          propertiesCreate: res.locals.currentUser.permissions.includes('properties_create'),
-          propertiesDelete: res.locals.currentUser.permissions.includes('properties_delete')
-        }
-      });
+    
+      // Count documents after sorting
+      const countResult = await Property.aggregate([
+        { $match: find },
+        { $count: 'count' }
+      ]);
+      propertyCount = countResult.length > 0 ? countResult[0].count : 0;
 
     } else {
-      res.json({
-        code: 200,
-        message: 'No properties found',
-        properties: properties,
-        paginationObject: paginationObject,
-        propertyCount: propertyCount,
-        permissions: {
-          propertiesView: res.locals.currentUser.permissions.includes('properties_view'),
-          propertiesEdit: res.locals.currentUser.permissions.includes('properties_edit'),
-          propertiesCreate: res.locals.currentUser.permissions.includes('properties_create'),
-          propertiesDelete: res.locals.currentUser.permissions.includes('properties_delete')
-        }
-      });
+      // If sorting by other fields
+      properties = await Property.find(find)
+        .sort(sortingQuery || '')
+        .limit(paginationObject.limitItems || 0)
+        .skip(paginationObject.skip || 0);
+ 
+      propertyCount = await Property.countDocuments(find);
     }
+    
+
+    res.status(200).json({
+      code: 200,
+      message: 'Success',
+      properties: properties,
+      paginationObject: paginationObject,
+      propertyCount: propertyCount,
+      permissions: {
+        propertiesView: res.locals.currentUser.permissions.includes('properties_view'),
+        propertiesEdit: res.locals.currentUser.permissions.includes('properties_edit'),
+        propertiesCreate: res.locals.currentUser.permissions.includes('properties_create'),
+        propertiesDelete: res.locals.currentUser.permissions.includes('properties_delete')
+      }
+    });
 
   } catch (error) {
     console.log('Error occurred while fetching properties data:', error);
@@ -120,7 +137,8 @@ export const index = async (req: Request, res: Response) => {
       message: 'Internal Server Error'
     });
   }
-}
+};
+
 
 // [GET] /admin/properties/detail/:propertyId
 export const detail = async (req: Request, res: Response) => {
