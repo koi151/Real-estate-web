@@ -1,22 +1,41 @@
 @import '../../../../App.scss';
 
-.slick-wrapper {
-  position: sticky;
-  top: 6.35rem;
+.slide-wrapper {
   display: flex;
   align-items: center;
-  width: 100%;
-  z-index: 99;
-  background-color: #fff;
-  padding: 1.5rem 0;
+  justify-content: space-between;
 
-  .slick {
-    width: 80%;
-    margin-left: 3rem;
-    .slick-arrow {
-      &::before {
-        color: $color-highlight !important;
+  &__slick-wrapper {
+    position: sticky;
+    top: 6.35rem;
+    display: flex;
+    align-items: center;
+    width: 70%;
+    z-index: 99;
+    background-color: #fff;
+    padding-bottom: 1.5rem;
+  
+    .slick {
+      width: 100%;
+      margin-left: 3rem;
+      .slick-arrow {
+        &::before {
+          color: $color-highlight !important;
+        }
       }
+    }
+  } 
+
+  &__sorting-items {
+    width: 100%;
+    margin-left: 7rem;
+
+    .ant-select {
+      width: 90%;
+    }
+
+    &--label {
+      margin-bottom: .5rem;
     }
   }
 }

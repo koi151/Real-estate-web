@@ -18,6 +18,7 @@ import { setListingType, setKeyword, setStatus, setSorting,
 import './filterBox.scss';
 import PriceRange from '../../shared/FilterComponents/PriceRange/priceRange';
 import CategoryTree from '../../shared/FilterComponents/CategoryTree/categoryTree';
+import { sortingOptionsAdmin } from '../../../helpers/filterOptions';
 
 interface FilterBoxProps {
   statusFilter?: boolean;
@@ -65,15 +66,6 @@ const FilterBox: React.FC<FilterBoxProps> = ({
       message.error("Error occurred, can not do multiple updates", 3);
     }
   };
-
-  const sortingOptions = [
-    { label: 'Descending position', value: 'position-desc' },
-    { label: 'Ascending position', value: 'position-asc' },
-    { label: 'Descending price', value: 'price-desc' },
-    { label: 'Ascending price', value: 'price-asc' },
-    { label: 'Descending view', value: 'view-desc' },
-    { label: 'Ascending view', value: 'view-asc' },
-  ];
 
   const multipleChangeOptions = [
     { label: 'Active status', value: 'active' },
@@ -158,7 +150,7 @@ const FilterBox: React.FC<FilterBoxProps> = ({
                 placeholder="Choose sorting method"
                 defaultValue={'position-desc'}
                 onChange={handleSortingChange}
-                options={sortingOptions}
+                options={sortingOptionsAdmin}
                 className='sorting-items__select'
               />
             </div>

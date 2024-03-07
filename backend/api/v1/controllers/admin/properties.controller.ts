@@ -6,7 +6,7 @@ import { searchHelper } from "../../../../helpers/search";
 import { paginationHelper } from '../../../../helpers/pagination';
 import { isValidStatus } from "../../../../helpers/dataTypeCheck";
 
-import { PropertyType, ValidMultiChangeType } from "../../../../commonTypes";
+import { FindCriteria, PropertyType, ValidMultiChangeType } from "../../../../commonTypes";
 import { processImagesData, processPropertyData } from "../../../../helpers/processData";
 import { generateAreaRangeFilter, generateFilterInRange, generateRoomFilter  } from "../../../../helpers/generateFilters";
 
@@ -21,36 +21,22 @@ export const index = async (req: Request, res: Response) => {
       })
     }
 
-    interface Find {
-      deleted?: boolean | null,
-      listingType?: string | null,
-      price?: { $gte: number; $lte: number } | null;
-      status?: string | null,
-      'propertyDetails.propertyCategory'?: string | null;
-      title?: RegExp | null,
-      slug?: RegExp | null
-    }
-    
-    const status: string | undefined = req.query.status?.toString();
-    const category: string | undefined = req.query.category?.toString();
-    const pageSize: number | null = req.query.pageSize ? parseInt(req.query.pageSize as string) : null;
-    const listingType: string | undefined = req.query.listingType?.toString();
-    const direction: string | undefined = req.query.direction?.toString();    
-  
-    const find = {
-      $and: [
-        { deleted: false },
-        ...(status ? [{ status }] : []),
-        ...(listingType ? [{ listingType }] : []),
-        ...(direction ? [{ 'propertyDetails.houseDirection': direction }] : []),
-        ...(category ? [{ 'propertyDetails.propertyCategory': category }] : []),
-    
-        ...generateRoomFilter(req.query.bedrooms, 'bedrooms'),
-        ...generateRoomFilter(req.query.bathrooms, 'bathrooms'),
+    const status = req.query.status?.toString() as string | undefined;
+    const category = req.query.category?.toString() as string | undefined;
+    const pageSize = req.query.pageSize ? parseInt(req.query.pageSize as string, 10) : null;
+    const listingType = req.query.listingType?.toString() as string | undefined;
+    const direction = req.query.direction?.toString() as string | undefined;
 
-        ...generateFilterInRange(req.query.priceRange, 'price'),
-        ...generateAreaRangeFilter(req.query.areaRange, 'area.propertyLength', 'area.propertyWidth')
-      ]
+    const find: FindCriteria = {
+      deleted: false,
+      ...(status && { status }),
+      ...(listingType && { listingType }),
+      ...(direction && { propertyDetails: { houseDirection: direction } }),
+      ...(category && { propertyDetails: { propertyCategory: category } }),
+      ...generateRoomFilter(req.query.bedrooms, 'bedrooms'),
+      ...generateRoomFilter(req.query.bathrooms, 'bathrooms'),
+      ...generateFilterInRange(req.query.priceRange, 'price'),
+      ...generateAreaRangeFilter(req.query.areaRange, 'area.propertyLength', 'area.propertyWidth'),
     };
     
 

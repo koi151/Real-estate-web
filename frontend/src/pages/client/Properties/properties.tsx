@@ -157,7 +157,7 @@ const Properties: React.FC = () => {
             suffix={<Button type="primary">Search</Button>}
 
           />
-          <FilterBoxSlide />
+            <FilterBoxSlide />
             
             <div className='line' style={{marginTop: "1.75rem"}} /> 
 

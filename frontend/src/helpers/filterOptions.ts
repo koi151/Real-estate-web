@@ -55,3 +55,20 @@ export const directionValues = [
   { name: "Northwest", value: 1 },
   { name: "Southwest", value: 1 }
 ];
+
+export const sortingOptionsAdmin = [
+  { label: 'Descending position', value: 'position-desc' },
+  { label: 'Ascending position', value: 'position-asc' },
+  { label: 'Descending price', value: 'price-desc' },
+  { label: 'Ascending price', value: 'price-asc' },
+  { label: 'Descending view', value: 'view-desc' },
+  { label: 'Ascending view', value: 'view-asc' },
+];
+
+export const sortingOptionsClient = [
+  { label: 'Descending price', value: 'price-desc' },
+  { label: 'Ascending price', value: 'price-asc' },
+  { label: 'Most view', value: 'view-desc' },
+
+  //add new
+];

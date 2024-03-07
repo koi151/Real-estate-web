@@ -147,3 +147,25 @@ export interface GetPropertiesOptions {
   pageSize?: number;
   currentPage?: number;
 }
+
+
+//// PROPERTIES FILTERING 
+interface PropertyDetailsFilter {
+  propertyCategory?: string;
+  houseDirection?: string;
+}
+
+interface PriceRange {
+  $gte?: number;
+  $lte?: number;
+}
+
+export interface FindCriteria {
+  deleted?: boolean;
+  listingType?: string;
+  price?: PriceRange;
+  status?: string;
+  propertyDetails?: PropertyDetailsFilter;
+  title?: RegExp;
+  slug?: RegExp;
+}
