@@ -63,6 +63,7 @@ export const sortingOptionsAdmin = [
   { label: 'Ascending price', value: 'price-asc' },
   { label: 'Descending view', value: 'view-desc' },
   { label: 'Ascending view', value: 'view-asc' },
+  { label: 'Newest', value: 'createdAt-desc' },
 ];
 
 export const sortingOptionsClient = [
@@ -71,4 +72,5 @@ export const sortingOptionsClient = [
   { label: 'Descending area', value: 'area-desc' },
   { label: 'Ascending area', value: 'area-asc' },
   { label: 'Most view', value: 'view-desc' },
+  { label: 'Newest', value: 'createdAt-desc' },
 ];

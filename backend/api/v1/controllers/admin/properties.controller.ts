@@ -31,8 +31,8 @@ export const index = async (req: Request, res: Response) => {
       deleted: false,
       ...(status && { status }),
       ...(listingType && { listingType }),
-      ...(direction && { propertyDetails: { houseDirection: direction } }),
-      ...(category && { propertyDetails: { propertyCategory: category } }),
+      ...(direction && {  "propertyDetails.houseDirection": direction  }),
+      ...(category && { "propertyDetails.propertyCategory": category }),
       ...generateRoomFilter(req.query.bedrooms, 'bedrooms'),
       ...generateRoomFilter(req.query.bathrooms, 'bathrooms'),
       ...generateFilterInRange(req.query.priceRange, 'price'),
@@ -68,7 +68,7 @@ export const index = async (req: Request, res: Response) => {
     
     const sortingQuery: SortingQuery = {};
 
-    if (req.query.sortKey && req.query.sortValue && req.query.sortKey !== 'area') {
+    if (req.query.sortKey && req.query.sortValue ) { //&& req.query.sortKey !== 'area'
       sortingQuery[req.query.sortKey.toString()] = req.query.sortValue.toString() as 'asc' | 'desc';
     }
 
@@ -76,44 +76,48 @@ export const index = async (req: Request, res: Response) => {
     let propertyCount: number = 0;
     
     // Calculate area and add it to sorting query
-    if (req.query.sortKey === 'area') {
-      const areaSortValue = sortingQuery['area'];
+    // if (req.query.sortKey === 'area') {
+    //   const areaSortValue = sortingQuery['area'];
     
-      const areaSortingPipeline: any[] = [
-        {
-          $addFields: {
-            newArea: { $multiply: ['$area.propertyWidth', '$area.propertyLength'] }
-          }
-        },
-        { $sort: { area: areaSortValue === 'asc' ? 1 : -1 } }
-      ];
-
-      // console.dir(areaSortingPipeline, {depth: null})
+    //   const areaSortingPipeline: any[] = [
+    //     {
+    //       $addFields: {
+    //         newArea: { $multiply: ['$area.propertyWidth', '$area.propertyLength'] }
+    //       }
+    //     },
+    //     { $sort: { area: areaSortValue === 'asc' ? 1 : -1 } }
+    //   ];
       
-      properties = await Property.aggregate([
-        { $match: find },
-        ...areaSortingPipeline,
-        { $limit: paginationObject.limitItems || 0 },
-        { $skip: paginationObject.skip || 0 }
-      ]);
+    //   properties = await Property.aggregate([
+    //     { $match: find },
+    //     ...areaSortingPipeline,
+    //     { $limit: paginationObject.limitItems || 0 },
+    //     { $skip: paginationObject.skip || 0 }
+    //   ]);
 
+    //   console.dir(areaSortingPipeline, {depth: null})
     
-      // Count documents after sorting
-      const countResult = await Property.aggregate([
-        { $match: find },
-        { $count: 'count' }
-      ]);
-      propertyCount = countResult.length > 0 ? countResult[0].count : 0;
+    //   // Count documents after sorting
+    //   const countResult = await Property.aggregate([
+    //     { $match: find },
+    //     { $count: 'count' }
+    //   ]);
+    //   propertyCount = countResult.length > 0 ? countResult[0].count : 0;
 
-    } else {
-      // If sorting by other fields
+    // } else {
+
+      console.log("sortingQuery:", sortingQuery)
+
+
+      console.dir(find, {depth: null})
+
       properties = await Property.find(find)
         .sort(sortingQuery || '')
         .limit(paginationObject.limitItems || 0)
         .skip(paginationObject.skip || 0);
  
       propertyCount = await Property.countDocuments(find);
-    }
+    // }
     
 
     res.status(200).json({
@@ -138,7 +142,6 @@ export const index = async (req: Request, res: Response) => {
     });
   }
 };
-
 
 // [GET] /admin/properties/detail/:propertyId
 export const detail = async (req: Request, res: Response) => {

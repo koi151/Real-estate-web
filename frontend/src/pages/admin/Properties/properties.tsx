@@ -21,6 +21,7 @@ import NoPermission from '../../../components/admin/NoPermission/noPermission';
 import { RootState } from '../../../redux/stores';
 import { setPermissions } from '../../../redux/reduxSlices/permissionsSlice';
 import './properties.scss';
+import FilterBoxSlide from '../../../components/shared/FilterComponents/FilterBoxSlide/filterBoxSlide';
 
 const Properties: React.FC = () => {
 

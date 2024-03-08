@@ -57,6 +57,10 @@ const CategoryTree: React.FC<CategoryTreeProps> = ({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  useEffect(() => { // testing
+    console.log("categoryTree:", categoryTree)
+  }, [categoryTree])
+
   return (
     <div className='category-filter'>
       {label && (
@@ -70,7 +74,7 @@ const CategoryTree: React.FC<CategoryTreeProps> = ({
         placeholder={text}
         className="custom-tree-select"
         treeDefaultExpandAll
-        onChange={(selectedNode: any) => dispatch(setCategory(selectedNode.label))}
+        onChange={(selectedNode: any) => dispatch(setCategory(selectedNode.value))}
         labelInValue
         treeLine
       />

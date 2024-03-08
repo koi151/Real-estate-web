@@ -195,6 +195,9 @@ const FilterBox: React.FC<FilterBoxProps> = ({
               Clear filters
             </Button>
           </Col>
+          <Col span={24}>
+            {/* <FilterBoxSlide slickWidth="90%" /> */}
+          </Col>
         </Row>
       </div>
     </>

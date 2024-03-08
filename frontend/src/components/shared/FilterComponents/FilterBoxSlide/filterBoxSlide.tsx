@@ -11,18 +11,22 @@ import Direction from '../Direction/direction';
 import RoomFilter from '../Rooms/roomFilter';
 
 
-const FilterBoxSlide: React.FC = () => {
+interface FilterBoxSlideProps {
+  slickWidth?: string
+}
+
+const FilterBoxSlide: React.FC<FilterBoxSlideProps> = ({slickWidth = "70%"}) => {
 
   useEffect(() => {
     $('.slick').slick({
       infinite: true,
-      slidesToShow: 5,
+      slidesToShow: 4,
       slidesToScroll: 1
     });
   }, []);
 
   return (
-    <div className='slick-wrapper'>
+    <div className='slick-wrapper' style={{width: slickWidth}}>
       <div className="slick">
         <div className="text-center">
           <CategoryTree width='95%' text='Category' />

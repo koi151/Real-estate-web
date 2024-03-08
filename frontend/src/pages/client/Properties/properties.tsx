@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Badge, Breadcrumb, Button, Input, Pagination, 
-         PaginationProps, Select, Skeleton, Tooltip,  message } from 'antd';
+import { Badge, Breadcrumb, Button, Col, Input, Pagination, 
+         PaginationProps, Row, Select, Skeleton, Tooltip,  message } from 'antd';
 import { RiSearchLine } from "react-icons/ri";
 import { RootState } from '../../../redux/stores';
 
@@ -208,7 +208,7 @@ const Properties: React.FC = () => {
                             onClick={() => navigate(`/properties/detail/${property._id}`)}
                             key={index}
                           >
-                            {property.postType === 'premium' || property.postType === 'exclusive' ? (
+                            {property.postType === 'premium'? (
                               <Badge.Ribbon 
                                 text={
                                   <Tooltip title={property.postType ? `${property.postType.charAt(0).toUpperCase() + property.postType.slice(1)} post` : ''}>
@@ -311,6 +311,17 @@ const Properties: React.FC = () => {
                                 </span>
                               )}
                             </div>
+
+                            <div className='line' style={{width: "100%"}}></div>
+                              <Row>
+                                <Col span={24}>
+                                  <div className='lower-content'>
+                                    <div className='lower-content--date-created'>
+                                      Created at: {property.createdAt ? new Date(property.createdAt).toLocaleString() : 'No data'}
+                                    </div>
+                                  </div>
+                                </Col>
+                              </Row>
                           </div>
                         );
                       })
@@ -338,6 +349,7 @@ const Properties: React.FC = () => {
             onChange={onPageChange}
             defaultCurrent={paginationObj?.currentPage || 1}
             total={propertyCount}
+            className='mt-5'
           />
         </>
       {/* ) : (

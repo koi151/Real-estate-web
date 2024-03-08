@@ -23,7 +23,7 @@ router.post(
 router.patch(
   '/edit/:propertyId', 
   upload.fields([{ name: 'images', maxCount: 8 }]),
-  validate.createProperty,
+  // validate.createProperty,
   uploadCloud.uploadFields,
   controller.editPatch
 );

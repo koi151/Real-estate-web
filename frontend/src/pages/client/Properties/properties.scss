@@ -169,4 +169,19 @@ $image-primary-wrap-max-height: 26rem;
       color: $grey-text;
     }
   }
+
+  .lower-content {
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+
+    &--date-created {
+      font-size: 1.3rem;
+      color: #999;
+      font-weight: 600;
+      font-family: $open-sans;
+      margin-right: 4rem;
+    }
+  }
 }
+
