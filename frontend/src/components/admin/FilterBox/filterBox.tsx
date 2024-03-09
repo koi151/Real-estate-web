@@ -181,6 +181,7 @@ const FilterBox: React.FC<FilterBoxProps> = ({
           {categoryFilter && (
             <Col xxl={8} xl={8} lg={8}>
               <CategoryTree 
+                userType='admin'
                 label='Property category:' 
                 text='None by default'
                 width='80%'

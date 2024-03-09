@@ -114,7 +114,7 @@ const PropertyDetail: React.FC = () => {
             <Col span={18}>
               <Row gutter={16}>
                 <Col span={24}>
-                  <div className='slick-wrapper'>
+                  <div className='slick-wrapper' style={{width: "85%"}}>
                     <div className="slick">
                       {property?.images?.map((imageUrl, index) => (
                         <Image

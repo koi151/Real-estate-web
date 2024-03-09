@@ -34,7 +34,7 @@ const LayOutDefault: React.FC = () => {
               <span className="nav-right__icon-notify">
                 {/* <MiniNotification /> */}
               </span>
-              <AccountHeader />
+              <AccountHeader userType='admin' navigateTo='/admin/auth/login'/>
             </ul>
           </div>
         </header>

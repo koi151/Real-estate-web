@@ -1,0 +1,86 @@
+$color-fade: #666;
+
+$z-index-layer: 999;
+
+.darken-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: $z-index-layer;
+}
+
+.box-wrapper {
+  top: 0;
+  left: 0;
+  background-image: url('https://preview.colorlib.com/theme/bootstrap/login-form-20/images/bg.jpg.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh;
+  width: 100vw;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  z-index: calc($z-index-layer + 1);
+
+  .box-sep {
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    width: 70%;
+    height: 80%;
+    position: relative;
+    z-index: 21;
+
+    &__left {
+      background-image: url('https://preview.colorlib.com/theme/bootstrap/login-form-20/images/bg.jpg.webp');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      width: 50%;
+    }
+
+    &__right {
+      background: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      width: 50%;
+      padding: 2rem;
+
+      &--title {
+        font-size: 2.6rem;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+
+      &--welcome-text {
+        color: $color-fade;
+        margin-top: 1.8rem;
+        font-size: 1.5rem;
+      }
+    }
+
+    form {
+      margin-top: 3rem;
+      width: 90%;
+    }
+  }
+  
+  .line {
+    height: 2px;
+    background-color: #ddd;
+    width: 5rem;
+  }
+  .redirect-page {
+    margin-left: .5rem; 
+    font-size: 1.4rem; 
+    color: #000
+  }
+}

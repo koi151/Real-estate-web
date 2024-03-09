@@ -1,7 +1,7 @@
 import React from "react";
 import { Menu } from "antd";
 import { DashboardOutlined, SettingOutlined, LockOutlined, AuditOutlined, 
-         InboxOutlined, UsergroupAddOutlined } from '@ant-design/icons';
+  InboxOutlined, UsergroupAddOutlined } from '@ant-design/icons';
 import { Link, useLocation } from "react-router-dom";
 
 import './siderMenu.scss';
@@ -23,7 +23,6 @@ const SiderMenu: React.FC = () => {
     { key: 'roles', label: <Link to={'/admin/roles'}>Roles</Link>, icon: <AuditOutlined className="sider-icon" /> },
     { key: 'accounts', label: <Link to={'/admin/accounts'}>Accounts</Link>, icon: <UsergroupAddOutlined className="sider-icon" />},
     { key: 'authentication', label: 'Authentication', icon: <LockOutlined className="sider-icon" />, children: [] },
-
   ];
 
   const menuItems = items.map(item => ({

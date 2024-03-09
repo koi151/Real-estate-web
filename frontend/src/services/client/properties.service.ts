@@ -1,7 +1,7 @@
 import createApi from '../api.service';
 import { GetPropertiesOptions } from '../../../../backend/commonTypes';
 
-class PropertiesServiceAdmin {
+class PropertiesServiceClient {
   private api: any; 
 
   constructor(baseUrl = "http://localhost:3000/api/v1/properties") {
@@ -9,15 +9,15 @@ class PropertiesServiceAdmin {
   }
 
   private getAuthHeaders() {
-    const accessToken = localStorage.getItem('accessToken');
+    const clientAccessToken = localStorage.getItem('clientAccessToken');
     
-    if (!accessToken) {
+    if (!clientAccessToken) {
       console.log("Access token not found");
       throw new Error('Unauthorized');
     }
     return {
       headers: {
-        Authorization: `Bearer ${accessToken}`
+        Authorization: `Bearer ${clientAccessToken}`
       }
     };
   }
@@ -29,6 +29,7 @@ class PropertiesServiceAdmin {
 
     } catch (err: any) {
       console.log('Error occurred in handleRequest:', err)
+      
       if (err.message === 'Access token not found') {
         throw new Error('Unauthorized')
 
@@ -36,14 +37,14 @@ class PropertiesServiceAdmin {
 
         // Attempt to refresh the token
         try {
-          const refreshToken = localStorage.getItem('refreshToken');
-          if (!refreshToken) {
+          const clientRefreshToken = localStorage.getItem('clientRefreshToken');
+          if (!clientRefreshToken) {
             throw new Error('Refresh token not found in localStorage');
           }
   
-          const refreshResponse = await this.api.post('/refresh', { refreshToken });
-          const newAccessToken = refreshResponse.data.accessToken;
-          localStorage.setItem('accessToken', newAccessToken);
+          const refreshResponse = await this.api.post('/refresh', { clientRefreshToken });
+          const newClientAccessToken = refreshResponse.data.clientAccessToken;
+          localStorage.setItem('clientAccessToken', newClientAccessToken);
   
           return await this.handleRequest(request);
 
@@ -70,47 +71,8 @@ class PropertiesServiceAdmin {
     const request = this.api.get(`/detail/${id}`, this.getAuthHeaders());
     return this.handleRequest(request);
   }
-
-  // async changePropertyStatus(id: string, status: ValidStatus) {
-  //   const request = this.api.patch(`/change-status/${status}/${id}`, {}, this.getAuthHeaders());
-  //   return this.handleRequest(request);
-  // }
-
-  // async multiChangeProperties(ids: string[], type: ValidMultiChangeType) {
-  //   const request = this.api.patch(`/multi-change`, { ids, type }, this.getAuthHeaders());
-  //   return this.handleRequest(request);
-  // }
-
-  // async createProperty(property: any) {
-  //   const authHeaders = this.getAuthHeaders();
-  //   const config = {
-  //     headers: {
-  //       ...authHeaders.headers,
-  //       'Content-Type': 'multipart/form-data',
-  //     }
-  //   };
-  //   const request = this.api.post('/create', property, config);
-  //   return this.handleRequest(request);
-  // }
-
-  // async updateProperty(property: any, id: string) {
-  //   const authHeaders = this.getAuthHeaders();
-  //   const config = {
-  //     headers: {
-  //       ...authHeaders.headers,
-  //       'Content-Type': 'multipart/form-data',
-  //     },
-  //   };
-  //   const request = this.api.patch(`/edit/${id}`, property, config);
-  //   return this.handleRequest(request);
-  // }
-
-  // async deleteProperty(id: string) {
-  //   const request = this.api.delete(`/delete/${id}`, this.getAuthHeaders());
-  //   return this.handleRequest(request);
-  // }
 }
 
-const propertiesServiceClient = new PropertiesServiceAdmin();
+const propertiesServiceClient = new PropertiesServiceClient();
 
 export default propertiesServiceClient;

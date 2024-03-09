@@ -8,7 +8,12 @@ import { setAvatar } from "../../../redux/reduxSlices/userSlice";
 
 import './accountHeader.scss'
 
-const AccountHeader: React.FC = () => {
+interface AccountHeaderProps {
+  userType: 'admin' | 'client';
+  navigateTo: string;
+}
+
+const AccountHeader: React.FC<AccountHeaderProps> = ({ userType, navigateTo }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -18,7 +23,7 @@ const AccountHeader: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userId = localStorage.getItem('adminUserId');
+        const userId = localStorage.getItem(`${userType}UserId`);
         if (userId) {
           try {
             const response = await adminAccountsService.getAvatar(userId);
@@ -50,12 +55,19 @@ const AccountHeader: React.FC = () => {
 
   const handleProfileClick = () => {
     try {
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('adminUserId');
+      if (userType === 'admin') {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+      } else {
+        localStorage.removeItem('clientAccessToken');
+        localStorage.removeItem('clientRefreshToken');
+      }
+
+      localStorage.removeItem(`${userType}UserId`);
+
 
       message.success('Account log out successful!', 3);
-      navigate('/admin/auth/login');
+      navigate(navigateTo);
 
     } catch (err) {
       console.log("Error occurred:", err);

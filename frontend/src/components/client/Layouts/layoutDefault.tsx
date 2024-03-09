@@ -7,6 +7,7 @@ import { useDispatch } from 'react-redux';
 import { setListingType } from '../../../redux/reduxSlices/filtersSlice';
 
 import './layoutDefault.scss'
+import AccountHeader from '../../admin/AccountHeader/accountHeader';
 
 const { Header, Content, Footer } = Layout;
 
@@ -70,6 +71,7 @@ const LayOutDefaultClient: React.FC = () => {
             </Menu>
           </div>
           <div className='menu-wrapper__right'>
+            <AccountHeader userType='client' navigateTo='/auth/login'/>
             <Button className='menu-wrapper__right--create-post'>
               <Link to='/properties/create'>
                 Create post

@@ -3,7 +3,10 @@ import { DefaultOptionType } from "antd/es/select";
 import React, { useEffect, useState } from "react";
 import { setCategory, setIsLoading } from "../../../../redux/reduxSlices/filtersSlice";
 import { useDispatch } from "react-redux";
+
 import propertyCategoriesService from "../../../../services/admin/property-categories.service";
+import propertyCategoriesServiceClient from "../../../../services/client/property-categories.service";
+
 import { useNavigate } from "react-router-dom";
 
 import './categoryTree.scss'
@@ -12,12 +15,14 @@ interface CategoryTreeProps {
   label?: string;
   width?: string;
   text?: string;
+  userType: "admin" | "client"
 }
 
 const CategoryTree: React.FC<CategoryTreeProps> = ({ 
   label,
   text,
   width = "100%", 
+  userType
 }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -32,7 +37,12 @@ const CategoryTree: React.FC<CategoryTreeProps> = ({
         dispatch(setIsLoading(true));
 
         // Fetch categories data
-        const categoryResponse = await propertyCategoriesService.getCategoryTree();
+        let categoryResponse: any;
+        if (userType === 'admin')
+          categoryResponse = await propertyCategoriesService.getCategoryTree();
+        else 
+          categoryResponse = await propertyCategoriesServiceClient.getCategoryTree();
+      
         if (categoryResponse.code === 200) {
           setCategoryTree(categoryResponse.categoryTree);
         } else {
@@ -43,7 +53,7 @@ const CategoryTree: React.FC<CategoryTreeProps> = ({
       } catch (err: any) {
         if (err.response && err.response.status === 401) {
           message.error('Unauthorized - Please log in to access this feature.', 3);
-          navigate('/admin/auth/login');
+          navigate(`${userType === 'admin' && userType}/auth/login`);
         } else {
           message.error('Error occurred while fetching data', 2);
           console.log('Error occurred:', err);
@@ -56,10 +66,6 @@ const CategoryTree: React.FC<CategoryTreeProps> = ({
     fetchData();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-  useEffect(() => { // testing
-    console.log("categoryTree:", categoryTree)
-  }, [categoryTree])
 
   return (
     <div className='category-filter'>

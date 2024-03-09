@@ -92,8 +92,24 @@ export interface AdminAccountType {
   roleTitle?: string;
 }
 
-// ADMIN ACCOUNT
-export interface AdminAccountLogType {
+// CLIENT ACCOUNT
+export interface ClientAccountType {
+  _id?: string;
+  fullName: string,
+  password: string,
+  token?: string,
+  email?: string,
+  phone?: string,
+  avatar?: string,
+  status?: ValidStatus,
+  createdAt?: Date;
+  expireAt?: Date;
+  deleted?: boolean;
+  roleTitle?: string;
+}
+
+// ACCOUNT
+export interface AccountLogType {
   email: string,
   password: string,
 }

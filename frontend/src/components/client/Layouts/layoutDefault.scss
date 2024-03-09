@@ -38,8 +38,10 @@ $header-left-side-width: 85%;
     }
 
     &__right {
+      display: flex;
       width: calc(100% - $header-left-side-width);
       justify-content: flex-end;
+      align-items: center;
 
       &--create-post {
         a {

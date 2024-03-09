@@ -13,9 +13,10 @@ import RoomFilter from '../Rooms/roomFilter';
 
 interface FilterBoxSlideProps {
   slickWidth?: string
+  userType: 'admin' | 'client',
 }
 
-const FilterBoxSlide: React.FC<FilterBoxSlideProps> = ({slickWidth = "70%"}) => {
+const FilterBoxSlide: React.FC<FilterBoxSlideProps> = ({slickWidth = "100%", userType}) => {
 
   useEffect(() => {
     $('.slick').slick({
@@ -26,10 +27,10 @@ const FilterBoxSlide: React.FC<FilterBoxSlideProps> = ({slickWidth = "70%"}) => 
   }, []);
 
   return (
-    <div className='slick-wrapper' style={{width: slickWidth}}>
+    <div className='slick-wrapper' style={{ width: `${slickWidth}` }}>
       <div className="slick">
         <div className="text-center">
-          <CategoryTree width='95%' text='Category' />
+          <CategoryTree width='95%' text='Category' userType={userType} />
         </div>
         <PriceRange width='95%' text='Price range' textColor='#999'/>
         <AreaRange width='95%' text='Area range' textColor='#999'/>

@@ -2,8 +2,8 @@ import { Request, Response } from "express";
 import bcrypt from 'bcrypt';
 
 import AdminAccount from "../../models/adminAccount.model";
-import { processAdminAccountLogData } from "../../../../helpers/processData";
-import { AdminAccountLogType, AdminAccountType } from "../../../../commonTypes";
+import { processAccountLogData } from "../../../../helpers/processData";
+import { AccountLogType, AdminAccountType } from "../../../../commonTypes";
 import { generateRandomString } from "../../../../helpers/generateString";
 import { decodeToken, generateToken } from "../../../../helpers/auth.methods";
 import Role from "../../models/roles.model";
@@ -11,7 +11,7 @@ import Role from "../../models/roles.model";
 // [POST] /admin/auth/login
 export const loginPost = async (req: Request, res: Response) => {
   try {
-    const userInfo: AdminAccountLogType = await processAdminAccountLogData(req);
+    const userInfo: AccountLogType = await processAccountLogData(req);
 
     const user: AdminAccountType = await AdminAccount.findOne({ 
       email: userInfo.email,
@@ -117,7 +117,6 @@ export const refreshToken = async (req: Request, res: Response) => {
 
 	// Get access token from header
 	const accessTokenFromHeader = req.headers.authorization;
-  console.log("accessTokenFromHeader", accessTokenFromHeader);
 
 	if (!accessTokenFromHeader) {
 		return res.status(400).json({
@@ -128,7 +127,6 @@ export const refreshToken = async (req: Request, res: Response) => {
 
 	// Get refresh token from body
 	const refreshTokenFromBody = req.body.refreshToken;
-  console.log("refreshTokenFromBody", refreshTokenFromBody);
 
 	if (!refreshTokenFromBody) {
 		return res.status(400).json({
@@ -148,8 +146,6 @@ export const refreshToken = async (req: Request, res: Response) => {
 		accessTokenFromHeader,
 		accessTokenSecret,
 	);
-  console.log("decoded", decoded);
-
 
 	if (!decoded) {
 		return res.status(400).json({
@@ -165,11 +161,11 @@ export const refreshToken = async (req: Request, res: Response) => {
     _id: id
   });
 	if (!user) {
-		return res.status(401).send('User không tồn tại.');
+		return res.status(401).send('User not exists.');
 	}
 
 	if (refreshTokenFromBody !== user['refreshToken']) {
-		return res.status(400).send('Refresh token không hợp lệ.');
+		return res.status(400).send('Refresh token not legit.');
 	}
 
 	// Create new access token
@@ -185,7 +181,7 @@ export const refreshToken = async (req: Request, res: Response) => {
 	if (!accessToken) {
 		return res
 			.status(400)
-			.send('Tạo access token không thành công, vui lòng thử lại.');
+			.send('Access token create failed, please try again.');
 	}
 	return res.json({
 		accessToken,

@@ -1,5 +1,5 @@
 import { Request } from "express";
-import { AdminAccountLogType, AdminAccountType, PropertyCategoryType, PropertyType, RolesType } from "../commonTypes";
+import { AccountLogType, AdminAccountType, PropertyCategoryType, PropertyType, RolesType } from "../commonTypes";
 import bcrypt from 'bcrypt';
 
 /*  formData replace undefined fields to '' value,
@@ -114,8 +114,8 @@ export const processAdminAccountData = async (req: Request): Promise<AdminAccoun
   };
 }
 
-// Admin account - Login && register
-export const processAdminAccountLogData = async (req: Request): Promise<AdminAccountLogType> => {
+// Login && register
+export const processAccountLogData = async (req: Request): Promise<AccountLogType> => {
 
   return {
     email: req.body.email && String(req.body.email),

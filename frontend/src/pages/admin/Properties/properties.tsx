@@ -21,7 +21,7 @@ import NoPermission from '../../../components/admin/NoPermission/noPermission';
 import { RootState } from '../../../redux/stores';
 import { setPermissions } from '../../../redux/reduxSlices/permissionsSlice';
 import './properties.scss';
-import FilterBoxSlide from '../../../components/shared/FilterComponents/FilterBoxSlide/filterBoxSlide';
+
 
 const Properties: React.FC = () => {
 
@@ -38,7 +38,8 @@ const Properties: React.FC = () => {
   const [error, setError] = useState<string | null>(null); 
   const [propertyCount, setPropertyCount] = useState<number>(0);
 
-  const { listingType, keyword, status, category, priceRange, sorting } = filters;
+  const { listingType, keyword, status, category, priceRange, sorting,
+          direction, bedrooms, bathrooms, areaRange } = filters;
 
   const [checkedList, setCheckedList] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -61,11 +62,13 @@ const Properties: React.FC = () => {
         setLoading(true);
         const response = await propertiesService.getProperties({ 
           ...(keyword && { keyword }), 
-          ...(status && { status }), 
           ...(listingType && { listingType }), 
           ...(category && { category }), 
+          ...(direction && { direction }), 
+          ...(bedrooms && { bedrooms }),
+          ...(bathrooms && { bathrooms }), 
           ...(priceRange && { priceRange }),
-          // ...(areaRange && { areaRange }),
+          ...(areaRange && { areaRange }),
           ...(sorting?.sortKey && { sortKey: sorting.sortKey }), 
           ...(sorting?.sortValue && { sortValue: sorting.sortValue }), 
           currentPage: currentPage,

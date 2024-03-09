@@ -9,17 +9,19 @@ import { RootState } from '../../../redux/stores';
 
 import getPriceUnit from '../../../helpers/getPriceUnit';
 
-import propertiesService from '../../../services/admin/properties.service';
+import propertiesServiceClient from '../../../services/client/properties.service';
 
 import { PropertyType, PaginationObject } from '../../../../../backend/commonTypes';
 import RoomCountTooltip from '../../../components/shared/Counters/RoomCounter/roomCount';
 
-import { setPermissions } from '../../../redux/reduxSlices/permissionsSlice';
 import HTMLContent from '../../../components/client/HTMLContent/HTMLContent';
 import FilterBoxSlide from '../../../components/shared/FilterComponents/FilterBoxSlide/filterBoxSlide';
 import PriceRange from '../../../components/shared/FilterComponents/PriceRange/priceRange';
 import AreaRange from '../../../components/shared/FilterComponents/AreaRange/areaRange';
+
 import { setKeyword, setSorting } from '../../../redux/reduxSlices/filtersSlice';
+import { setPermissions } from '../../../redux/reduxSlices/permissionsSlice';
+
 import { sortingOptionsClient } from '../../../helpers/filterOptions';
 
 import './properties.scss';
@@ -33,7 +35,6 @@ const Properties: React.FC = () => {
   const filters = useSelector((state: RootState) => state.filters);
   // const currentUserPermissions = useSelector((state: RootState) => state.currentUserPermissions.permissions);
 
-  const [accessAllowed, setAccessAllowed] = useState(true);
   const [loading, setLoading] = useState(true);
   const [propertyList, setPropertyList] = useState<PropertyType[]>([]);
   const [error, setError] = useState<string | null>(null); 
@@ -60,9 +61,8 @@ const Properties: React.FC = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await propertiesService.getProperties({ 
+        const response = await propertiesServiceClient.getProperties({ 
           ...(keyword && { keyword }), 
-          ...(status && { status }), 
           ...(listingType && { listingType }), 
           ...(category && { category }), 
           ...(direction && { direction }), 
@@ -87,14 +87,13 @@ const Properties: React.FC = () => {
           }
 
         } else {
-          setAccessAllowed(false);
           message.error(response.message, 4);
         }
   
       } catch (error: any) {
         if ((error.response && error.response.status === 401) || error.message === 'Unauthorized') {
           message.error('Unauthorized - Please log in to access this feature.', 3);
-          navigate('/admin/auth/login');
+          navigate('/auth/login');
         } else {
           message.error('Error occurred while fetching properties data', 2);
           setError('No property found.');
@@ -163,7 +162,7 @@ const Properties: React.FC = () => {
             suffix={<Button type="primary">Search</Button>}
 
           />
-            <FilterBoxSlide />
+            <FilterBoxSlide slickWidth='70%' userType='client'/>
             
             <div className='line' style={{marginTop: "1.75rem"}} /> 
 

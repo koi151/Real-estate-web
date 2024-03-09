@@ -5,7 +5,7 @@ import { propertiesRoutes } from "./properties.router";
 import { propertyCategoriesRoutes } from "./property-categories.router";
 import { rolesRoutes } from "./roles.router";
 import { accountsRoutes } from "./accounts.router";
-import { authRoutes } from "./auth.router";
+import { authRoutes } from "./auth-admin.router";
 import { authRequire } from "../../../../middlewares/admin/auth.middleware";
 import { dashboardRoutes } from "./dashboard.router";
 
@@ -35,12 +35,6 @@ const v1AdminRoutes = (app: Express): void => {
     `${version}/${ADMIN_PATH}/roles`, 
     authRequire,
     rolesRoutes
-  );
-
-  app.use(
-    `${version}/${ADMIN_PATH}/accounts`, 
-    authRequire,
-    accountsRoutes
   );
 
   app.use(

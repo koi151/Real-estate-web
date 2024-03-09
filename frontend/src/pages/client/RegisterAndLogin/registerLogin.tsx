@@ -2,35 +2,36 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Form, Col, Row, Input, Button, message } from "antd";
 import { useDispatch } from "react-redux";
-import adminAuthorizationService from "../../../services/admin/authorization.service";
+
+import clientAuthorizationService from "../../../services/client/authorization.service";
 import { setUser } from "../../../redux/reduxSlices/userSlice";
-import './adminRegisterLogin.scss'
+import './registerLogin.scss'
 
 
-interface AdminRegisterLoginProps {
+interface RegisterLoginProps {
   isRegisterPage: boolean;
 }
 
-const AdminRegisterLogin: React.FC<AdminRegisterLoginProps> = ({ isRegisterPage = false }) => {
+const RegisterLogin: React.FC<RegisterLoginProps> = ({ isRegisterPage = false }) => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const onFinishForm = async (data: any) => {
     try {
-      const response = await adminAuthorizationService.submitLogin(data);
+      const response = await clientAuthorizationService.submitLogin(data);
         switch (response.code) {
           case 200:
-            localStorage.setItem('accessToken', response.accessToken);
-            localStorage.setItem('refreshToken', response.refreshToken);
+            localStorage.setItem('clientAccessToken', response.clientAccessToken);
+            localStorage.setItem('clientRefreshToken', response.clientRefreshToken);
 
             if (response.user) {
               dispatch(setUser(response.user))
-              localStorage.setItem('adminUserId', response.user._id);
+              localStorage.setItem('clientUserId', response.user._id);
             }
 
-            message.success(`${isRegisterPage ? "Register" : "Login"} successful. Welcome to administrator page !`);
-            navigate('/admin/properties');
+            message.success(`${isRegisterPage ? "Register" : "Login"} successful. Welcome to SPRUHA real estate web !`);
+            navigate('/properties');
             break;
 
           case 401:
@@ -60,7 +61,7 @@ const AdminRegisterLogin: React.FC<AdminRegisterLoginProps> = ({ isRegisterPage 
               {isRegisterPage ? 'REGISTER' : 'LOGIN'}
             </strong>
             <span className="box-sep__right--welcome-text">
-              Welcome to Admin Page
+              Welcome to SPRUHA
             </span>
 
             <Form
@@ -137,4 +138,4 @@ const AdminRegisterLogin: React.FC<AdminRegisterLoginProps> = ({ isRegisterPage 
   )
 }
 
-export default AdminRegisterLogin;
+export default RegisterLogin;

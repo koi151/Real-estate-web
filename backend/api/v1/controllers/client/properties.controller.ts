@@ -11,13 +11,6 @@ import { paginationHelper } from "../../../../helpers/pagination";
 // [GET] /properties
 export const index = async (req: Request, res: Response) => {
   try {
-    if (!res.locals.currentUser.permissions.includes('properties_view')) {
-      return res.json({
-        code: 403,
-        message: "Account does not have access rights"
-      });
-    }
-
     const status = req.query.status?.toString() as string | undefined;
     const category = req.query.category?.toString() as string | undefined;
     const pageSize = req.query.pageSize ? parseInt(req.query.pageSize as string, 10) : null;
@@ -123,12 +116,6 @@ export const index = async (req: Request, res: Response) => {
       properties: properties,
       paginationObject: paginationObject,
       propertyCount: propertyCount,
-      permissions: {
-        propertiesView: res.locals.currentUser.permissions.includes('properties_view'),
-        propertiesEdit: res.locals.currentUser.permissions.includes('properties_edit'),
-        propertiesCreate: res.locals.currentUser.permissions.includes('properties_create'),
-        propertiesDelete: res.locals.currentUser.permissions.includes('properties_delete')
-      }
     });
 
   } catch (error) {

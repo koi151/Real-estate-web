@@ -21,7 +21,8 @@ import AdminAccounts from "../pages/admin/Accounts/accounts";
 import AdminAccountsDetail from "../pages/admin/Accounts/detail";
 import CreateAdminAccounts from "../pages/admin/Accounts/create";
 import EditAdminAccounts from "../pages/admin/Accounts/edit";
-import AdminRegister from "../pages/admin/RegisterAndLogin/adminRegisterLogin";
+
+import RegisterAndLogin from "../pages/admin/RegisterAndLogin/adminRegisterLogin";
 
 import PageNotFound from "../components/shared/PageNotFound/pageNotFound";
 
@@ -100,11 +101,11 @@ export const adminRoutes = [
       },
       {
         path: '/admin/auth/login',
-        element: <AdminRegister />
+        element: <RegisterAndLogin />
       },
       {
         path: '/admin/auth/register',
-        element: <AdminRegister isRegisterPage/>
+        element: <RegisterAndLogin isRegisterPage/>
       }
     ]
   }, 
