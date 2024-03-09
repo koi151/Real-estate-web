@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import Property from "../../models/property.model";
 
 import { generateAreaRangeFilter, generateFilterInRange, generateRoomFilter  } from "../../../../helpers/generateFilters";
+import { getAreaSortingPipeline } from "../../../../helpers/generateSorting";
 import { FindCriteria } from "../../../../commonTypes";
 import { searchHelper } from "../../../../helpers/search";
 import { paginationHelper } from "../../../../helpers/pagination";
@@ -37,12 +38,11 @@ export const index = async (req: Request, res: Response) => {
       const orClause = { $or: [{ title: regex }, { slug: slugRegex }] };
       Object.assign(find, orClause);
     }
-
     // Pagination
     const countRecords = await Property.countDocuments(find);
     let paginationObject = paginationHelper(
       {
-        currentPage: typeof req.query.currentPage == "string" ? parseInt(req.query.currentPage) : 1,
+        currentPage: typeof req.query.currentPage === "string" ? parseInt(req.query.currentPage) : 1,
         limitItems: pageSize,
         skip: null, // helper return skip, totalPage value, do not change
         totalPage: null,
@@ -51,64 +51,39 @@ export const index = async (req: Request, res: Response) => {
       countRecords
     );
 
-    // Sorting 
+    // Sorting
     interface SortingQuery {
       [key: string]: 'asc' | 'desc';
-    } 
-    
+    }  
     const sortingQuery: SortingQuery = {};
-
-    if (req.query.sortKey && req.query.sortValue ) { //&& req.query.sortKey !== 'area'
-      sortingQuery[req.query.sortKey.toString()] = req.query.sortValue.toString() as 'asc' | 'desc';
-    }
 
     let properties = [];
     let propertyCount: number = 0;
-    
-    // Calculate area and add it to sorting query
-    // if (req.query.sortKey === 'area') {
-    //   const areaSortValue = sortingQuery['area'];
-    
-    //   const areaSortingPipeline: any[] = [
-    //     {
-    //       $addFields: {
-    //         newArea: { $multiply: ['$area.propertyWidth', '$area.propertyLength'] }
-    //       }
-    //     },
-    //     { $sort: { area: areaSortValue === 'asc' ? 1 : -1 } }
-    //   ];
-      
-    //   properties = await Property.aggregate([
-    //     { $match: find },
-    //     ...areaSortingPipeline,
-    //     { $limit: paginationObject.limitItems || 0 },
-    //     { $skip: paginationObject.skip || 0 }
-    //   ]);
 
-    //   console.dir(areaSortingPipeline, {depth: null})
-    
-    //   // Count documents after sorting
-    //   const countResult = await Property.aggregate([
-    //     { $match: find },
-    //     { $count: 'count' }
-    //   ]);
-    //   propertyCount = countResult.length > 0 ? countResult[0].count : 0;
+    // Sorting by area is more complex than usual sort => split to specific case 
+    if (req.query.sortKey === 'area') {
+      const areaSortingPipeline: any[] = getAreaSortingPipeline(req.query)
 
-    // } else {
+      properties = await Property.aggregate([ // Advanced queries
+        { $match: find },
+        ...areaSortingPipeline,
+        { $skip: paginationObject.skip || 0 },
+        { $limit: paginationObject.limitItems || 0 },
+      ]);
 
-      console.log("sortingQuery:", sortingQuery)
+    } else {
 
-
-      console.dir(find, {depth: null})
+      if (req.query.sortKey && req.query.sortValue) {
+        sortingQuery[req.query.sortKey.toString()] = req.query.sortValue.toString() as 'asc' | 'desc';
+      }
 
       properties = await Property.find(find)
         .sort(sortingQuery || '')
+        .skip(paginationObject.skip || 0)
         .limit(paginationObject.limitItems || 0)
-        .skip(paginationObject.skip || 0);
- 
-      propertyCount = await Property.countDocuments(find);
-    // }
-    
+    }
+
+    propertyCount = await Property.countDocuments(find);
 
     res.status(200).json({
       code: 200,

@@ -177,8 +177,12 @@ const Properties: React.FC = () => {
                     ]}
                   />
                   <h1 className="main-content-title mt-2">Buy and sell real estate nationwide</h1>
-                  <div className='d-flex justify-content-between mt-4'>
-                    <span>Currently have {propertyCount} properties</span>
+                  <div className='d-flex justify-content-between align-items-center mt-4'>
+                    {loading ? (
+                      <span>Data is loading, please wait for a moment...</span>
+                    ) : (
+                      <span>Currently have {propertyCount} properties</span>
+                    )}
                     <div className='sorting-items'>
                       <Select
                         placement='bottomLeft'
