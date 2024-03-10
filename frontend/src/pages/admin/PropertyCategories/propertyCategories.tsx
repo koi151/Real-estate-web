@@ -42,6 +42,10 @@ const PropertyCategories: React.FC = () => {
     { sortKey: '', sortValue: '' }
   )
 
+  useEffect(() => { // test
+    console.log("currentUserPermissions sample:", currentUserPermissions)
+  }, [currentUserPermissions])
+
   const [paginationObj, setPaginationObj] = useState<PaginationObject>({
     currentPage: null,
     limitItems: null,

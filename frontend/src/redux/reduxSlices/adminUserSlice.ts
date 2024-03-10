@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { AdminPermissions } from '../../../../backend/commonTypes';
 
 interface UserState {
   avatar: string;
@@ -6,7 +7,7 @@ interface UserState {
   deleted: boolean;
   email: string;
   fullName: string;
-  permissions: string[];
+  permissions: AdminPermissions | undefined;
   phone: string;
   role_id: string;
   status: string;
@@ -20,7 +21,7 @@ const initialState: UserState = {
   deleted: false,
   email: '',
   fullName: '',
-  permissions: [],
+  permissions: undefined,
   phone: '',
   role_id: '',
   status: '',

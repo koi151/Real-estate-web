@@ -7,6 +7,7 @@ import { AccountLogType, AdminAccountType } from "../../../../commonTypes";
 import { generateRandomString } from "../../../../helpers/generateString";
 import { decodeToken, generateToken } from "../../../../helpers/auth.methods";
 import Role from "../../models/roles.model";
+import { formattedPermissions } from "../../../../helpers/formatData";
 
 // [POST] /admin/auth/login
 export const loginPost = async (req: Request, res: Response) => {
@@ -75,19 +76,26 @@ export const loginPost = async (req: Request, res: Response) => {
     const userPermissions = await Role.findOne({
       _id: user.role_id,
       deleted: false
-    }).select('permissions')
+    }).select('permissions -_id')
 
     if (userPermissions) {
 
       // convert document to JSON
       const regularUserObj = { ...user['_doc'] };
 
+      const permissionObj: { [key: string]: boolean } = userPermissions.permissions.reduce((acc, item) => {
+        acc[formattedPermissions(item)] = true;
+        return acc;
+      }, {});
+      
+      console.log("userPermissions af:", permissionObj)
+
       delete regularUserObj['password'];
       delete regularUserObj["accessToken"];
       delete regularUserObj["refreshToken"];
       delete regularUserObj["token"];    
 
-      regularUserObj['permissions'] = userPermissions.permissions;
+      regularUserObj['permissions'] = permissionObj;
 
       res.status(200).json({
         code: 200,

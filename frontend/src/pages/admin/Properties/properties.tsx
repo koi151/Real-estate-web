@@ -19,7 +19,6 @@ import StatusButton from '../../../components/admin/StatusButton/statusButton';
 import NoPermission from '../../../components/admin/NoPermission/noPermission';
 
 import { RootState } from '../../../redux/stores';
-import { setPermissions } from '../../../redux/reduxSlices/adminPermissionsSlice';
 import './properties.scss';
 
 
@@ -30,9 +29,7 @@ const Properties: React.FC = () => {
   const location = useLocation();
 
   const filters = useSelector((state: RootState) => state.filters);
-  const adminUser = useSelector((state: RootState) => state.adminUser);
-
-  const currentUserPermissions = useSelector((state: RootState) => state.currentAdminUserPermissions.permissions);
+  const currentUser = useSelector((state: RootState) => state.adminUser);
 
   const [accessAllowed, setAccessAllowed] = useState(true);
   const [loading, setLoading] = useState(true);
@@ -56,10 +53,6 @@ const Properties: React.FC = () => {
   const onPageChange: PaginationProps['onChange'] = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
-
-  useEffect(() => { // testing
-    console.log("adminUser:", adminUser)
-  }, [adminUser])
 
   // fetch properties data
   useEffect(() => {
@@ -86,10 +79,6 @@ const Properties: React.FC = () => {
           setPaginationObj(response.paginationObject);
           setPropertyCount(response.propertyCount);
           setLoading(false);
-
-          if (response.permissions) {
-            dispatch(setPermissions(response.permissions));
-          }
 
         } else {
           setAccessAllowed(false);
@@ -208,7 +197,7 @@ const Properties: React.FC = () => {
           </div>
     
           <FilterBox 
-            createAllowed={currentUserPermissions?.propertiesCreate} 
+            createAllowed={currentUser?.permissions?.propertiesCreate} 
             priceRangeFilter
             categoryFilter
             statusFilter
@@ -347,12 +336,12 @@ const Properties: React.FC = () => {
                               <Link to={`/admin/properties/detail/${property._id}`}> 
                                 <Button className='detail-btn'>Detail</Button> 
                               </Link>
-                              {currentUserPermissions?.propertiesEdit && (
+                              {currentUser?.permissions?.propertiesEdit && (
                                 <Link to={`/admin/properties/edit/${property._id}`}> 
                                   <Button className='edit-btn'>Edit</Button> 
                                 </Link>
                               )}
-                              {currentUserPermissions?.propertiesDelete && (
+                              {currentUser?.permissions?.propertiesDelete && (
                                 <Popconfirm
                                   title="Delete the task"
                                   description="Are you sure to delete this property?"

@@ -106,32 +106,21 @@ export const index = async (req: Request, res: Response) => {
 
     // } else {
 
-      console.log("sortingQuery:", sortingQuery)
+    console.dir(find, {depth: null})
 
+    properties = await Property.find(find)
+      .sort(sortingQuery || '')
+      .limit(paginationObject.limitItems || 0)
+      .skip(paginationObject.skip || 0);
 
-      console.dir(find, {depth: null})
-
-      properties = await Property.find(find)
-        .sort(sortingQuery || '')
-        .limit(paginationObject.limitItems || 0)
-        .skip(paginationObject.skip || 0);
- 
-      propertyCount = await Property.countDocuments(find);
-    // }
-    
+    propertyCount = await Property.countDocuments(find);    
 
     res.status(200).json({
       code: 200,
       message: 'Success',
       properties: properties,
       paginationObject: paginationObject,
-      propertyCount: propertyCount,
-      permissions: {
-        propertiesView: res.locals.currentUser.permissions.includes('properties_view'),
-        propertiesEdit: res.locals.currentUser.permissions.includes('properties_edit'),
-        propertiesCreate: res.locals.currentUser.permissions.includes('properties_create'),
-        propertiesDelete: res.locals.currentUser.permissions.includes('properties_delete')
-      }
+      propertyCount: propertyCount
     });
 
   } catch (error) {

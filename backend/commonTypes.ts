@@ -138,6 +138,30 @@ export interface RolesType {
   updateAt?: Date;
 }
 
+// AVAILABLE PERMISSIONS
+
+export interface AdminPermissions {
+  administratorRolesCreate: boolean;
+  administratorRolesDelete: boolean;
+  administratorRolesEdit: boolean;
+  administratorRolesView: boolean;
+
+  administratorAccountsCreate: boolean;
+  administratorAccountsDelete: boolean;
+  administratorAccountsEdit: boolean;
+  administratorAccountsView: boolean;
+
+  propertiesCreate: boolean;
+  propertiesDelete: boolean;
+  propertiesEdit: boolean;
+  propertiesView: boolean;
+
+  propertyCategoriesCreate: boolean;
+  propertyCategoriesDelete: boolean;
+  propertyCategoriesEdit: boolean;
+  propertyCategoriesView: boolean;
+}
+
 // Custom role request type - FE accepts from BE
 export interface RoleTitleType {
   _id: string,
@@ -185,3 +209,4 @@ export interface FindCriteria {
   title?: RegExp;
   slug?: RegExp;
 }
+
