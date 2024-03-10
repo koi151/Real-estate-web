@@ -46,6 +46,7 @@ export const authRequire = async (req: Request, res: Response, next: NextFunctio
     }).select('permissions');
 
     res.locals.currentUser = user;
+
     res.locals.currentUser.permissions = userRole?.permissions;
 
     return next();

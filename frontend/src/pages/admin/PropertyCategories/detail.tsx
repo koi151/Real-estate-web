@@ -11,7 +11,7 @@ import NoPermission from "../../../components/admin/NoPermission/noPermission";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/stores";
 import AdminRolesService from "../../../services/admin/roles.service";
-import { setPermissions } from "../../../redux/reduxSlices/permissionsSlice";
+import { setPermissions } from "../../../redux/reduxSlices/adminPermissionsSlice";
 
 const PropertyCategoriesDetail: React.FC = () => {
   
@@ -19,7 +19,7 @@ const PropertyCategoriesDetail: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   
-  const currentUserPermissions = useSelector((state: RootState) => state.currentUserPermissions.permissions);
+  const currentUserPermissions = useSelector((state: RootState) => state.currentAdminUserPermissions.permissions);
 
   const [viewAllowed, setViewAllowed] = useState(true);
   const [loading, setLoading] = useState(true);

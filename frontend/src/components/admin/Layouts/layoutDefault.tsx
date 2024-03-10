@@ -6,7 +6,7 @@ import Sider from "antd/es/layout/Sider";
 import { Outlet } from 'react-router-dom';
 import { MenuUnfoldOutlined } from '@ant-design/icons';
 
-import AccountHeader from '../AccountHeader/accountHeader';
+import AccountHeader from '../../shared/AccountHeader/accountHeader';
 import SiderMenu from "../SiderMenu/siderMenu";
 // import MiniNotification from "../../MiniNotification/miniNotification";
 

@@ -13,7 +13,7 @@ import FilterBox from '../../../components/admin/FilterBox/filterBox';
 import NoPermission from '../../../components/admin/NoPermission/noPermission';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../redux/stores';
-import { setPermissions } from '../../../redux/reduxSlices/permissionsSlice';
+import { setPermissions } from '../../../redux/reduxSlices/adminPermissionsSlice';
 
 import '../Properties/properties.scss'
 
@@ -30,15 +30,15 @@ const PropertyCategories: React.FC = () => {
   const [error, setError] = useState<string | null>(null); 
   const [categoryCount, setCategoryCount] = useState<number>(0);
 
-  const currentUserPermissions = useSelector((state: RootState) => state.currentUserPermissions.permissions);
+  const currentUserPermissions = useSelector((state: RootState) => state.currentAdminUserPermissions.permissions);
 
   // Searching and filtering
   const [checkedList, setCheckedList] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [status, setStatus] = useState<string | undefined>(undefined);
-  const [keyword, setKeyword] = useState<string | null>(null); 
+  const [status] = useState<string | undefined>(undefined);
+  const [keyword] = useState<string | null>(null); 
 
-  const [sorting, setSorting] = useState<SortingQuery>(
+  const [sorting] = useState<SortingQuery>(
     { sortKey: '', sortValue: '' }
   )
 

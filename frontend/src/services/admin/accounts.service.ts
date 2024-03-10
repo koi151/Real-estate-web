@@ -50,6 +50,11 @@ class AccountsServiceAdmin {
     return this.handleRequest(request);
   }
 
+  async getSingleAccountLocal() {
+    const request = this.api.get(`/detail/local/`, this.getAuthHeaders());
+    return this.handleRequest(request);
+  }
+
   async changeAccountStatus(id: string, status: ValidStatus) {
     const request = this.api.patch(`/change-status/${status}/${id}`, {}, this.getAuthHeaders());
     return this.handleRequest(request);

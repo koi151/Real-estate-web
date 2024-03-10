@@ -19,7 +19,7 @@ import StatusButton from '../../../components/admin/StatusButton/statusButton';
 import NoPermission from '../../../components/admin/NoPermission/noPermission';
 
 import { RootState } from '../../../redux/stores';
-import { setPermissions } from '../../../redux/reduxSlices/permissionsSlice';
+import { setPermissions } from '../../../redux/reduxSlices/adminPermissionsSlice';
 import './properties.scss';
 
 
@@ -30,7 +30,9 @@ const Properties: React.FC = () => {
   const location = useLocation();
 
   const filters = useSelector((state: RootState) => state.filters);
-  const currentUserPermissions = useSelector((state: RootState) => state.currentUserPermissions.permissions);
+  const adminUser = useSelector((state: RootState) => state.adminUser);
+
+  const currentUserPermissions = useSelector((state: RootState) => state.currentAdminUserPermissions.permissions);
 
   const [accessAllowed, setAccessAllowed] = useState(true);
   const [loading, setLoading] = useState(true);
@@ -54,6 +56,10 @@ const Properties: React.FC = () => {
   const onPageChange: PaginationProps['onChange'] = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
+
+  useEffect(() => { // testing
+    console.log("adminUser:", adminUser)
+  }, [adminUser])
 
   // fetch properties data
   useEffect(() => {

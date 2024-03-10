@@ -14,14 +14,14 @@ import NoPermission from "../../../components/admin/NoPermission/noPermission";
 import * as standardizeData from '../../../helpers/standardizeData'
 
 import { RoleTitleType } from "../../../../../backend/commonTypes";
-import { setPermissions } from "../../../redux/reduxSlices/permissionsSlice";
+import { setPermissions } from "../../../redux/reduxSlices/adminPermissionsSlice";
 
 const CreateAdminAccounts: React.FC = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const currentUserPermissions = useSelector((state: RootState) => state.currentUserPermissions.permissions);
+  const currentUserPermissions = useSelector((state: RootState) => state.currentAdminUserPermissions.permissions);
 
   const [viewAllowed, setViewAllowed] = useState(true);
 

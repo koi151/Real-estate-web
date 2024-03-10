@@ -11,14 +11,14 @@ import AdminRolesService from "../../../services/admin/roles.service";
 import { RolesType } from "../../../../../backend/commonTypes";
 import { convertLabelToPermission, convertPermissionToLabels } from '../../../helpers/standardizeData'
 import NoPermission from "../../../components/admin/NoPermission/noPermission";
-import { setPermissions } from "../../../redux/reduxSlices/permissionsSlice";
+import { setPermissions } from "../../../redux/reduxSlices/adminPermissionsSlice";
  
 const EditAdminRole: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const currentUserPermissions = useSelector((state: RootState) => state.currentUserPermissions.permissions);
+  const currentUserPermissions = useSelector((state: RootState) => state.currentAdminUserPermissions.permissions);
 
   const [viewAllowed, setViewAllowed] = useState(true);
   const [loading, setLoading] = useState(true);
@@ -87,7 +87,7 @@ const EditAdminRole: React.FC = () => {
       }
     }
     fetchData();
-  }, []);
+  }, [dispatch, navigate, currentUserPermissions?.administratorRolesEdit]);
 
   const roleOptions = ['Properties', 'Property categories', 'Administrator roles', 'Administrator accounts'].flatMap(label => ({
     label,

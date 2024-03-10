@@ -11,7 +11,7 @@ import AdminRolesService from "../../../services/admin/roles.service";
 
 import UploadMultipleFile from "../../../components/admin/UploadMultipleFile/uploadMultipleFile";
 import NoPermission from "../../../components/admin/NoPermission/noPermission";
-import { setPermissions } from "../../../redux/reduxSlices/permissionsSlice";
+import { setPermissions } from "../../../redux/reduxSlices/adminPermissionsSlice";
 import * as standardizeData from '../../../helpers/standardizeData'
 import { DefaultOptionType } from "antd/es/select";
 
@@ -21,7 +21,7 @@ const EditPropertyCategories: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const currentUserPermissions = useSelector((state: RootState) => state.currentUserPermissions.permissions);
+  const currentUserPermissions = useSelector((state: RootState) => state.currentAdminUserPermissions.permissions);
 
   const [viewAllowed, setViewAllowed] = useState(true);
   const [loading, setLoading] = useState<boolean>(true);

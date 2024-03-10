@@ -39,7 +39,7 @@ export const authRequire = async (req: Request, res: Response, next: NextFunctio
       });
     }
 
-    res.locals.currentUser = user;
+    res.locals.currentUserClient = user;
 
     return next();
 

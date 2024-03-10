@@ -3,10 +3,12 @@ import { useDispatch, useSelector } from "react-redux";
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
+import clientAccountsService from "../../../services/client/accounts.service";
 import adminAccountsService from "../../../services/admin/accounts.service";
-import { setAvatar } from "../../../redux/reduxSlices/userSlice";
+import { resetAdminUserState, setAvatar } from "../../../redux/reduxSlices/adminUserSlice";
 
 import './accountHeader.scss'
+import { resetClientUserState } from "../../../redux/reduxSlices/clientUserSlice";
 
 interface AccountHeaderProps {
   userType: 'admin' | 'client';
@@ -17,7 +19,7 @@ const AccountHeader: React.FC<AccountHeaderProps> = ({ userType, navigateTo }) =
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const avatarUrl = useSelector((state: any) => state.user?.avatar);
+  const avatarUrl = useSelector((state: any) => state.clientUser);
 
   // get user avatar if redux don't have
   useEffect(() => {
@@ -26,7 +28,12 @@ const AccountHeader: React.FC<AccountHeaderProps> = ({ userType, navigateTo }) =
         const userId = localStorage.getItem(`${userType}UserId`);
         if (userId) {
           try {
-            const response = await adminAccountsService.getAvatar(userId);
+            let response: any;
+
+            if (userType === 'admin')
+              response = await adminAccountsService.getAvatar(userId);
+            else response = await clientAccountsService.getAvatar(userId);
+
             if (response.code === 200 && response.currentUser) {
               dispatch(setAvatar(response.currentUser.avatar));
             } else {
@@ -58,13 +65,15 @@ const AccountHeader: React.FC<AccountHeaderProps> = ({ userType, navigateTo }) =
       if (userType === 'admin') {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
+        dispatch(resetAdminUserState())
+
       } else {
         localStorage.removeItem('clientAccessToken');
         localStorage.removeItem('clientRefreshToken');
+        dispatch(resetClientUserState())
       }
 
       localStorage.removeItem(`${userType}UserId`);
-
 
       message.success('Account log out successful!', 3);
       navigate(navigateTo);

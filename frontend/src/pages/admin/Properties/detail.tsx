@@ -21,7 +21,7 @@ import NoPermission from "../../../components/admin/NoPermission/noPermission";
 
 // Redux
 import { RootState } from "../../../redux/stores";
-import { setPermissions } from "../../../redux/reduxSlices/permissionsSlice";
+import { setPermissions } from "../../../redux/reduxSlices/adminPermissionsSlice";
 import { directionOptions, documentOptions, furnitureOptions } from "../../../helpers/propertyOptions";
 import { IoBedOutline } from "react-icons/io5";
 import { LuBath } from "react-icons/lu";
@@ -35,7 +35,7 @@ const PropertyDetail: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const currentUserPermissions = useSelector((state: RootState) => state.currentUserPermissions.permissions);
+  const currentUserPermissions = useSelector((state: RootState) => state.currentAdminUserPermissions.permissions);
 
   const [viewAllowed, setViewAllowed] = useState(true);
   const [loading, setLoading] = useState(true);

@@ -27,7 +27,7 @@ import NoPermission from "../../../components/admin/NoPermission/noPermission";
 import { RootState } from "../../../redux/stores";
 import AdminRolesService from "../../../services/admin/roles.service";
 import * as standardizeData from '../../../helpers/standardizeData'
-import { setPermissions } from "../../../redux/reduxSlices/permissionsSlice";
+import { setPermissions } from "../../../redux/reduxSlices/adminPermissionsSlice";
 import { directionOptions, documentOptions, furnitureOptions, listingTypeOptions } from "../../../helpers/propertyOptions";
 
 import './create.scss'
@@ -36,7 +36,7 @@ const CreateProperty: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const currentUserPermissions = useSelector((state: RootState) => state.currentUserPermissions.permissions);
+  const currentUserPermissions = useSelector((state: RootState) => state.currentAdminUserPermissions.permissions);
 
   const [viewAllowed, setViewAllowed] = useState(true);
 

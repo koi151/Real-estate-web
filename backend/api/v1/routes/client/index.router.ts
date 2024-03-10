@@ -5,6 +5,7 @@ import { thirdPartyRoutes } from "./third-party.router";
 import { authRequire } from "../../../../middlewares/client/auth.middleware";
 import { authRoutesClient } from "./auth-client.router";
 import { propertyCategoriesRoutesClient } from "./property-categories.router";
+import { accountsRoutesClient } from "./accounts.router";
 
 const v1ClientRoutes = (app: Express): void => {
   const version: string = "/api/v1";
@@ -19,6 +20,12 @@ const v1ClientRoutes = (app: Express): void => {
     `${version}/property-categories`, 
     authRequire,
     propertyCategoriesRoutesClient
+  );
+
+  app.use(
+    `${version}/accounts`, 
+    authRequire,
+    accountsRoutesClient
   );
   
   app.use(

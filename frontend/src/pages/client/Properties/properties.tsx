@@ -20,7 +20,7 @@ import PriceRange from '../../../components/shared/FilterComponents/PriceRange/p
 import AreaRange from '../../../components/shared/FilterComponents/AreaRange/areaRange';
 
 import { setKeyword, setSorting } from '../../../redux/reduxSlices/filtersSlice';
-import { setPermissions } from '../../../redux/reduxSlices/permissionsSlice';
+import { setPermissions } from '../../../redux/reduxSlices/adminPermissionsSlice';
 
 import { sortingOptionsClient } from '../../../helpers/filterOptions';
 
@@ -33,7 +33,6 @@ const Properties: React.FC = () => {
   const location = useLocation();
 
   const filters = useSelector((state: RootState) => state.filters);
-  // const currentUserPermissions = useSelector((state: RootState) => state.currentUserPermissions.permissions);
 
   const [loading, setLoading] = useState(true);
   const [propertyList, setPropertyList] = useState<PropertyType[]>([]);

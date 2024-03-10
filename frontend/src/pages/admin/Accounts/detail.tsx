@@ -11,7 +11,7 @@ import { AdminAccountType } from "../../../../../backend/commonTypes";
 import NoPermission from "../../../components/admin/NoPermission/noPermission";
 import UploadMultipleFile from "../../../components/admin/UploadMultipleFile/uploadMultipleFile";
 
-import { setPermissions } from "../../../redux/reduxSlices/permissionsSlice";
+import { setPermissions } from "../../../redux/reduxSlices/adminPermissionsSlice";
 
 const AdminAccountsDetail: React.FC = () => {
 
@@ -19,7 +19,7 @@ const AdminAccountsDetail: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const currentUserPermissions = useSelector((state: RootState) => state.currentUserPermissions.permissions);
+  const currentUserPermissions = useSelector((state: RootState) => state.currentAdminUserPermissions.permissions);
 
   const [viewAllowed, setViewAllowed] = useState(true);
   const [account, setAccount] = useState<AdminAccountType | undefined>(undefined);

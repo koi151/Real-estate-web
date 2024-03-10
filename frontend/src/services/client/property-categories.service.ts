@@ -1,5 +1,4 @@
 import createApi from '../api.service';
-import { GetPropertiesOptions } from '../../../../backend/commonTypes';
 
 class PropertyCategoriesServiceClient {
   private api: any; 

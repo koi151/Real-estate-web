@@ -21,8 +21,10 @@ import thirdPartyAPIService from '../../../services/shared/third-party.service';
 import * as standardizeData from '../../../helpers/standardizeData'
 import { calculatePricePerUnitArea } from '../../../helpers/getPriceUnit';
 import HTMLContent from '../../../components/client/HTMLContent/HTMLContent';
-import './detail.scss';
 import MapContainer from '../../../components/client/MapContainer/mapContainer';
+import './detail.scss';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../redux/stores';
 
 const PropertyDetail: React.FC = () => {
   const navigate = useNavigate();
@@ -33,11 +35,14 @@ const PropertyDetail: React.FC = () => {
   const [ imageCount, setImageCount ] = useState<number>(0);
 
   const [ googleApiKey, setGoogleApiKey ] = useState<string | undefined>(undefined);
-
   const [address, setAddress] = useState<string>("");
 
   const formattedListingType = standardizeData.listingTypeFormatted(property?.listingType || '');
   
+  const user = useSelector((state: RootState) => state.clientUser);
+
+
+  // fetch property data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -320,7 +325,7 @@ const PropertyDetail: React.FC = () => {
                   Posted by
                 </div>
                 <div className="detail-wrap__username">
-                  Sample Name
+                  {user.fullName}
                 </div>
                 <div className="detail-wrap__other-post">
                   See more 3 other posts

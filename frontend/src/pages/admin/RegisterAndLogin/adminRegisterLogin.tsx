@@ -3,8 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { Form, Col, Row, Input, Button, message } from "antd";
 import { useDispatch } from "react-redux";
 import adminAuthorizationService from "../../../services/admin/authorization.service";
-import { setUser } from "../../../redux/reduxSlices/userSlice";
 import './adminRegisterLogin.scss'
+import { setAdminUser } from "../../../redux/reduxSlices/adminUserSlice";
 
 
 interface AdminRegisterLoginProps {
@@ -24,12 +24,16 @@ const AdminRegisterLogin: React.FC<AdminRegisterLoginProps> = ({ isRegisterPage 
             localStorage.setItem('accessToken', response.accessToken);
             localStorage.setItem('refreshToken', response.refreshToken);
 
+            // remove client account info when logging as admin
+            localStorage.removeItem('clientAccessToken');
+            localStorage.removeItem('clientRefreshToken');
+
             if (response.user) {
-              dispatch(setUser(response.user))
-              localStorage.setItem('adminUserId', response.user._id);
+              console.log(response.user)
+              dispatch(setAdminUser(response.user))
             }
 
-            message.success(`${isRegisterPage ? "Register" : "Login"} successful. Welcome to administrator page !`);
+            message.success(`${isRegisterPage ? "Register" : "Login"} successful. Welcome ${response.user.fullName} to administrator page !`);
             navigate('/admin/properties');
             break;
 

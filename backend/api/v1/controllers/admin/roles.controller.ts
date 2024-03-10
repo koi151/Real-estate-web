@@ -127,7 +127,8 @@ export const detail = async (req: Request, res: Response) => {
 // [GET] /admin/roles/permissions
 export const currentAccPermissions = async (req: Request, res: Response) => {
   try {
-    const permissions = res.locals.currentUser.permissions;
+    const permissions: any = res.locals.currentUser.permissions;
+
     const permissionsObject = permissions.reduce((acc: any, item: string) => {
       const permission = formattedPermissions(item);
       acc[permission] = true;

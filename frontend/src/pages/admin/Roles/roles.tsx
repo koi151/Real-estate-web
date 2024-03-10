@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RolesType } from '../../../../../backend/commonTypes';
 import AdminRolesService from '../../../services/admin/roles.service';
 import NoPermission from '../../../components/admin/NoPermission/noPermission';
-import { setPermissions } from '../../../redux/reduxSlices/permissionsSlice';
+import { setPermissions } from '../../../redux/reduxSlices/adminPermissionsSlice';
 import { RootState } from '../../../redux/stores';
 
 const AdminRoles: React.FC = () => {
@@ -18,7 +18,7 @@ const AdminRoles: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const currentUserPermissions = useSelector((state: RootState) => state.currentUserPermissions.permissions);
+  const currentUserPermissions = useSelector((state: RootState) => state.currentAdminUserPermissions.permissions);
 
   const [accessAllowed, setAccessAllowed] = useState(true);
   const [loading, setLoading] = useState(true);

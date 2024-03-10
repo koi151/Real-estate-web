@@ -10,7 +10,7 @@ const initialState: PermissionsState = {
   isLoading: false,
 };
 
-const permissionsSlice = createSlice({
+const adminPermissionsSlice = createSlice({
   name: 'permissions',
   initialState,
   reducers: {
@@ -20,6 +20,6 @@ const permissionsSlice = createSlice({
   },
 });
 
-export const { setPermissions } = permissionsSlice.actions;
+export const { setPermissions } = adminPermissionsSlice.actions;
 
-export default permissionsSlice.reducer;
+export default adminPermissionsSlice.reducer;

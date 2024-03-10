@@ -6,9 +6,7 @@ interface UserState {
   deleted: boolean;
   email: string;
   fullName: string;
-  permissions: string[];
   phone: string;
-  role_id: string;
   status: string;
   updatedAt: string;
   _id: string;
@@ -20,27 +18,28 @@ const initialState: UserState = {
   deleted: false,
   email: '',
   fullName: '',
-  permissions: [],
   phone: '',
-  role_id: '',
   status: '',
   updatedAt: '',
   _id: '',
 };
 
-export const userSlice = createSlice({
-  name: 'user',
+export const clientUserSlice = createSlice({
+  name: 'clientUser',
   initialState,
   reducers: {
-    setUser: (state, action: PayloadAction<UserState>) => {
+    setClientUser: (_, action: PayloadAction<UserState>) => {
       return action.payload;
     },
     setAvatar: (state, action: PayloadAction<string>) => {
       state.avatar = action.payload;
     },
+    resetClientUserState: state => {
+      return initialState;
+    }
   },
 });
 
-export const { setUser, setAvatar } = userSlice.actions;
+export const { setClientUser, setAvatar, resetClientUserState } = clientUserSlice.actions;
 
-export default userSlice.reducer;
+export default clientUserSlice.reducer;

@@ -4,9 +4,8 @@ import { Form, Col, Row, Input, Button, message } from "antd";
 import { useDispatch } from "react-redux";
 
 import clientAuthorizationService from "../../../services/client/authorization.service";
-import { setUser } from "../../../redux/reduxSlices/userSlice";
+import { setClientUser } from "../../../redux/reduxSlices/clientUserSlice";
 import './registerLogin.scss'
-
 
 interface RegisterLoginProps {
   isRegisterPage: boolean;
@@ -24,13 +23,17 @@ const RegisterLogin: React.FC<RegisterLoginProps> = ({ isRegisterPage = false })
           case 200:
             localStorage.setItem('clientAccessToken', response.clientAccessToken);
             localStorage.setItem('clientRefreshToken', response.clientRefreshToken);
+            
+            // remove admin account info when logging as client
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
 
             if (response.user) {
-              dispatch(setUser(response.user))
+              dispatch(setClientUser(response.user))
               localStorage.setItem('clientUserId', response.user._id);
             }
 
-            message.success(`${isRegisterPage ? "Register" : "Login"} successful. Welcome to SPRUHA real estate web !`);
+            message.success(`${isRegisterPage ? "Register" : "Login"} successful. Welcome ${response.user.fullName}!`);
             navigate('/properties');
             break;
 

@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux';
 import { setListingType } from '../../../redux/reduxSlices/filtersSlice';
 
 import './layoutDefault.scss'
-import AccountHeader from '../../admin/AccountHeader/accountHeader';
+import AccountHeader from '../../shared/AccountHeader/accountHeader';
 
 const { Header, Content, Footer } = Layout;
 

@@ -4,7 +4,7 @@ import AdminAccount from "../../models/adminAccount.model";
 import Role from "../../models/roles.model";
 
 import { AdminAccountType } from "../../../../commonTypes";
-import { processAdminAccountData, processImagesData, processRequestBody } from "../../../../helpers/processData";
+import { processAdminAccountData } from "../../../../helpers/processData";
 import { isValidStatus } from "../../../../helpers/dataTypeCheck";
 
 // [GET] /admin/accounts
@@ -20,8 +20,11 @@ export const index = async (req: Request, res: Response) => {
     const accounts = await AdminAccount.find(
       { deleted: false }
     ).select('-password -token');
+
+    console.log("accounts:", accounts)
     
     const accountPromises = accounts.map(async (account) => {
+      console.log('acc check',account)
       const role = await Role.findOne(
         { 
           _id: account.role_id,
@@ -123,6 +126,36 @@ export const detail = async (req: Request, res: Response) => {
     });
   }
 };
+
+// [GET] /admin/accounts/detail/local
+export const localDetail = async (req: Request, res: Response) => {
+  try {
+    console.log('run localDetail')
+    const user: any = res.locals.currentUser;
+
+    console.log('user-ctrl', user)
+
+    if (!user) {
+      return res.json({
+        code: 404,
+        message: "User information not found"
+      })
+    } 
+    return res.status(200).json({
+      code: 200,
+      message: "Success",
+      user: user
+    })
+
+  } catch (err) {
+    console.log('Error occurred while fetching administrator account data:', err);
+    return res.status(500).json({
+      code: 500,
+      message: 'Internal Server Error'
+    });
+  }
+}
+
 
 // [GET] /admin/accounts/avatar/:accountId
 export const getAvatar = async (req: Request, res: Response) => {

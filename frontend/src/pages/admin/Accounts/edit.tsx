@@ -13,7 +13,7 @@ import NoPermission from "../../../components/admin/NoPermission/noPermission";
 import UploadMultipleFile from "../../../components/admin/UploadMultipleFile/uploadMultipleFile";
 import { AdminAccountType, RoleTitleType } from "../../../../../backend/commonTypes";
 import * as standardizeData from '../../../helpers/standardizeData'
-import { setPermissions } from "../../../redux/reduxSlices/permissionsSlice";
+import { setPermissions } from "../../../redux/reduxSlices/adminPermissionsSlice";
 
 
 const EditAdminAccounts: React.FC = () => {
@@ -22,7 +22,7 @@ const EditAdminAccounts: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const currentUserPermissions = useSelector((state: RootState) => state.currentUserPermissions.permissions);
+  const currentUserPermissions = useSelector((state: RootState) => state.currentAdminUserPermissions.permissions);
   
   const [loading, setLoading] = useState<boolean>(true);
   const [viewAllowed, setViewAllowed] = useState(true);

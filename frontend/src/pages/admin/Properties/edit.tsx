@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { directionOptions, documentOptions, furnitureOptions, listingTypeOptions } from "../../../helpers/propertyOptions";
 import NoPermission from "../../../components/admin/NoPermission/noPermission";
 import AdminRolesService from "../../../services/admin/roles.service";
-import { setPermissions } from "../../../redux/reduxSlices/permissionsSlice";
+import { setPermissions } from "../../../redux/reduxSlices/adminPermissionsSlice";
 import propertyCategoriesService from "../../../services/admin/property-categories.service";
 import { DefaultOptionType } from "antd/es/select";
 import { IoBedOutline } from "react-icons/io5";
@@ -28,7 +28,7 @@ const EditProperty: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const currentUserPermissions = useSelector((state: RootState) => state.currentUserPermissions.permissions);
+  const currentUserPermissions = useSelector((state: RootState) => state.currentAdminUserPermissions.permissions);
 
   const [viewAllowed, setViewAllowed] = useState(true);
   const [loading, setLoading] = useState(true);

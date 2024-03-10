@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import bcrypt from 'bcrypt';
 
-import ClientAccount from "../../models/adminAccount.model";
+import ClientAccount from "../../models/clientAccount.model";
 import { processAccountLogData } from "../../../../helpers/processData";
 import { AccountLogType, ClientAccountType } from "../../../../commonTypes";
 import { generateRandomString } from "../../../../helpers/generateString";
@@ -70,6 +70,8 @@ export const loginPost = async (req: Request, res: Response) => {
     } else {
       refreshToken = user.token;
     }
+
+    delete user.token;
 
     return res.status(200).json({
       code: 200,

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Breadcrumb, Button, Checkbox, Col, Image, InputNumber, Pagination, PaginationProps, Popconfirm, Row, Skeleton, Tooltip, message } from 'antd';
+import { Breadcrumb, Button, Checkbox, Col, Image, Popconfirm, Row, Skeleton, Tooltip, message } from 'antd';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { FaPlus } from 'react-icons/fa';
@@ -11,7 +11,7 @@ import StatusButton from '../../../components/admin/StatusButton/statusButton';
 
 import adminAccountsService from '../../../services/admin/accounts.service';
 import '../Properties/properties.scss';
-import { setPermissions } from '../../../redux/reduxSlices/permissionsSlice';
+import { setPermissions } from '../../../redux/reduxSlices/adminPermissionsSlice';
 import NoPermission from '../../../components/admin/NoPermission/noPermission';
 
 const AdminAccounts: React.FC = () => {
@@ -20,7 +20,7 @@ const AdminAccounts: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const currentUserPermissions = useSelector((state: RootState) => state.currentUserPermissions.permissions);
+  const currentUserPermissions = useSelector((state: RootState) => state.currentAdminUserPermissions.permissions);
 
   const [accessAllowed, setAccessAllowed] = useState(true);
   const [loading, setLoading] = useState(true);

@@ -14,13 +14,13 @@ import * as standardizeData from '../../../helpers/standardizeData'
 import UploadMultipleFile from "../../../components/admin/UploadMultipleFile/uploadMultipleFile";
 import NoPermission from "../../../components/admin/NoPermission/noPermission";
 
-import { setPermissions } from "../../../redux/reduxSlices/permissionsSlice";
+import { setPermissions } from "../../../redux/reduxSlices/adminPermissionsSlice";
 
 const CreatePropertyCategory: React.FC = () => {
   
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const currentUserPermissions = useSelector((state: RootState) => state.currentUserPermissions.permissions);
+  const currentUserPermissions = useSelector((state: RootState) => state.currentAdminUserPermissions.permissions);
 
   const [viewAllowed, setViewAllowed] = useState(true);
   const [ loading, setLoading ] = useState<boolean>(true);
