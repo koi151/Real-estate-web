@@ -20,8 +20,6 @@ export const index = async (req: Request, res: Response) => {
     const accounts = await AdminAccount.find(
       { deleted: false }
     ).select('-password -token');
-
-    console.log("accounts:", accounts)
     
     const accountPromises = accounts.map(async (account) => {
       console.log('acc check',account)

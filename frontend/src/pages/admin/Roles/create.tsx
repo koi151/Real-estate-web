@@ -1,57 +1,19 @@
 import { Badge, Button, Card, Col, Form, Input, Row, Select, message } from "antd";
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import TextArea from "antd/es/input/TextArea";
 import { AiFillEye, AiOutlineEdit, AiOutlineDelete, AiOutlinePlusSquare } from 'react-icons/ai';
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../redux/stores";
 
 import AdminRolesService from "../../../services/admin/roles.service";
 
 import { convertLabelToPermission } from "../../../helpers/standardizeData";
 import NoPermission from "../../../components/admin/NoPermission/noPermission";
-import { setPermissions } from "../../../redux/reduxSlices/adminPermissionsSlice";
 
 
 const CreateAdminRole: React.FC = () => {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-
-  const currentUserPermissions = useSelector((state: RootState) => state.currentAdminUserPermissions.permissions);
-  
-  const [viewAllowed, setViewAllowed] = useState(true);
+  const [accessAllowed, setAccessAllowed] = useState(true);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
-  // if permission in redux not existed => fetch permissions
-  useEffect(() =>  {
-    if (currentUserPermissions?.administratorRolesCreate)
-      return;
-
-    const fetchData = async () => {
-      try {
-        const response = await AdminRolesService.getPermissions();
-        if (response.code === 200) {
-          if (response.permissions) {
-            dispatch(setPermissions(response.permissions));
-          }
-
-          if (!response.permissions.administratorRolesCreate) {
-            setViewAllowed(false)
-          }
-
-        } else {
-          setViewAllowed(false);
-        }
-
-      } catch (err) {
-        console.log("Error occurred while fetching permissions:", err);
-        message.error('Error occurred, redirect to previous page', 3)
-        navigate(-1);
-        setViewAllowed(false);
-      }
-    }
-    fetchData();
-  }, []);  
 
   const roleOptions = ['Properties', 'Property categories', 'Administrator roles', 'Administrator accounts'].flatMap(label => ({
     label,
@@ -88,7 +50,7 @@ const CreateAdminRole: React.FC = () => {
 
   return (
     <>
-    {currentUserPermissions?.administratorRolesCreate || viewAllowed ? (
+    {accessAllowed ? (
       <>
         <div className="d-flex align-items-center justify-content-center"> 
           <Form

@@ -3,11 +3,9 @@ import React, { useEffect, useState } from "react";
 import { Editor } from '@tinymce/tinymce-react';
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Dayjs } from "dayjs";
-import { useDispatch, useSelector } from "react-redux";
 
 // Services
 import propertiesService from "../../../services/admin/properties.service";
-import AdminRolesService from "../../../services/admin/roles.service";
 
 // Data types
 import { PropertyType } from "../../../../../backend/commonTypes";
@@ -20,8 +18,6 @@ import ExpireTimePicker from "../../../components/admin/ExpireTimePicker/expireT
 import NoPermission from "../../../components/admin/NoPermission/noPermission";
 
 // Redux
-import { RootState } from "../../../redux/stores";
-import { setPermissions } from "../../../redux/reduxSlices/adminPermissionsSlice";
 import { directionOptions, documentOptions, furnitureOptions } from "../../../helpers/propertyOptions";
 import { IoBedOutline } from "react-icons/io5";
 import { LuBath } from "react-icons/lu";
@@ -33,12 +29,9 @@ const PropertyDetail: React.FC = () => {
 
   const { id } = useParams();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
-  const currentUserPermissions = useSelector((state: RootState) => state.currentAdminUserPermissions.permissions);
-
-  const [viewAllowed, setViewAllowed] = useState(true);
-  const [loading, setLoading] = useState(true);
+  const [accessAllowed, setAccessAllowed] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const [postType] = useState<string>('sell');
   const [priceMultiplier] = useState<number>(1);
@@ -57,14 +50,14 @@ const PropertyDetail: React.FC = () => {
           return;
         }
 
+        setLoading(true);
         const response = await propertiesService.getSingleProperty(id);
 
         if(response?.code === 200 && response.property) {
           setProperty(response.property);
-          setLoading(false);
+          setAccessAllowed(true)
         } else {
           message.error(response.message, 2);
-          setLoading(false);
         }
 
       } catch (error: any) {
@@ -75,42 +68,13 @@ const PropertyDetail: React.FC = () => {
           message.error('Error occurred while fetching property data', 2);
           console.log('Error occurred:', error);
         }
+      } finally {
+        setLoading(false);
       }
     };
+    
     fetchData();
   }, [id, navigate])
-
-  // if permission in redux not existed => fetch permissions
-  useEffect(() =>  {
-    if (currentUserPermissions?.propertiesView)
-      return;
-
-    const fetchData = async () => {
-      try {
-        const response = await AdminRolesService.getPermissions();
-        if (response.code === 200) {
-          if (response.permissions) {
-            dispatch(setPermissions(response.permissions));
-          }
-
-          if (!response.permissions.propertiesView) {
-            setViewAllowed(false)
-          }
-
-        } else {
-          setViewAllowed(false);
-        }
-
-      } catch (err) {
-        console.log("Error occurred while fetching permissions:", err);
-        message.error('Error occurred, redirect to previous page', 3)
-        navigate(-1);
-        setViewAllowed(false);
-      }
-    }
-    fetchData();
-  }, []);
-
 
   const handleExpireTimeChange = (dateTime: Dayjs | null) => {
     setExpireDateTime(dateTime);
@@ -118,15 +82,10 @@ const PropertyDetail: React.FC = () => {
 
   return (
     <>
-      {currentUserPermissions?.propertiesView || viewAllowed ? (
+      { !loading ? (
         <>
-          { loading ? (
-              <div className='d-flex justify-content-center' style={{width: "100%", height: "100vh"}}>
-                <Spin tip='Loading...' size="large">
-                  <div className="content" />
-                </Spin>
-              </div>
-          ) : (
+          { accessAllowed ? (
+            
             <div className="d-flex align-items-center justify-content-center"> 
               <Form 
                 layout="vertical" 
@@ -467,10 +426,16 @@ const PropertyDetail: React.FC = () => {
                 </Card>
               </Form>
             </div>
+          ) : (
+            <NoPermission permissionType='access' />
           )}
         </>
       ) : (
-        <NoPermission permissionType='access' />
+        <div className='d-flex justify-content-center' style={{width: "100%", height: "100vh"}}>
+          <Spin tip='Loading...' size="large">
+            <div className="content" />
+          </Spin>
+        </div>
       )}
     </>
   )

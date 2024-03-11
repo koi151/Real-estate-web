@@ -3,24 +3,20 @@ import { Breadcrumb, Button, Checkbox, Col, Image, Popconfirm, Row, Skeleton, To
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { FaPlus } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
 
-import { RootState } from '../../../redux/stores';
-import { AdminAccountType } from '../../../../../backend/commonTypes';
+import { AdminAccountType, AdminPermissions } from '../../../../../backend/commonTypes';
 import StatusButton from '../../../components/admin/StatusButton/statusButton';
 
 import adminAccountsService from '../../../services/admin/accounts.service';
-import '../Properties/properties.scss';
-import { setPermissions } from '../../../redux/reduxSlices/adminPermissionsSlice';
 import NoPermission from '../../../components/admin/NoPermission/noPermission';
+import '../Properties/properties.scss';
 
 const AdminAccounts: React.FC = () => {
 
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const currentUserPermissions = useSelector((state: RootState) => state.currentAdminUserPermissions.permissions);
+  const [permissions, setPermissions] = useState<AdminPermissions | undefined>(undefined);
 
   const [accessAllowed, setAccessAllowed] = useState(true);
   const [loading, setLoading] = useState(true);
@@ -32,18 +28,17 @@ const AdminAccounts: React.FC = () => {
   const [checkedList, setCheckedList] = useState<string[]>([]);
 
   useEffect(() => {
-    setLoading(true);
     const fetchData = async () => {
       try {
+        setLoading(true);
         const response = await adminAccountsService.getAccounts();
 
         if(response?.code === 200) {
           setAccountList(response.accounts);
-          setLoading(false);
+          setAccessAllowed(true);
 
-          if (response.permissions) {
-            dispatch(setPermissions(response.permissions));
-          }
+          if (response.permissions)
+            setPermissions(response.permissions)
 
         } else {
           setAccessAllowed(false);
@@ -59,8 +54,13 @@ const AdminAccounts: React.FC = () => {
           setError('No account found.');
           console.log('Error occurred:', error);
         }
+
+        setAccessAllowed(false);
+      } finally {
+        setLoading(false);
       }
     };
+
     fetchData();
   }, [navigate]);
 
@@ -96,10 +96,9 @@ const AdminAccounts: React.FC = () => {
     }
   };
   
-
   return (
     <>
-      {accessAllowed ? (
+      { accessAllowed ? (
         <>
           <div className='title-wrapper'>
             <h1 className="main-content-title">Administrator accounts:</h1>
@@ -117,7 +116,7 @@ const AdminAccounts: React.FC = () => {
           ) : (
             <>
               <Skeleton loading={loading} active style={{ padding: '3.5rem' }}>
-                {currentUserPermissions?.administratorAccountsCreate && (
+                {permissions?.administratorAccountsCreate && (
                   <div className='d-flex justify-content-end' style={{width: '100%'}}>
                     <Link to={`${location.pathname}/create`} className='custom-link'>
                       <Button className='add-new-button'>
@@ -199,12 +198,12 @@ const AdminAccounts: React.FC = () => {
                                 <Link to={`/admin/accounts/detail/${account._id}`}> 
                                   <Button className='detail-btn'>Detail</Button> 
                                 </Link>
-                                {currentUserPermissions?.administratorAccountsEdit && (
+                                {permissions?.administratorAccountsEdit && (
                                   <Link to={`/admin/accounts/edit/${account._id}`}> 
                                     <Button className='edit-btn'>Edit</Button> 
                                   </Link>
                                 )}
-                                {currentUserPermissions?.administratorAccountsDelete && (
+                                {permissions?.administratorAccountsDelete && (
                                   <Popconfirm
                                     title="Delete the task"
                                     description="Are you sure to delete this property account?"

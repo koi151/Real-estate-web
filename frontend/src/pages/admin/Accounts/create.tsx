@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Select from "antd/es/select";
 import { Badge, Button, Card, Col, 
         Form, Input, Radio, Row, Spin, message } from "antd";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/stores";
 
 import adminAccountsService from "../../../services/admin/accounts.service";
@@ -14,16 +14,12 @@ import NoPermission from "../../../components/admin/NoPermission/noPermission";
 import * as standardizeData from '../../../helpers/standardizeData'
 
 import { RoleTitleType } from "../../../../../backend/commonTypes";
-import { setPermissions } from "../../../redux/reduxSlices/adminPermissionsSlice";
 
 const CreateAdminAccounts: React.FC = () => {
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
-  const currentUserPermissions = useSelector((state: RootState) => state.currentAdminUserPermissions.permissions);
-
-  const [viewAllowed, setViewAllowed] = useState(true);
+  const [accessAllowed, setAccessAllowed] = useState(false);
 
   const [loading, setLoading] = useState(true);
   const [roleTitles, setRoleTitles] = useState<any>([]);
@@ -34,12 +30,15 @@ const CreateAdminAccounts: React.FC = () => {
         const response = await AdminRolesService.getRoleTitles();
 
         if(response?.code === 200) {
+          setAccessAllowed(true);
+
           const formattedTitles = response?.roleTitles.map((role: RoleTitleType) => (
             { "value": role._id, "label": role.title }
           )) 
           setRoleTitles(formattedTitles);
-          setLoading(false);
+
         } else {
+          setAccessAllowed(false);
           message.error(response.message, 2);
         }
 
@@ -51,43 +50,15 @@ const CreateAdminAccounts: React.FC = () => {
           message.error('Error occurred while fetching administrator account data', 2);
           console.log('Error occurred:', err);
         }
+
+        setAccessAllowed(false);
+      } finally {
+        setLoading(false);
       }
     };
+
     fetchData();
   }, [navigate])
-
-  // if permission in redux not existed => fetch permissions
-  useEffect(() =>  {
-    if (currentUserPermissions?.administratorAccountsCreate)
-      return;
-
-    const fetchData = async () => {
-      try {
-        const response = await AdminRolesService.getPermissions();
-        if (response.code === 200) {
-          if (response.permissions) {
-            dispatch(setPermissions(response.permissions));
-          }
-
-          if (!response.permissions.administratorAccountsCreate) {
-            setViewAllowed(false)
-          }
-
-        } else {
-          setViewAllowed(false);
-        }
-
-      } catch (err) {
-        console.log("Error occurred while fetching permissions:", err);
-        message.error('Error occurred, redirect to previous page', 3)
-        navigate(-1);
-        setViewAllowed(false);
-      }
-    }
-    fetchData();
-    
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   /* eslint-disable no-template-curly-in-string */
   const validateMessages = {
@@ -105,7 +76,7 @@ const CreateAdminAccounts: React.FC = () => {
   const filterOption = (input: string, option?: { label: string; value: string }) =>
   (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
 
-  // Phone
+  // Sample phone option
   const prefixSelector = (
     <Form.Item noStyle>
       <Select defaultValue="84" style={{ width: "7rem" }}>
@@ -142,163 +113,163 @@ const CreateAdminAccounts: React.FC = () => {
 
   return (
     <>
-      {currentUserPermissions?.administratorAccountsCreate || viewAllowed ? (
+      { !loading ? (
         <>
-          { loading ? (
-              <div className='d-flex justify-content-center' style={{width: "100%", height: "100vh"}}>
-                <Spin tip='Loading...' size="large">
-                  <div className="content" />
-                </Spin>
-              </div>
-          ) : (
-          <div className="d-flex align-items-center justify-content-center"> 
-            <Form 
-              layout="vertical" 
-              onFinish={onFinishForm}
-              method="POST"
-              encType="multipart/form-data"
-              className="custom-form" 
-              validateMessages={validateMessages}
-            >
-              <Badge.Ribbon text={<Link to="/admin/property-categories">Back</Link>} color="purple" className="custom-ribbon">
-                <Card 
-                  title="Create administrator account" 
-                  className="custom-card" 
-                  style={{marginTop: '2rem'}}
-                  extra={<Link to="/admin/accounts">Back</Link>}
-                >
-                  <Row gutter={16}>
-                    <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
-                      <Form.Item 
-                        label={<span>Full name <b className="required-txt">- required:</b></span>}
-                        name='fullName'
-                        rules={[{ required: true }]}
-                      >
-                        <Input 
-                          type="text" required
-                          id="fullName" 
-                          placeholder="Please enter your full name"
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
-                      <Form.Item 
-                        label='Email:' 
-                        name='email' 
-                        rules={[{ type: 'email', required: true }]}
-                      >
-                        <Input 
-                          type='email' id="email" 
-                          placeholder="Please enter your email"
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
-                      <Form.Item
-                        name="password"
-                        label="Password:"
-                        rules={[
-                          {
-                            required: true,
-                            message: 'Please input your password!',
-                          },
-                          {
-                            min: 6, 
-                            message: 'Password must be at least 6 characters long!',
-                          },
-                          {
-                            max: 20,
-                            message: 'Password must be at most 20 characters long!',
-                          },
-                        ]}
-                        hasFeedback
-                      >
-                        <Input.Password placeholder="Please enter your password"/>
-                      </Form.Item>
-                    </Col>
-                    <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
-                      <Form.Item
-                        name="confirm"
-                        label="Confirm Password:"
-                        dependencies={['password']}
-                        hasFeedback
-                        rules={[
-                          {
-                            required: true,
-                            message: 'Please confirm your password!',
-                          },
-                          ({ getFieldValue }) => ({
-                            validator(_, value) {
-                              if (!value || getFieldValue('password') === value) {
-                                return Promise.resolve();
-                              }
-                              return Promise.reject(new Error('The new password that you entered do not match!'));
+          { accessAllowed ? (
+            <div className="d-flex align-items-center justify-content-center"> 
+              <Form 
+                layout="vertical" 
+                onFinish={onFinishForm}
+                method="POST"
+                encType="multipart/form-data"
+                className="custom-form" 
+                validateMessages={validateMessages}
+              >
+                <Badge.Ribbon text={<Link to="/admin/property-categories">Back</Link>} color="purple" className="custom-ribbon">
+                  <Card 
+                    title="Create administrator account" 
+                    className="custom-card" 
+                    style={{marginTop: '2rem'}}
+                    extra={<Link to="/admin/accounts">Back</Link>}
+                  >
+                    <Row gutter={16}>
+                      <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
+                        <Form.Item 
+                          label={<span>Full name <b className="required-txt">- required:</b></span>}
+                          name='fullName'
+                          rules={[{ required: true }]}
+                        >
+                          <Input 
+                            type="text" required
+                            id="fullName" 
+                            placeholder="Please enter your full name"
+                          />
+                        </Form.Item>
+                      </Col>
+                      <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
+                        <Form.Item 
+                          label='Email:' 
+                          name='email' 
+                          rules={[{ type: 'email', required: true }]}
+                        >
+                          <Input 
+                            type='email' id="email" 
+                            placeholder="Please enter your email"
+                          />
+                        </Form.Item>
+                      </Col>
+                      <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
+                        <Form.Item
+                          name="password"
+                          label="Password:"
+                          rules={[
+                            {
+                              required: true,
+                              message: 'Please input your password!',
                             },
-                          }),
-                        ]}
-                      >
-                        <Input.Password placeholder="Confirm your password"/>
-                      </Form.Item>
-                    </Col>
+                            {
+                              min: 6, 
+                              message: 'Password must be at least 6 characters long!',
+                            },
+                            {
+                              max: 20,
+                              message: 'Password must be at most 20 characters long!',
+                            },
+                          ]}
+                          hasFeedback
+                        >
+                          <Input.Password placeholder="Please enter your password"/>
+                        </Form.Item>
+                      </Col>
+                      <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
+                        <Form.Item
+                          name="confirm"
+                          label="Confirm Password:"
+                          dependencies={['password']}
+                          hasFeedback
+                          rules={[
+                            {
+                              required: true,
+                              message: 'Please confirm your password!',
+                            },
+                            ({ getFieldValue }) => ({
+                              validator(_, value) {
+                                if (!value || getFieldValue('password') === value) {
+                                  return Promise.resolve();
+                                }
+                                return Promise.reject(new Error('The new password that you entered do not match!'));
+                              },
+                            }),
+                          ]}
+                        >
+                          <Input.Password placeholder="Confirm your password"/>
+                        </Form.Item>
+                      </Col>
 
-                    <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
-                      <Form.Item
-                        name="phone"
-                        label="Phone number:"
-                        rules={[{ message: 'Please input your phone number!' }]}
-                      >
-                        <Input 
-                          placeholder="Please enter your phone"
-                          addonBefore={prefixSelector} 
-                          style={{ width: '100%' }} 
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
-                      <Form.Item
-                        name="role_id"
-                        label="Administrator role:"
-                        required
-                      >
-                        <Select
-                          showSearch
-                          placeholder="Select administrator role of account"
-                          optionFilterProp="children"
-                          filterOption={filterOption}
-                          options={roleTitles}
-                        />
-                      </Form.Item>
-                    </Col>
-                    
-                    <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
-                      <Form.Item label="Account status:" name='status' initialValue={'active'}>
-                        <Radio.Group>
-                          <Radio value="active">Active</Radio>
-                          <Radio value="inactive">Inactive</Radio>
-                        </Radio.Group>
-                      </Form.Item>
-                    </Col>
+                      <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
+                        <Form.Item
+                          name="phone"
+                          label="Phone number:"
+                          rules={[{ message: 'Please input your phone number!' }]}
+                        >
+                          <Input 
+                            placeholder="Please enter your phone"
+                            addonBefore={prefixSelector} 
+                            style={{ width: '100%' }} 
+                          />
+                        </Form.Item>
+                      </Col>
+                      <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
+                        <Form.Item
+                          name="role_id"
+                          label="Administrator role:"
+                          required
+                        >
+                          <Select
+                            showSearch
+                            placeholder="Select administrator role of account"
+                            optionFilterProp="children"
+                            filterOption={filterOption}
+                            options={roleTitles}
+                          />
+                        </Form.Item>
+                      </Col>
+                      
+                      <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
+                        <Form.Item label="Account status:" name='status' initialValue={'active'}>
+                          <Radio.Group>
+                            <Radio value="active">Active</Radio>
+                            <Radio value="inactive">Inactive</Radio>
+                          </Radio.Group>
+                        </Form.Item>
+                      </Col>
 
-                    <Col span={24}>
-                      <UploadMultipleFile singleImageMode={true} />
-                    </Col>
-                    
-                    <Col span={24}>
-                      <Form.Item>
-                        <Button className='custom-btn-main' type="primary" htmlType="submit">
-                          Create
-                        </Button>
-                      </Form.Item>
-                    </Col>
-                  </Row>
-                </Card>
-              </Badge.Ribbon>
-            </Form>
-          </div>
+                      <Col span={24}>
+                        <UploadMultipleFile singleImageMode={true} />
+                      </Col>
+                      
+                      <Col span={24}>
+                        <Form.Item>
+                          <Button className='custom-btn-main' type="primary" htmlType="submit">
+                            Create
+                          </Button>
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                  </Card>
+                </Badge.Ribbon>
+              </Form>
+            </div>
+          ) : (
+            <NoPermission permissionType='access' />
           )}
         </>
       ) : (
-        <NoPermission permissionType='access' />
+        <div className='d-flex justify-content-center' style={{width: "100%", height: "100vh"}}>
+          <Spin tip='Loading...' size="large">
+            <div className="content" />
+          </Spin>
+        </div>
       )}
     </>
   )

@@ -23,7 +23,7 @@ const EditPropertyCategories: React.FC = () => {
 
   const currentUserPermissions = useSelector((state: RootState) => state.currentAdminUserPermissions.permissions);
 
-  const [viewAllowed, setViewAllowed] = useState(true);
+  const [accessAllowed, setAccessAllowed] = useState(true);
   const [loading, setLoading] = useState<boolean>(true);
 
   const [editorContent, setEditorContent] = useState<string>("");
@@ -37,6 +37,7 @@ const EditPropertyCategories: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         if (!id) {
           message.error('Can not find property, redirect to previous page', 3);
@@ -47,7 +48,6 @@ const EditPropertyCategories: React.FC = () => {
         // Fetch category tree
         const categoryTreeResponse = await propertyCategoriesService.getCategoryTree();
         if (categoryTreeResponse.code === 200) {
-          console.log("categoryTree:", categoryTreeResponse.categoryTree)
           setCategoryTree(categoryTreeResponse.categoryTree);
         } else {
           message.error(categoryTreeResponse.error || 'Error occurred while fetching property categories data', 3);
@@ -83,45 +83,14 @@ const EditPropertyCategories: React.FC = () => {
           message.error('Error occurred while fetching property category data', 2);
           console.log('Error occurred:', err);
         }
+      } finally {
+        setLoading(false)
       }
     };
+    
     fetchData();
   }, [id, navigate])
 
-  // if permission in redux not existed => fetch permissions
-  useEffect(() =>  {
-    if (currentUserPermissions?.propertyCategoriesEdit)
-      return;
-
-    const fetchData = async () => {
-      try {
-        const response = await AdminRolesService.getPermissions();
-        if (response.code === 200) {
-          if (response.permissions) {
-            dispatch(setPermissions(response.permissions));
-          }
-
-          if (!response.permissions.propertyCategoriesEdit) {
-            setViewAllowed(false)
-          }
-
-        } else {
-          setViewAllowed(false);
-        }
-
-      } catch (err) {
-        console.log("Error occurred while fetching permissions:", err);
-        message.error('Error occurred, redirect to previous page', 3)
-        navigate(-1);
-        setViewAllowed(false);
-      }
-    }
-    fetchData();
-  }, []);
-
-  useEffect(() => { //test
-    console.log("parentCategoryId:", parentCategory)
-  }, [parentCategory])
 
   const handleEditorChange = (content: any) => {
     const contentString = typeof content === 'string' ? content : '';
@@ -168,115 +137,125 @@ const EditPropertyCategories: React.FC = () => {
 
   return (
     <>
-      {currentUserPermissions?.propertyCategoriesEdit || viewAllowed ? (
+      { !loading ? (
         <>
-          {loading ? (
-              <div className='d-flex justify-content-center' style={{width: "100%", height: "100vh"}}>
-                <Spin tip='Loading...' size="large">
-                  <div className="content" />
-                </Spin>
-              </div>
-          ) : (
-            <div className="d-flex align-items-center justify-content-center"> 
-              <Form 
-                layout="vertical" 
-                onFinish={onFinishForm}
-                method="POST"
-                encType="multipart/form-data"
-                className="custom-form" 
-              >
-                <Badge.Ribbon text={<Link to="/admin/property-categories">Back</Link>} color="purple" className="custom-ribbon">
-                  <Card 
-                    title="Property category information" 
-                    className="custom-card" 
-                    style={{marginTop: '2rem'}}
-                    extra={<Link to="/admin/property-categories">Back</Link>}
+          { accessAllowed? (
+            <>
+              {loading ? (
+                  <div className='d-flex justify-content-center' style={{width: "100%", height: "100vh"}}>
+                    <Spin tip='Loading...' size="large">
+                      <div className="content" />
+                    </Spin>
+                  </div>
+              ) : (
+                <div className="d-flex align-items-center justify-content-center"> 
+                  <Form 
+                    layout="vertical" 
+                    onFinish={onFinishForm}
+                    method="POST"
+                    encType="multipart/form-data"
+                    className="custom-form" 
                   >
-                    <Row gutter={16}>
-                      <Col span={24}>
-                        <Form.Item 
-                          label="Property category name"
-                          name='title'
-                          initialValue={category?.title}
-                          required
-                        >
-                          <Input type="text" id="title" required />
-                        </Form.Item>
-                      </Col>
-                      <Col span={24}>
-                        <Form.Item 
-                          label={(<span>Parent category: <b className="required-txt">{parentCategory}</b></span>)} 
-                          name='parent_id' 
-                        >
-                          <TreeSelect
-                            style={{ width: '100%' }}
-                            dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-                            treeData={categoryTree}
-                            labelInValue
-                            onChange={(node) => setParentCategory(node.label)} 
-                            placeholder="Select new parent category if needed only"
-                            treeDefaultExpandAll
-                            treeLine
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col span={24}>
-                        <Form.Item label={`Property category description:`}>
-                          <Editor
-                            id="description" 
-                            initialValue={category?.description}             
-                            onEditorChange={handleEditorChange}
-                            apiKey='zabqr76pjlluyvwebi3mqiv72r4vyshj6g0u07spd34wk1t2'
-                            init={{
-                              toolbar_mode: 'sliding', 
-                              plugins: ' anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount', 
-                              toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat', 
-                              tinycomments_mode: 'embedded', tinycomments_author: 'Author name', mergetags_list: [ { value: 'First.Name', title: 'First Name' }, { value: 'Email', title: 'Email' }, ], 
-                            }}
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col sm={24} md={24} lg={10}  xl={10} xxl={10}>
-                        <Form.Item label="Category status:" name='status' initialValue={category?.status}>
-                          <Radio.Group>
-                            <Radio value="active">Active</Radio>
-                            <Radio value="inactive">Inactive</Radio>
-                          </Radio.Group>
-                        </Form.Item>
-                      </Col>
-    
-                      <Col sm={24} md={24} lg={14} xl={14} xxl={14}>
-                        <Form.Item label="Post position:" name='position' initialValue={category?.position}>
-                          <InputNumber 
-                            type="number"
-                            id="position" 
-                            min={0} 
-                            className="custom-number-input position-input"
-                            placeholder='Auto increase by default'
-                          />
-                        </Form.Item>
-                      </Col>
-    
-                      <Col span={24}>
-                        <UploadMultipleFile uploadedImages={category?.images} setImageUrlRemove={handleImageUrlRemove}/>
-                      </Col>
-                      
-                      <Col span={24}>
-                        <Form.Item>
-                          <Button className='custom-btn-main' type="primary" htmlType="submit">
-                            Update
-                          </Button>
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                  </Card>
-                </Badge.Ribbon>
-              </Form>
-            </div>
+                    <Badge.Ribbon text={<Link to="/admin/property-categories">Back</Link>} color="purple" className="custom-ribbon">
+                      <Card 
+                        title="Property category information" 
+                        className="custom-card" 
+                        style={{marginTop: '2rem'}}
+                        extra={<Link to="/admin/property-categories">Back</Link>}
+                      >
+                        <Row gutter={16}>
+                          <Col span={24}>
+                            <Form.Item 
+                              label="Property category name"
+                              name='title'
+                              initialValue={category?.title}
+                              required
+                            >
+                              <Input type="text" id="title" required />
+                            </Form.Item>
+                          </Col>
+                          <Col span={24}>
+                            <Form.Item 
+                              label={(<span>Parent category: <b className="required-txt">{parentCategory}</b></span>)} 
+                              name='parent_id' 
+                            >
+                              <TreeSelect
+                                style={{ width: '100%' }}
+                                dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                                treeData={categoryTree}
+                                labelInValue
+                                onChange={(node) => setParentCategory(node.label)} 
+                                placeholder="Select new parent category if needed only"
+                                treeDefaultExpandAll
+                                treeLine
+                              />
+                            </Form.Item>
+                          </Col>
+                          <Col span={24}>
+                            <Form.Item label={`Property category description:`}>
+                              <Editor
+                                id="description" 
+                                initialValue={category?.description}             
+                                onEditorChange={handleEditorChange}
+                                apiKey='zabqr76pjlluyvwebi3mqiv72r4vyshj6g0u07spd34wk1t2'
+                                init={{
+                                  toolbar_mode: 'sliding', 
+                                  plugins: ' anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount', 
+                                  toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat', 
+                                  tinycomments_mode: 'embedded', tinycomments_author: 'Author name', mergetags_list: [ { value: 'First.Name', title: 'First Name' }, { value: 'Email', title: 'Email' }, ], 
+                                }}
+                              />
+                            </Form.Item>
+                          </Col>
+                          <Col sm={24} md={24} lg={10}  xl={10} xxl={10}>
+                            <Form.Item label="Category status:" name='status' initialValue={category?.status}>
+                              <Radio.Group>
+                                <Radio value="active">Active</Radio>
+                                <Radio value="inactive">Inactive</Radio>
+                              </Radio.Group>
+                            </Form.Item>
+                          </Col>
+        
+                          <Col sm={24} md={24} lg={14} xl={14} xxl={14}>
+                            <Form.Item label="Post position:" name='position' initialValue={category?.position}>
+                              <InputNumber 
+                                type="number"
+                                id="position" 
+                                min={0} 
+                                className="custom-number-input position-input"
+                                placeholder='Auto increase by default'
+                              />
+                            </Form.Item>
+                          </Col>
+        
+                          <Col span={24}>
+                            <UploadMultipleFile uploadedImages={category?.images} setImageUrlRemove={handleImageUrlRemove}/>
+                          </Col>
+                          
+                          <Col span={24}>
+                            <Form.Item>
+                              <Button className='custom-btn-main' type="primary" htmlType="submit">
+                                Update
+                              </Button>
+                            </Form.Item>
+                          </Col>
+                        </Row>
+                      </Card>
+                    </Badge.Ribbon>
+                  </Form>
+                </div>
+              )}
+            </>
+          ) : (
+            <NoPermission permissionType='access' />
           )}
         </>
       ) : (
-        <NoPermission permissionType='access' />
+        <div className='d-flex justify-content-center' style={{width: "100%", height: "100vh"}}>
+          <Spin tip='Loading...' size="large">
+            <div className="content" />
+          </Spin>
+        </div>
       )}
     </>
   )

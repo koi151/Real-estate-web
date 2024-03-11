@@ -3,8 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import Select from "antd/es/select";
 import { Badge, Button, Card, Col, 
         Form, Input, Radio, Row, Spin, message } from "antd";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../redux/stores";
+import { useDispatch } from "react-redux";
 
 import adminAccountsService from "../../../services/admin/accounts.service";
 import AdminRolesService from "../../../services/admin/roles.service";
@@ -13,19 +12,15 @@ import NoPermission from "../../../components/admin/NoPermission/noPermission";
 import UploadMultipleFile from "../../../components/admin/UploadMultipleFile/uploadMultipleFile";
 import { AdminAccountType, RoleTitleType } from "../../../../../backend/commonTypes";
 import * as standardizeData from '../../../helpers/standardizeData'
-import { setPermissions } from "../../../redux/reduxSlices/adminPermissionsSlice";
 
 
 const EditAdminAccounts: React.FC = () => {
   
   const { id } = useParams();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-
-  const currentUserPermissions = useSelector((state: RootState) => state.currentAdminUserPermissions.permissions);
   
   const [loading, setLoading] = useState<boolean>(true);
-  const [viewAllowed, setViewAllowed] = useState(true);
+  const [accessAllowed, setAccessAllowed] = useState<boolean>(true);
 
   const [account, setAccount] = useState<AdminAccountType | undefined>(undefined);
   const [roleTitles, setRoleTitles] = useState<any>([]);
@@ -41,9 +36,13 @@ const EditAdminAccounts: React.FC = () => {
         }
         
         const accountResponse = await adminAccountsService.getSingleAccount(id);
+        setLoading(true);
+
         if(accountResponse?.code === 200 && accountResponse.account) {
+          setAccessAllowed(true);
           setAccount(accountResponse.account);
         } else {
+          setAccessAllowed(false);
           message.error(accountResponse.message || 'Could not find administrator account information', 2);
         }
   
@@ -58,56 +57,24 @@ const EditAdminAccounts: React.FC = () => {
         } else {
           message.error(roleTitlesResponse.message || 'No roles found', 2);
         }
-  
-        setLoading(false);
-        
+          
       } catch (err: any) {
         if (err.response && err.response.status === 401) {
+          setAccessAllowed(false);
           message.error('Unauthorized - Please log in to access this feature.', 3);
           navigate('/admin/auth/login');
         } else {
           message.error('Error occurred while feaching administrator role', 2);
           console.log('Error occurred:', err);
         }
+      } finally { 
+        setLoading(false);
       }
     };
     
     fetchData();
-    
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
-
-  // if permission in redux not existed => fetch permissions
-  useEffect(() =>  {
-    if (currentUserPermissions?.administratorAccountsEdit)
-      return;
-
-    const fetchData = async () => {
-      try {
-        const response = await AdminRolesService.getPermissions();
-        if (response.code === 200) {
-          if (response.permissions) {
-            dispatch(setPermissions(response.permissions));
-          }
-
-          if (!response.permissions.administratorAccountsEdit) {
-            setViewAllowed(false)
-          }
-
-        } else {
-          setViewAllowed(false);
-        }
-
-      } catch (err) {
-        console.log("Error occurred while fetching permissions:", err);
-        message.error('Error occurred, redirect to previous page', 3)
-        navigate(-1);
-        setViewAllowed(false);
-      }
-    }
-    fetchData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   /* eslint-disable no-template-curly-in-string */
   const validateMessages = {
@@ -123,7 +90,6 @@ const EditAdminAccounts: React.FC = () => {
 
   // Phone
   const prefixSelector = (
-    // name="prefix"
     <Form.Item noStyle>
       <Select defaultValue="84" style={{ width: "7rem" }}>
         <Select.Option value="84">+84</Select.Option>
@@ -170,15 +136,9 @@ const EditAdminAccounts: React.FC = () => {
 
   return (
     <>
-      {currentUserPermissions?.administratorAccountsEdit || viewAllowed ? (
+      { !loading ? (
         <>
-          { loading ? (
-              <div className='d-flex justify-content-center' style={{width: "100%", height: "100vh"}}>
-                <Spin tip='Loading...' size="large">
-                  <div className="content" />
-                </Spin>
-              </div>
-          ) : (
+          { accessAllowed ? (
             <div className="d-flex align-items-center justify-content-center"> 
               <Form 
                 layout="vertical" 
@@ -321,10 +281,16 @@ const EditAdminAccounts: React.FC = () => {
                 </Badge.Ribbon>
               </Form>
             </div>
+          ) : (
+            <NoPermission permissionType='access' />
           )}
         </>
       ) : (
-        <NoPermission permissionType='access' />
+        <div className='d-flex justify-content-center' style={{width: "100%", height: "100vh"}}>
+          <Spin tip='Loading...' size="large">
+            <div className="content" />
+          </Spin>
+        </div>
       )}
     </>
   )

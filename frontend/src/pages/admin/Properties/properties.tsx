@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { Link, useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Breadcrumb, Button, Checkbox, Col, Image, InputNumber, Pagination, 
          PaginationProps, Popconfirm, Row, Skeleton, Space, Tag,  Tooltip,  message } from 'antd';
 
@@ -11,7 +11,7 @@ import getPriceUnit from '../../../helpers/getPriceUnit';
 
 import propertiesService from '../../../services/admin/properties.service';
 
-import { PropertyType, PaginationObject } from '../../../../../backend/commonTypes';
+import { PropertyType, PaginationObject, AdminPermissions } from '../../../../../backend/commonTypes';
 import ViewCount from '../../../components/shared/Counters/ViewCount/viewCount';
 import RoomCountTooltip from '../../../components/shared/Counters/RoomCounter/roomCount';
 import FilterBox from '../../../components/admin/FilterBox/filterBox';
@@ -23,16 +23,15 @@ import './properties.scss';
 
 
 const Properties: React.FC = () => {
-
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
 
   const filters = useSelector((state: RootState) => state.filters);
-  const currentUser = useSelector((state: RootState) => state.adminUser);
 
+  const [permissions, setPermissions] = useState<AdminPermissions | undefined>(undefined);
   const [accessAllowed, setAccessAllowed] = useState(true);
   const [loading, setLoading] = useState(true);
+
   const [propertyList, setPropertyList] = useState<PropertyType[]>([]);
   const [error, setError] = useState<string | null>(null); 
   const [propertyCount, setPropertyCount] = useState<number>(0);
@@ -78,7 +77,10 @@ const Properties: React.FC = () => {
           setPropertyList(response.properties);
           setPaginationObj(response.paginationObject);
           setPropertyCount(response.propertyCount);
-          setLoading(false);
+
+          if (response.permissions) {
+            setPermissions(response.permissions);
+          }
 
         } else {
           setAccessAllowed(false);
@@ -94,12 +96,15 @@ const Properties: React.FC = () => {
           setError('No property found.');
           console.log('Error occurred:', error);
         }
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [keyword, status, sorting, currentPage, listingType, priceRange, category]); 
+
 
   // update url
   useEffect(() => {
@@ -129,7 +134,7 @@ const Properties: React.FC = () => {
     
     return `${location.pathname}${queryString}`;
   };
-  
+
   
   const handleCheckboxChange = (id: string | undefined) => (e: CheckboxChangeEvent) => {
     if (id === undefined) {
@@ -197,7 +202,7 @@ const Properties: React.FC = () => {
           </div>
     
           <FilterBox 
-            createAllowed={currentUser?.permissions?.propertiesCreate} 
+            createAllowed={permissions?.propertiesCreate} 
             priceRangeFilter
             categoryFilter
             statusFilter
@@ -336,12 +341,12 @@ const Properties: React.FC = () => {
                               <Link to={`/admin/properties/detail/${property._id}`}> 
                                 <Button className='detail-btn'>Detail</Button> 
                               </Link>
-                              {currentUser?.permissions?.propertiesEdit && (
+                              {permissions?.propertiesEdit && (
                                 <Link to={`/admin/properties/edit/${property._id}`}> 
                                   <Button className='edit-btn'>Edit</Button> 
                                 </Link>
                               )}
-                              {currentUser?.permissions?.propertiesDelete && (
+                              {permissions?.propertiesDelete && (
                                 <Popconfirm
                                   title="Delete the task"
                                   description="Are you sure to delete this property?"

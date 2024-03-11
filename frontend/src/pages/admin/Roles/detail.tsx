@@ -2,26 +2,20 @@ import { Badge, Card, Col, Form, Input, Row, Spin, message } from "antd";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import TextArea from "antd/es/input/TextArea";
-import { RootState } from "../../../redux/stores";
-import { useDispatch, useSelector } from "react-redux";
 
 import AdminRolesService from "../../../services/admin/roles.service";
 
 import { RolesType } from "../../../../../backend/commonTypes";
 import NoPermission from "../../../components/admin/NoPermission/noPermission";
-import { setPermissions } from "../../../redux/reduxSlices/adminPermissionsSlice";
 
 const AdminRoleDetail: React.FC = () => {
 
   const { id } = useParams();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
-  const currentUserPermissions = useSelector((state: RootState) => state.currentAdminUserPermissions.permissions);
-
-  const [viewAllowed, setViewAllowed] = useState(true);
-
+  const [accessAllowed, setAccessAllowed] = useState(false);
   const [loading, setLoading] = useState(true);
+
   const [role, setRole] = useState<RolesType | undefined>(undefined);
 
   useEffect(() => {
@@ -36,10 +30,10 @@ const AdminRoleDetail: React.FC = () => {
 
         if(response?.code === 200 && response.role) {
           setRole(response.role);
-          setLoading(false);
+          setAccessAllowed(true);
+
         } else {
           message.error(response.message, 2);
-          setLoading(false);
         }
 
       } catch (err: any) {
@@ -50,53 +44,19 @@ const AdminRoleDetail: React.FC = () => {
           message.error('Error occurred while fetching administrator role data', 2);
           console.log('Error occurred:', err);
         }
+      } finally {
+        setLoading(false);
       }
     };
+
     fetchData();
   }, [id, navigate])
 
-  // if permission in redux not existed => fetch permissions
-  useEffect(() =>  {
-    if (currentUserPermissions?.administratorRolesView)
-      return;
-
-    const fetchData = async () => {
-      try {
-        const response = await AdminRolesService.getPermissions();
-        if (response.code === 200) {
-          if (response.permissions) {
-            dispatch(setPermissions(response.permissions));
-          }
-
-          if (!response.permissions.administratorRolesView) {
-            setViewAllowed(false)
-          }
-
-        } else {
-          setViewAllowed(false);
-        }
-
-      } catch (err) {
-        console.log("Error occurred while fetching permissions:", err);
-        message.error('Error occurred, redirect to previous page', 3)
-        navigate(-1);
-        setViewAllowed(false);
-      }
-    }
-    fetchData();
-  }, []);
-
   return (
     <>
-      {currentUserPermissions?.administratorRolesView || viewAllowed ? (
+      { !loading ? (
         <>
-          { loading ? (
-              <div className='d-flex justify-content-center' style={{width: "100%", height: "100vh"}}>
-                <Spin tip='Loading...' size="large">
-                  <div className="content" />
-                </Spin>
-              </div>
-          ) : (
+          { accessAllowed ? (
             <div className="d-flex align-items-center justify-content-center"> 
               <Form
                 layout="vertical" 
@@ -133,10 +93,16 @@ const AdminRoleDetail: React.FC = () => {
                 </Badge.Ribbon>
               </Form>
             </div>
+          ) : (
+            <NoPermission permissionType='access' />
           )}
         </>
       ) : (
-        <NoPermission permissionType='access' />
+        <div className='d-flex justify-content-center' style={{width: "100%", height: "100vh"}}>
+          <Spin tip='Loading...' size="large">
+            <div className="content" />
+          </Spin>
+        </div>
       )}
     </>
   )

@@ -10,12 +10,8 @@ import * as standardizeData from '../../../helpers/standardizeData'
 import GetAddress from "../../../components/admin/getAddress/getAddress";
 import UploadMultipleFile from "../../../components/admin/UploadMultipleFile/uploadMultipleFile";
 import ExpireTimePicker from "../../../components/admin/ExpireTimePicker/expireTimePicker";
-import { RootState } from "../../../redux/stores";
-import { useDispatch, useSelector } from "react-redux";
 import { directionOptions, documentOptions, furnitureOptions, listingTypeOptions } from "../../../helpers/propertyOptions";
 import NoPermission from "../../../components/admin/NoPermission/noPermission";
-import AdminRolesService from "../../../services/admin/roles.service";
-import { setPermissions } from "../../../redux/reduxSlices/adminPermissionsSlice";
 import propertyCategoriesService from "../../../services/admin/property-categories.service";
 import { DefaultOptionType } from "antd/es/select";
 import { IoBedOutline } from "react-icons/io5";
@@ -26,11 +22,8 @@ import { SlDirections } from "react-icons/sl";
 const EditProperty: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
-  const currentUserPermissions = useSelector((state: RootState) => state.currentAdminUserPermissions.permissions);
-
-  const [viewAllowed, setViewAllowed] = useState(true);
+  const [accessAllowed, setAccessAllowed] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const [postType] = useState<string>('sell');
@@ -55,6 +48,7 @@ const EditProperty: React.FC = () => {
         const categoryTreeResponse = await propertyCategoriesService.getCategoryTree();
         if (categoryTreeResponse.code === 200) {
           setCategoryTree(categoryTreeResponse.categoryTree);
+          setAccessAllowed(true);
         } else {
           message.error(categoryTreeResponse.error || 'Error occurred while fetching property categories data', 3);
         }
@@ -75,9 +69,7 @@ const EditProperty: React.FC = () => {
         } else {
           message.error('ID not provided, unable to fetch property data', 3);
         }
-  
-        setLoading(false);
-        
+          
       } catch (err: any) {
         if (err.response && err.response.status === 401) {
           message.error('Unauthorized - Please log in to access this feature.', 3);
@@ -86,6 +78,8 @@ const EditProperty: React.FC = () => {
           message.error('Error occurred while fetching data', 2);
           console.error('Error occurred:', err);
         }
+        
+      } finally {
         setLoading(false);
       }
     };
@@ -93,38 +87,6 @@ const EditProperty: React.FC = () => {
     fetchData();
   }, []);
   
-
-  // if permission in redux not existed => fetch permissions
-  useEffect(() =>  {
-    if (currentUserPermissions?.propertiesEdit)
-      return;
-
-    const fetchData = async () => {
-      try {
-        const response = await AdminRolesService.getPermissions();
-        if (response.code === 200) {
-          if (response.permissions) {
-            dispatch(setPermissions(response.permissions));
-          }
-
-          if (!response.permissions.propertiesEdit) {
-            setViewAllowed(false)
-          }
-
-        } else {
-          setViewAllowed(false);
-        }
-
-      } catch (err) {
-        console.log("Error occurred while fetching permissions:", err);
-        message.error('Error occurred, redirect to previous page', 3)
-        navigate(-1);
-        setViewAllowed(false);
-      }
-    }
-    fetchData();
-  }, []);
-
 
   const handleEditorChange = (content: any, editor: any) => {
     const contentString = typeof content === 'string' ? content : '';
@@ -203,15 +165,9 @@ const EditProperty: React.FC = () => {
 
   return (
     <>
-      {currentUserPermissions?.propertiesEdit || viewAllowed ? (
+      {!loading ? (
         <>
-        {loading ? (
-            <div className='d-flex justify-content-center' style={{width: "100%", height: "100vh"}}>
-              <Spin tip='Loading...' size="large">
-                <div className="content" />
-              </Spin>
-            </div>
-        ) : (
+        {accessAllowed ? (
           <div className="d-flex align-items-center justify-content-center"> 
             <Form 
               layout="vertical" 
@@ -574,10 +530,16 @@ const EditProperty: React.FC = () => {
               </Card>
             </Form>
           </div>
+        ) : (
+          <NoPermission permissionType='access' />
         )}
         </>
       ) : (
-        <NoPermission permissionType='access' />
+        <div className='d-flex justify-content-center' style={{width: "100%", height: "100vh"}}>
+          <Spin tip='Loading...' size="large">
+            <div className="content" />
+          </Spin>
+        </div>
       )}
     </>
   )

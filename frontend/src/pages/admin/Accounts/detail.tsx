@@ -1,29 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Badge, Card, Col, Form, Input, Radio, Row, Spin, message } from "antd";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../redux/stores";
+import { useDispatch } from "react-redux";
 
-import AdminRolesService from "../../../services/admin/roles.service";
 import adminAccountsService from "../../../services/admin/accounts.service";
 
 import { AdminAccountType } from "../../../../../backend/commonTypes";
 import NoPermission from "../../../components/admin/NoPermission/noPermission";
 import UploadMultipleFile from "../../../components/admin/UploadMultipleFile/uploadMultipleFile";
 
-import { setPermissions } from "../../../redux/reduxSlices/adminPermissionsSlice";
 
 const AdminAccountsDetail: React.FC = () => {
 
   const { id } = useParams();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
-  const currentUserPermissions = useSelector((state: RootState) => state.currentAdminUserPermissions.permissions);
-
-  const [viewAllowed, setViewAllowed] = useState(true);
-  const [account, setAccount] = useState<AdminAccountType | undefined>(undefined);
+  const [accessAllowed, setAccessAllowed] = useState(true);
   const [loading, setLoading] = useState<boolean>(true);
+
+  const [account, setAccount] = useState<AdminAccountType | undefined>(undefined);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,14 +28,16 @@ const AdminAccountsDetail: React.FC = () => {
           navigate(-1);
           return;
         }
+
         const response = await adminAccountsService.getSingleAccount(id);
+        setLoading(true)
 
         if(response?.code === 200 && response.account) {
+          setAccessAllowed(true);
           setAccount(response.account);
-          setLoading(false);
         } else {
+          setAccessAllowed(false);
           message.error(response.message, 2);
-          setLoading(false);
         }
 
       } catch (err: any) {
@@ -51,53 +48,21 @@ const AdminAccountsDetail: React.FC = () => {
           message.error('Error occurred while fetching administrator account data', 2);
           console.log('Error occurred:', err);
         }
+
+        setAccessAllowed(false);
+      } finally {
+        setLoading(false);
       }
     };
+
     fetchData();
-  }, [id])
-
-  // if permission in redux not existed => fetch permissions
-  useEffect(() =>  {
-    if (currentUserPermissions?.administratorAccountsView)
-      return;
-
-    const fetchData = async () => {
-      try {
-        const response = await AdminRolesService.getPermissions();
-        if (response.code === 200) {
-          if (response.permissions) {
-            dispatch(setPermissions(response.permissions));
-          }
-
-          if (!response.permissions.administratorAccountsView) {
-            setViewAllowed(false)
-          }
-
-        } else {
-          setViewAllowed(false);
-        }
-
-      } catch (err) {
-        console.log("Error occurred while fetching permissions:", err);
-        message.error('Error occurred, redirect to previous page', 3)
-        navigate(-1);
-        setViewAllowed(false);
-      }
-    }
-    fetchData();
-  }, []);
+  }, [id, navigate])
 
   return (
     <>
-      {currentUserPermissions?.administratorAccountsView || viewAllowed ? (
+      { !loading ? (
         <>
-          { loading ? (
-              <div className='d-flex justify-content-center' style={{width: "100%", height: "100vh"}}>
-                <Spin tip='Loading...' size="large">
-                  <div className="content" />
-                </Spin>
-              </div>
-          ) : (
+          { accessAllowed ? (
             <div className="d-flex align-items-center justify-content-center"> 
               <Form 
                 layout="vertical" 
@@ -173,10 +138,16 @@ const AdminAccountsDetail: React.FC = () => {
                 </Badge.Ribbon>
               </Form>
             </div>
+          ) : (
+            <NoPermission permissionType='access' />
           )}
         </>
       ) : (
-        <NoPermission permissionType='access' />
+        <div className='d-flex justify-content-center' style={{width: "100%", height: "100vh"}}>
+          <Spin tip='Loading...' size="large">
+            <div className="content" />
+          </Spin>
+        </div>
       )}
     </>
   )

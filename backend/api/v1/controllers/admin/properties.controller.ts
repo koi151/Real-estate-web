@@ -106,7 +106,7 @@ export const index = async (req: Request, res: Response) => {
 
     // } else {
 
-    console.dir(find, {depth: null})
+      // console.dir(find, {depth: null})
 
     properties = await Property.find(find)
       .sort(sortingQuery || '')
@@ -120,7 +120,13 @@ export const index = async (req: Request, res: Response) => {
       message: 'Success',
       properties: properties,
       paginationObject: paginationObject,
-      propertyCount: propertyCount
+      propertyCount: propertyCount,
+      permissions: {
+        propertiesView: res.locals.currentUser.permissions.includes('properties_view'),
+        propertiesEdit: res.locals.currentUser.permissions.includes('properties_edit'),
+        propertiesCreate: res.locals.currentUser.permissions.includes('properties_create'),
+        propertiesDelete: res.locals.currentUser.permissions.includes('properties_delete')
+      }
     });
 
   } catch (error) {

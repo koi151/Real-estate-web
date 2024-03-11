@@ -74,3 +74,4 @@ export const sortingOptionsClient = [
   { label: 'Most view', value: 'view-desc' },
   { label: 'Newest', value: 'createdAt-desc' },
 ];
+

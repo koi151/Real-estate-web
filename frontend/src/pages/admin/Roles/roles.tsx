@@ -4,24 +4,21 @@ import React, { useEffect, useState } from "react"
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { DeleteOutlined, EditOutlined, SolutionOutlined } from '@ant-design/icons';
 import { FaPlus } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
 
-import { RolesType } from '../../../../../backend/commonTypes';
+import { AdminPermissions, RolesType } from '../../../../../backend/commonTypes';
 import AdminRolesService from '../../../services/admin/roles.service';
 import NoPermission from '../../../components/admin/NoPermission/noPermission';
-import { setPermissions } from '../../../redux/reduxSlices/adminPermissionsSlice';
-import { RootState } from '../../../redux/stores';
 
 const AdminRoles: React.FC = () => {
 
-  const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
 
-  const currentUserPermissions = useSelector((state: RootState) => state.currentAdminUserPermissions.permissions);
+  const [permissions, setPermissions] = useState<AdminPermissions | undefined>(undefined);
 
   const [accessAllowed, setAccessAllowed] = useState(true);
   const [loading, setLoading] = useState(true);
+
   const [roles, setRoles] = useState<RolesType[]>([]);
 
   const columns: TableProps<RolesType>['columns'] = [
@@ -59,7 +56,7 @@ const AdminRoles: React.FC = () => {
               />
             </Link>
           </Tooltip>
-          {currentUserPermissions?.administratorRolesEdit && (
+          {permissions?.administratorRolesEdit && (
             <Tooltip title='Edit role'>
               <Link to={`/admin/roles/edit/${role._id}`}> 
                 <Button 
@@ -69,7 +66,7 @@ const AdminRoles: React.FC = () => {
               </Link>
             </Tooltip>
           )}
-          {currentUserPermissions?.administratorRolesDelete && (
+          {permissions?.administratorRolesDelete && (
             <Tooltip title='Delete role'>
               <Popconfirm
                 title="Delete role"
@@ -97,11 +94,10 @@ const AdminRoles: React.FC = () => {
 
         if(response?.code === 200) {
           setRoles(response.roles);
-          setLoading(false);
+          setAccessAllowed(true);
 
-          if (response.permissions) {
-            dispatch(setPermissions(response.permissions));
-          }
+          if (response.permissions)
+            setPermissions(response.permissions);
 
         } else {
           setAccessAllowed(false);
@@ -116,10 +112,12 @@ const AdminRoles: React.FC = () => {
           message.error('Error occurred while fetching administrator roles', 2);
           console.log('Error occurred:', err);
         }
+      } finally {
+        setLoading(false);
       }
     };
+
     fetchData();
-    
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -156,7 +154,7 @@ const AdminRoles: React.FC = () => {
           {!loading ? 
             <>
               <div className='d-flex justify-content-end' style={{width: '100%'}}>
-                {currentUserPermissions?.administratorRolesCreate && (
+                {permissions?.administratorRolesCreate && (
                   <Link to={`${location.pathname}/create`} className='custom-link mb-3'>
                     <Button className='add-new-button'>
                       Add new <FaPlus />
