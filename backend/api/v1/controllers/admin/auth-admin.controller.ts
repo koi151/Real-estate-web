@@ -52,16 +52,16 @@ export const loginPost = async (req: Request, res: Response) => {
       });
     }
   
-    let refreshToken = generateRandomString(30);
+    // let refreshToken = generateRandomString(30);
 
-    if (!user.token) {
-      await AdminAccount.updateOne({
-        _id: user._id,
-        refreshToken: refreshToken
-      })
-    } else {
-      refreshToken = user.token;
-    }
+    // if (!user.token) {
+    //   await AdminAccount.updateOne({
+    //     _id: user._id,
+    //     refreshToken: refreshToken
+    //   })
+    // } else {
+    //   refreshToken = user.token;
+    // }
 
     const userPermissions = await Role.findOne({
       _id: user.role_id,

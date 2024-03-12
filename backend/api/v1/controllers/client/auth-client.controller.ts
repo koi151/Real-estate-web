@@ -50,16 +50,16 @@ export const loginPost = async (req: Request, res: Response) => {
       });
     }
   
-    let refreshToken = generateRandomString(30);
+    // let refreshToken = generateRandomString(30);
 
-    if (!user.token) {
-      await ClientAccount.updateOne({
-        _id: user._id,
-        refreshToken: refreshToken
-      })
-    } else {
-      refreshToken = user.token;
-    }
+    // if (!user.token) {
+    //   await ClientAccount.updateOne({
+    //     _id: user._id,
+    //     refreshToken: refreshToken
+    //   })
+    // } else {
+    //   refreshToken = user.token;
+    // }
 
     delete user.token;
     delete user.password;
