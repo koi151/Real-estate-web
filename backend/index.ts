@@ -1,6 +1,7 @@
 import express, { Express } from 'express';
 import * as database from './configs/database';
 import { systemConfig } from './configs/system';
+import cookieParser from 'cookie-parser';
 
 import methodOverride from 'method-override';
 import cors from "cors";
@@ -19,7 +20,21 @@ const app: Express = express();
 const port: number | string = process.env.PORT || 3000;
 
 app.use(methodOverride('_method'));
-app.use(cors());
+
+const allowedOrigins = ['http://localhost:3001'];
+const corsOptions: cors.CorsOptions = {
+  origin: function (origin: string, callback: (err: Error | null, allow: boolean) => void) {
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'), false);
+    }
+  },
+  credentials: true, 
+};
+
+app.use(cors(corsOptions));
+app.use(cookieParser());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

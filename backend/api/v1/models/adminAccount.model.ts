@@ -11,10 +11,6 @@ const adminAccountSchema = new mongoose.Schema(
     fullName: String,
     password: String,
     email: String,
-    token: {
-      type: String,
-      default: generateRandomString(30)
-    },
     role_id: String,
     phone: String,
     avatar: String,

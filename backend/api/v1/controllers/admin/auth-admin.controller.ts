@@ -19,18 +19,8 @@ export const loginPost = async (req: Request, res: Response) => {
       deleted: false
     });
 
-    if (!user) {
-      res.status(401).json({
-        code: 401,
-        message: "Incorrect email or password"
-      });
-      return;
-    }
-
-    const passwordMatch = bcrypt.compareSync(userInfo.password, user.password);
-
-    if (!passwordMatch) {
-      return res.json({
+    if (!user || !bcrypt.compareSync(userInfo.password, user.password)) {
+      return res.status(401).json({
         code: 401,
         message: "Incorrect email or password"
       });
@@ -78,39 +68,41 @@ export const loginPost = async (req: Request, res: Response) => {
       deleted: false
     }).select('permissions -_id')
 
-    if (userPermissions) {
-
-      // convert document to JSON
-      const regularUserObj = { ...user['_doc'] };
-
-      const permissionObj: { [key: string]: boolean } = userPermissions.permissions.reduce((acc, item) => {
-        acc[formattedPermissions(item)] = true;
-        return acc;
-      }, {});
-      
-      console.log("userPermissions af:", permissionObj)
-
-      delete regularUserObj['password'];
-      delete regularUserObj["accessToken"];
-      delete regularUserObj["refreshToken"];
-      delete regularUserObj["token"];    
-
-      regularUserObj['permissions'] = permissionObj;
-
-      res.status(200).json({
-        code: 200,
-        message: 'Success',
-        accessToken,
-        refreshToken,
-        user: regularUserObj
-      });
-
-    } else {
-      res.json({
+    if (!userPermissions) {
+      return res.status(400).json({
         code: 400,
         message: 'Can not get permissions of account',
       });
     }
+
+    // convert document to JSON
+    const regularUserObj = { ...user['_doc'] };
+
+    const permissionObj: { [key: string]: boolean } = userPermissions.permissions.reduce((acc, item) => {
+      acc[formattedPermissions(item)] = true;
+      return acc;
+    }, {});
+    
+    delete regularUserObj['password'];
+    delete regularUserObj["accessToken"];
+    delete regularUserObj["token"];    
+
+    regularUserObj['permissions'] = permissionObj;
+    
+    res.cookie('accessToken', accessToken, {
+      expires: new Date(Date.now() + (24 * 60 * 60 * 1000)),
+      httpOnly: true, 
+      secure: true, 
+      sameSite: 'strict',
+      path: '/' 
+    })
+
+    res.status(200).json({
+      code: 200,
+      message: 'Success',
+      user: regularUserObj
+    });
+
 
   } catch (error) {
     console.log('Error occurred while verifying account:', error);
@@ -132,7 +124,7 @@ export const refreshToken = async (req: Request, res: Response) => {
       message: 'Access token not found'
     });
 	}
-
+  
 	// Get refresh token from body
 	const refreshTokenFromBody = req.body.refreshToken;
 
@@ -195,3 +187,13 @@ export const refreshToken = async (req: Request, res: Response) => {
 		accessToken,
 	});
 }; // !
+
+
+// [GET] /admin/auth/logout
+export const logout = async (req: Request, res: Response) => {
+  res.clearCookie("accessToken");
+  res.send({
+    code: 200,
+    success: true
+  })
+}

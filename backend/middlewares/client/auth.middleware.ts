@@ -5,8 +5,9 @@ import { verifyToken } from '../../helpers/auth.methods';
 export const authRequire = async (req: Request, res: Response, next: NextFunction) => {
   try {
     // Get access token from header
-    const accessTokenFromHeader = req.headers['authorization'];
-    if (!accessTokenFromHeader) {
+    const { clientAccessToken } = req.cookies;
+
+    if (!clientAccessToken) {
       return res.status(400).json({
         code: 400,
         message: 'No access token found.'
@@ -16,7 +17,7 @@ export const authRequire = async (req: Request, res: Response, next: NextFunctio
     const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
 
     const verified: any = await verifyToken(
-      accessTokenFromHeader,
+      clientAccessToken,
       accessTokenSecret,
     );
 
@@ -30,7 +31,7 @@ export const authRequire = async (req: Request, res: Response, next: NextFunctio
     // Fetch user
     const user = await ClientAccount.findOne(
       { _id: verified.payload.username }
-    ).select('-password');
+    ).select('-password -token');
 
     if (!user) {
       return res.status(401).json({

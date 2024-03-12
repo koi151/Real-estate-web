@@ -21,15 +21,8 @@ const AdminRegisterLogin: React.FC<AdminRegisterLoginProps> = ({ isRegisterPage 
       const response = await adminAuthorizationService.submitLogin(data);
         switch (response.code) {
           case 200:
-            localStorage.setItem('accessToken', response.accessToken);
-            localStorage.setItem('refreshToken', response.refreshToken);
-
-            // remove client account info when logging as admin
-            localStorage.removeItem('clientAccessToken');
-            localStorage.removeItem('clientRefreshToken');
 
             if (response.user) {
-              console.log(response.user)
               dispatch(setAdminUser(response.user))
             }
 

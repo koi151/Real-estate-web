@@ -8,19 +8,6 @@ class RolesServiceAdmin {
     this.api = createApi(baseUrl);
   }
 
-  private getAuthHeaders() {
-    const accessToken = localStorage.getItem('accessToken');
-
-    if (!accessToken) {
-      throw new Error('Access token not found in localStorage');
-    }
-    return {
-      headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
-    };
-  }
-
   private async handleRequest(request: Promise<any>) {
     try {
       const response = await request;
@@ -36,37 +23,37 @@ class RolesServiceAdmin {
   }
 
   async getRoleTitles() {
-    const request = this.api.get(`/titles`, this.getAuthHeaders());
+    const request = this.api.get(`/titles`);
     return this.handleRequest(request);
   }
 
   async getPermissions() { // redux
-    const request = this.api.get(`/permissions`, this.getAuthHeaders());
+    const request = this.api.get(`/permissions`);
     return this.handleRequest(request);
   }
 
   async getRoles() { 
-    const request = this.api.get("/", this.getAuthHeaders());
+    const request = this.api.get("/");
     return this.handleRequest(request);
   }
 
   async getSingleRole(id: string) {
-    const request = this.api.get(`/detail/${id}`, this.getAuthHeaders());
+    const request = this.api.get(`/detail/${id}`);
     return this.handleRequest(request);
   }
 
   async createRole(role: any) {
-    const request = this.api.post('/create', role, this.getAuthHeaders());
+    const request = this.api.post('/create', role);
     return this.handleRequest(request);
   }
 
   async updateRole(role: RolesType, id: string) {
-    const request = this.api.patch(`/edit/${id}`, role, this.getAuthHeaders());
+    const request = this.api.patch(`/edit/${id}`, role);
     return this.handleRequest(request);
   }
 
   async deleteRole(id: string) {
-    const request = this.api.delete(`/delete/${id}`, this.getAuthHeaders());
+    const request = this.api.delete(`/delete/${id}`);
     return this.handleRequest(request);
   }
 }

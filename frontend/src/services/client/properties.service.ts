@@ -8,20 +8,6 @@ class PropertiesServiceClient {
     this.api = createApi(baseUrl);
   }
 
-  private getAuthHeaders() {
-    const clientAccessToken = localStorage.getItem('clientAccessToken');
-    
-    if (!clientAccessToken) {
-      console.log("Access token not found");
-      throw new Error('Unauthorized');
-    }
-    return {
-      headers: {
-        Authorization: `Bearer ${clientAccessToken}`
-      }
-    };
-  }
-
   private async handleRequest(request: Promise<any>): Promise<any> {
     try {
       const response = await request;
@@ -33,7 +19,7 @@ class PropertiesServiceClient {
       if (err.message === 'Access token not found') {
         throw new Error('Unauthorized')
 
-      } else if (err.response && err.response.status === 401) {
+      } else if (err.response && err.response.message === "Don't have permission") {
 
         // Attempt to refresh the token
         try {
@@ -62,13 +48,12 @@ class PropertiesServiceClient {
   async getProperties(options: GetPropertiesOptions) {
     const request = this.api.get("/", { 
       params: options,
-      ...this.getAuthHeaders()
     });
     return this.handleRequest(request);
   }
 
   async getSingleProperty(id: string) {
-    const request = this.api.get(`/detail/${id}`, this.getAuthHeaders());
+    const request = this.api.get(`/detail/${id}`);
     return this.handleRequest(request);
   }
 }

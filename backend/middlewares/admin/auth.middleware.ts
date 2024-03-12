@@ -5,9 +5,9 @@ import Role from '../../api/v1/models/roles.model';
 
 export const authRequire = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // Get access token from header
-    const accessTokenFromHeader = req.headers['authorization'];
-    if (!accessTokenFromHeader) {
+    const { accessToken } = req.cookies;
+
+    if (!accessToken) {
       return res.status(400).json({
         code: 400,
         message: 'No access token found.'
@@ -17,14 +17,14 @@ export const authRequire = async (req: Request, res: Response, next: NextFunctio
     const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
 
     const verified: any = await verifyToken(
-      accessTokenFromHeader,
+      accessToken,
       accessTokenSecret,
     );
 
     if (!verified) {
       return res.status(401).json({
         code: 401,
-        message: "You don't have permission to access this feature"
+        message: "Don't have permission"
       });
     }
 
@@ -46,7 +46,6 @@ export const authRequire = async (req: Request, res: Response, next: NextFunctio
     }).select('permissions');
 
     res.locals.currentUser = user;
-
     res.locals.currentUser.permissions = userRole?.permissions;
 
     return next();

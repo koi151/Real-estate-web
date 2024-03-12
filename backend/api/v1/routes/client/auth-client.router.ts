@@ -3,6 +3,8 @@ import * as controller from '../../controllers/client/auth-client.controller';
 
 const router: Router = Router();
 
+router.get('/logout', controller.logout);
+
 router.post('/login', controller.loginPost);
 
 router.post('/refresh', controller.clientRefreshToken);

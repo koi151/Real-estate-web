@@ -27,8 +27,7 @@ export const generateToken = async (
 
 export const verifyToken = async (token: string, secretKey: string): Promise<any | null> => {
   try {
-    const tokenWithoutBearer = token.split('Bearer ')[1];
-    return jwt.verify(tokenWithoutBearer, secretKey);
+    return jwt.verify(token, secretKey);
   } catch (error) {
     console.log(`Error in verify access token: ${error}`);
     throw new Error('Authorization failed');

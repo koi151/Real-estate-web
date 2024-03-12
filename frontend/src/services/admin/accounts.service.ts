@@ -8,19 +8,6 @@ class AccountsServiceAdmin {
     this.api = createApi(baseUrl);
   }
 
-  private getAuthHeaders() {
-    const accessToken = localStorage.getItem('accessToken');
-
-    if (!accessToken) {
-      throw new Error('Access token not found in localStorage');
-    }
-    return {
-      headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
-    };
-  }
-
   private async handleRequest(request: Promise<any>) {
     try {
       const response = await request;
@@ -36,39 +23,28 @@ class AccountsServiceAdmin {
   }
 
   async getAccounts() {
-    const request = this.api.get("/", this.getAuthHeaders());
-    return this.handleRequest(request);
-  }
-
-  async getAvatar(id: string) {
-    const request = this.api.get(`/avatar/${id}`, this.getAuthHeaders());
+    const request = this.api.get("/");
     return this.handleRequest(request);
   }
 
   async getSingleAccount(id: string) {
-    const request = this.api.get(`/detail/${id}`, this.getAuthHeaders());
+    const request = this.api.get(`/detail/${id}`);
     return this.handleRequest(request);
   }
 
   async getSingleAccountLocal() {
-    const request = this.api.get(`/detail/local/`, this.getAuthHeaders());
+    const request = this.api.get(`/detail/local/`);
     return this.handleRequest(request);
   }
 
   async changeAccountStatus(id: string, status: ValidStatus) {
-    const request = this.api.patch(`/change-status/${status}/${id}`, {}, this.getAuthHeaders());
+    const request = this.api.patch(`/change-status/${status}/${id}`, {});
     return this.handleRequest(request);
   }
 
-  // async multiChangeProperties(ids: string[], type: ValidMultiChangeType) {
-  //   return (await this.api.patch(`/multi-change`, {ids, type})).data;
-  // }
-
   async createAccount(info: any) {
-    const authHeaders = this.getAuthHeaders();
     const config = {
       headers: {
-        ...authHeaders.headers,
         'Content-Type': 'multipart/form-data',
       },
     };
@@ -77,10 +53,8 @@ class AccountsServiceAdmin {
   }
 
   async updateAccount(info: any, id: string) {
-    const authHeaders = this.getAuthHeaders();
     const config = {
       headers: {
-        ...authHeaders.headers,
         'Content-Type': 'multipart/form-data',
       },
     };
@@ -89,7 +63,7 @@ class AccountsServiceAdmin {
   }
 
   async deleteAccount(id: string) {
-    const request = this.api.delete(`/delete/${id}`, this.getAuthHeaders());
+    const request = this.api.delete(`/delete/${id}`);
     return this.handleRequest(request);
   }
 }

@@ -8,18 +8,6 @@ class PropertyCategoriesServiceAdmin {
     this.api = createApi(baseUrl);
   }
 
-  private getAuthHeaders() {
-    const accessToken = localStorage.getItem('accessToken');
-    if (!accessToken) {
-      throw new Error('Access token not found in localStorage');
-    }
-    return {
-      headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
-    };
-  }
-
   private async handleRequest(request: Promise<any>) {
     try {
       const response = await request;
@@ -37,36 +25,33 @@ class PropertyCategoriesServiceAdmin {
   async getPropertyCategories(options: GetPropertiesOptions) {
     const request = this.api.get("/", { 
       params: options,
-      ...this.getAuthHeaders()
     });
     return this.handleRequest(request);
   }
 
   async getCategoryTree() {
-    const request = this.api.get(`/category-tree`, this.getAuthHeaders());
+    const request = this.api.get(`/category-tree`);
     return this.handleRequest(request);
   };
 
   async getParentCategory(id: string) {
-    const request = this.api.get(`/parent/${id}`, this.getAuthHeaders());
+    const request = this.api.get(`/parent/${id}`);
     return this.handleRequest(request);
   };
 
   async getSingleCategory(id: string) { 
-    const request = this.api.get(`/detail/${id}`, this.getAuthHeaders());
+    const request = this.api.get(`/detail/${id}`);
     return this.handleRequest(request);
   }
 
   async changeCategoryStatus(id: string, status: ValidStatus) { 
-    const request = this.api.patch(`/change-status/${status}/${id}`, {}, this.getAuthHeaders());
+    const request = this.api.patch(`/change-status/${status}/${id}`, {});
     return this.handleRequest(request);
   }
 
   async createCategory(category: any) { 
-    const authHeaders = this.getAuthHeaders();
     const config = {
       headers: {
-        ...authHeaders.headers,
         'Content-Type': 'multipart/form-data',
       },
     };
@@ -75,10 +60,8 @@ class PropertyCategoriesServiceAdmin {
   }
 
   async updateCategory(category: any, id: string) { 
-    const authHeaders = this.getAuthHeaders();
     const config = {
       headers: {
-        ...authHeaders.headers,
         'Content-Type': 'multipart/form-data',
       },
     };
@@ -87,7 +70,7 @@ class PropertyCategoriesServiceAdmin {
   }
 
   async deleteCategory(id: string) { 
-    const request = this.api.delete(`/delete/${id}`, this.getAuthHeaders());
+    const request = this.api.delete(`/delete/${id}`);
     return this.handleRequest(request);
   }
 }

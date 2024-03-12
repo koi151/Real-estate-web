@@ -11,6 +11,10 @@ class ClientAuthorizationService {
   async submitLogin(data: AccountLogType) {
     return (await this.api.post("/login", data)).data;
   }
+
+  async logout() {
+    return (await this.api.get("/logout")).data;
+  }
 }
 
 const clientAuthorizationService = new ClientAuthorizationService();

@@ -11,6 +11,8 @@ const createApi = (baseURL) => {
   return axios.create({
     baseURL,
     ...commonConfig,
+    withCredentials: true,
+    timeout: 120000
   });
 };
 

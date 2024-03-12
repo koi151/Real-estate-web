@@ -7,18 +7,6 @@ class PropertyCategoriesServiceClient {
     this.api = createApi(baseUrl);
   }
 
-  private getAuthHeaders() {
-    const clientAccessToken = localStorage.getItem('clientAccessToken');
-    if (!clientAccessToken) {
-      throw new Error('Access token not found');
-    }
-    return {
-      headers: {
-        Authorization: `Bearer ${clientAccessToken}`
-      }
-    };
-  }
-
   private async handleRequest(request: Promise<any>) {
     try {
       const response = await request;
@@ -34,7 +22,7 @@ class PropertyCategoriesServiceClient {
   }
 
   async getCategoryTree() {
-    const request = this.api.get(`/category-tree`, this.getAuthHeaders());
+    const request = this.api.get(`/category-tree`);
     return this.handleRequest(request);
   };
 }

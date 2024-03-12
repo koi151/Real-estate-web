@@ -12,7 +12,6 @@ const upload = multer();
 router.get('/', controller.index);
 router.get('/detail/:accountId', controller.detail)
 router.get('/detail/local', controller.localDetail)
-router.get('/avatar/:accountId', controller.getAvatar)
 
 router.post(
   '/create',

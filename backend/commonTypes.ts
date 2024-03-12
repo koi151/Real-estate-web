@@ -210,3 +210,8 @@ export interface FindCriteria {
   slug?: RegExp;
 }
 
+// COOKIES
+export interface CookieOptions {
+  expires?: number; 
+  path?: string; 
+}

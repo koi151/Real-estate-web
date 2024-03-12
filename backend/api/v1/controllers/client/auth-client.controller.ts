@@ -17,18 +17,8 @@ export const loginPost = async (req: Request, res: Response) => {
       deleted: false
     });
 
-    if (!user) {
-      res.status(401).json({
-        code: 401,
-        message: "Incorrect email or password"
-      });
-      return;
-    }
-
-    const passwordMatch = bcrypt.compareSync(userInfo.password, user.password);
-
-    if (!passwordMatch) {
-      return res.json({
+    if (!user || !bcrypt.compareSync(userInfo.password, user.password)) {
+      return res.status(401).json({
         code: 401,
         message: "Incorrect email or password"
       });
@@ -72,12 +62,19 @@ export const loginPost = async (req: Request, res: Response) => {
     }
 
     delete user.token;
+    delete user.password;
+
+    res.cookie('clientAccessToken', clientAccessToken, {
+      expires: new Date(Date.now() + (24 * 60 * 60 * 1000)),
+      httpOnly: true, 
+      secure: true, 
+      sameSite: 'strict',
+      path: '/' 
+    })
 
     return res.status(200).json({
       code: 200,
       message: 'Success',
-      clientAccessToken,
-      refreshToken,
       user: user
     });
 
@@ -162,3 +159,12 @@ export const clientRefreshToken = async (req: Request, res: Response) => {
 		accessToken,
 	});
 }; // !
+
+// [GET] /auth/logout
+export const logout = async (req: Request, res: Response) => {
+  res.clearCookie("clientAccessToken");
+  res.send({
+    code: 200,
+    success: true
+  })
+}

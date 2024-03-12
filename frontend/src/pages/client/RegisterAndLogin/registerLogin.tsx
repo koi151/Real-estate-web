@@ -20,17 +20,10 @@ const RegisterLogin: React.FC<RegisterLoginProps> = ({ isRegisterPage = false })
     try {
       const response = await clientAuthorizationService.submitLogin(data);
         switch (response.code) {
+          
           case 200:
-            localStorage.setItem('clientAccessToken', response.clientAccessToken);
-            localStorage.setItem('clientRefreshToken', response.clientRefreshToken);
-            
-            // remove admin account info when logging as client
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('refreshToken');
-
             if (response.user) {
               dispatch(setClientUser(response.user))
-              localStorage.setItem('clientUserId', response.user._id);
             }
 
             message.success(`${isRegisterPage ? "Register" : "Login"} successful. Welcome ${response.user.fullName}!`);

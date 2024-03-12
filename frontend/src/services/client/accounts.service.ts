@@ -7,19 +7,6 @@ class AccountsServiceClient {
     this.api = createApi(baseUrl);
   }
 
-  private getAuthHeaders() {
-    const clientAccessToken = localStorage.getItem('clientAccessToken');
-
-    if (!clientAccessToken) {
-      throw new Error('Access token not found in localStorage');
-    }
-    return {
-      headers: {
-        Authorization: `Bearer ${clientAccessToken}`
-      }
-    };
-  }
-
   private async handleRequest(request: Promise<any>) {
     try {
       const response = await request;
@@ -34,18 +21,13 @@ class AccountsServiceClient {
     }
   }
 
-  async getAvatar(id: string) {
-    const request = this.api.get(`/avatar/${id}`, this.getAuthHeaders());
-    return this.handleRequest(request);
-  }
-
   async getSingleAccount(id: string) {
-    const request = this.api.get(`/detail/${id}`, this.getAuthHeaders());
+    const request = this.api.get(`/detail/${id}`);
     return this.handleRequest(request);
   }
 
   async getSingleAccountLocal() {
-    const request = this.api.get(`/detail/local/`, this.getAuthHeaders());
+    const request = this.api.get(`/detail/local/`);
     return this.handleRequest(request);
   }
 }

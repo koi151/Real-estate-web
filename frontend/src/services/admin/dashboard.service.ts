@@ -7,19 +7,6 @@ class DashboardService {
     this.api = createApi(baseUrl);
   }
 
-  private getAuthHeaders() {
-    const accessToken = localStorage.getItem('accessToken');
-
-    if (!accessToken) {
-      throw new Error('Access token not found in localStorage');
-    }
-    return {
-      headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
-    };
-  }
-
   private async handleRequest(request: Promise<any>) {
     try {
       const response = await request;
@@ -35,7 +22,7 @@ class DashboardService {
   }
 
   async getStatistics() {
-    const request = this.api.get("/", this.getAuthHeaders());
+    const request = this.api.get("/");
     return this.handleRequest(request);
   } 
 }
