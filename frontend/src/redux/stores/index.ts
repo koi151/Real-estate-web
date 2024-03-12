@@ -1,34 +1,18 @@
-import { combineReducers } from 'redux';
+import { configureStore } from '@reduxjs/toolkit';
 import filtersReducer from '../reduxSlices/filtersSlice';
-import adminPermissionsReducer from '../reduxSlices/adminPermissionsSlice';
-import adminUserReducer from '../reduxSlices/adminUserSlice';
-import clientUserReducer from '../reduxSlices/clientUserSlice';
+import adminPermissionsReducer from '../reduxSlices/adminPermissionsSlice'
+import administratorUser from '../reduxSlices/adminUserSlice'
+import clientUser from '../reduxSlices/clientUserSlice'
 
-import storage from 'redux-persist/lib/storage';
-import { persistReducer } from 'redux-persist';
 
-// Persist configuration (ensures only 'adminUser' slice is persisted)
-const persistConfig = {
-  key: 'root',
-  storage,
-  whitelist: ['adminUser', 'clientUser'],
-  expire: {
-    adminUser: 24 * 60 * 60 * 1000, // 1d
-    clientUser: 24 * 60 * 60 * 1000, 
+export const store = configureStore({
+  reducer: {
+    filters: filtersReducer,
+    currentAdminUserPermissions: adminPermissionsReducer,
+    adminUser: administratorUser,
+    clientUser: clientUser
   },
-};
-
-const rootReducer = combineReducers({
-  filters: filtersReducer,
-  currentAdminUserPermissions: adminPermissionsReducer,
-  adminUser: adminUserReducer,
-  clientUser: clientUserReducer,
 });
 
-const persistedReducer = persistReducer(persistConfig, rootReducer);
-
-export type RootState = ReturnType<typeof rootReducer>;
-
-export default persistedReducer;
-
-
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;

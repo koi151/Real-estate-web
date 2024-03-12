@@ -7,19 +7,6 @@ class ThirdPartyAPIService {
     this.api = createApi(baseUrl);
   }
 
-  private getAuthHeaders() {
-    const accessToken = localStorage.getItem('accessToken');
-
-    if (!accessToken) {
-      throw new Error('Access token not found in localStorage');
-    }
-    return {
-      headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
-    };
-  }
-
   private async handleRequest(request: Promise<any>) {
     try {
       const response = await request;
@@ -35,12 +22,12 @@ class ThirdPartyAPIService {
   }
 
   async getGoogleCloudAPI() {
-    const request = this.api.get(`/google-cloud`, this.getAuthHeaders());
+    const request = this.api.get(`/google-cloud`);
     return this.handleRequest(request); 
   }
 
   async getOpenCageAPI() {
-    const request = this.api.get(`/open-cage`, this.getAuthHeaders());
+    const request = this.api.get(`/open-cage`);
     return this.handleRequest(request);   }
 }
 

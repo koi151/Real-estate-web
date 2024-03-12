@@ -34,7 +34,6 @@
     "react-scripts": "5.0.1",
     "recharts": "^2.12.1",
     "redux": "^5.0.1",
-    "redux-persist": "^6.0.0",
     "sanitize-html": "^2.11.0",
     "sass": "^1.69.7",
     "slick-carousel": "^1.8.1",
