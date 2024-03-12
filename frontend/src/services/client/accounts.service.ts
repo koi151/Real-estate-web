@@ -30,6 +30,7 @@ class AccountsServiceClient {
     const request = this.api.get(`/detail/local/`);
     return this.handleRequest(request);
   }
+
 }
 
 const clientAccountsService = new AccountsServiceClient();

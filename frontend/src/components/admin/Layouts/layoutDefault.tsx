@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { memo, useState } from "react";
-import { Layout } from 'antd';
+import { Layout, message } from 'antd';
 import { Content } from "antd/es/layout/layout";
 import Sider from "antd/es/layout/Sider";
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { MenuUnfoldOutlined } from '@ant-design/icons';
 
 import AccountHeader from '../../shared/AccountHeader/accountHeader';
@@ -13,9 +13,39 @@ import SiderMenu from "../SiderMenu/siderMenu";
 import logo from '../../../assets/images/logo.png';
 import logoFold from '../../../assets/images/logo-fold.png';
 import './layoutDefault.scss';
+import { useDispatch } from 'react-redux';
+import { setAdminUser } from '../../../redux/reduxSlices/adminUserSlice';
+import adminAccountsService from '../../../services/admin/accounts.service';
 
 const LayOutDefault: React.FC = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const [collapsed, setCollapsed] = useState(false);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await adminAccountsService.getSingleAccountLocal();
+        if (response.code === 200 && response.user) {
+          dispatch(setAdminUser(response.user));
+        }
+        
+      } catch (err: any) {
+        if (err.response && err.response.status === 401) {
+          message.error('Unauthorized - Please log in to access this feature.', 3);
+          navigate(`/admin/auth/login`);
+        } else {
+          console.error('Error occurred while fetching user data:', err);
+        }
+      }
+    };
+  
+    fetchUserData();
+
+    
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>

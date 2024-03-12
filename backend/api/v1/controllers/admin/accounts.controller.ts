@@ -128,8 +128,7 @@ export const detail = async (req: Request, res: Response) => {
 // [GET] /admin/accounts/detail/local
 export const localDetail = async (req: Request, res: Response) => {
   try {
-    console.log('run localDetail - admin', res.locals);
-    const user: any = res.locals.currentUser;
+    const user: any | undefined = res.locals.currentUser;
 
     if (!user) {
       return res.json({

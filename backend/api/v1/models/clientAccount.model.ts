@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import { statusValues } from '../../../commonTypes';
-import { generateRandomString } from '../../../helpers/generateString';
 
 const slug = require('mongoose-slug-updater');
 
@@ -16,7 +15,12 @@ const clientAccountSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: statusValues
-    },    
+    }, 
+    social: {
+      zaloLink: Array,
+    },
+    postList: Array,
+    favoriteList: Array,
     createdAt: Date,
     expireAt: Date,
     slug: {

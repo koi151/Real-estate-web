@@ -34,6 +34,7 @@ class AccountsServiceAdmin {
 
   async getSingleAccountLocal() {
     const request = this.api.get(`/detail/local/`);
+    console.log('return')
     return this.handleRequest(request);
   }
 

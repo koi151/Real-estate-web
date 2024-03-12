@@ -33,6 +33,7 @@ export const authRequire = async (req: Request, res: Response, next: NextFunctio
       { _id: verified.payload.username }
     ).select('-password');
 
+
     if (!user) {
       return res.status(401).json({
         code: 401,

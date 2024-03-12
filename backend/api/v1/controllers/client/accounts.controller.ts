@@ -3,8 +3,7 @@ import { Request, Response } from "express";
 // [GET] /accounts/detail/local
 export const localDetail = async (req: Request, res: Response) => {
   try {
-    console.log('run localDetail - client', res.locals);
-    const user: any = res.locals.currentClientUser;
+    const user: any | undefined = res.locals.currentUserClient;
 
     if (!user) {
       return res.json({
