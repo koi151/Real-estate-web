@@ -10,8 +10,8 @@ import * as uploadCloud from '../../../../middlewares/admin/uploadCloud.middlewa
 const upload = multer();
 
 router.get('/', controller.index);
-router.get('/detail/local', controller.localDetail)
-router.get('/detail/:accountId', controller.detail)
+router.get('/detail/:id/:accountType', controller.detail);
+router.get('/detail-local', controller.localDetail);
 
 router.post(
   '/create',

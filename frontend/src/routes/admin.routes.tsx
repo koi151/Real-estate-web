@@ -1,3 +1,5 @@
+import React from 'react';
+
 import LayoutDefault from "../components/admin/Layouts/layoutDefault";
 
 import DashBoard from "../pages/admin/Home/dashboard";
@@ -25,11 +27,17 @@ import EditAdminAccounts from "../pages/admin/Accounts/edit";
 import RegisterAndLogin from "../pages/admin/RegisterAndLogin/adminRegisterLogin";
 
 import PageNotFound from "../components/shared/PageNotFound/pageNotFound";
+import ProtectedRoute from "../components/shared/ProtectedRoute/protectedRoute";
+import { RouteObject } from "react-router-dom";
 
-export const adminRoutes = [
+// Updated routes:
+export const adminRoutes: RouteObject[] = [
   {
     path: '/admin',
-    element: <LayoutDefault />,
+    element: 
+      <ProtectedRoute userType='admin'>
+        <LayoutDefault />
+      </ProtectedRoute>,
     children: [
       {
         path: "dashboard",
@@ -99,18 +107,18 @@ export const adminRoutes = [
         path: 'accounts/edit/:id',
         element: <EditAdminAccounts />
       },
-      {
-        path: '/admin/auth/login',
-        element: <RegisterAndLogin />
-      },
-      {
-        path: '/admin/auth/register',
-        element: <RegisterAndLogin isRegisterPage/>
-      }
-    ]
-  }, 
+    ],
+  },
+  {
+    path: '/admin/auth/login',
+    element: <RegisterAndLogin isRegisterPage={false} />
+  },
+  {
+    path: '/admin/auth/register',
+    element: <RegisterAndLogin isRegisterPage/>
+  },
   {
     path: '*',
     element: <PageNotFound />,
   }
-]
+];

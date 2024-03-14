@@ -6,6 +6,7 @@ import Role from "../../models/roles.model";
 import { AdminAccountType } from "../../../../commonTypes";
 import { processAdminAccountData } from "../../../../helpers/processData";
 import { isValidStatus } from "../../../../helpers/dataTypeCheck";
+import ClientAccount from "../../models/clientAccount.model";
 
 // [GET] /admin/accounts
 export const index = async (req: Request, res: Response) => {
@@ -63,14 +64,14 @@ export const index = async (req: Request, res: Response) => {
   }
 }
 
-// [GET] /admin/accounts/detail/:accountId
+// [GET] /admin/accounts/detail/:accountId/:accountType
 export const detail = async (req: Request, res: Response) => {
   try {
     if (!res.locals.currentUser.permissions.includes('administrator-accounts_view')) {
-      return res.json({
+      return res.status(403).json({
         code: 403,
         message: "Account does not have access rights"
-      })
+      });
     }
 
     const id: string | undefined = req.params.accountId;
@@ -81,33 +82,44 @@ export const detail = async (req: Request, res: Response) => {
       });
     }
 
-    const account = await AdminAccount.findOne(
-      { _id: id, deleted: false }
-    ).select('-password -token');
-
-    if (!account) {
+    const accountType: string = req.params.accountType;
+    if (!accountType) {
       return res.status(400).json({
         code: 400,
+        message: 'No account type requested'
+      });
+    }
+
+    let account: any;
+    
+    if (accountType === 'admin') {
+      account = await AdminAccount.findOne(
+        { _id: id, deleted: false }
+      ).select('-password -token');
+
+    } else {
+      account = await ClientAccount.findOne(
+        { _id: id, deleted: false }
+      ).select('-password -token');
+    }
+
+    if (!account) {
+      return res.status(404).json({
+        code: 404,
         message: "Account not found"
       });
     }
 
-    const role = await Role.findOne({ 
-        _id: account.role_id, 
-        deleted: false 
-      }).select('title');
-
-    delete account.role_id;
-
-    if (role) { 
-      account['roleTitle'] = role.title;
-    } else { 
-      res.json({
-        code: 200,
-        message: "Can not get account role data",
-        account: account,
-      });
-      return;
+    if (accountType === 'admin') {
+      const role = await Role.findOne({ _id: account.role_id, deleted: false }).select('title');
+      if (role) {
+        account.roleTitle = role.title;
+      } else {
+        return res.status(404).json({
+          code: 404,
+          message: "Account role not found"
+        });
+      }
     }
 
     res.status(200).json({

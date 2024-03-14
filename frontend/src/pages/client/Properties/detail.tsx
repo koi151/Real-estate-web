@@ -11,9 +11,10 @@ import { IoWarningOutline, IoPricetagOutline, IoBedOutline, IoDocumentTextOutlin
 import { IoMdHeartEmpty } from "react-icons/io";
 import { BsTextareaResize } from "react-icons/bs";
 import { MdOutlineBathroom } from "react-icons/md";
+import { LuSofa } from "react-icons/lu";
 import ZaloIcon from '../../../assets/images/zalo-seeklogo.svg'
 
-import { PropertyType } from "../../../../../backend/commonTypes";
+import { AdminAccountType, ClientAccountType, PropertyType } from "../../../../../backend/commonTypes";
 
 import propertiesServiceClient from "../../../services/client/properties.service";
 import thirdPartyAPIService from '../../../services/shared/third-party.service';
@@ -23,8 +24,7 @@ import { calculatePricePerUnitArea } from '../../../helpers/getPriceUnit';
 import HTMLContent from '../../../components/client/HTMLContent/HTMLContent';
 import MapContainer from '../../../components/client/MapContainer/mapContainer';
 import './detail.scss';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../redux/stores';
+import clientAccountsService from '../../../services/client/accounts.service';
 
 const PropertyDetail: React.FC = () => {
   const navigate = useNavigate();
@@ -38,9 +38,8 @@ const PropertyDetail: React.FC = () => {
   const [address, setAddress] = useState<string>("");
 
   const formattedListingType = standardizeData.listingTypeFormatted(property?.listingType || '');
-  
-  const user = useSelector((state: RootState) => state.clientUser);
 
+  const [userPosted, setUserPosted] = useState<AdminAccountType | ClientAccountType | undefined>(undefined);
 
   // fetch property data
   useEffect(() => {
@@ -63,6 +62,22 @@ const PropertyDetail: React.FC = () => {
             = `Việt Nam, ${response.property.location.city}, ${response.property.location.district}, ${response.property.location.ward}`
           setAddress(addressFormatted);
 
+          let accountResponse;
+          const propertyRes = response.property;
+          if (propertyRes.createdBy?.accountType) {
+            accountResponse = await clientAccountsService.getSingleAccount(propertyRes.createdBy.accountId, propertyRes.createdBy.accountType);
+
+            if (accountResponse.code === 200) {
+              setUserPosted(accountResponse.account)
+            } else {
+              message.error(accountResponse.message, 2);
+            }
+
+          } else {
+            message.error('Cannot get account information that created post');
+            return;
+          }
+
         } else {
           message.error(response.message, 2);
           setLoading(false);
@@ -79,7 +94,8 @@ const PropertyDetail: React.FC = () => {
       }
     };
     fetchData();
-  }, [id, navigate]);
+
+  }, []);
 
   useEffect(() => {
     if (!loading && property?.images?.length) {
@@ -299,6 +315,19 @@ const PropertyDetail: React.FC = () => {
                         </Row>
                       </Col>
                     )}
+                     {property?.propertyDetails?.furnitures && (
+                      <Col span={12}>
+                        <Row className='custom-row'>
+                          <Col span={12}>
+                            <LuSofa />
+                            <b>Furnitures</b>   
+                          </Col>
+                          <Col span={12}>
+                            <div>{property.propertyDetails.furnitures}</div>
+                          </Col>
+                        </Row>
+                      </Col>
+                    )}
                     </Row>
                   </Col>
 
@@ -325,7 +354,7 @@ const PropertyDetail: React.FC = () => {
                   Posted by
                 </div>
                 <div className="detail-wrap__username">
-                  {user.fullName}
+                  {userPosted?.fullName}
                 </div>
                 <div className="detail-wrap__other-post">
                   See more 3 other posts

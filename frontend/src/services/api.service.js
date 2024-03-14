@@ -12,7 +12,7 @@ const createApi = (baseURL) => {
     baseURL,
     ...commonConfig,
     withCredentials: true,
-    timeout: 120000
+    // timeout: 120000
   });
 };
 

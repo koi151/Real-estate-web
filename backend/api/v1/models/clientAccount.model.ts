@@ -17,10 +17,10 @@ const clientAccountSchema = new mongoose.Schema(
       enum: statusValues
     }, 
     social: {
-      zaloLink: Array,
+      zaloLink: [String],
     },
-    postList: Array,
-    favoriteList: Array,
+    postList: [String],
+    favoriteList: [String],
     createdAt: Date,
     expireAt: Date,
     slug: {

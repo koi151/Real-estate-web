@@ -21,16 +21,15 @@ class AccountsServiceClient {
     }
   }
 
-  async getSingleAccount(id: string) {
-    const request = this.api.get(`/detail/${id}`);
+  async getSingleAccount(id: string, accountType: string) {
+    const request = this.api.get(`detail/${id}/${accountType}`, accountType);
     return this.handleRequest(request);
   }
 
   async getSingleAccountLocal() {
-    const request = this.api.get(`/detail/local/`);
+    const request = this.api.get(`/detail-local`);
     return this.handleRequest(request);
   }
-
 }
 
 const clientAccountsService = new AccountsServiceClient();

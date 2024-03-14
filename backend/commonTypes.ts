@@ -5,6 +5,7 @@ export type ValidMultiChangeType = 'active' | "inactive" | "position" | "delete"
 export const postTypeValues = ["standard", "premium", "exclusive"];
 export const listingTypeValues = ["forSale", "forRent"];
 export const statusValues = ["active", "inactive"];
+export const accountTypeValues = ['admin', 'client']
 
 // STATISTICS
 export interface Statistics {
@@ -54,6 +55,10 @@ export interface PropertyType {
   location?: Location;
   listingType?: string;
   propertyDetails?: PropertyDetails;
+  createdBy? : {
+    accountId: string,
+    accountType: 'admin' | 'client'
+  };  
   slug?: string;
   createdAt?: Date;
   expireTime?: Date;
@@ -85,6 +90,7 @@ export interface AdminAccountType {
   role_id?: string,
   phone?: string,
   avatar?: string,
+  postList?: string[],
   status?: ValidStatus,
   createdAt?: Date;
   expireAt?: Date;
@@ -101,6 +107,7 @@ export interface ClientAccountType {
   email?: string,
   phone?: string,
   avatar?: string,
+  postList?: string[],
   status?: ValidStatus,
   createdAt?: Date;
   expireAt?: Date;

@@ -35,7 +35,7 @@ const EditAdminAccounts: React.FC = () => {
           return;
         }
         
-        const accountResponse = await adminAccountsService.getSingleAccount(id);
+        const accountResponse = await adminAccountsService.getSingleAccount(id, 'admin');
         setLoading(true);
 
         if(accountResponse?.code === 200 && accountResponse.account) {

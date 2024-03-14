@@ -29,7 +29,7 @@ const AdminAccountsDetail: React.FC = () => {
           return;
         }
 
-        const response = await adminAccountsService.getSingleAccount(id);
+        const response = await adminAccountsService.getSingleAccount(id, 'admin');
         setLoading(true)
 
         if(response?.code === 200 && response.account) {

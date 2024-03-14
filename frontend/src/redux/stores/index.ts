@@ -4,7 +4,6 @@ import adminPermissionsReducer from '../reduxSlices/adminPermissionsSlice'
 import administratorUser from '../reduxSlices/adminUserSlice'
 import clientUser from '../reduxSlices/clientUserSlice'
 
-
 export const store = configureStore({
   reducer: {
     filters: filtersReducer,

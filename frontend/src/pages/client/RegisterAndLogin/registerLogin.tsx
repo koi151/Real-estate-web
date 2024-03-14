@@ -27,6 +27,7 @@ const RegisterLogin: React.FC<RegisterLoginProps> = ({ isRegisterPage = false })
             }
 
             message.success(`${isRegisterPage ? "Register" : "Login"} successful. Welcome ${response.user.fullName}!`);
+            console.log('LOGIN DONE')
             navigate('/properties');
             break;
 

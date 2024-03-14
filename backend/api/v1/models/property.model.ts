@@ -1,8 +1,10 @@
 import mongoose from 'mongoose';
 const slug = require('mongoose-slug-updater');
-import { listingTypeValues, postTypeValues, statusValues } from '../../../commonTypes';
+import { accountTypeValues, listingTypeValues, postTypeValues, statusValues } from '../../../commonTypes';
 
 mongoose.plugin(slug);
+
+type accountType = 'admin' | 'client';
 
 const propertySchema = new mongoose.Schema(
   {
@@ -23,7 +25,7 @@ const propertySchema = new mongoose.Schema(
       propertyLength: Number,
       propertyWidth: Number
     },
-    images: Array,
+    images: [String],
     view: Number,
     status: {
       type: String,
@@ -40,9 +42,16 @@ const propertySchema = new mongoose.Schema(
       furnitures: String,
       houseDirection: String,
       balconyDirection: String,
-      legalDocuments: Array,
-      rooms: Array,
+      legalDocuments: [String],
+      rooms: [String],
       totalFloors: Number
+    },
+    createdBy: {
+      accountType: {
+        type: String,
+        enum: accountTypeValues
+      },
+      accountId: String
     },
     slug: { 
       type: String, 

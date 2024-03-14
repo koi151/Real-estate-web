@@ -5,6 +5,7 @@
     "target": "ES6",
     "module": "commonjs",
     "removeComments": true,
+    "allowImportingTsExtensions": true,
     "esModuleInterop": true,
     "outDir": "dist",
     "lib": ["dom", "dom.iterable", "esnext"],

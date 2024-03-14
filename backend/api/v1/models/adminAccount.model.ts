@@ -14,6 +14,7 @@ const adminAccountSchema = new mongoose.Schema(
     role_id: String,
     phone: String,
     avatar: String,
+    postList: [String],
     status: {
       type: String,
       enum: statusValues

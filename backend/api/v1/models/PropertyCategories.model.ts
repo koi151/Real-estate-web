@@ -8,7 +8,7 @@ const categorySchema = new mongoose.Schema(
   {
     title: String,
     position: Number,
-    images: Array,
+    images: [String],
     description: String,
     parent_id: String,
     status: {
