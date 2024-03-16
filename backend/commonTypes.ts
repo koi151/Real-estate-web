@@ -43,21 +43,21 @@ export interface PropertyType {
   title: string;
   status?: ValidStatus;
   postType?: string;
-  position?: number;
+  position?: number | null;
   description: any,
   area?: {
-    propertyWidth: number;
-    propertyLength: number;
+    propertyWidth: number | null;
+    propertyLength: number | null;
   },
-  view?: number;
-  price?: number;
+  view?: number | null;
+  price?: number | null;
   images?: string[];
   location?: Location;
   listingType?: string;
   propertyDetails?: PropertyDetails;
   createdBy? : {
     accountId: string,
-    accountType: 'admin' | 'client'
+    accountType: 'admin' | 'client' | undefined
   };  
   slug?: string;
   createdAt?: Date;

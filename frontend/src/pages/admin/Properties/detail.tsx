@@ -186,7 +186,7 @@ const PropertyDetail: React.FC = () => {
                       >
                         <Input 
                           disabled
-                          value={property?.price}
+                          value={property?.price ? property?.price : 'No data'}
                           addonAfter={
                             <Select 
                               value={property?.price && property.price >= 1000 ? "billion" : "million"} 
