@@ -52,6 +52,16 @@ $fader-color: #999;
         transform: scale(1.2);
       }
     }
+
+    .favorite-icon {
+      color: #2c2c2c;
+      transition: transform 0.3s ease-in-out, color 0.3s ease-in-out;
+    }
+    
+    .favorite-icon-active {
+      color: rgb(241, 74, 74);
+      transform: scale(1.1);
+    }
   }
 
   .desciption, .char {

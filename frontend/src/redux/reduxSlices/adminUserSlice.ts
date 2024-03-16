@@ -9,6 +9,8 @@ interface UserState {
   fullName: string;
   permissions: AdminPermissions | undefined;
   phone: string;
+  postList: string[],
+  favoritePosts: string[],
   role_id: string;
   status: string;
   updatedAt: string;
@@ -24,6 +26,8 @@ const initialState: UserState = {
   permissions: undefined,
   phone: '',
   role_id: '',
+  postList: [],
+  favoritePosts: [],
   status: '',
   updatedAt: '',
   _id: '',

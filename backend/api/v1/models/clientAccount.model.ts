@@ -20,7 +20,7 @@ const clientAccountSchema = new mongoose.Schema(
       zaloLink: [String],
     },
     postList: [String],
-    favoriteList: [String],
+    favoritePosts: [String],
     createdAt: Date,
     expireAt: Date,
     slug: {

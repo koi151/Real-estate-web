@@ -30,6 +30,13 @@ class AccountsServiceClient {
     const request = this.api.get(`/detail-local`);
     return this.handleRequest(request);
   }
+
+  async updateFavoriteList(userId: string, postId: string) {
+    const request = this.api.patch(`/favorite-posts/${userId}`, { postId });
+    return this.handleRequest(request);
+  }
+  
+
 }
 
 const clientAccountsService = new AccountsServiceClient();

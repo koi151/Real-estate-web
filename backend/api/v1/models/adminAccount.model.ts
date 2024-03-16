@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { statusValues } from '../../../commonTypes';
-import { generateRandomString } from '../../../helpers/generateString';
+// import { generateRandomString } from '../../../helpers/generateString';
 
 const slug = require('mongoose-slug-updater');
 
@@ -15,6 +15,7 @@ const adminAccountSchema = new mongoose.Schema(
     phone: String,
     avatar: String,
     postList: [String],
+    favoritePosts: [String],
     status: {
       type: String,
       enum: statusValues

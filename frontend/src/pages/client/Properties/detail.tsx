@@ -2,13 +2,13 @@ import $ from 'jquery';
 import 'slick-carousel';
 
 import { Avatar, Breadcrumb, Button, Card, Col, Image, Row, Space, Spin, Tooltip, message } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 import { UserOutlined } from "@ant-design/icons";
 import { GoShareAndroid } from "react-icons/go";
 import { IoWarningOutline, IoPricetagOutline, IoBedOutline, IoDocumentTextOutline } from "react-icons/io5";
-import { IoMdHeartEmpty } from "react-icons/io";
+import { FaHeart } from "react-icons/fa";
 import { BsTextareaResize } from "react-icons/bs";
 import { MdOutlineBathroom } from "react-icons/md";
 import { LuSofa } from "react-icons/lu";
@@ -20,11 +20,14 @@ import propertiesServiceClient from "../../../services/client/properties.service
 import thirdPartyAPIService from '../../../services/shared/third-party.service';
 
 import * as standardizeData from '../../../helpers/standardizeData'
+import { IoMdHeartEmpty } from "react-icons/io";
 import { calculatePricePerUnitArea } from '../../../helpers/getPriceUnit';
 import HTMLContent from '../../../components/client/HTMLContent/HTMLContent';
 import MapContainer from '../../../components/client/MapContainer/mapContainer';
-import './detail.scss';
 import clientAccountsService from '../../../services/client/accounts.service';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../redux/stores';
+import './detail.scss';
 
 const PropertyDetail: React.FC = () => {
   const navigate = useNavigate();
@@ -33,6 +36,7 @@ const PropertyDetail: React.FC = () => {
   const [ property, setProperty ] = useState<PropertyType | undefined>(undefined);
   const [ loading, setLoading ] = useState<boolean>(true);
   const [ imageCount, setImageCount ] = useState<number>(0);
+  const [ isFavorite, setIsFavorite ] = useState<boolean | undefined>(undefined);
 
   const [ googleApiKey, setGoogleApiKey ] = useState<string | undefined>(undefined);
   const [address, setAddress] = useState<string>("");
@@ -40,7 +44,13 @@ const PropertyDetail: React.FC = () => {
   const formattedListingType = standardizeData.listingTypeFormatted(property?.listingType || '');
 
   const [userPosted, setUserPosted] = useState<AdminAccountType | ClientAccountType | undefined>(undefined);
-
+  
+  const currentUser = useSelector<RootState, { userId: string; favoritePosts: string[] }>((state: RootState) => {
+    return (state.adminUser.fullName !== '')
+      ? { userId: state.adminUser._id, favoritePosts: state.adminUser.favoritePosts }
+      : { userId: state.clientUser._id, favoritePosts: state.clientUser.favoritePosts }
+  });
+  
   // fetch property data
   useEffect(() => {
     const fetchData = async () => {
@@ -49,6 +59,11 @@ const PropertyDetail: React.FC = () => {
           message.error('Error occurred while searching property information, redirect to the previous page', 3);
           navigate(-1);
           return;
+        }
+
+        if (id && currentUser) {
+          const isPostFavorited = currentUser.favoritePosts.includes(id);
+          setIsFavorite(isPostFavorited);
         }
 
         const response = await propertiesServiceClient.getSingleProperty(id);
@@ -95,7 +110,7 @@ const PropertyDetail: React.FC = () => {
     };
     fetchData();
 
-  }, []);
+  }, [id, navigate, currentUser]);
 
   useEffect(() => {
     if (!loading && property?.images?.length) {
@@ -120,6 +135,28 @@ const PropertyDetail: React.FC = () => {
 
     fetchdata();
   }, [googleApiKey])
+
+  const addToFavoriteHandle = async () => {
+    if (!id) {
+      message.error('Can not get user ID');
+      return;
+    }
+
+    setIsFavorite(!isFavorite);
+    const response = await clientAccountsService.updateFavoriteList(currentUser.userId, id);
+
+    if (response.code === 200) {  
+      if (response.isAddTask) {
+        message.success("Added post to favorite list")
+      }
+      else {
+        message.success("Removed post from favorite list")
+      } 
+
+    } else {
+      console.log("Error occurred: ", response.message)
+    }
+  }
 
   return (
     <>
@@ -218,7 +255,21 @@ const PropertyDetail: React.FC = () => {
                           <IoWarningOutline />
                         </Tooltip>
                         <Tooltip title="Add to favorite">
-                          <IoMdHeartEmpty />
+                        {isFavorite !== undefined ? ( 
+                          isFavorite ? (
+                            <FaHeart
+                              onClick={addToFavoriteHandle}
+                              className='favorite-icon-active'
+                            />
+                          ) : (
+                            <IoMdHeartEmpty
+                              onClick={addToFavoriteHandle}
+                              className='favorite-icon'
+                            />
+                          )
+                        ) : (
+                          <span>...</span>
+                        )}                          
                         </Tooltip>
                       </div>
                     </div>
@@ -348,7 +399,7 @@ const PropertyDetail: React.FC = () => {
             <Col span={6}>
               <Card className='detail-wrap'>
                 <Space wrap size={16}>
-                  <Avatar size='large' icon={<UserOutlined />} />
+                  <Avatar size='large' icon={<UserOutlined />} src={<img src={userPosted?.avatar} alt="avatar" />} />
                 </Space>
                 <div className="post-by-txt">
                   Posted by
@@ -357,7 +408,7 @@ const PropertyDetail: React.FC = () => {
                   {userPosted?.fullName}
                 </div>
                 <div className="detail-wrap__other-post">
-                  See more 3 other posts
+                  See more {userPosted?.postList?.length} other posts
                 </div>
                 <Button type="primary" className="detail-wrap__phone">
                   0334 324 434

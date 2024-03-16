@@ -96,3 +96,71 @@ export const detail = async (req: Request, res: Response) => {
     });
   }
 };
+
+// [PATCH] /accounts/favorite-posts/:id
+export const favorites = async (req: Request, res: Response) => {
+  try {
+    const userId: string | undefined = req.params.id;
+    if (!userId) return res.json({
+      code: 400,
+      message: 'Cannot get user id'
+    })
+
+    const postId: string | undefined = req.body['postId'];
+    if (!postId) return res.json({
+      code: 400,
+      message: 'Cannot get post id'
+    })
+
+    // const updatedAccount = await ClientAccount.findOneAndUpdate(
+    //   { _id: userId, deleted: false },
+    //   {
+    //     $cond: {
+    //       if: { $in: [postId, "$favoritePosts"] },
+    //       then: { $pull: { favoritePosts: postId } },
+    //       else: { $addToSet: { favoritePosts: postId } }
+    //     }
+    //   },
+    //   { new: true }
+    // );
+
+
+    const clientAccount = await ClientAccount.findOne({ _id: userId });
+    if (!clientAccount) {
+      return res.json({
+        code: 404,
+        message: 'Account not found'
+      });
+    }
+
+    const isPostFavorited = clientAccount.favoritePosts.includes(postId);
+    let isAddTask: boolean = false;
+
+    if (isPostFavorited) {
+      await ClientAccount.updateOne(
+          { _id: userId },
+          { $pull: { favoritePosts: postId } }
+      );
+
+    } else {
+      isAddTask = true;
+      await ClientAccount.updateOne(
+          { _id: userId },
+          { $addToSet: { favoritePosts: postId } }
+      );
+    }
+
+    res.status(200).json({
+      code: 200,
+      message: 'Success',
+      isAddTask: isAddTask
+    })
+
+  } catch (err) {
+    console.log('Error occurred while fetching administrator accounts data:', err);
+    return res.status(500).json({
+      code: 500,
+      message: 'Internal Server Error'
+    });
+  }
+};

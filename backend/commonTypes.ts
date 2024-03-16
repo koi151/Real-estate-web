@@ -91,6 +91,7 @@ export interface AdminAccountType {
   phone?: string,
   avatar?: string,
   postList?: string[],
+  favoriteList? : string[],
   status?: ValidStatus,
   createdAt?: Date;
   expireAt?: Date;
@@ -108,6 +109,7 @@ export interface ClientAccountType {
   phone?: string,
   avatar?: string,
   postList?: string[],
+  favoritePosts? : string[],
   status?: ValidStatus,
   createdAt?: Date;
   expireAt?: Date;

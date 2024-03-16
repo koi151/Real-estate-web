@@ -7,6 +7,8 @@ interface UserState {
   email: string;
   fullName: string;
   phone: string;
+  postList: string[],
+  favoritePosts: string[],
   status: string;
   updatedAt: string;
   _id: string;
@@ -19,6 +21,8 @@ const initialState: UserState = {
   email: '',
   fullName: '',
   phone: '',
+  postList: [],
+  favoritePosts: [],
   status: '',
   updatedAt: '',
   _id: '',
