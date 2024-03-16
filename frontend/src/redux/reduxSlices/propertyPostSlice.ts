@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { PropertyType } from '../../../../backend/commonTypes';
 
-
 const initialState: PropertyType = {
   _id: '',
   title: '',

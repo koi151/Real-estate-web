@@ -2,7 +2,7 @@ import $ from 'jquery';
 import 'slick-carousel';
 
 import { Avatar, Breadcrumb, Button, Card, Col, Image, Row, Space, Spin, Tooltip, message } from "antd";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 import { UserOutlined } from "@ant-design/icons";

@@ -1,32 +1,36 @@
 import { Badge, Button, Card, Col, Form, Input, InputNumber, 
-         Radio, Row, Segmented, Select, Space, Spin, TreeSelect, message } from "antd";
+        Row, Segmented, Select, Space, Spin, TreeSelect, message } from "antd";
 import React, { useEffect, useState } from "react";
 import { Editor } from '@tinymce/tinymce-react';
 import { Link, useNavigate } from "react-router-dom";
 import { DefaultOptionType } from "antd/es/select";
+import { useDispatch, useSelector } from "react-redux";
 
 // Icons
 import { SlDirections } from "react-icons/sl";
 import { IoBedOutline } from "react-icons/io5";
 import { LuBath } from "react-icons/lu";
 import { FaRegBuilding } from "react-icons/fa";
+import { MdNavigateNext } from "react-icons/md";
 
 // Services
-import propertyCategoriesService from "../../../services/admin/property-categories.service";
+import propertyCategoriesServiceClient from "../../../services/client/property-categories.service";
 
-// Components
+// Components, helpers, data types,..
 import GetAddress from "../../../components/admin/getAddress/getAddress";
 import UploadMultipleFile from "../../../components/admin/UploadMultipleFile/uploadMultipleFile";
 import NoPermission from "../../../components/admin/NoPermission/noPermission";
-
-import * as standardizeData from '../../../helpers/standardizeData'
+import { directionOptions, documentOptions, furnitureOptions, listingTypeOptions } from "../../../helpers/propertyOptions";
+import { setPost } from "../../../redux/reduxSlices/propertyPostSlice";
 
 import './create.scss'
-import { directionOptions, documentOptions, furnitureOptions, listingTypeOptions } from "../../../helpers/propertyOptions";
-import propertiesServiceClient from "../../../services/client/properties.service";
+import { validateCreatePostClient } from "../../../helpers/validateMessages";
+import { RootState } from "../../../redux/stores";
+import { createSelector } from "@reduxjs/toolkit";
 
 const CreateProperty: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [accessAllowed, setAccessAllowed] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
@@ -39,12 +43,25 @@ const CreateProperty: React.FC = () => {
 
   const [categoryTree, setCategoryTree] = useState<DefaultOptionType[] | undefined>(undefined);
 
+  // get current user info
+  const selectCurrentUser = createSelector(
+    (state: RootState) => state.adminUser,
+    (state: RootState) => state.clientUser,
+    (adminUser, clientUser) => {
+      return adminUser.fullName !== ''
+        ? { phone: adminUser.phone }
+        : { phone: clientUser.phone };
+    }
+  );
+
+  const currentUser = useSelector(selectCurrentUser);
+
   // fetch categories data 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await propertyCategoriesService.getCategoryTree();
+        const response = await propertyCategoriesServiceClient.getCategoryTree();
 
         if (response.code === 200) {
           setCategoryTree(response.categoryTree);
@@ -84,36 +101,10 @@ const CreateProperty: React.FC = () => {
 
   const onFinishForm = async (data: any) => {
     try {  
+      console.log("data:", data)
+      dispatch(setPost(data));
+      navigate('/properties/create/choose-options')
 
-      const rooms = ['bedrooms', 'bathrooms', 'kitchens']
-      .filter(room => data[room])
-      .map(room => `${room}-${data[room]}`);
-
-      // update actual price with price unit
-      const parsedPrice = parseFloat(data.price);
-      const adjustedPrice = !isNaN(parsedPrice) ? String(priceMultiplier * parsedPrice) : '';
-
-      const { bedrooms, bathrooms, kitchens, ...restData } = data;
-
-      const transformedData = {
-        ...restData,
-        description: editorContent,
-        price: adjustedPrice,
-        propertyDetails: {
-          ...restData.propertyDetails,
-          rooms: rooms,
-        }
-      };
-      
-      const formData = standardizeData.objectToFormData(transformedData);
-
-      const response = await propertiesServiceClient.createProperty(formData);
-  
-      if (response.code === 200) {
-        message.success("Property created successfully!", 3);
-      } else {
-        message.error(response.message, 3);
-      }
     } catch (error) {
       message.error("Error occurred while creating a new property.");
       console.log("Error occurred:", error)
@@ -132,6 +123,7 @@ const CreateProperty: React.FC = () => {
                 method="POST"
                 encType="multipart/form-data"
                 style={{ width: "80%"}}
+                validateMessages={validateCreatePostClient}
               >
                 <Badge.Ribbon 
                   text={<Link to="/admin/properties">Back</Link>} 
@@ -160,6 +152,7 @@ const CreateProperty: React.FC = () => {
                         <Form.Item
                           name={['propertyDetails', 'propertyCategory']}  
                           label='Select property category'
+                          rules={[{ required: true }]}
                         >
                           <TreeSelect
                             style={{ width: '100%' }}
@@ -182,7 +175,11 @@ const CreateProperty: React.FC = () => {
                 <Card title="Property information" className="custom-card" style={{marginTop: '2rem'}}>
                   <Row gutter={16}>
                     <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
-                      <Form.Item label='Property length (m)' name={['area', 'propertyLength']}>
+                      <Form.Item 
+                        label='Property length (m)' 
+                        name={['area', 'propertyLength']}
+                        rules={[{ required: true }]}
+                      >
                         <InputNumber 
                           type="number" min={0} 
                           onChange={(value) => setPropertyLength(value)}
@@ -192,7 +189,11 @@ const CreateProperty: React.FC = () => {
                       </Form.Item>
                     </Col>
                     <Col sm={24} md={12} lg={8} xl={8} xxl={8}>  
-                      <Form.Item label='Property width (m)' name={['area', 'propertyWidth']}>
+                      <Form.Item 
+                        label='Property width (m)' 
+                        name={['area', 'propertyWidth']}
+                        rules={[{ required: true }]}
+                      >
                         <InputNumber 
                           type="number" min={0} 
                           className="custom-number-input" 
@@ -213,7 +214,7 @@ const CreateProperty: React.FC = () => {
                       </Form.Item>
                     </Col>
                     <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
-                      <Form.Item label={`Property price`} name='price'>
+                      <Form.Item label={`Property price`} name='price' rules={[{ required: true }]}>
                         <InputNumber 
                           min={0}
                           type="number"
@@ -381,15 +382,15 @@ const CreateProperty: React.FC = () => {
                   <Row gutter={16}>
                     <Col span={24}>
                       <Form.Item 
-                        label={<span>Post title <b className="required-txt">- required:</b></span>}
+                        label='Post title'
                         name='title'
-                        required
+                        rules={[{ required: true }]}
                       >
                         <Input type="text" id="title" required />
                       </Form.Item>
                     </Col>
                     <Col span={24}>
-                      <Form.Item label={`Property description:`}>
+                      <Form.Item label={`Property description:`} rules={[{ required: true }]}>
                         <Editor
                           id="description" 
                           value={editorContent}
@@ -404,30 +405,61 @@ const CreateProperty: React.FC = () => {
                         />
                       </Form.Item>
                     </Col>
-                    <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
-                      <Form.Item label="Post type:" name='postType' initialValue={'standard'}>
-                        <Radio.Group>
-                          <Radio value="standard" className="label-light"> Standard </Radio>
-                          <Radio value="premium" className="label-light"> Premium </Radio>
-                          <Radio value="exclusive" className="label-light"> Exclusive </Radio>
-                        </Radio.Group>
-                      </Form.Item>
-                    </Col>
-                    <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
-                      <Form.Item label="Post position:" name='position'>
-                        <InputNumber 
-                          type="number"
-                          id="position" 
-                          min={0} 
-                          className="custom-number-input position-input"
-                          placeholder='Auto increase by default'
+                  </Row>
+                </Card>
+
+                <Card title="Contact information" className="custom-card" style={{marginTop: '2rem'}}>
+                  <Row gutter={16}>
+                    <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                      <Form.Item   
+                        label={
+                          <Space className="d-flex align-items-center">
+                            <span>Contact name:</span>
+                          </Space>
+                        } 
+                        name={['contactInfo', 'name']}
+                        rules={[{ required: true }]}
+                      >
+                        <Input
+                          placeholder="Enter name" 
+                          style={{width: "100%"}} 
                         />
                       </Form.Item>
                     </Col>
+                    <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                      <Form.Item   
+                        label={
+                          <Space className="d-flex align-items-center">
+                            <span>Phone number:</span>
+                          </Space>
+                        } 
+                        name={['contactInfo', 'phone']}
+                        rules={[{ required: true }]}
+                        initialValue={currentUser?.phone}
+                      >
+                        <InputNumber 
+                          min={0} type="number"
+                          placeholder="Enter your phone number" 
+                          style={{width: "100%"}} 
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
+                        <Form.Item 
+                          label='Email:' 
+                          name={['contactInfo', 'email']}
+                          rules={[{ type: 'email' }]}
+                        >
+                          <Input 
+                            type='email' id="email" 
+                            placeholder="Please enter your email"
+                          />
+                        </Form.Item>
+                      </Col>
                     <Col span={24}>
-                      <Form.Item>
-                        <Button className='custom-btn-main' type="primary" htmlType="submit">
-                          Submit
+                      <Form.Item className="d-flex justify-content-end">
+                        <Button className='custom-btn-main d-flex align-items-center' type="primary" htmlType="submit">
+                          Continue <MdNavigateNext style={{fontSize: "2rem", margin: "0 .5rem"}}/>
                         </Button>
                       </Form.Item>
                     </Col>

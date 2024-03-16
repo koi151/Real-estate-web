@@ -30,6 +30,8 @@ const GetAddress: React.FC<{ initialValues?: any }> = ({ initialValues }) => {
         fetchDistricts(selectedCity.province_id || '');
       }
     }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCityCode]);
 
   useEffect(() => {
@@ -109,7 +111,8 @@ const GetAddress: React.FC<{ initialValues?: any }> = ({ initialValues }) => {
           label='City' 
           name={['location', 'city']}  
           initialValue={initialValues?.city}
-        >
+          rules={[{ required: true }]}
+          >
           <Select
             placeholder="Choose city"
             onChange={handleCityChange}
@@ -127,6 +130,7 @@ const GetAddress: React.FC<{ initialValues?: any }> = ({ initialValues }) => {
           label='District' 
           name={['location', 'district']}   
           initialValue={initialValues?.district}
+          rules={[{ required: true }]}
         >
           <Select
             placeholder="Choose district"
@@ -145,6 +149,7 @@ const GetAddress: React.FC<{ initialValues?: any }> = ({ initialValues }) => {
           label='Ward' 
           name={['location', 'ward']}  
           initialValue={initialValues?.ward}
+          rules={[{ required: true }]}
         >
           <Select
             placeholder="Choose ward"
