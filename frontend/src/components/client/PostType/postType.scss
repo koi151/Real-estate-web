@@ -1,0 +1,29 @@
+@import '../../../App.scss';
+
+.type-wrapper {
+  height: 15rem;
+  font-family: $lexend;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  margin: 1.5rem;
+
+  &--title {
+    font-weight: 600;
+    font-size: 1.6rem;
+  } 
+
+  &__price-range {
+    font-weight: 400;
+
+    &--price {
+      font-weight: 600;
+    }
+  } 
+
+  &__select-btn {
+    // background-color: $color-highlight-lighter;
+    // color: #fff;
+  }
+}

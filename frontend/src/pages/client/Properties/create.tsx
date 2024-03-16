@@ -5,6 +5,8 @@ import { Editor } from '@tinymce/tinymce-react';
 import { Link, useNavigate } from "react-router-dom";
 import { DefaultOptionType } from "antd/es/select";
 import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../../redux/stores";
+import { createSelector } from "@reduxjs/toolkit";
 
 // Icons
 import { SlDirections } from "react-icons/sl";
@@ -20,13 +22,12 @@ import propertyCategoriesServiceClient from "../../../services/client/property-c
 import GetAddress from "../../../components/admin/getAddress/getAddress";
 import UploadMultipleFile from "../../../components/admin/UploadMultipleFile/uploadMultipleFile";
 import NoPermission from "../../../components/admin/NoPermission/noPermission";
+
 import { directionOptions, documentOptions, furnitureOptions, listingTypeOptions } from "../../../helpers/propertyOptions";
 import { setPost } from "../../../redux/reduxSlices/propertyPostSlice";
+import { validateCreatePostClient } from "../../../helpers/validateMessages";
 
 import './create.scss'
-import { validateCreatePostClient } from "../../../helpers/validateMessages";
-import { RootState } from "../../../redux/stores";
-import { createSelector } from "@reduxjs/toolkit";
 
 const CreateProperty: React.FC = () => {
   const navigate = useNavigate();
@@ -122,7 +123,7 @@ const CreateProperty: React.FC = () => {
                 onFinish={onFinishForm}
                 method="POST"
                 encType="multipart/form-data"
-                style={{ width: "80%"}}
+                style={{ width: "80%", marginTop: '4rem'}}
                 validateMessages={validateCreatePostClient}
               >
                 <Badge.Ribbon 
@@ -456,13 +457,13 @@ const CreateProperty: React.FC = () => {
                           />
                         </Form.Item>
                       </Col>
-                    <Col span={24}>
+                    {/* <Col span={24}>
                       <Form.Item className="d-flex justify-content-end">
                         <Button className='custom-btn-main d-flex align-items-center' type="primary" htmlType="submit">
                           Continue <MdNavigateNext style={{fontSize: "2rem", margin: "0 .5rem"}}/>
                         </Button>
                       </Form.Item>
-                    </Col>
+                    </Col> */}
                   </Row>
                 </Card>
               </Form>

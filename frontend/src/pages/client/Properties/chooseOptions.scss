@@ -1,0 +1,38 @@
+@import '../../../App.scss';
+
+.options-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  .ant-form-item-control-input-content {
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+
+    .ant-segmented {
+      background: #fbfbfb;
+
+      .ant-segmented-item-selected {
+        border: 1.5px solid $color-highlight-lighter;
+
+        .ant-segmented-item-label {
+          background-color: #f9f7ff;
+        }
+      }
+    }
+  }
+
+  &__post-segmented {
+    margin-top: 2rem;
+    width: 90%;
+    justify-self: center;
+
+    .ant-segmented-group {
+      display: flex;
+      justify-content: space-around;
+    }
+  }
+
+}
