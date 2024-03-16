@@ -110,7 +110,8 @@ const PropertyDetail: React.FC = () => {
     };
     fetchData();
 
-  }, [id, navigate, currentUser]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, navigate]);
 
   useEffect(() => {
     if (!loading && property?.images?.length) {
