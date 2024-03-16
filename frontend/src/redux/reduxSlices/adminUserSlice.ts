@@ -37,18 +37,25 @@ export const adminUserSlice = createSlice({
   name: 'adminUser',
   initialState,
   reducers: {
+
     setAdminUser: (_, action: PayloadAction<UserState>) => {
       return action.payload;
     },
+
+    setPermissions: (state, action: PayloadAction<AdminPermissions | undefined>) => {
+      state.permissions = action.payload;
+    },
+
     setAvatar: (state, action: PayloadAction<string>) => {
       state.avatar = action.payload;
     },
+
     resetAdminUserState: state => {
       return initialState;
     }
   },
 });
 
-export const { setAdminUser, setAvatar, resetAdminUserState } = adminUserSlice.actions;
+export const { setAdminUser, setPermissions, setAvatar, resetAdminUserState } = adminUserSlice.actions;
 
 export default adminUserSlice.reducer;

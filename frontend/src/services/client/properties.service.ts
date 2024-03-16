@@ -56,6 +56,16 @@ class PropertiesServiceClient {
     const request = this.api.get(`/detail/${id}`);
     return this.handleRequest(request);
   }
+
+  async createProperty(property: any) {
+    const config = {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      }
+    };
+    const request = this.api.post('/create', property, config);
+    return this.handleRequest(request);
+  }
 }
 
 const propertiesServiceClient = new PropertiesServiceClient();

@@ -28,6 +28,7 @@ import clientAccountsService from '../../../services/client/accounts.service';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/stores';
 import './detail.scss';
+import { createSelector } from '@reduxjs/toolkit';
 
 const PropertyDetail: React.FC = () => {
   const navigate = useNavigate();
@@ -45,11 +46,18 @@ const PropertyDetail: React.FC = () => {
 
   const [userPosted, setUserPosted] = useState<AdminAccountType | ClientAccountType | undefined>(undefined);
   
-  const currentUser = useSelector<RootState, { userId: string; favoritePosts: string[] }>((state: RootState) => {
-    return (state.adminUser.fullName !== '')
-      ? { userId: state.adminUser._id, favoritePosts: state.adminUser.favoritePosts }
-      : { userId: state.clientUser._id, favoritePosts: state.clientUser.favoritePosts }
-  });
+  // get current user info
+  const selectCurrentUser = createSelector(
+    (state: RootState) => state.adminUser,
+    (state: RootState) => state.clientUser,
+    (adminUser, clientUser) => {
+      return adminUser.fullName !== ''
+        ? { userId: adminUser._id, favoritePosts: adminUser.favoritePosts }
+        : { userId: clientUser._id, favoritePosts: clientUser.favoritePosts };
+    }
+  );
+
+  const currentUser = useSelector(selectCurrentUser);
   
   // fetch property data
   useEffect(() => {

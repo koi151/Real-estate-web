@@ -6,6 +6,7 @@ import PropertyDetail from "../pages/client/Properties/detail";
 import RegisterAndLogin from "../pages/client/RegisterAndLogin/registerLogin";
 import PageNotFound from "../components/shared/PageNotFound/pageNotFound";
 import ProtectedRoute from '../components/shared/ProtectedRoute/protectedRoute';
+import CreateProperty from '../pages/client/Properties/create';
 
 export const clientRoutes: RouteObject[] = [
   {
@@ -18,6 +19,10 @@ export const clientRoutes: RouteObject[] = [
       {
         path: "properties",
         element: <Properties />,
+      },
+      {
+        path: 'properties/create',
+        element: <CreateProperty />
       },
       {
         path: 'properties/detail/:id',

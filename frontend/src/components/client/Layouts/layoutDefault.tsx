@@ -56,7 +56,9 @@ const LayOutDefaultClient: React.FC = () => {
         <div className='menu-wrapper'>
           <div className='menu-wrapper__left'>
             <div className='logo-wrapper'>
-              <img className="logo-wrapper--logo" src={HeaderLogo} alt='header logo' />
+              <Link to='/properties'>
+                <img className="logo-wrapper--logo" src={HeaderLogo} alt='header logo' />
+              </Link>
             </div>
             <Menu
               mode="horizontal"

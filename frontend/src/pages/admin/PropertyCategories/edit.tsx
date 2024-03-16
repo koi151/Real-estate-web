@@ -7,11 +7,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/stores";
 
 import propertyCategoriesService from "../../../services/admin/property-categories.service";
-import AdminRolesService from "../../../services/admin/roles.service";
 
 import UploadMultipleFile from "../../../components/admin/UploadMultipleFile/uploadMultipleFile";
 import NoPermission from "../../../components/admin/NoPermission/noPermission";
-import { setPermissions } from "../../../redux/reduxSlices/adminPermissionsSlice";
 import * as standardizeData from '../../../helpers/standardizeData'
 import { DefaultOptionType } from "antd/es/select";
 
@@ -19,11 +17,8 @@ const EditPropertyCategories: React.FC = () => {
   
   const { id } = useParams();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
-  const currentUserPermissions = useSelector((state: RootState) => state.currentAdminUserPermissions.permissions);
-
-  const [accessAllowed, setAccessAllowed] = useState(true);
+  const [accessAllowed, setAccessAllowed] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
 
   const [editorContent, setEditorContent] = useState<string>("");
@@ -49,6 +44,7 @@ const EditPropertyCategories: React.FC = () => {
         const categoryTreeResponse = await propertyCategoriesService.getCategoryTree();
         if (categoryTreeResponse.code === 200) {
           setCategoryTree(categoryTreeResponse.categoryTree);
+          setAccessAllowed(true);
         } else {
           message.error(categoryTreeResponse.error || 'Error occurred while fetching property categories data', 3);
         }
@@ -84,7 +80,7 @@ const EditPropertyCategories: React.FC = () => {
           console.log('Error occurred:', err);
         }
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     };
     
@@ -139,7 +135,7 @@ const EditPropertyCategories: React.FC = () => {
     <>
       { !loading ? (
         <>
-          { accessAllowed? (
+          { accessAllowed ? (
             <>
               {loading ? (
                   <div className='d-flex justify-content-center' style={{width: "100%", height: "100vh"}}>

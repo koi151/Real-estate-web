@@ -3,7 +3,6 @@ import { Badge, Button, Card, Col, Form, Input, InputNumber,
 import React, { useEffect, useState } from "react";
 import { Editor } from '@tinymce/tinymce-react';
 import { Link, useNavigate } from "react-router-dom";
-import dayjs, { Dayjs } from "dayjs";
 import { DefaultOptionType } from "antd/es/select";
 
 // Icons
@@ -13,12 +12,10 @@ import { LuBath } from "react-icons/lu";
 import { FaRegBuilding } from "react-icons/fa";
 
 // Services
-import propertiesService from "../../../services/admin/properties.service";
 import propertyCategoriesService from "../../../services/admin/property-categories.service";
 
 // Components
 import GetAddress from "../../../components/admin/getAddress/getAddress";
-import ExpireTimePicker from "../../../components/admin/ExpireTimePicker/expireTimePicker";
 import UploadMultipleFile from "../../../components/admin/UploadMultipleFile/uploadMultipleFile";
 import NoPermission from "../../../components/admin/NoPermission/noPermission";
 
@@ -26,6 +23,7 @@ import * as standardizeData from '../../../helpers/standardizeData'
 
 import './create.scss'
 import { directionOptions, documentOptions, furnitureOptions, listingTypeOptions } from "../../../helpers/propertyOptions";
+import propertiesServiceClient from "../../../services/client/properties.service";
 
 const CreateProperty: React.FC = () => {
   const navigate = useNavigate();
@@ -40,9 +38,6 @@ const CreateProperty: React.FC = () => {
   const [editorContent, setEditorContent] = useState<string>("");
 
   const [categoryTree, setCategoryTree] = useState<DefaultOptionType[] | undefined>(undefined);
-
-  // data from child component
-  const [expireDateTime, setExpireDateTime] = useState<Dayjs | null>(null);
 
   // fetch categories data 
   useEffect(() => {
@@ -100,24 +95,10 @@ const CreateProperty: React.FC = () => {
 
       const { bedrooms, bathrooms, kitchens, ...restData } = data;
 
-      let updatedExpireTime = null;
-      if (expireDateTime) {
-        updatedExpireTime = expireDateTime.toISOString();
-        
-      } else if (['day', 'week', 'month'].includes(data.expireTime)) {
-        const duration = data.expireTime === 'day' ? 1 : (data.expireTime === 'week' ? 7 : 30);
-        const expirationDate = dayjs().add(duration, 'day');
-        updatedExpireTime = expirationDate.toISOString();
-      };
-
-      if (data.expireTime === 'other' || !data.expireTime)
-        delete data.expireTime
-
       const transformedData = {
         ...restData,
         description: editorContent,
         price: adjustedPrice,
-        ...(updatedExpireTime && { expireTime: updatedExpireTime }),
         propertyDetails: {
           ...restData.propertyDetails,
           rooms: rooms,
@@ -126,7 +107,7 @@ const CreateProperty: React.FC = () => {
       
       const formData = standardizeData.objectToFormData(transformedData);
 
-      const response = await propertiesService.createProperty(formData);
+      const response = await propertiesServiceClient.createProperty(formData);
   
       if (response.code === 200) {
         message.success("Property created successfully!", 3);
@@ -150,9 +131,12 @@ const CreateProperty: React.FC = () => {
                 onFinish={onFinishForm}
                 method="POST"
                 encType="multipart/form-data"
-                className="custom-form" 
+                style={{ width: "80%"}}
               >
-                <Badge.Ribbon text={<Link to="/admin/properties">Back</Link>} color="purple" className="custom-ribbon">
+                <Badge.Ribbon 
+                  text={<Link to="/admin/properties">Back</Link>} 
+                  color="purple" className="custom-ribbon"
+                >
                   <Card 
                     title="Basic information"
                     className="custom-card" 
@@ -430,21 +414,6 @@ const CreateProperty: React.FC = () => {
                       </Form.Item>
                     </Col>
                     <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
-                      <Form.Item label="Property status:" name='status' initialValue={'active'}>
-                        <Radio.Group>
-                          <Radio value="active">Active</Radio>
-                          <Radio value="inactive">Inactive</Radio>
-                        </Radio.Group>
-                      </Form.Item>
-                    </Col>
-
-                    <Col span={24}>
-                      <ExpireTimePicker 
-                        onExpireDateTimeChange={(value) => setExpireDateTime(value)} 
-                      />
-                    </Col>
-
-                    <Col sm={24} md={24}  lg={12} xl={12} xxl={12}>
                       <Form.Item label="Post position:" name='position'>
                         <InputNumber 
                           type="number"

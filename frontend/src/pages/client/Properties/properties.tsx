@@ -20,7 +20,7 @@ import PriceRange from '../../../components/shared/FilterComponents/PriceRange/p
 import AreaRange from '../../../components/shared/FilterComponents/AreaRange/areaRange';
 
 import { setKeyword, setSorting } from '../../../redux/reduxSlices/filtersSlice';
-import { setPermissions } from '../../../redux/reduxSlices/adminPermissionsSlice';
+import { setPermissions } from '../../../redux/reduxSlices/adminUserSlice'; 
 
 import { sortingOptionsClient } from '../../../helpers/filterOptions';
 

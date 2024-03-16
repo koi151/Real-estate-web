@@ -4,9 +4,10 @@ import Property from "../../models/property.model";
 
 import { generateAreaRangeFilter, generateFilterInRange, generateRoomFilter  } from "../../../../helpers/generateFilters";
 import { getAreaSortingPipeline } from "../../../../helpers/generateSorting";
-import { FindCriteria } from "../../../../commonTypes";
+import { FindCriteria, PropertyType } from "../../../../commonTypes";
 import { searchHelper } from "../../../../helpers/search";
 import { paginationHelper } from "../../../../helpers/pagination";
+import { processImagesData, processPropertyData } from "../../../../helpers/processData";
 
 
 // [GET] /properties
@@ -105,13 +106,6 @@ export const index = async (req: Request, res: Response) => {
 // [GET] /properties/detail/:id
 export const detail = async (req: Request, res: Response) => {
   try {
-    // if (!res.locals.currentUser.permissions.includes('properties_view')) {
-    //   return res.json({
-    //     code: 403,
-    //     message: "Account does not have access rights"
-    //   })
-    // }
-
     const id: string | undefined = req.params.id;
     if (!id) {
       return res.status(400).json({
@@ -140,6 +134,38 @@ export const detail = async (req: Request, res: Response) => {
 
   } catch (error) {
     console.log('Error occurred while fetching property data:', error);
+    return res.status(500).json({
+      code: 500,
+      message: 'Internal Server Error'
+    });
+  }
+}
+
+// [POST] /properties/create
+export const createPost = async (req: any, res: Response) => {
+  try {
+
+    console.log("req.body:", req.body)
+
+    // const property: PropertyType = processPropertyData(req);
+    // const processedImages = processImagesData(req.body.images);
+
+    // if (!property.position) {
+    //   const cntProperty = await Property.countDocuments();
+    //   property.position = cntProperty + 1;
+    // }
+
+    // const propertyWithImages = processedImages ? { ...property, images: processedImages } : property;
+    // const newProperty = new Property(propertyWithImages);
+    // await newProperty.save();
+    
+    // res.status(200).json({
+    //   code: 200,
+    //   message: "Created new property successfully"
+    // })
+
+  } catch (error) {
+    console.log('Error occurred while creating property:', error);
     return res.status(500).json({
       code: 500,
       message: 'Internal Server Error'
