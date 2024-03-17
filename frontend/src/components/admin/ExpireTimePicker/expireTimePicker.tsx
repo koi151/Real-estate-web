@@ -70,6 +70,7 @@ const ExpireTimePicker: React.FC<ExpireTimePickerProps> = ({ onExpireDateTimeCha
 
   return (
     <Form.Item 
+      className="time-form"
       label={onExpireDateTimeChange 
         ? `Post expire after: ${expireDateTime ? dateTimeHelper.differenceInTime(expireDateTime.toDate()) : ''}` 
         : ''}      

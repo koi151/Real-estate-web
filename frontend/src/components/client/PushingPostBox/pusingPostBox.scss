@@ -1,0 +1,64 @@
+@import '../../../App.scss';
+
+.push-box-wrapper {
+  display: flex;
+  justify-content: space-between;
+  margin: 2rem 0;
+  padding: 1.5rem;
+  width: 90%;
+  border: 1px solid rgb(204, 204, 204);
+  border-radius: 8px;
+
+  &__left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    &--push-time {
+      font-family: $lexend;
+      font-size: 1.8rem;
+      font-weight: 600;
+    }
+
+    &--multiple {
+      color: rgb(7, 163, 93);
+      font-weight: 600;
+      margin-left: .5rem;
+      font-size: 1.5rem;
+    }
+
+    &--view-txt {
+      font-family: $lexend;
+      margin-left: .5rem;
+      // font-weight: 400;
+    }
+    
+    .icon-wrapper-round {
+      height: 2rem;
+      width: 2rem;
+      background: rgb(7, 163, 93);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      
+      svg {
+        color: #fff;
+        font-size: 1.2rem;
+      }
+    }
+
+    .push-price {
+      font-family: $lexend;
+      display: flex;
+      font-size: 1.6rem;
+
+      &--default {
+        color: #777;
+        margin-left: 1.5rem;
+        text-decoration: line-through;
+      }
+
+    }
+  }
+}

@@ -6,6 +6,104 @@
   justify-content: center;
   align-items: center;
 
+  .custom-card {
+    .ant-card-body{
+      margin: 1rem 2rem;
+    }
+
+    .ant-card-head {
+      margin: 0 1.5rem;
+    }
+
+    .push-box-intro {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      margin-bottom: 2rem;
+
+      &__icon-wrapper {
+        padding: .5rem;
+        background: #d9d5f3;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-right: 2rem;
+
+        &--icon {
+          font-size: 2.2rem;
+          font-weight: 600;
+          margin: 0;
+          color: $color-highlight;
+        }
+      }
+
+      &__box {
+        &--title {
+          font-family: $lexend;
+          font-size: 2rem;
+          font-weight: 600;
+
+          .tag {
+            margin-left: 1.5rem;
+          }
+        }
+
+        &--desc {
+          color: #555;
+          font-size: 1.4rem;
+        }
+      }
+    }
+
+    .auto-post-box {
+      width: 100%;
+      margin-top: 2rem;
+      display: flex;
+      justify-content: space-between;
+
+      &__icon-wrapper {
+        padding: .75rem;
+        background: rgb(255, 240, 233);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-right: 2rem;
+
+        &--icon {
+          color: rgb(255, 102, 31);
+          font-size: 1.8rem;
+          font-weight: 900;
+        }
+      }
+
+      &__txt-wrapper {
+        &--title {
+          font-family: $lexend;
+          font-size: 1.8rem;
+          font-weight: 600;
+        }
+
+        &--desc {
+          max-width: 55rem;
+        }
+      }
+    }
+  }
+
+  .payment-card {
+
+    .section-one, .section-two {
+      display: flex;
+      justify-content: space-between;
+
+      &__left, &__right {
+        max-width: 15rem;
+        display: flex;
+        flex-direction: column;
+      }
+    }
+  }
+
   .ant-form-item-control-input-content {
     display: flex; 
     justify-content: center;

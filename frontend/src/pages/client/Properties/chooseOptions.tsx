@@ -1,11 +1,16 @@
-import { Badge, Card, Col, Form, Row, Segmented, Space, Spin } from "antd";
-import React, { useEffect, useState } from "react";
+import { Badge, Card, Col, Form, Row, Segmented, Space, Spin, Switch, Tag } from "antd";
+import { MdKeyboardDoubleArrowUp } from "react-icons/md";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import NoPermission from "../../../components/admin/NoPermission/noPermission";
 import PostType from "../../../components/client/PostType/postType";
 
-import './chooseOptions.scss'
 import ExpireTimePicker from "../../../components/admin/ExpireTimePicker/expireTimePicker";
+import PushingPostBox from "../../../components/client/PushingPostBox/pushingPostBox";
+
+import './chooseOptions.scss'
+import { AiOutlineReload } from "react-icons/ai";
+
 
 interface OptionsType {
   label: React.ReactNode;
@@ -159,12 +164,103 @@ const ChooseOptions: React.FC = () => {
                             onChange={(value: string) => setExpireDateTime(value)}
                           />
                         </Form.Item>
-                        <div className="d-flex" style={{width: '100%'}}>
+                        <div className="d-flex ml-5" style={{width: '100%', marginTop: '-2rem'}}>
                           <ExpireTimePicker expireTimeRequest={expireDateTime}/>
-                          </div>
+                        </div>
                       </Col>
                     </Row>
                   </Card>
+
+                  <Card
+                    title="Utilities"
+                    className="custom-card mt-5" 
+                  >
+                    <Row gutter={16}>
+                      <Col span={24} className="d-flex align-items-center" style={{ width: "100%"}}>
+                        <div className="push-box-intro">
+                          <div className="push-box-intro__icon-wrapper">
+                            <MdKeyboardDoubleArrowUp className="push-box-intro__icon-wrapper--icon"/>
+                          </div>
+                          <div className="push-box-intro__box">
+                            <span className="push-box-intro__box--title">
+                              Automatic pushing post package
+                              <Tag color="#f50" className="tag">New</Tag>
+                            </span>
+                            <div className="push-box-intro__box--desc">
+                              Post news will be automatically push every 24 hours.
+                              <br />
+                              First push: After property post displayed for 24 hours.
+                            </div>
+                          </div>
+                        </div>
+                      </Col>
+                      <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                        <PushingPostBox 
+                          multiple={3} pushTimes={3}
+                          defaultPrice={1.99}
+                          promoPercentage={10}
+                        />
+                      </Col>
+                      <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                        <PushingPostBox 
+                          multiple={6} pushTimes={6}
+                          defaultPrice={3.99}
+                          promoPercentage={20}
+                        />
+                      </Col>
+                      <div className="auto-post-box">
+                        <div className="d-flex align-items-center">
+                          <div className="auto-post-box__icon-wrapper">
+                            <AiOutlineReload className="auto-post-box__icon-wrapper--icon"/>
+                          </div>
+                          <div className="auto-post-box__txt-wrapper">
+                            <div className="auto-post-box__txt-wrapper--title">
+                              Auto repost
+                            </div>
+                            <div className="auto-post-box__txt-wrapper--desc">
+                              The post will be automatically repost as soon as it expires. 
+                              Each time it is repost, the system will only deduct the fee for that repost.
+                            </div>
+                          </div>
+                        </div>
+                        <Switch className="mt-5 mr-5"/>
+                      </div>
+                    </Row>
+                  </Card>
+
+                  <Card title='Payment' className="custom-card payment-card mt-5">
+                    <Row gutter={16}>
+                      <Col span={24}>
+                        <div className="section-one">
+                          <div className="section-one__left">
+                            <span>Post type</span>
+                            <span>Unit price / day</span>
+                            <span>Expire time</span>
+                          </div>
+                          <div className="section-one__right">
+                            <span>Post type</span>
+                            <span>Unit price / day</span>
+                            <span>Expire time</span>
+                          </div>
+                        </div>
+
+                        <div className="line" style={{margin: "2rem 0"}} />
+
+                        <div className="section-two">
+                          <div className="section-two__left">
+                            <span>Post fee</span>
+                            <span>Auto pushing post package</span>
+                          </div>
+                          <div className="section-two__right">
+                            <span>Post fee</span>
+                            <span>0</span>
+                          </div>
+                        </div>
+
+                      </Col>
+                    </Row>
+                  </Card>
+
                 </Badge.Ribbon>
               </Form>
             </div>
