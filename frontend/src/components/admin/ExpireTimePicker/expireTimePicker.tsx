@@ -6,11 +6,12 @@ import * as dateTimeHelper from '../../../helpers/dateTimeHelpers'
 import './expireTimePicker.scss'
 
 interface ExpireTimePickerProps {
-  onExpireDateTimeChange: (dateTime: Dayjs | null) => void;
-  expireTimeGiven?: Date | string 
+  onExpireDateTimeChange?: (dateTime: Dayjs | null) => void;
+  expireTimeGiven?: Date | string;
+  expireTimeRequest?: string
 }
 
-const ExpireTimePicker: React.FC<ExpireTimePickerProps> = ({ onExpireDateTimeChange, expireTimeGiven }) => {
+const ExpireTimePicker: React.FC<ExpireTimePickerProps> = ({ onExpireDateTimeChange, expireTimeGiven, expireTimeRequest }) => {
   
   const [currentDateTime, setCurrentDateTime] = useState<Dayjs | null>(dayjs());
   const [expireDateTime, setExpireDateTime] = useState<Dayjs | null>(null);
@@ -32,7 +33,7 @@ const ExpireTimePicker: React.FC<ExpireTimePickerProps> = ({ onExpireDateTimeCha
 
   const handleExpireDateTimeChange = (value: Dayjs | null) => {
     setExpireDateTime(value);
-    onExpireDateTimeChange(value);
+    onExpireDateTimeChange && onExpireDateTimeChange(value);
   };
 
   const handleSetCurrentDateTime = () => {
@@ -45,6 +46,15 @@ const ExpireTimePicker: React.FC<ExpireTimePickerProps> = ({ onExpireDateTimeCha
 
   const disabledDate = (current: Dayjs) => {
     return current.isBefore(dayjs(), 'day');
+  };
+
+  const findExpireTimeAfter = (timeString: string): Dayjs | null => {
+    const daysToAdd = parseInt(timeString);
+    if (isNaN(daysToAdd)) {
+      return null;
+    }
+  
+    return dayjs().add(daysToAdd, 'days');
   };
 
   const disabledTime = (current: Dayjs | null) => {
@@ -60,61 +70,80 @@ const ExpireTimePicker: React.FC<ExpireTimePickerProps> = ({ onExpireDateTimeCha
 
   return (
     <Form.Item 
-      label={`Post expire after:${expireDateTime ? ` ${dateTimeHelper.differenceInTime(expireDateTime.toDate())}` : ''}`}
+      label={onExpireDateTimeChange 
+        ? `Post expire after: ${expireDateTime ? dateTimeHelper.differenceInTime(expireDateTime.toDate()) : ''}` 
+        : ''}      
       initialValue={'other'}
     >
-      <div>
-        <Radio.Group defaultValue={'other'} onChange={handleChangeExpireOption}>
-          <Radio value="day">1 day</Radio>
-          <Radio value="week">1 week</Radio>
-          <Radio value="month">1 month</Radio>
-          <Radio value="other">Other</Radio>
-          <Radio value="">None</Radio>
-        </Radio.Group>
+      {onExpireDateTimeChange && (
+        <div>
+          <Radio.Group defaultValue={'other'} onChange={handleChangeExpireOption}>
+            <Radio value="day">1 day</Radio>
+            <Radio value="week">1 week</Radio>
+            <Radio value="month">1 month</Radio>
+            <Radio value="other">Other</Radio>
+            <Radio value="">None</Radio>
+          </Radio.Group>
 
-        <div className="time-picker" style={{ marginTop: "2rem" }}>
-          <div className="d-flex">
-            <Row gutter={16}>
-              <Col sm={24} md={12} lg={12} xl={12} xxl={12} className="custom-col-one">
-                <DatePicker
-                  disabled
-                  showTime
-                  value={currentDateTime}
-                  onChange={handleDateTimeChange}
-                  style={{ width: "90%" }}
-                />
-                <Button onClick={handleSetCurrentDateTime} className="custom-btn-main">Update current time</Button>
-              </Col>
+          <div className="time-picker" style={{ marginTop: "2rem" }}>
+            <div className="d-flex" style={{width: "100%"}}>
+              <Row gutter={16} style={{width: "100%"}}>
+                <Col sm={24} md={12} lg={12} xl={12} xxl={12} className="custom-col-one">
+                  <DatePicker
+                    disabled
+                    showTime
+                    value={currentDateTime}
+                    onChange={handleDateTimeChange}
+                    style={{ width: "90%" }}
+                  />
+                  <Button onClick={handleSetCurrentDateTime} className="custom-btn-main">Update current time</Button>
+                </Col>
 
-              <Col sm={24} md={12} lg={12} xl={12} xxl={12} className="custom-col-two">
-                <DatePicker
-                  showTime
-                  value={expireDateTime}
-                  onChange={handleExpireDateTimeChange}
-                  style={{ width: "90%" }}
-                  disabledDate={disabledDate} 
-                  disabledTime={disabledTime}
-                />
-                <Button 
-                  onClick={handleSetExpireDateTime} 
-                  className="custom-btn-main"
-                >
-                  Set expire time
-                </Button>
-              </Col>
-            </Row>
-          </div>
-          <div className="time-display">
-            <Row gutter={16} style={{width: "100%"}}>
-              <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
-                <p>Current time: <b>{currentDateTime?.format('HH:mm - DD/MM/YYYY')}</b></p>
-              </Col>
-              <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
-                <p>Expire time: <b>{expireDateTime ? expireDateTime?.format('HH:mm - DD/MM/YYYY') : 'Not select'}</b></p>
-              </Col>
-            </Row>
+                <Col sm={24} md={12} lg={12} xl={12} xxl={12} className="custom-col-two">
+                  <DatePicker
+                    showTime
+                    value={expireDateTime}
+                    onChange={handleExpireDateTimeChange}
+                    style={{ width: "90%" }}
+                    disabledDate={disabledDate} 
+                    disabledTime={disabledTime}
+                  />
+                  <Button 
+                    onClick={handleSetExpireDateTime} 
+                    className="custom-btn-main"
+                  >
+                    Set expire time
+                  </Button>
+                </Col>
+              </Row>
+            </div>
           </div>
         </div>
+      )}
+
+      <div className="time-display">
+        <Row gutter={16} style={{width: "100%"}}>
+          <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+            <p>Current time: <b>{currentDateTime?.format('HH:mm - DD/MM/YYYY')}</b></p>
+          </Col>
+          <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+            {expireTimeRequest ? (
+              <p>
+                Expire time: 
+                <b>
+                  {expireTimeRequest ? (
+                    findExpireTimeAfter(expireTimeRequest)?.format('HH:mm - DD/MM/YYYY')
+                  ) : (
+                    'No information'
+                  )}
+                </b>
+              </p>
+
+              ) : (
+              <p>Expire time: <b>{expireDateTime ? expireDateTime?.format('HH:mm - DD/MM/YYYY') : 'Not select'}</b></p>
+            )}
+          </Col>
+        </Row>
       </div>
     </Form.Item>
   )

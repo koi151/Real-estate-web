@@ -67,9 +67,6 @@ body {
 // status button
 .active-btn {
   background-color: #58c965;
-  // :hover {
-  //   background-color: #6cd178;
-  // }
 }
 
 .inactive-btn {
@@ -345,4 +342,21 @@ label {
 
 .ant-card-body {
   padding: 2rem !important;
+}
+
+// COLOR
+.yellow {
+  color: rgb(227, 170, 73);
+}
+
+.grey {
+  color: #666;
+}
+
+.red {
+  color: rgb(224, 60, 49);
+}
+
+.purple {
+  color: $color-highlight-lighter;
 }

@@ -12,10 +12,15 @@
     align-items: center;
 
     .ant-segmented {
-      background: #fbfbfb;
+      background: #fcfcfc;
+
+      .ant-segmented-item {
+        border: 1px solid #ddd;
+      }
 
       .ant-segmented-item-selected {
         border: 1.5px solid $color-highlight-lighter;
+        box-shadow: rgba(182, 182, 182, 0.42) 0px 8px 20px;
 
         .ant-segmented-item-label {
           background-color: #f9f7ff;
@@ -35,4 +40,7 @@
     }
   }
 
+  .line {
+    margin: 2rem 0;
+  }
 }

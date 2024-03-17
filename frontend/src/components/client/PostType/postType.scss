@@ -1,7 +1,6 @@
 @import '../../../App.scss';
 
 .type-wrapper {
-  height: 15rem;
   font-family: $lexend;
   display: flex;
   flex-direction: column;
@@ -11,7 +10,7 @@
 
   &--title {
     font-weight: 600;
-    font-size: 1.6rem;
+    font-size: 1.8rem;
   } 
 
   &__price-range {
@@ -23,7 +22,18 @@
   } 
 
   &__select-btn {
-    // background-color: $color-highlight-lighter;
-    // color: #fff;
+    transition: ease-in-out .2s;
+  }
+
+  .selected {
+    background-color: $color-highlight-lighter;
+    color: #fff;
+  } 
+
+  .post-view-txt {
+    margin-top: -.75rem;
+    font-weight: 400;
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
   }
 }

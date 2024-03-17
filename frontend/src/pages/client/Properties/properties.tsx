@@ -210,7 +210,7 @@ const Properties: React.FC = () => {
                             onClick={() => navigate(`/properties/detail/${property._id}`)}
                             key={index}
                           >
-                            {property.postType === 'premium'? (
+                            {property.postType === 'premium' || property.postType === 'exclusive'? (
                               <Badge.Ribbon 
                                 text={
                                   <Tooltip title={property.postType ? `${property.postType.charAt(0).toUpperCase() + property.postType.slice(1)} post` : ''}>
