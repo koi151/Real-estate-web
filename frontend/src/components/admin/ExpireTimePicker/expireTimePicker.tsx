@@ -8,10 +8,10 @@ import './expireTimePicker.scss'
 interface ExpireTimePickerProps {
   onExpireDateTimeChange?: (dateTime: Dayjs | null) => void;
   expireTimeGiven?: Date | string;
-  expireTimeRequest?: string
+  expireDayRequest?: number | null
 }
 
-const ExpireTimePicker: React.FC<ExpireTimePickerProps> = ({ onExpireDateTimeChange, expireTimeGiven, expireTimeRequest }) => {
+const ExpireTimePicker: React.FC<ExpireTimePickerProps> = ({ onExpireDateTimeChange, expireTimeGiven, expireDayRequest }) => {
   
   const [currentDateTime, setCurrentDateTime] = useState<Dayjs | null>(dayjs());
   const [expireDateTime, setExpireDateTime] = useState<Dayjs | null>(null);
@@ -48,8 +48,8 @@ const ExpireTimePicker: React.FC<ExpireTimePickerProps> = ({ onExpireDateTimeCha
     return current.isBefore(dayjs(), 'day');
   };
 
-  const findExpireTimeAfter = (timeString: string): Dayjs | null => {
-    const daysToAdd = parseInt(timeString);
+  const findExpireTimeAfter = (val: string | number): Dayjs | null => {
+    const daysToAdd = typeof(val) == 'string' ? parseInt(val) : val;
     if (isNaN(daysToAdd)) {
       return null;
     }
@@ -128,12 +128,12 @@ const ExpireTimePicker: React.FC<ExpireTimePickerProps> = ({ onExpireDateTimeCha
             <p>Current time: <b>{currentDateTime?.format('HH:mm - DD/MM/YYYY')}</b></p>
           </Col>
           <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
-            {expireTimeRequest ? (
+            {expireDayRequest ? (
               <p>
                 Expire time: 
                 <b>
-                  {expireTimeRequest ? (
-                    findExpireTimeAfter(expireTimeRequest)?.format('HH:mm - DD/MM/YYYY')
+                  {expireDayRequest ? (
+                    findExpireTimeAfter(expireDayRequest)?.format('HH:mm - DD/MM/YYYY')
                   ) : (
                     'No information'
                   )}

@@ -4,11 +4,9 @@ import Property from "../../models/property.model";
 
 import { generateAreaRangeFilter, generateFilterInRange, generateRoomFilter  } from "../../../../helpers/generateFilters";
 import { getAreaSortingPipeline } from "../../../../helpers/generateSorting";
-import { FindCriteria, PropertyType } from "../../../../commonTypes";
+import { FindCriteria } from "../../../../commonTypes";
 import { searchHelper } from "../../../../helpers/search";
 import { paginationHelper } from "../../../../helpers/pagination";
-import { processImagesData, processPropertyData } from "../../../../helpers/processData";
-
 
 // [GET] /properties
 export const index = async (req: Request, res: Response) => {

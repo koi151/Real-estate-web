@@ -10,11 +10,11 @@ const steps = [
     content: <CreateProperty key="create-property" />,
   },
   {
-    title: 'Second',
+    title: 'Select posting services',
     content: <ChooseOptions key="choose-options" />,
   },
   {
-    title: 'Last',
+    title: 'Payment and pending post',
     content: 'Last-content',
   },
 ];

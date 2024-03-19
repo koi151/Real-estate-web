@@ -64,7 +64,6 @@ const buildFormData = (formData: FormData, data: any, parentKey?: string) => {
   }
 }
 
-
 export const objectToFormData = (data: any) => {
   const formData = new FormData();
   buildFormData(formData, data);
@@ -85,5 +84,8 @@ export const objectToFormData = (data: any) => {
   return formData;
 }
 
+export const capitalizeString = (s: string): string => {
+  return s.charAt(0).toUpperCase() + s.slice(1);
+};
 
 export default objectToFormData

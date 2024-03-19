@@ -9,11 +9,14 @@ interface PushingPostBoxProps {
   defaultPrice: number;
   multiple?: number;
   promoPercentage?: number;
+  selected?: boolean;
+  onClick?: any;
 }
 
-const PushingPostBox: React.FC<PushingPostBoxProps> = ({ multiple, defaultPrice, promoPercentage, pushTimes }) => {
+const PushingPostBox: React.FC<PushingPostBoxProps> = ({ multiple, defaultPrice, promoPercentage, pushTimes, selected, onClick }) => {
+  
   return (
-    <div className="push-box-wrapper">
+    <div className={`push-box-wrapper ${selected && 'selected'}`} onClick={onClick}>
       <div className="push-box-wrapper__left">
         <span className="push-box-wrapper__left--push-time">{pushTimes} push time</span>
         <div className="d-flex mt-2 mb-5">
@@ -24,10 +27,10 @@ const PushingPostBox: React.FC<PushingPostBoxProps> = ({ multiple, defaultPrice,
         <div className="push-price">
           {promoPercentage && (
             <div className="push-price--promo">
-              {((defaultPrice * (100 - promoPercentage)) / 100).toFixed(2)}$
+              ${((defaultPrice * (100 - promoPercentage)) / 100).toFixed(2)}
             </div>
           )}
-          <div className="push-price--default">{defaultPrice}$</div>
+          <div className="push-price--default">${defaultPrice}</div>
         </div>
       </div>
       { promoPercentage && (

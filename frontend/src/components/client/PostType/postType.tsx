@@ -9,14 +9,13 @@ interface PostTypeProps {
   color?: string
   height?: string
   active?: boolean
-  pricePerDay?: string
-  minView?: number
+  pricePerDay?: number | null;
+  minView?: number | null
   displaySelect?: boolean
   alignCenter?: boolean
 }
 
 const PostType: React.FC<PostTypeProps> = ({ title, color, pricePerDay, active, minView, height, displaySelect, alignCenter }) => {
-  
   return (
     <div className="type-wrapper" style={{ height: height }}>
       <div className={`${!alignCenter && 'd-flex flex-column align-items-start'}`}>
@@ -24,7 +23,7 @@ const PostType: React.FC<PostTypeProps> = ({ title, color, pricePerDay, active, 
           {title}
         </div>
         <div className="type-wrapper__price-range">
-          From <span className="type-wrapper__price-range--price">{pricePerDay}</span>/day
+          From <span className="type-wrapper__price-range--price">${pricePerDay}</span>/day
         </div>
       </div>
       <div className="d-flex flex-column justify-content-center align-items-center">

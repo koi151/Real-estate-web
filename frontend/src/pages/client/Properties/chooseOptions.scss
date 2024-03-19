@@ -92,15 +92,24 @@
 
   .payment-card {
 
-    .section-one, .section-two {
+    .block-one, .block-two, .block-three, .block-four {
+      font-family: $roboto;
       display: flex;
       justify-content: space-between;
 
       &__left, &__right {
-        max-width: 15rem;
+        max-width: 20rem;
         display: flex;
         flex-direction: column;
       }
+
+      &__right {
+        text-align: right;
+      }
+    }
+
+    .block-three {
+      cursor: pointer;
     }
   }
 

@@ -8,6 +8,7 @@
   width: 90%;
   border: 1px solid rgb(204, 204, 204);
   border-radius: 8px;
+  transition: all cubic-bezier(0.215, 0.610, 0.355, .2);
 
   &__left {
     display: flex;
@@ -61,4 +62,10 @@
 
     }
   }
+}
+
+.selected {
+  background-color: #f9f7ff;;
+  border: 1.5px solid $color-highlight-lighter;
+  box-shadow: rgba(182, 182, 182, 0.42) 0px 8px 20px;
 }

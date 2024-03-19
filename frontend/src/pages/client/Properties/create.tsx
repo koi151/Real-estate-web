@@ -123,11 +123,11 @@ const CreateProperty: React.FC = () => {
                 onFinish={onFinishForm}
                 method="POST"
                 encType="multipart/form-data"
-                style={{ width: "80%", marginTop: '4rem'}}
+                style={{ width: "75%", marginTop: '4rem'}}
                 validateMessages={validateCreatePostClient}
               >
                 <Badge.Ribbon 
-                  text={<Link to="/admin/properties">Back</Link>} 
+                  text={<Link to="/properties">Back</Link>} 
                   color="purple" className="custom-ribbon"
                 >
                   <Card 
