@@ -1,6 +1,6 @@
-import { Badge, Button, Card, Col, Form, Input, InputNumber, 
+import { Badge, Card, Col, Form, Input, InputNumber, 
         Row, Segmented, Select, Space, Spin, TreeSelect, message } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Editor } from '@tinymce/tinymce-react';
 import { Link, useNavigate } from "react-router-dom";
 import { DefaultOptionType } from "antd/es/select";
@@ -13,7 +13,6 @@ import { SlDirections } from "react-icons/sl";
 import { IoBedOutline } from "react-icons/io5";
 import { LuBath } from "react-icons/lu";
 import { FaRegBuilding } from "react-icons/fa";
-import { MdNavigateNext } from "react-icons/md";
 
 // Services
 import propertyCategoriesServiceClient from "../../../services/client/property-categories.service";
@@ -24,14 +23,20 @@ import UploadMultipleFile from "../../../components/admin/UploadMultipleFile/upl
 import NoPermission from "../../../components/admin/NoPermission/noPermission";
 
 import { directionOptions, documentOptions, furnitureOptions, listingTypeOptions } from "../../../helpers/propertyOptions";
-import { setPost } from "../../../redux/reduxSlices/propertyPostSlice";
+import { setAllowNextStep, setPost, setSubmitRequest } from "../../../redux/reduxSlices/propertyPostSlice";
 import { validateCreatePostClient } from "../../../helpers/validateMessages";
 
+import { FormInstance } from "antd/es/form/Form";
 import './create.scss'
+
 
 const CreateProperty: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const submitFormReq = useSelector((state: RootState) => state.propertyPost.submitRequest);
+
+  const formRef = useRef<FormInstance>(null);
 
   const [accessAllowed, setAccessAllowed] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
@@ -75,7 +80,7 @@ const CreateProperty: React.FC = () => {
       } catch (err: any) {
         if (err.response && err.response.status === 401) {
           message.error('Unauthorized - Please log in to access this feature.', 3);
-          navigate('/admin/auth/login');
+          navigate('/auth/login');
         } else {
           message.error('Error occurred while fetching property categories data', 2);
           console.log('Error occurred:', err);
@@ -88,6 +93,31 @@ const CreateProperty: React.FC = () => {
     fetchData();
   }, [navigate]);
 
+  // submit form
+  useEffect(() => {
+    const submitForm = async () => {
+      if (!formRef.current) {
+        console.log('Reference to form failed');
+        return;
+      }
+  
+      if (submitFormReq) {
+        try {
+          const formData = await formRef.current.validateFields();
+          dispatch(setAllowNextStep(true));
+          dispatch(setPost(formData));
+        } catch (err) { // in case of not passed validation
+          console.error('Form validation failed:', err);
+          dispatch(setSubmitRequest(false));
+        }
+      }
+    }
+
+    submitForm();
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [submitFormReq])
+
   const selectPriceUnit = (
     <Select defaultValue="million" onChange={ (value) => setPriceMultiplier(value === 'million' ? 1 : 1000)}>
       <Select.Option value="million">million</Select.Option>
@@ -99,18 +129,6 @@ const CreateProperty: React.FC = () => {
     const contentString = typeof content === 'string' ? content : '';
     setEditorContent(contentString);
   };
-
-  const onFinishForm = async (data: any) => {
-    try {  
-      console.log("data:", data)
-      dispatch(setPost(data));
-      navigate('/properties/create/choose-options')
-
-    } catch (error) {
-      message.error("Error occurred while creating a new property.");
-      console.log("Error occurred:", error)
-    }
-  }
   
   return (
     <>
@@ -119,8 +137,8 @@ const CreateProperty: React.FC = () => {
           { accessAllowed ? (
             <div className="d-flex flex-column align-items-center justify-content-center"> 
               <Form 
+                ref={formRef}
                 layout="vertical" 
-                onFinish={onFinishForm}
                 method="POST"
                 encType="multipart/form-data"
                 style={{ width: "75%", marginTop: '4rem'}}
@@ -165,7 +183,6 @@ const CreateProperty: React.FC = () => {
                           />
                         </Form.Item>
                       </Col>
-
                       <Col span={24}>
                         <GetAddress />
                       </Col>
@@ -457,13 +474,6 @@ const CreateProperty: React.FC = () => {
                           />
                         </Form.Item>
                       </Col>
-                    {/* <Col span={24}>
-                      <Form.Item className="d-flex justify-content-end">
-                        <Button className='custom-btn-main d-flex align-items-center' type="primary" htmlType="submit">
-                          Continue <MdNavigateNext style={{fontSize: "2rem", margin: "0 .5rem"}}/>
-                        </Button>
-                      </Form.Item>
-                    </Col> */}
                   </Row>
                 </Card>
               </Form>

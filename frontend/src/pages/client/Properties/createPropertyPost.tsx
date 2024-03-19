@@ -1,34 +1,57 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, message, Spin, Steps, theme } from 'antd';
 import NoPermission from '../../../components/admin/NoPermission/noPermission';
 import CreateProperty from './create';
 import ChooseOptions from './chooseOptions';
-
-const steps = [
-  {
-    title: 'Fill basic information',
-    content: <CreateProperty key="create-property" />,
-  },
-  {
-    title: 'Select posting services',
-    content: <ChooseOptions key="choose-options" />,
-  },
-  {
-    title: 'Payment and pending post',
-    content: 'Last-content',
-  },
-];
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../../redux/stores';
+import { setSubmitRequest } from '../../../redux/reduxSlices/propertyPostSlice';
 
 const CreatePropertyPost: React.FC = () => {
   const { token } = theme.useToken();
+  const dispatch = useDispatch();
 
   const [current, setCurrent] = useState(0);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [accessAllowed, setAccessAllowed] = useState(true);
+  const [loading] = useState<boolean>(false); // tempo test
+  const [accessAllowed] = useState<boolean>(true); // tempo test
+
+  // const postInfo = useSelector((state: RootState) => state.propertyPost);
+  const allowNextStep = useSelector((state: RootState) => state.propertyPost.allowNextStep);
+
+  // useEffect(() => { // testing
+  //   console.log("postInfo:", postInfo)
+  // }, [postInfo])
+
+  const steps = [
+    {
+      title: 'Fill basic information',
+      content: <CreateProperty key="create-property" />,
+    },
+    {
+      title: 'Select posting services',
+      content: <ChooseOptions key="choose-options" />,
+    },
+    {
+      title: 'Payment and pending post',
+      content: 'Last-content',
+    },
+  ];
 
   const next = () => {
-    setCurrent(current + 1);
+    if (current === 0) { // Waiting for permission to proceed to the next page after validation has ended.
+      dispatch(setSubmitRequest(true));
+      return;
+    }
+    setCurrent(current + 1) 
   };
+  
+  // Process to next page when allowed
+  useEffect(() => { 
+    if (allowNextStep || allowNextStep === undefined) setCurrent(current + 1)
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allowNextStep])
+
 
   const prev = () => {
     setCurrent(current - 1);

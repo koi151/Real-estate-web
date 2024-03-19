@@ -4,7 +4,6 @@ import bcrypt from 'bcrypt';
 import AdminAccount from "../../models/adminAccount.model";
 import { processAccountLogData } from "../../../../helpers/processData";
 import { AccountLogType, AdminAccountType } from "../../../../commonTypes";
-import { generateRandomString } from "../../../../helpers/generateString";
 import { decodeToken, generateToken } from "../../../../helpers/auth.methods";
 import Role from "../../models/roles.model";
 import { formattedPermissions } from "../../../../helpers/formatData";

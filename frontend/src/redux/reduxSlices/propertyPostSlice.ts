@@ -1,13 +1,25 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { PropertyType } from '../../../../backend/commonTypes';
 
-const initialState: PropertyType = {
-  _id: '',
+type PropertyTypeExtraField = {
+  submitRequest: boolean;
+  allowNextStep: boolean;
+};
+
+type PropertyTypeForPosting<T extends PropertyTypeExtraField = { allowNextStep: boolean, submitRequest: boolean}> = Omit<
+  PropertyType & T,
+  'slug' | 'createdBy' | 'createdAt' | 'deleted'
+>;
+
+const initialState: Omit<PropertyTypeForPosting, 'slug' | 'createdBy' | 'createdAt' | 'deleted'> = {
+  submitRequest: false,
+  allowNextStep: false,
+
   title: '',
-  status: undefined,
+  status: 'active',
   postType: '',
-  position: undefined,
-  description: '',
+  position: null,
+  description: undefined,
   area: {
     propertyWidth: null,
     propertyLength: null,
@@ -18,30 +30,25 @@ const initialState: PropertyType = {
   location: undefined,
   listingType: '',
   propertyDetails: undefined,
-  createdBy : {
-    accountId: '',
-    accountType: undefined
-  },  
-  slug: '',
-  createdAt: undefined,
   expireTime: undefined,
-  deleted: undefined,
 };
 
-export const clientUserSlice = createSlice({
+export const propertyPostSlice = createSlice({
   name: 'propertyPost',
   initialState,
   reducers: {
-    setPost: (_, action: PayloadAction<PropertyType>) => {
+    setPost: (_, action: PayloadAction<typeof initialState>) => {
       return action.payload;
     },
-
-    resetPostState: state => {
-      return initialState;
+    setSubmitRequest: (state, action: PayloadAction<boolean>) => {
+      state.submitRequest = action.payload;
+    },
+    setAllowNextStep: (state, action: PayloadAction<boolean>) => {
+      state.allowNextStep = action.payload;
     }
   },
 });
 
-export const { setPost, resetPostState } = clientUserSlice.actions;
+export const { setPost, setAllowNextStep, setSubmitRequest } = propertyPostSlice.actions;
 
-export default clientUserSlice.reducer;
+export default propertyPostSlice.reducer;
