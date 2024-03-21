@@ -48,19 +48,10 @@ const ChooseOptions: React.FC = () => {
     discountPercentage: null,
   });
 
-  const submitRequested = useSelector((state: RootState) => state.propertyPost.submitSecondPage) 
   const postInfo = useSelector((state: RootState) => state.propertyPost) 
 
-  useEffect(() => { // testing
-    console.log("postInfo:", postInfo)
-  }, [postInfo])
-
   useEffect(() => {
-    if (submitRequested) {
-      console.log('postFeePerDay:', postFeePerDay);
-      console.log('activePostType:', activePostType);
-      console.log('dayExpireLeft:', dayExpireLeft);
-      console.log('pushingPostInfo:', pushingPostInfo);
+    if (postInfo.submitSecondPage) {
       dispatch(setPost({ 
         ...postInfo,
         postServices: pushingPostInfo,
@@ -68,7 +59,7 @@ const ChooseOptions: React.FC = () => {
     }
     
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [submitRequested])
+  }, [postInfo.submitSecondPage])
 
   const postTypeOptions: OptionsType[] = [
     {

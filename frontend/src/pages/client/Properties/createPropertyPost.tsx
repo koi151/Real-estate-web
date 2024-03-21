@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, message, Spin, Steps, theme } from 'antd';
 import NoPermission from '../../../components/admin/NoPermission/noPermission';
-import CreateProperty from './create';
+import CreatePropertyForm from '../../../components/client/CreatePropertyForm/createPropertyForm';
 import ChooseOptions from './chooseOptions';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../redux/stores';
@@ -15,17 +15,17 @@ const CreatePropertyPost: React.FC = () => {
   const [loading] = useState<boolean>(false); // tempo test
   const [accessAllowed] = useState<boolean>(true); // tempo test
 
-  // const postInfo = useSelector((state: RootState) => state.propertyPost);
+  const postInfo = useSelector((state: RootState) => state.propertyPost);
   const allowNextStep = useSelector((state: RootState) => state.propertyPost.allowNextStep);
 
-  // useEffect(() => { // testing
-  //   console.log("postInfo:", postInfo)
-  // }, [postInfo])
+  useEffect(() => { // testing
+    console.log("postInfo:", postInfo)
+  }, [postInfo])
 
   const steps = [
     {
       title: 'Fill basic information',
-      content: <CreateProperty key="create-property" />,
+      content: <CreatePropertyForm key="create-property" />,
     },
     {
       title: 'Select posting services',
@@ -38,10 +38,10 @@ const CreatePropertyPost: React.FC = () => {
   ];
 
   const next = () => {
+    console.log("current:", current)
     if (current === 0) { // Waiting for permission to proceed to the next page after validation has ended.
       dispatch(setSubmitFirstPage(true));
     } else if (current === 1) {
-      console.log('second submit')
       dispatch(setSubmitSecondPage(true));
     } else {
       setCurrent(current + 1) 

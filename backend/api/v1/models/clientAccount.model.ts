@@ -21,6 +21,9 @@ const clientAccountSchema = new mongoose.Schema(
     },
     postList: [String],
     favoritePosts: [String],
+    wallet: {
+      balance: Number,  
+    },
     createdAt: Date,
     expireAt: Date,
     slug: {

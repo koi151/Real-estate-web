@@ -9,10 +9,10 @@ type PropertyTypeExtraField = {
 
 type PropertyTypeForPosting<ExtraPropertyInfo extends PropertyTypeExtraField = { allowNextStep: boolean, submitFirstPage: boolean, submitSecondPage: boolean}> = Omit<
   PropertyType & ExtraPropertyInfo,
-  'slug' | 'createdBy' | 'createdAt' | 'deleted'
+  'slug' | 'createdAt' | 'deleted'
 >;
 
-const initialState: Omit<PropertyTypeForPosting, 'slug' | 'createdBy' | 'createdAt' | 'deleted'> = {
+const initialState: Omit<PropertyTypeForPosting, 'slug' | 'createdAt' | 'deleted'> = {
   submitFirstPage: false,
   submitSecondPage: false,
   allowNextStep: false,

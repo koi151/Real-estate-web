@@ -55,7 +55,10 @@ const propertySchema = new mongoose.Schema(
         type: String,
         enum: accountTypeValues
       },
-      accountId: String
+      accountId: String,
+      phone: String,
+      fullName: String,
+      email: String,
     },
     slug: { 
       type: String, 

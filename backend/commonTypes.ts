@@ -63,7 +63,10 @@ export interface PropertyType {
   propertyDetails?: PropertyDetails;
   createdBy? : {
     accountId: string,
-    accountType: 'admin' | 'client' | undefined
+    accountType: 'admin' | 'client' | undefined,
+    phone: string,
+    fullName: string,
+    email: string
   };  
   postServices?: PostServices; 
   slug?: string;

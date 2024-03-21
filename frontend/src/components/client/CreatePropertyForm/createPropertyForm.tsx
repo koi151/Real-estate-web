@@ -7,6 +7,7 @@ import { DefaultOptionType } from "antd/es/select";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/stores";
 import { createSelector } from "@reduxjs/toolkit";
+import { FormInstance } from "antd/es/form/Form";
 
 // Icons
 import { SlDirections } from "react-icons/sl";
@@ -18,19 +19,18 @@ import { FaRegBuilding } from "react-icons/fa";
 import propertyCategoriesServiceClient from "../../../services/client/property-categories.service";
 
 // Components, helpers, data types,..
-import GetAddress from "../../../components/admin/getAddress/getAddress";
-import UploadMultipleFile from "../../../components/admin/UploadMultipleFile/uploadMultipleFile";
-import NoPermission from "../../../components/admin/NoPermission/noPermission";
+import GetAddress from "../../admin/getAddress/getAddress";
+import UploadMultipleFile from "../../admin/UploadMultipleFile/uploadMultipleFile";
+import NoPermission from "../../admin/NoPermission/noPermission";
 
 import { directionOptions, documentOptions, furnitureOptions, listingTypeOptions } from "../../../helpers/propertyOptions";
 import { setAllowNextStep, setPost, setSubmitFirstPage } from "../../../redux/reduxSlices/propertyPostSlice";
 import { validateCreatePostClient } from "../../../helpers/validateMessages";
 
-import { FormInstance } from "antd/es/form/Form";
-import './create.scss'
+import './createPropertyForm.scss'
+import { getRoomCount } from "../../../helpers/standardizeData";
 
-
-const CreateProperty: React.FC = () => {
+const CreatePropertyForm: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -61,6 +61,7 @@ const CreateProperty: React.FC = () => {
   );
 
   const currentUser = useSelector(selectCurrentUser);
+  const postInfo = useSelector((state: RootState) => state.propertyPost);
 
   // fetch categories data 
   useEffect(() => {
@@ -97,7 +98,6 @@ const CreateProperty: React.FC = () => {
   useEffect(() => {
     const submitForm = async () => {
       if (!formRef.current) {
-        console.log('Reference to form failed');
         return;
       }
   
@@ -105,9 +105,24 @@ const CreateProperty: React.FC = () => {
         try {
           const formData = await formRef.current.validateFields();
           dispatch(setAllowNextStep(true));
-          dispatch(setPost(formData));
+
+          const rooms = ['bedrooms', 'bathrooms', 'kitchens']
+          .filter(room => formData[room])
+          .map(room => `${room}-${formData[room]}`);
+
+          // Save post data to Redux store
+          dispatch(setPost({ // converted rooms to array
+            ...formData,
+            description: editorContent,
+            propertyDetails: {
+              ...formData.propertyDetails,
+              rooms: rooms,
+            }
+          }));
+
         } catch (err) { // in case of not passed validation
           console.error('Form validation failed:', err);
+        } finally {
           dispatch(setSubmitFirstPage(false));
         }
       }
@@ -157,7 +172,7 @@ const CreateProperty: React.FC = () => {
                         <Form.Item 
                           label='Choose listing type' 
                           name='listingType' 
-                          initialValue={'forSale'}
+                          initialValue={postInfo.postType || 'forSale'}
                           style={{height: "4.5rem"}}
                         >
                           <Segmented 
@@ -169,6 +184,7 @@ const CreateProperty: React.FC = () => {
                       </Col>
                       <Col span={24}>
                         <Form.Item
+                          initialValue={postInfo.propertyDetails?.propertyCategory}
                           name={['propertyDetails', 'propertyCategory']}  
                           label='Select property category'
                           rules={[{ required: true }]}
@@ -184,7 +200,7 @@ const CreateProperty: React.FC = () => {
                         </Form.Item>
                       </Col>
                       <Col span={24}>
-                        <GetAddress />
+                        <GetAddress initialValues={postInfo?.location}/>
                       </Col>
                     </Row>
                   </Card>
@@ -194,6 +210,7 @@ const CreateProperty: React.FC = () => {
                   <Row gutter={16}>
                     <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
                       <Form.Item 
+                        initialValue={postInfo.area?.propertyLength}
                         label='Property length (m)' 
                         name={['area', 'propertyLength']}
                         rules={[{ required: true }]}
@@ -208,6 +225,7 @@ const CreateProperty: React.FC = () => {
                     </Col>
                     <Col sm={24} md={12} lg={8} xl={8} xxl={8}>  
                       <Form.Item 
+                        initialValue={postInfo.area?.propertyWidth}
                         label='Property width (m)' 
                         name={['area', 'propertyWidth']}
                         rules={[{ required: true }]}
@@ -232,11 +250,28 @@ const CreateProperty: React.FC = () => {
                       </Form.Item>
                     </Col>
                     <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
-                      <Form.Item label={`Property price`} name='price' rules={[{ required: true }]}>
+                      <Form.Item 
+                        initialValue={postInfo.price && postInfo.price >= 1000 ? postInfo.price / 1000 : postInfo?.price}
+                        label={`Property price`} 
+                        name='price' 
+                        rules={[{ required: true }]}
+                      >
                         <InputNumber 
                           min={0}
                           type="number"
-                          addonAfter={selectPriceUnit} 
+                          addonAfter={
+                            <Select 
+                              defaultValue={postInfo?.price && postInfo.price >= 1000 ? "billion" : "million"} 
+                              onChange={(value) => {
+                                if (typeof value === 'number') {
+                                  setPrice(value);
+                                }
+                              }}
+                            >
+                              <Select.Option value="million">million</Select.Option>
+                              <Select.Option value="billion">billion</Select.Option>
+                            </Select>
+                          }  
                           placeholder={`Please select property price`}
                           onChange={(value) => {
                             if (typeof value === 'number') {
@@ -253,8 +288,8 @@ const CreateProperty: React.FC = () => {
                           disabled 
                           placeholder={`Select property price and area to view`} 
                           style={{width: "100%"}}
-                          value={`${propertyLength && propertyWidth && price && (priceMultiplier * price / (propertyLength * propertyWidth)).toFixed(2)} million`}
-                        />
+                          value={`${postInfo?.area?.propertyLength && postInfo?.area?.propertyWidth && price 
+                            && (priceMultiplier * price / (postInfo.area.propertyLength * postInfo.area.propertyWidth)).toFixed(2)} million`}                        />
                       </Form.Item>
                     </Col>
                     <Col span={24}>
@@ -262,6 +297,7 @@ const CreateProperty: React.FC = () => {
                     </Col>
                     <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
                       <Form.Item 
+                        initialValue={postInfo.propertyDetails?.legalDocuments}
                         label={`Legal documents:`} 
                         name={['propertyDetails', 'legalDocuments']}  
                       >
@@ -275,6 +311,7 @@ const CreateProperty: React.FC = () => {
                     </Col>
                     <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
                       <Form.Item 
+                        initialValue={postInfo.propertyDetails?.furnitures}
                         label={`Furnitures:`} 
                         name={['propertyDetails', 'furnitures']}  
                       >
@@ -287,6 +324,7 @@ const CreateProperty: React.FC = () => {
                     </Col>
                     <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
                       <Form.Item   
+                        initialValue={postInfo?.propertyDetails?.rooms && getRoomCount(postInfo?.propertyDetails?.rooms, 'bedrooms')}
                         label={
                           <Space className="d-flex align-items-center">
                             <span>Number of bedrooms:</span>
@@ -304,6 +342,7 @@ const CreateProperty: React.FC = () => {
                     </Col>
                     <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
                       <Form.Item   
+                        initialValue={postInfo?.propertyDetails?.rooms && getRoomCount(postInfo?.propertyDetails?.rooms, 'kitchens')}
                         label={
                           <Space className="d-flex align-items-center">
                             <span>Number of kitchens:</span>
@@ -321,6 +360,7 @@ const CreateProperty: React.FC = () => {
                     </Col>
                     <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
                       <Form.Item 
+                        initialValue={postInfo?.propertyDetails?.rooms && getRoomCount(postInfo?.propertyDetails?.rooms, 'bathrooms')}
                         label={
                           <Space className="d-flex align-items-center">
                             <span>Number of bathrooms:</span>
@@ -338,6 +378,7 @@ const CreateProperty: React.FC = () => {
                     </Col>
                     <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
                       <Form.Item 
+                        initialValue={postInfo.propertyDetails?.totalFloors}
                         label={
                           <Space className="d-flex align-items-center">
                             <span>Number of floors:</span>
@@ -354,7 +395,8 @@ const CreateProperty: React.FC = () => {
                       </Form.Item>
                     </Col>
                     <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
-                      <Form.Item 
+                      <Form.Item
+                        initialValue={postInfo.propertyDetails?.houseDirection}
                         label={
                           <Space className="d-flex align-items-center">
                             <span>House direction:</span>
@@ -372,6 +414,7 @@ const CreateProperty: React.FC = () => {
                     </Col>
                     <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
                       <Form.Item 
+                        initialValue={postInfo.propertyDetails?.balconyDirection}
                         label={
                           <Space className="d-flex align-items-center">
                             <span>Balcony direction:</span>
@@ -391,7 +434,12 @@ const CreateProperty: React.FC = () => {
                       <div className="line-two"></div>
                     </Col>
                     <Col span={24}>
-                      <UploadMultipleFile />
+                      {/* uploadedImages={postInfo?.images} */}
+                      <UploadMultipleFile 
+                        uploadedImages={
+                          postInfo?.images?.map((image: any, index: number) => image['thumbUrl'])
+                        } 
+                      />
                     </Col>
                   </Row>
                 </Card>
@@ -400,6 +448,7 @@ const CreateProperty: React.FC = () => {
                   <Row gutter={16}>
                     <Col span={24}>
                       <Form.Item 
+                        initialValue={postInfo.title}
                         label='Post title'
                         name='title'
                         rules={[{ required: true }]}
@@ -412,6 +461,7 @@ const CreateProperty: React.FC = () => {
                         <Editor
                           id="description" 
                           value={editorContent}
+                          initialValue={postInfo?.description}               
                           onEditorChange={handleEditorChange}
                           apiKey='zabqr76pjlluyvwebi3mqiv72r4vyshj6g0u07spd34wk1t2'
                           init={{
@@ -429,13 +479,14 @@ const CreateProperty: React.FC = () => {
                 <Card title="Contact information" className="custom-card" style={{marginTop: '2rem'}}>
                   <Row gutter={16}>
                     <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
-                      <Form.Item   
+                      <Form.Item
+                        initialValue={postInfo?.createdBy?.fullName}                  
                         label={
                           <Space className="d-flex align-items-center">
                             <span>Contact name:</span>
                           </Space>
                         } 
-                        name={['contactInfo', 'name']}
+                        name={['createdBy', 'fullName']}
                         rules={[{ required: true }]}
                       >
                         <Input
@@ -446,14 +497,14 @@ const CreateProperty: React.FC = () => {
                     </Col>
                     <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
                       <Form.Item   
+                        initialValue={postInfo?.createdBy?.phone || currentUser?.phone}                  
                         label={
                           <Space className="d-flex align-items-center">
                             <span>Phone number:</span>
                           </Space>
                         } 
-                        name={['contactInfo', 'phone']}
+                        name={['createdBy', 'phone']}
                         rules={[{ required: true }]}
-                        initialValue={currentUser?.phone}
                       >
                         <InputNumber 
                           min={0} type="number"
@@ -464,8 +515,9 @@ const CreateProperty: React.FC = () => {
                     </Col>
                     <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
                         <Form.Item 
+                          initialValue={postInfo.createdBy?.email}
                           label='Email:' 
-                          name={['contactInfo', 'email']}
+                          name={['createdBy', 'email']}
                           rules={[{ type: 'email' }]}
                         >
                           <Input 
@@ -493,4 +545,4 @@ const CreateProperty: React.FC = () => {
   )
 }
 
-export default CreateProperty;
+export default CreatePropertyForm;
