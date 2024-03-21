@@ -4,8 +4,6 @@ import { accountTypeValues, listingTypeValues, postTypeValues, statusValues } fr
 
 mongoose.plugin(slug);
 
-type accountType = 'admin' | 'client';
-
 const propertySchema = new mongoose.Schema(
   {
     title: String,
@@ -45,6 +43,12 @@ const propertySchema = new mongoose.Schema(
       legalDocuments: [String],
       rooms: [String],
       totalFloors: Number
+    },
+    postServices: {
+      postFeePerDay: Number,
+      pushTimesLeft: Number,
+      defaultPostFeePerDay: Number,
+      discountPercentage: Number
     },
     createdBy: {
       accountType: {

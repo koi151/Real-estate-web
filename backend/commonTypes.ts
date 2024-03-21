@@ -38,6 +38,12 @@ export interface PropertyDetails {
   totalFloors?: number;
 }
 
+export interface PostServices {
+  pushTimesLeft: number | null;
+  defaultPostFeePerDay: number | null;
+  discountPercentage: number | null;
+}
+
 export interface PropertyType {
   _id?: string;
   title: string;
@@ -59,6 +65,7 @@ export interface PropertyType {
     accountId: string,
     accountType: 'admin' | 'client' | undefined
   };  
+  postServices?: PostServices; 
   slug?: string;
   createdAt?: Date;
   expireTime?: Date;

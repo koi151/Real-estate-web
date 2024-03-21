@@ -1,6 +1,6 @@
 import { Badge, Card, Col, Form, Input, Modal, Row, Segmented, Space, Spin, Switch, Tag } from "antd";
 import { MdKeyboardDoubleArrowUp, MdOutlineDiscount } from "react-icons/md";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import NoPermission from "../../../components/admin/NoPermission/noPermission";
 import PostType from "../../../components/client/PostType/postType";
@@ -12,12 +12,16 @@ import './chooseOptions.scss'
 import { AiOutlineReload } from "react-icons/ai";
 import { FaAngleRight } from "react-icons/fa";
 import { capitalizeString } from "../../../helpers/standardizeData";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../../redux/stores";
+import { setPost } from "../../../redux/reduxSlices/propertyPostSlice";
+import { PostServices } from "../../../../../backend/commonTypes";
 
 interface PushingPostBoxOption {
   multiple?: number;
   pushTimes?: number;
   defaultPrice?: number;
-  promoPercentage?: number;
+  discountPercentage?: number;
 }
 
 interface OptionsType {
@@ -27,6 +31,7 @@ interface OptionsType {
 }
 
 const ChooseOptions: React.FC = () => {
+  const dispatch = useDispatch();
 
   const [loading] = useState<boolean>(false); // testing
   const [accessAllowed] = useState(true); // testing
@@ -34,9 +39,36 @@ const ChooseOptions: React.FC = () => {
 
   const [postFeePerDay, setPostFeePerDay] = useState<number | null>(null);
   const [activePostType, setActivePostType] = useState<string>('');
-  const [expireDateTime, setExpireDateTime] = useState<number | null>(null);
+  const [dayExpireLeft, setDayExpireLeft] = useState<number | null>(null);
 
   const [selectedPushingPostBox, setSelectedPushingPostBox] = useState<number | null>(null); 
+  const [pushingPostInfo, setPushingPostInfo] = useState<PostServices>({
+    pushTimesLeft: null,
+    defaultPostFeePerDay: null,
+    discountPercentage: null,
+  });
+
+  const submitRequested = useSelector((state: RootState) => state.propertyPost.submitSecondPage) 
+  const postInfo = useSelector((state: RootState) => state.propertyPost) 
+
+  useEffect(() => { // testing
+    console.log("postInfo:", postInfo)
+  }, [postInfo])
+
+  useEffect(() => {
+    if (submitRequested) {
+      console.log('postFeePerDay:', postFeePerDay);
+      console.log('activePostType:', activePostType);
+      console.log('dayExpireLeft:', dayExpireLeft);
+      console.log('pushingPostInfo:', pushingPostInfo);
+      dispatch(setPost({ 
+        ...postInfo,
+        postServices: pushingPostInfo,
+      }));
+    }
+    
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [submitRequested])
 
   const postTypeOptions: OptionsType[] = [
     {
@@ -158,28 +190,28 @@ const ChooseOptions: React.FC = () => {
       multiple: 3, 
       pushTimes: 3,
       defaultPrice: getPushingPostPrice(activePostType)[0],
-      promoPercentage: 10
+      discountPercentage: 10
     },
     {
       multiple: 6, 
       pushTimes: 6,
       defaultPrice: getPushingPostPrice(activePostType)[1],
-      promoPercentage: 20
+      discountPercentage: 20
     },
   ]
 
   const handleClickExpireTime = (value: string | number) => {
     const numericValue = typeof value === 'string' ? parseFloat(value) : value;
-    setExpireDateTime(numericValue);
+    setDayExpireLeft(numericValue);
     setPostFeePerDay(getPricePerDayPosted(numericValue))
   }
 
   const getPushingPostPackagePrice = (): number | null => {
     if (selectedPushingPostBox === null || selectedPushingPostBox === undefined) return null;
-    const { defaultPrice, promoPercentage } = pushingPostBoxOptions[selectedPushingPostBox] || {};
-    if (!defaultPrice || !promoPercentage) return null;
+    const { defaultPrice, discountPercentage } = pushingPostBoxOptions[selectedPushingPostBox] || {};
+    if (!defaultPrice || !discountPercentage) return null;
 
-    return (defaultPrice * (100 - promoPercentage)) / 100;
+    return (defaultPrice * (100 - discountPercentage)) / 100;
   };
 
   const getTotalPayment = (): number => {
@@ -189,7 +221,7 @@ const ChooseOptions: React.FC = () => {
   
     const pushingPostBoxPriceNumber = parseFloat(pushingPostBoxPrice);
   
-    const postFee: number = postFeePerDay && expireDateTime ? postFeePerDay * expireDateTime : 0;
+    const postFee: number = postFeePerDay && dayExpireLeft ? postFeePerDay * dayExpireLeft : 0;
   
     const totalPayment = pushingPostBoxPriceNumber + postFee;
     return totalPayment;
@@ -261,7 +293,7 @@ const ChooseOptions: React.FC = () => {
                           />
                         </Form.Item>
                         <div className="d-flex ml-5" style={{width: '100%', marginTop: '-2rem'}}>
-                          <ExpireTimePicker expireDayRequest={expireDateTime}/>
+                          <ExpireTimePicker expireDayRequest={dayExpireLeft}/>
                         </div>
                       </Col>
                     </Row>
@@ -296,9 +328,16 @@ const ChooseOptions: React.FC = () => {
                             multiple={item.multiple} 
                             pushTimes={item.pushTimes || 0}
                             defaultPrice={item.defaultPrice || 0}
-                            promoPercentage={item.promoPercentage}
+                            discountPercentage={item.discountPercentage}
                             selected={index === selectedPushingPostBox}
-                            onClick={() => setSelectedPushingPostBox(index)}
+                            onClick={() => {
+                              setSelectedPushingPostBox(index);
+                              setPushingPostInfo({
+                                pushTimesLeft: item.pushTimes || 0,
+                                defaultPostFeePerDay: item.defaultPrice || 0,
+                                discountPercentage: item.discountPercentage || 0,
+                              });
+                            }}
                           />
                         </Col>
                       ))}
@@ -334,7 +373,7 @@ const ChooseOptions: React.FC = () => {
                           <div className="block-one__right">
                             <b>{activePostType ? capitalizeString(activePostType) : "Not selected"}</b>
                             <b>{postFeePerDay ? "$" + postFeePerDay : "Not selected"}</b>
-                            <b>{expireDateTime ? expireDateTime + " days" : "Not selected"}</b>
+                            <b>{dayExpireLeft ? dayExpireLeft + " days" : "Not selected"}</b>
                           </div>
                         </div>
                         <div className="line" style={{margin: "2rem 0"}} />
@@ -344,8 +383,8 @@ const ChooseOptions: React.FC = () => {
                             <span>Auto pushing post package</span>
                           </div>
                           <div className="block-two__right">
-                            {postFeePerDay && expireDateTime && (
-                              <b>${(postFeePerDay * expireDateTime).toFixed(2)}</b>
+                            {postFeePerDay && dayExpireLeft && (
+                              <b>${(postFeePerDay * dayExpireLeft).toFixed(2)}</b>
                             )}
                             {selectedPushingPostBox !== null && (
                               <b>

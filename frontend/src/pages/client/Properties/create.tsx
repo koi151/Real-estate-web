@@ -23,7 +23,7 @@ import UploadMultipleFile from "../../../components/admin/UploadMultipleFile/upl
 import NoPermission from "../../../components/admin/NoPermission/noPermission";
 
 import { directionOptions, documentOptions, furnitureOptions, listingTypeOptions } from "../../../helpers/propertyOptions";
-import { setAllowNextStep, setPost, setSubmitRequest } from "../../../redux/reduxSlices/propertyPostSlice";
+import { setAllowNextStep, setPost, setSubmitFirstPage } from "../../../redux/reduxSlices/propertyPostSlice";
 import { validateCreatePostClient } from "../../../helpers/validateMessages";
 
 import { FormInstance } from "antd/es/form/Form";
@@ -34,7 +34,7 @@ const CreateProperty: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const submitFormReq = useSelector((state: RootState) => state.propertyPost.submitRequest);
+  const submitFormReq = useSelector((state: RootState) => state.propertyPost.submitFirstPage);
 
   const formRef = useRef<FormInstance>(null);
 
@@ -108,7 +108,7 @@ const CreateProperty: React.FC = () => {
           dispatch(setPost(formData));
         } catch (err) { // in case of not passed validation
           console.error('Form validation failed:', err);
-          dispatch(setSubmitRequest(false));
+          dispatch(setSubmitFirstPage(false));
         }
       }
     }

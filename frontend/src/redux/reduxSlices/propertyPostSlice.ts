@@ -2,19 +2,20 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { PropertyType } from '../../../../backend/commonTypes';
 
 type PropertyTypeExtraField = {
-  submitRequest: boolean;
+  submitFirstPage: boolean;
+  submitSecondPage: boolean,
   allowNextStep: boolean;
 };
 
-type PropertyTypeForPosting<T extends PropertyTypeExtraField = { allowNextStep: boolean, submitRequest: boolean}> = Omit<
-  PropertyType & T,
+type PropertyTypeForPosting<ExtraPropertyInfo extends PropertyTypeExtraField = { allowNextStep: boolean, submitFirstPage: boolean, submitSecondPage: boolean}> = Omit<
+  PropertyType & ExtraPropertyInfo,
   'slug' | 'createdBy' | 'createdAt' | 'deleted'
 >;
 
 const initialState: Omit<PropertyTypeForPosting, 'slug' | 'createdBy' | 'createdAt' | 'deleted'> = {
-  submitRequest: false,
+  submitFirstPage: false,
+  submitSecondPage: false,
   allowNextStep: false,
-
   title: '',
   status: 'active',
   postType: '',
@@ -30,6 +31,7 @@ const initialState: Omit<PropertyTypeForPosting, 'slug' | 'createdBy' | 'created
   location: undefined,
   listingType: '',
   propertyDetails: undefined,
+  postServices: undefined,
   expireTime: undefined,
 };
 
@@ -40,8 +42,11 @@ export const propertyPostSlice = createSlice({
     setPost: (_, action: PayloadAction<typeof initialState>) => {
       return action.payload;
     },
-    setSubmitRequest: (state, action: PayloadAction<boolean>) => {
-      state.submitRequest = action.payload;
+    setSubmitFirstPage: (state, action: PayloadAction<boolean>) => {
+      state.submitFirstPage = action.payload;
+    },
+    setSubmitSecondPage: (state, action: PayloadAction<boolean>) => {
+      state.submitSecondPage = action.payload;
     },
     setAllowNextStep: (state, action: PayloadAction<boolean>) => {
       state.allowNextStep = action.payload;
@@ -49,6 +54,6 @@ export const propertyPostSlice = createSlice({
   },
 });
 
-export const { setPost, setAllowNextStep, setSubmitRequest } = propertyPostSlice.actions;
+export const { setPost, setAllowNextStep, setSubmitFirstPage, setSubmitSecondPage } = propertyPostSlice.actions;
 
 export default propertyPostSlice.reducer;

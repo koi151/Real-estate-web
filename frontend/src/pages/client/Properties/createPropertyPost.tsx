@@ -5,7 +5,7 @@ import CreateProperty from './create';
 import ChooseOptions from './chooseOptions';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../redux/stores';
-import { setSubmitRequest } from '../../../redux/reduxSlices/propertyPostSlice';
+import { setSubmitFirstPage, setSubmitSecondPage } from '../../../redux/reduxSlices/propertyPostSlice';
 
 const CreatePropertyPost: React.FC = () => {
   const { token } = theme.useToken();
@@ -39,10 +39,14 @@ const CreatePropertyPost: React.FC = () => {
 
   const next = () => {
     if (current === 0) { // Waiting for permission to proceed to the next page after validation has ended.
-      dispatch(setSubmitRequest(true));
-      return;
+      dispatch(setSubmitFirstPage(true));
+    } else if (current === 1) {
+      console.log('second submit')
+      dispatch(setSubmitSecondPage(true));
+    } else {
+      setCurrent(current + 1) 
     }
-    setCurrent(current + 1) 
+    return;
   };
   
   // Process to next page when allowed
