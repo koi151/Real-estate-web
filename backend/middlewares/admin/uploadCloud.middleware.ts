@@ -21,12 +21,8 @@ export const uploadFields = async (req: Request, res: Response, next: NextFuncti
 
     const array = req["files"][key];
     for (const item of array) {
-      try {
-        const result = await uploadToCloudinary(item.buffer);
-        req.body[key].push(result);
-      } catch (error) {
-        console.log(error);
-      }
+      const result = await uploadToCloudinary(item.buffer);
+      req.body[key].push(result);
     }
   }
 

@@ -1,38 +1,33 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { ClientAccountType } from '../../../../backend/commonTypes';
 
-interface UserState {
-  avatar: string;
-  createdAt: string;
-  deleted: boolean;
-  email: string;
-  fullName: string;
-  phone: string;
-  postList: string[],
-  favoritePosts: string[],
-  status: string;
-  updatedAt: string;
-  _id: string;
-}
+type ClientAccountTypeLimited = Omit<
+  ClientAccountType,
+  'password' | 'token'
+>;
 
-const initialState: UserState = {
-  avatar: '',
-  createdAt: '',
-  deleted: false,
-  email: '',
-  fullName: '',
-  phone: '',
-  postList: [],
-  favoritePosts: [],
-  status: '',
-  updatedAt: '',
-  _id: '',
-};
+const initialState: 
+  Omit<ClientAccountTypeLimited, 'password' | 'token'> = 
+  {
+    avatar: '',
+    createdAt: undefined,
+    deleted: false,
+    wallet: undefined,
+    email: '',
+    fullName: '',
+    phone: '',
+    postList: [],
+    favoritePosts: [],
+    status: undefined,
+    updatedAt: undefined,
+    _id: '',
+  };
 
 export const clientUserSlice = createSlice({
   name: 'clientUser',
   initialState,
   reducers: {
-    setClientUser: (_, action: PayloadAction<UserState>) => {
+    setClientUser: (_, action: PayloadAction<ClientAccountType>) => {
       return action.payload;
     },
     setAvatar: (state, action: PayloadAction<string>) => {

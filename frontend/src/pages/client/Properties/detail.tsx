@@ -70,7 +70,7 @@ const PropertyDetail: React.FC = () => {
         }
 
         if (id && currentUser) {
-          const isPostFavorited = currentUser.favoritePosts.includes(id);
+          const isPostFavorited = currentUser.favoritePosts?.includes(id);
           setIsFavorite(isPostFavorited);
         }
 
@@ -147,9 +147,11 @@ const PropertyDetail: React.FC = () => {
 
   const addToFavoriteHandle = async () => {
     if (!id) {
-      message.error('Can not get user ID');
+      message.error('Can not get post ID');
       return;
     }
+    if (!currentUser.userId) 
+      return message.error('Can not get current user information')
 
     setIsFavorite(!isFavorite);
     const response = await clientAccountsService.updateFavoriteList(currentUser.userId, id);

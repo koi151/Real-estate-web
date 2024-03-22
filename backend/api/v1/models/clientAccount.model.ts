@@ -25,7 +25,7 @@ const clientAccountSchema = new mongoose.Schema(
       balance: Number,  
     },
     createdAt: Date,
-    expireAt: Date,
+    updatedAt: Date,
     slug: {
       type: String, 
       slug: "title",

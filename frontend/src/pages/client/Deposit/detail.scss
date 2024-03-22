@@ -1,0 +1,27 @@
+@import './deposit.scss';
+
+.deposit-detail-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  font-family: $lexend;
+
+  &--title {
+    font-size: 2.2rem;
+    font-weight: 700;
+  }
+
+  &--select {
+    width: 50%;
+  }
+
+  &__link {
+    max-width: 10rem;
+    text-decoration: none;
+
+    &--btn {
+      width: 100%;
+    }
+  }
+}

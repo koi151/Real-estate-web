@@ -1,0 +1,38 @@
+@import '../../../App.scss';
+
+.payment-method-wrapper {
+  font-family: $lexend;
+  padding: 2rem;
+
+  &--title {
+    font-size: 2.4rem;
+    font-weight: 700;
+  }
+
+  &--desc {
+    margin-top: .65rem;
+  }
+
+  &__box {
+    margin-top: 4rem;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    background: rgb(255, 255, 255);
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+    border-radius: 4px;
+    padding: 1.5rem;
+    cursor: pointer;
+
+    &--logo {
+      width: 10rem;
+      height: 5rem;
+      object-fit: cover;
+    }
+
+    &--desc {
+      margin-left: 2rem;
+      width: 100%;
+    }
+  }
+}

@@ -7,6 +7,8 @@ import RegisterAndLogin from "../pages/client/RegisterAndLogin/registerLogin";
 import PageNotFound from "../components/shared/PageNotFound/pageNotFound";
 import ProtectedRoute from '../components/shared/ProtectedRoute/protectedRoute';
 import CreatePropertyPost from '../pages/client/Properties/createPropertyPost';
+import DepositMethods from '../pages/client/Deposit/deposit';
+import DepositDetail from '../pages/client/Deposit/detail';
 
 export const clientRoutes: RouteObject[] = [
   {
@@ -28,6 +30,14 @@ export const clientRoutes: RouteObject[] = [
         path: 'properties/detail/:id',
         element: <PropertyDetail />
       },
+      {
+        path: 'deposit',
+        element: <DepositMethods />
+      },
+      {
+        path: 'deposit/vnpay',
+        element: <DepositDetail />
+      }
     ]
   }, 
   {

@@ -33,14 +33,17 @@ interface OptionsType {
 const ChooseOptions: React.FC = () => {
   const dispatch = useDispatch();
 
+  // loading & access
   const [loading] = useState<boolean>(false); // testing
   const [accessAllowed] = useState(true); // testing
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Modal
+  const [promotionModalOpen, setPromotionModalOpen] = useState<boolean>(false);
+
+  // Post info 
   const [postFeePerDay, setPostFeePerDay] = useState<number | null>(null);
   const [activePostType, setActivePostType] = useState<string>('');
   const [dayExpireLeft, setDayExpireLeft] = useState<number | null>(null);
-
   const [selectedPushingPostBox, setSelectedPushingPostBox] = useState<number | null>(null); 
   const [pushingPostInfo, setPushingPostInfo] = useState<PostServices>({
     pushTimesLeft: null,
@@ -48,13 +51,15 @@ const ChooseOptions: React.FC = () => {
     discountPercentage: null,
   });
 
+  // Redux
   const postInfo = useSelector((state: RootState) => state.propertyPost) 
 
   useEffect(() => {
-    if (postInfo.submitSecondPage) {
+    if (postInfo.submitSecondPage) { // check if submit requested or not
       dispatch(setPost({ 
         ...postInfo,
         postServices: pushingPostInfo,
+        totalPayment: getTotalPayment()
       }));
     }
     
@@ -216,14 +221,6 @@ const ChooseOptions: React.FC = () => {
   
     const totalPayment = pushingPostBoxPriceNumber + postFee;
     return totalPayment;
-  };
-
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
   };
 
 
@@ -388,7 +385,7 @@ const ChooseOptions: React.FC = () => {
                           </div>
                         </div>
                         <div className="line" style={{margin: "2rem 0"}} />
-                        <div className="block-three" onClick={() => setIsModalOpen(true)}>
+                        <div className="block-three" onClick={() => setPromotionModalOpen(true)}>
                           <div className="block-three__left">
                             <div className="d-flex align-items-center">
                               <div className="auto-post-box__icon-wrapper">
@@ -415,7 +412,6 @@ const ChooseOptions: React.FC = () => {
                       </Col>
                     </Row>
                   </Card>
-
                 </Badge.Ribbon>
               </Form>
             </div>
@@ -431,7 +427,12 @@ const ChooseOptions: React.FC = () => {
         </div>
       )}
 
-      <Modal title="Promotion" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+      <Modal 
+        title="Promotion" 
+        open={promotionModalOpen}
+        onOk={() => setPromotionModalOpen(true)} 
+        onCancel={() => setPromotionModalOpen(false)}
+      >
         <div className="line" style={{marginTop: "1rem", marginBottom: "1.5rem", background: "#eee"}}></div>
         <Input size="large" style={{width: "100%"}} placeholder="Enter promo code..."></Input>
       </Modal>

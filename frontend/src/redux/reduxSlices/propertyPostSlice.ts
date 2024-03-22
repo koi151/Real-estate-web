@@ -1,21 +1,19 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { PropertyType } from '../../../../backend/commonTypes';
 
-type PropertyTypeExtraField = {
+// Combined type for all property post data (including extra fields)
+interface PropertyPostFull extends Omit<PropertyType, 'slug' | 'createdAt' | 'deleted'> {
   submitFirstPage: boolean;
-  submitSecondPage: boolean,
+  submitSecondPage: boolean;
   allowNextStep: boolean;
-};
+  totalPayment: number;
+}
 
-type PropertyTypeForPosting<ExtraPropertyInfo extends PropertyTypeExtraField = { allowNextStep: boolean, submitFirstPage: boolean, submitSecondPage: boolean}> = Omit<
-  PropertyType & ExtraPropertyInfo,
-  'slug' | 'createdAt' | 'deleted'
->;
-
-const initialState: Omit<PropertyTypeForPosting, 'slug' | 'createdAt' | 'deleted'> = {
+const initialState: PropertyPostFull = {
   submitFirstPage: false,
   submitSecondPage: false,
   allowNextStep: false,
+  totalPayment: 0,
   title: '',
   status: 'active',
   postType: '',
@@ -42,15 +40,22 @@ export const propertyPostSlice = createSlice({
     setPost: (_, action: PayloadAction<typeof initialState>) => {
       return action.payload;
     },
+
     setSubmitFirstPage: (state, action: PayloadAction<boolean>) => {
       state.submitFirstPage = action.payload;
     },
+
     setSubmitSecondPage: (state, action: PayloadAction<boolean>) => {
       state.submitSecondPage = action.payload;
     },
+
     setAllowNextStep: (state, action: PayloadAction<boolean>) => {
       state.allowNextStep = action.payload;
-    }
+    },
+    
+    setTotalPayment: (state, action: PayloadAction<number>) => {
+      state.totalPayment = action.payload;
+    },
   },
 });
 

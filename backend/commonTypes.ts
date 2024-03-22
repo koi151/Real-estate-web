@@ -110,6 +110,10 @@ export interface AdminAccountType {
 }
 
 // CLIENT ACCOUNT
+export interface AccountWalletType {
+  balance: number,  
+}
+
 export interface ClientAccountType {
   _id?: string;
   fullName: string,
@@ -120,11 +124,11 @@ export interface ClientAccountType {
   avatar?: string,
   postList?: string[],
   favoritePosts? : string[],
+  wallet?: AccountWalletType,
   status?: ValidStatus,
   createdAt?: Date;
-  expireAt?: Date;
+  updatedAt?: Date;
   deleted?: boolean;
-  roleTitle?: string;
 }
 
 // ACCOUNT

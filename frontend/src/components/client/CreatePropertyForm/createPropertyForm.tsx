@@ -27,8 +27,10 @@ import { directionOptions, documentOptions, furnitureOptions, listingTypeOptions
 import { setAllowNextStep, setPost, setSubmitFirstPage } from "../../../redux/reduxSlices/propertyPostSlice";
 import { validateCreatePostClient } from "../../../helpers/validateMessages";
 
-import './createPropertyForm.scss'
 import { getRoomCount } from "../../../helpers/standardizeData";
+import AlertBeforeReload from "../../shared/AlertBeforeReload/alertBeforeReload";
+import './createPropertyForm.scss'
+
 
 const CreatePropertyForm: React.FC = () => {
   const navigate = useNavigate();
@@ -44,7 +46,7 @@ const CreatePropertyForm: React.FC = () => {
   const [price, setPrice] = useState<number | null>(null);
   const [propertyWidth, setPropertyWidth] = useState<number | null>(null);
   const [propertyLength, setPropertyLength] = useState<number | null>(null);
-  const [priceMultiplier, setPriceMultiplier] = useState<number>(1);
+  const [priceMultiplier] = useState<number>(1);
   const [editorContent, setEditorContent] = useState<string>("");
 
   const [categoryTree, setCategoryTree] = useState<DefaultOptionType[] | undefined>(undefined);
@@ -62,6 +64,9 @@ const CreatePropertyForm: React.FC = () => {
 
   const currentUser = useSelector(selectCurrentUser);
   const postInfo = useSelector((state: RootState) => state.propertyPost);
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleReload = AlertBeforeReload('Are you sure you want to reload the page?');
 
   // fetch categories data 
   useEffect(() => {
@@ -132,13 +137,6 @@ const CreatePropertyForm: React.FC = () => {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [submitFormReq])
-
-  const selectPriceUnit = (
-    <Select defaultValue="million" onChange={ (value) => setPriceMultiplier(value === 'million' ? 1 : 1000)}>
-      <Select.Option value="million">million</Select.Option>
-      <Select.Option value="billion">billion</Select.Option>
-    </Select>
-  );
 
   const handleEditorChange = (content: any) => {
     const contentString = typeof content === 'string' ? content : '';
@@ -288,8 +286,19 @@ const CreatePropertyForm: React.FC = () => {
                           disabled 
                           placeholder={`Select property price and area to view`} 
                           style={{width: "100%"}}
-                          value={`${postInfo?.area?.propertyLength && postInfo?.area?.propertyWidth && price 
-                            && (priceMultiplier * price / (postInfo.area.propertyLength * postInfo.area.propertyWidth)).toFixed(2)} million`}                        />
+                          value={(
+                            postInfo?.area?.propertyLength && postInfo?.area?.propertyWidth
+                            && price
+                          ) ? `${(priceMultiplier * price / (postInfo.area.propertyLength * postInfo.area.propertyWidth)).toFixed(2)} million` 
+                            : (
+                              propertyLength && 
+                              propertyWidth && 
+                              price
+                            ) ? 
+                              `${(priceMultiplier * price / (propertyLength * propertyWidth)).toFixed(2)} million` 
+                            : ''
+                          }
+                          />
                       </Form.Item>
                     </Col>
                     <Col span={24}>
@@ -529,7 +538,7 @@ const CreatePropertyForm: React.FC = () => {
                   </Row>
                 </Card>
               </Form>
-            </div>
+            </div>            
           ) : (
             <NoPermission permissionType='access' />
           )}
