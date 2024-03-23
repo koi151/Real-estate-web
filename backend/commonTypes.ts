@@ -238,3 +238,11 @@ export interface CookieOptions {
   expires?: number; 
   path?: string; 
 }
+
+// ORDER
+// DEPOSIT BALANCE
+export interface DepositOrderType {
+  amount?: string,
+  bankCode: string,
+  language: string
+}

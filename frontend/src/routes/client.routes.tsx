@@ -35,7 +35,7 @@ export const clientRoutes: RouteObject[] = [
         element: <DepositMethods />
       },
       {
-        path: 'deposit/vnpay',
+        path: 'order/deposit/vnpay',
         element: <DepositDetail />
       }
     ]

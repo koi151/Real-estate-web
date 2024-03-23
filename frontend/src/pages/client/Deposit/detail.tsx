@@ -1,47 +1,70 @@
-import { Badge, Button, Card, Col, Form, Radio, Row, Select, Space } from "antd";
-import { Link } from "react-router-dom";
+import { Badge, Button, Card, Col, Form, Radio, Row, Select, Space, message } from "antd";
+import { Link, useNavigate } from "react-router-dom";
 import React from "react";
 import './detail.scss'
+import orderService from "../../../services/client/order.service";
+import { DepositOrderType } from "../../../../../backend/commonTypes";
 
 const DepositDetail: React.FC = () => {
+  const navigate = useNavigate();
 
   const depositOptions = [
     {
-      value: '0.2',
+      value: '200000',
       label: '200.000 đ',
     },
     {
-      value: '0.5',
+      value: '500000',
       label: '500.000 đ',
     },
     {
-      value: '1',
+      value: '1000000',
       label: '1.000.000 đ',
     },
     {
-      value: '2',
+      value: '2000000',
       label: '2.000.000 đ',
     },
     {
-      value: '3',
+      value: '3000000',
       label: '3.000.000 đ',
     },
     {
-      value: '5',
+      value: '5000000',
       label: '5.000.000 đ',
     },
     {
-      value: '10',
+      value: '10000000',
       label: '10.000.000 đ',
     },
   ];
+
+  const onFinishForm = async (data: DepositOrderType) => {
+    try {  
+      console.log('data check:', data)
+      const response = await orderService.createPaymentUrlVnPay(data);
+  
+      if (response.code === 200) {
+        console.log("response.url", response.url)
+        // navigate(`/${response.url}`)
+        window.location.href = response.url;
+
+      } else {
+        message.error(response.message, 3);
+      }
+
+    } catch (err) {
+      message.error("Error occurred while processing to payment page.");
+      console.log("Error occurred:", err)
+    }
+  }
   
   return (
     <div className="deposit-detail-wrapper">
       <Form
         style={{width: "75%"}}
         layout="vertical" 
-        // onFinish={onFinishForm}
+        onFinish={onFinishForm}
         method="POST"
         className="custom-form"   
       >
@@ -54,31 +77,54 @@ const DepositDetail: React.FC = () => {
               <Col span={24}>
                 <Form.Item 
                   label='Deposit amount' 
-                  name='deposit' 
+                  name='amount' 
                   style={{height: "4.5rem"}}
+                  required
+                  rules={[
+                    {
+                      validator: (_, value) => {
+                        if (isNaN(value)) {
+                          return Promise.reject(new Error("Please enter a valid number"));
+                        }
+                
+                        if (value * 100 < 10000) {
+                          return Promise.reject(new Error("Minimum deposit is 10,000 đ"));
+                        }
+                
+                        return Promise.resolve(); // Valid value
+                      },
+                    },
+                  ]}
                 >
                   <Select
                     className="deposit-detail-wrapper--select"
                     placeholder='Minimum deposit: 10.000 đ' 
                     options={depositOptions} 
                     showSearch
-                    mode='tags'
                   />
                 </Form.Item>
               </Col>
               <Col span={24} className="mt-3">
                 <Form.Item 
                   label='Choose payment method' 
-                  name='paymentMethod' 
+                  name='bankCode' 
+                  initialValue=''
+                  required
                 >
                   <Radio.Group 
                     // onChange={onChange}
-                    defaultValue={1} 
+                    defaultValue='' 
                   >
                     <Space direction="vertical" className="ml-2">
-                      <Radio value={1}>VNPAYQR Payment Gateway</Radio>
-                      <Radio value={2}>Payment via ATM - Domestic bank account</Radio>
-                      <Radio value={3}>Payment via international card</Radio>
+                      <Radio value=''>
+                        VNPAYQR Payment Gateway
+                      </Radio>
+                      <Radio value='VNBANK'>
+                        Payment via ATM - Domestic bank account
+                      </Radio>
+                      <Radio value='INTCARD'>
+                        Payment via international card
+                      </Radio>
                     </Space>
                   </Radio.Group>
                 </Form.Item>
@@ -86,28 +132,27 @@ const DepositDetail: React.FC = () => {
               <Col span={24} className="mt-3">
                 <Form.Item 
                   label='Choose language' 
-                  name='lang' 
+                  name='language'
+                  initialValue='vn' 
+                  required
                 >
                   <Radio.Group 
                     // onChange={onChange} 
                     defaultValue='vn'
                   >
                     <Space direction="vertical" className="ml-2">
-                      <Radio value='en'>English</Radio>
                       <Radio value='vn'>Vietnamese</Radio>
+                      <Radio value='en'>English</Radio>
                     </Space>
                   </Radio.Group>
                 </Form.Item>
               </Col>
               <Col span={24} className="d-flex mt-2">
-                <Link 
-                  className="deposit-detail-wrapper__link"
-                  to={'/deposit/vnpay/qr-code'}
-                >
-                  <Button className="deposit-detail-wrapper__link--btn">
-                    Continue
+                <Form.Item>
+                  <Button className='custom-btn-main' type="primary" htmlType="submit">
+                    Submit
                   </Button>
-                </Link>
+                </Form.Item>
               </Col>
             </Row>            
           </Card>
