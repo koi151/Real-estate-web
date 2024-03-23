@@ -9,6 +9,7 @@ import ProtectedRoute from '../components/shared/ProtectedRoute/protectedRoute';
 import CreatePropertyPost from '../pages/client/Properties/createPropertyPost';
 import DepositMethods from '../pages/client/Deposit/deposit';
 import DepositDetail from '../pages/client/Deposit/detail';
+import VNPayResult from '../pages/client/VNPay/vnPayResult';
 
 export const clientRoutes: RouteObject[] = [
   {
@@ -37,6 +38,10 @@ export const clientRoutes: RouteObject[] = [
       {
         path: 'order/deposit/vnpay',
         element: <DepositDetail />
+      },
+      {
+        path: 'order/deposit/vnpay/vnpay-return',
+        element: <VNPayResult />
       }
     ]
   }, 

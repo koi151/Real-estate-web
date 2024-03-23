@@ -10,6 +10,10 @@ const DepositDetail: React.FC = () => {
 
   const depositOptions = [
     {
+      value: '100000',
+      label: '100.000 đ',
+    },
+    {
       value: '200000',
       label: '200.000 đ',
     },
@@ -41,21 +45,23 @@ const DepositDetail: React.FC = () => {
 
   const onFinishForm = async (data: DepositOrderType) => {
     try {  
-      console.log('data check:', data)
       const response = await orderService.createPaymentUrlVnPay(data);
   
       if (response.code === 200) {
-        console.log("response.url", response.url)
-        // navigate(`/${response.url}`)
         window.location.href = response.url;
 
       } else {
         message.error(response.message, 3);
       }
 
-    } catch (err) {
-      message.error("Error occurred while processing to payment page.");
-      console.log("Error occurred:", err)
+    } catch (err: any) {
+      if (err.response && err.response.status === 401) {
+        message.error('Unauthorized - Please log in to access this feature.', 3);
+        navigate('/auth/login');
+      } else {
+        message.error("Error occurred while processing to payment page.");
+        console.log("Error occurred:", err)
+      }
     }
   }
   
@@ -112,7 +118,6 @@ const DepositDetail: React.FC = () => {
                   required
                 >
                   <Radio.Group 
-                    // onChange={onChange}
                     defaultValue='' 
                   >
                     <Space direction="vertical" className="ml-2">
@@ -137,7 +142,6 @@ const DepositDetail: React.FC = () => {
                   required
                 >
                   <Radio.Group 
-                    // onChange={onChange} 
                     defaultValue='vn'
                   >
                     <Space direction="vertical" className="ml-2">

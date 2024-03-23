@@ -26,6 +26,11 @@ class OrderService {
     const request = this.api.post(`/deposit/vnpay/create-payment-url`, data);
     return this.handleRequest(request);
   }
+
+  async getVNPayResponse() {
+    const request = this.api.get(`/deposit/vnpay/vnpay-return`);
+    return this.handleRequest(request);
+  }
 }
 
 const orderService = new OrderService();

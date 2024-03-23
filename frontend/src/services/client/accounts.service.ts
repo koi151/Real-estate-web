@@ -31,12 +31,15 @@ class AccountsServiceClient {
     return this.handleRequest(request);
   }
 
-  async updateFavoriteList(userId: string, postId: string) {
-    const request = this.api.patch(`/favorite-posts/${userId}`, { postId });
+  async updateFavoriteList(accountId: string, postId: string) {
+    const request = this.api.patch(`/favorite-posts/${accountId}`, { postId });
     return this.handleRequest(request);
   }
   
-
+  async updateAccountBalance(accountId: string, amount: number, deposit: boolean) {
+    const request = this.api.patch(`/update-balance/${accountId}`, { amount, deposit });
+    return this.handleRequest(request);
+  }
 }
 
 const clientAccountsService = new AccountsServiceClient();

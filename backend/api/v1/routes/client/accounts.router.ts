@@ -7,6 +7,7 @@ import * as controller from '../../controllers/client/accounts.controller';
 router.get('/detail/:id/:accountType', controller.detail);
 router.get('/detail-local', controller.localDetail);
 
-router.patch('/favorite-posts/:id', controller.favorites);
+router.patch('/favorite-posts/:accountId', controller.favorites);
+router.patch('/update-balance/:accountId', controller.patchBalance);
 
 export const accountsRoutesClient: Router = router;

@@ -21,6 +21,7 @@ type VNPayParams = {
   vnp_SecureHash?: string;
 };
 
+// [POST] /deposit/vnpay/create-payment-url
 export const createPaymentUrl = async (req: Request, res: Response) => {
   try {
     process.env.TZ = 'Asia/Ho_Chi_Minh';
@@ -85,10 +86,14 @@ export const createPaymentUrl = async (req: Request, res: Response) => {
   }
 };
 
+// [GET] /deposit/vnpay/create-payment-url
 export const vnPayReturn = async (req: Request, res: Response) => {
   try {
 
     let vnpParams = req.query as unknown as VNPayParams;
+    console.log("vnpParams:", vnpParams)
+    console.log("req.body:", req.body)
+
 
     const secureHash = vnpParams['vnp_SecureHash'];
     delete vnpParams['vnp_SecureHash'];
@@ -106,16 +111,16 @@ export const vnPayReturn = async (req: Request, res: Response) => {
     if (secureHash === signed) {
       // Check if data in db is legit or not and show result
 
-      // res.render('success', { code: vnpParams['vnp_ResponseCode'] });
+      return res.status(200).json({
+        code: 200,
+        message: 'Transaction successful',
+      })
     } else {
-      // res.render('success', { code: '97' });
+      return res.json({
+        code: 400,
+        message: 'Transaction failed',
+      })
     }
-
-    return res.status(200).json({
-      code: 200,
-      message: 'Created payment url successfully.',
-      // url: vnpUrl
-    })
 
   } catch (err) {
     console.log('Error occurred in createPaymentUrl controller:', err);
