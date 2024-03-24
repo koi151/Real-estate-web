@@ -15,6 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import clientAccountsService from '../../../services/client/accounts.service';
 import propertiesServiceClient from '../../../services/client/properties.service';
 import objectToFormData from '../../../helpers/standardizeData';
+import CreatePostResult from '../../../components/client/Result/createPostResult';
 
 const CreatePropertyPost: React.FC = () => {
   const { token } = theme.useToken();
@@ -47,7 +48,7 @@ const CreatePropertyPost: React.FC = () => {
     },
     {
       title: 'Pending post',
-      content: 'Last-content',
+      content: <CreatePostResult />,
     },
   ];
 
@@ -91,6 +92,12 @@ const CreatePropertyPost: React.FC = () => {
         const formData = objectToFormData(filteredPostInfo);
 
         const newPostResponse = await propertiesServiceClient.createProperty(formData)
+
+        if (newPostResponse.code === 200) {
+          message.success('Your post has been added to moderation queue!')
+        } else {
+          message.error('Error occurred, can not add post to moderation queue')
+        }
       
       } else {
         message.error('Error occurred, can not processing payment')
