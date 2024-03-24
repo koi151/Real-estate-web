@@ -155,36 +155,21 @@ export const favorites = async (req: Request, res: Response) => {
 // [PATCH] /accounts/update-balance 
 export const patchBalance = async (req: Request, res: Response) => {
   try {
-    console.log("req.body patchBalance:", req.body);
-
     const accountId: string | undefined = req.params.accountId;
     const deposit: boolean = req.body['deposit'];
     const amount: number = req.body['amount'];
-
-    console.log("accountId:", accountId)
 
     if (!accountId) return res.json({
       code: 400,
       message: 'Cannot get account id'
     })
 
-    // const updateOperator = {
-    //   $inc: {
-    //     balance: deposit ? amount : -amount // Use ternary operator for concise update
-    //   }
-    // };
-
-    // const updateResult = await collection.updateOne(
-    //   { _id: clientId },
-    //   updateOperator
-    // );
-
     const updateResult = await ClientAccount.updateOne(
       { 
         _id: accountId,
         deleted: false 
       },
-      { $inc: { balance: deposit ? amount : -amount } }
+      { $inc: { 'wallet.balance': deposit ? amount : -amount } }
     );
 
     if (updateResult.modifiedCount === 1) {
@@ -201,7 +186,7 @@ export const patchBalance = async (req: Request, res: Response) => {
     }
 
   } catch (err) {
-    console.log('Error occurred while fetching administrator accounts data:', err);
+    console.log('Error occurred while fetching client accounts data:', err);
     return res.status(500).json({
       code: 500,
       message: 'Internal Server Error'

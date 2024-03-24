@@ -8,10 +8,13 @@ import CreatePropertyForm from '../../../components/client/CreatePropertyForm/cr
 import ChooseOptions from './chooseOptions';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../redux/stores';
-import { setSubmitSecondPage } from '../../../redux/reduxSlices/propertyPostSlice';
+import { setSubmitFirstPage, setSubmitSecondPage } from '../../../redux/reduxSlices/propertyPostSlice';
 
 import './createPropertyPost.scss'
 import { useNavigate } from 'react-router-dom';
+import clientAccountsService from '../../../services/client/accounts.service';
+import propertiesServiceClient from '../../../services/client/properties.service';
+import objectToFormData from '../../../helpers/standardizeData';
 
 const CreatePropertyPost: React.FC = () => {
   const { token } = theme.useToken();
@@ -20,6 +23,7 @@ const CreatePropertyPost: React.FC = () => {
 
   const [current, setCurrent] = useState(0);
 
+  // testing
   const [loading] = useState<boolean>(false); // tempo test
   const [accessAllowed] = useState<boolean>(true); // tempo test
   const postInfo = useSelector((state: RootState) => state.propertyPost); // testing only
@@ -27,42 +31,32 @@ const CreatePropertyPost: React.FC = () => {
   // modal display
   const [outOfBalanceModalOpen, setOutOfBalanceModalOpen] = useState<boolean>(false);
 
-  const allowNextStep = useSelector((state: RootState) => state.propertyPost.allowNextStep);
+  const allowStep2 = useSelector((state: RootState) => state.propertyPost.allowStep_2);
+  const allowStep3 = useSelector((state: RootState) => state.propertyPost.allowStep_3);
   const currentUser = useSelector((state: RootState) => state.clientUser);
 
-  useEffect(() => { // testing
-    console.log("postInfo:", postInfo)
-  }, [postInfo])
-
+  // create post steps
   const steps = [
     {
       title: 'Fill basic information',
       content: <CreatePropertyForm key="create-property" />,
     },
     {
-      title: 'Select posting services',
+      title: 'Select posting services and payment',
       content: <ChooseOptions key="choose-options" />,
     },
     {
-      title: 'Payment and pending post',
+      title: 'Pending post',
       content: 'Last-content',
     },
   ];
 
   const next = () => {
     if (current === 0) { // Waiting for permission to proceed to the next page after validation has ended.
-      // dispatch(setSubmitFirstPage(true));
-      setCurrent(current + 1) 
-
+      dispatch(setSubmitFirstPage(true));
 
     } else if (current === 1) {
       dispatch(setSubmitSecondPage(true));
-      console.log("currentUser.wallet, postInfo.totalPayment:", currentUser.wallet, postInfo.totalPayment)
-      if (currentUser.wallet && currentUser.wallet.balance < postInfo.totalPayment) {
-        setOutOfBalanceModalOpen(true);
-      } else message.error('Error occurred, can not process to payment')
-
-      return;
 
     } else {
       setCurrent(current + 1) 
@@ -70,12 +64,57 @@ const CreatePropertyPost: React.FC = () => {
     return;
   };
   
-  // Process to next page when allowed
+  // Process to step 2 when allowed
   useEffect(() => { 
-    if (allowNextStep || allowNextStep === undefined) setCurrent(current + 1)
+    if (allowStep2 || allowStep2 === undefined) setCurrent(current + 1)
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allowNextStep])
+  }, [allowStep2])
+
+
+  // Process to step 3 when allowed
+  useEffect(() => { 
+    const updateAccount = async () => {
+      if (!currentUser._id) 
+        return message.error('Cannot get account id, please try to reload page again');
+
+      console.log('check: currentUser._id, postInfo.totalPayment:', currentUser._id, postInfo.totalPayment)
+      const accUpdatedReponse = await clientAccountsService.updateAccountBalance(currentUser._id, postInfo.totalPayment, false);
+      if (accUpdatedReponse.code === 200) {
+        message.success(`Account has successfully paid ${postInfo.totalPayment}$ for the post`)
+
+        const filteredPostInfo = Object.fromEntries(
+          Object.entries(postInfo)
+            .filter(([key]) => !['submitFirstPage', 'submitSecondPage', 'allowStep_2', 'allowStep_3', 'totalPayment'].includes(key))
+        );
+
+        const formData = objectToFormData(filteredPostInfo);
+
+        const newPostResponse = await propertiesServiceClient.createProperty(formData)
+      
+      } else {
+        message.error('Error occurred, can not processing payment')
+      }
+    }
+
+    // console.log("postInfo.price:", postInfo.price)
+    // if (!postInfo.price) return; // waiting for data in Redux updated
+
+    if ((allowStep3 || allowStep3 === undefined) && current === 1) {
+      
+      if (currentUser.wallet && currentUser.wallet.balance < postInfo.totalPayment) {
+        setOutOfBalanceModalOpen(true);
+        return;
+      } else {
+        console.log('updating account');
+        updateAccount();
+      }
+
+      setCurrent(current + 1);
+    }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allowStep3])
 
 
   const prev = () => {
@@ -140,16 +179,18 @@ const CreatePropertyPost: React.FC = () => {
                 <div className='d-flex flex-column' style={{width: "85%"}}>
                   <div className='d-flex justify-content-between'>
                     <span>Account balance</span>
-                    <span>${currentUser.wallet?.balance}</span>
+                    <span>${currentUser.wallet?.balance && currentUser.wallet?.balance.toFixed(2)}</span>
                   </div>
                   <div className='d-flex justify-content-between mt-1'>
                     <span>Total payment</span>
-                    <span>${postInfo.totalPayment}</span>
+                    <span>${postInfo.totalPayment && postInfo.totalPayment.toFixed(2)}</span>
                   </div>
                   {currentUser.wallet && (
                     <div className='d-flex justify-content-between mt-1'>
                       <span>You need to deposit</span>
-                      <span>${postInfo.totalPayment - currentUser.wallet.balance}</span>
+                      <span>${postInfo.totalPayment && currentUser.wallet.balance &&
+                        (postInfo.totalPayment - currentUser.wallet.balance).toFixed(2)}
+                      </span>
                     </div>
                   )}
 

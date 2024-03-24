@@ -4,7 +4,7 @@ export type ValidMultiChangeType = 'active' | "inactive" | "position" | "delete"
 
 export const postTypeValues = ["standard", "premium", "exclusive"];
 export const listingTypeValues = ["forSale", "forRent"];
-export const statusValues = ["active", "inactive"];
+export const statusValues = ["active", "inactive", "pending"];
 export const accountTypeValues = ['admin', 'client']
 
 // STATISTICS
@@ -39,8 +39,9 @@ export interface PropertyDetails {
 }
 
 export interface PostServices {
+  defaultPostFeePerDay: number | null,
   pushTimesLeft: number | null;
-  defaultPostFeePerDay: number | null;
+  dayPost?: number | null,
   discountPercentage: number | null;
 }
 
@@ -71,7 +72,7 @@ export interface PropertyType {
   postServices?: PostServices; 
   slug?: string;
   createdAt?: Date;
-  expireTime?: Date;
+  expireTime?: Date | string;
   deleted?: boolean;
 }
 

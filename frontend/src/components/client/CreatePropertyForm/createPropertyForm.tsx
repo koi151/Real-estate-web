@@ -6,7 +6,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { DefaultOptionType } from "antd/es/select";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/stores";
-import { createSelector } from "@reduxjs/toolkit";
 import { FormInstance } from "antd/es/form/Form";
 
 // Icons
@@ -24,7 +23,7 @@ import UploadMultipleFile from "../../admin/UploadMultipleFile/uploadMultipleFil
 import NoPermission from "../../admin/NoPermission/noPermission";
 
 import { directionOptions, documentOptions, furnitureOptions, listingTypeOptions } from "../../../helpers/propertyOptions";
-import { setAllowNextStep, setPost, setSubmitFirstPage } from "../../../redux/reduxSlices/propertyPostSlice";
+import { setAllowStep2, setPost, setSubmitFirstPage } from "../../../redux/reduxSlices/propertyPostSlice";
 import { validateCreatePostClient } from "../../../helpers/validateMessages";
 
 import { getRoomCount } from "../../../helpers/standardizeData";
@@ -46,27 +45,23 @@ const CreatePropertyForm: React.FC = () => {
   const [price, setPrice] = useState<number | null>(null);
   const [propertyWidth, setPropertyWidth] = useState<number | null>(null);
   const [propertyLength, setPropertyLength] = useState<number | null>(null);
-  const [priceMultiplier] = useState<number>(1);
+  const [priceMultiplier, setPriceMultiplier] = useState<number>(1);
   const [editorContent, setEditorContent] = useState<string>("");
 
   const [categoryTree, setCategoryTree] = useState<DefaultOptionType[] | undefined>(undefined);
 
-  // get current user info
-  const selectCurrentUser = createSelector(
-    (state: RootState) => state.adminUser,
-    (state: RootState) => state.clientUser,
-    (adminUser, clientUser) => {
-      return adminUser.fullName !== ''
-        ? { phone: adminUser.phone }
-        : { phone: clientUser.phone };
-    }
-  );
-
-  const currentUser = useSelector(selectCurrentUser);
+  const currentUser = useSelector((state: RootState) => state.clientUser);
   const postInfo = useSelector((state: RootState) => state.propertyPost);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleReload = AlertBeforeReload('Are you sure you want to reload the page?');
+  const handleReload = AlertBeforeReload('Are you sure you want to reload the page?'); // alert user 
+
+  const selectPriceUnit = (
+    <Select defaultValue="million" onChange={ (value) => setPriceMultiplier(value === 'million' ? 1 : 1000)}>
+      <Select.Option value="million">million</Select.Option>
+      <Select.Option value="billion">billion</Select.Option>
+    </Select>
+  );
 
   // fetch categories data 
   useEffect(() => {
@@ -102,26 +97,35 @@ const CreatePropertyForm: React.FC = () => {
   // submit form
   useEffect(() => {
     const submitForm = async () => {
-      if (!formRef.current) {
+      if (!formRef.current || postInfo.price) {
         return;
       }
   
       if (submitFormReq) {
         try {
           const formData = await formRef.current.validateFields();
-          dispatch(setAllowNextStep(true));
+          dispatch(setAllowStep2(true));
 
+          // convert to correct data type
           const rooms = ['bedrooms', 'bathrooms', 'kitchens']
           .filter(room => formData[room])
           .map(room => `${room}-${formData[room]}`);
 
-          // Save post data to Redux store
-          dispatch(setPost({ // converted rooms to array
+          const adjustedPrice = priceMultiplier * formData.price;
+
+          // Add extra information and post data to Redux store
+          dispatch(setPost({ 
             ...formData,
+            price: adjustedPrice,
             description: editorContent,
             propertyDetails: {
               ...formData.propertyDetails,
               rooms: rooms,
+            },
+            createdBy: {
+              ...formData.createdBy,
+              accountId: currentUser._id,
+              accountType: 'client' 
             }
           }));
 
@@ -170,7 +174,7 @@ const CreatePropertyForm: React.FC = () => {
                         <Form.Item 
                           label='Choose listing type' 
                           name='listingType' 
-                          initialValue={postInfo.postType || 'forSale'}
+                          initialValue={postInfo.listingType || 'forSale'}
                           style={{height: "4.5rem"}}
                         >
                           <Segmented 
@@ -257,19 +261,7 @@ const CreatePropertyForm: React.FC = () => {
                         <InputNumber 
                           min={0}
                           type="number"
-                          addonAfter={
-                            <Select 
-                              defaultValue={postInfo?.price && postInfo.price >= 1000 ? "billion" : "million"} 
-                              onChange={(value) => {
-                                if (typeof value === 'number') {
-                                  setPrice(value);
-                                }
-                              }}
-                            >
-                              <Select.Option value="million">million</Select.Option>
-                              <Select.Option value="billion">billion</Select.Option>
-                            </Select>
-                          }  
+                          addonAfter={selectPriceUnit} 
                           placeholder={`Please select property price`}
                           onChange={(value) => {
                             if (typeof value === 'number') {
@@ -496,8 +488,12 @@ const CreatePropertyForm: React.FC = () => {
                           </Space>
                         } 
                         name={['createdBy', 'fullName']}
-                        rules={[{ required: true }]}
-                      >
+                        rules={[
+                          {
+                            required: true,
+                            message: 'Please enter your contact name',
+                          },
+                        ]}                      >
                         <Input
                           placeholder="Enter name" 
                           style={{width: "100%"}} 

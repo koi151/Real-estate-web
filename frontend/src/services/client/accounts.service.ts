@@ -15,7 +15,7 @@ class AccountsServiceClient {
       if (err.status === 401) {
         throw new Error('Unauthorized: Please log in to access this feature.');
       } else {
-        console.error('An error occurred:', err);
+        console.log('An error occurred:', err);
         throw new Error('An unexpected error occurred. Please try again later.');
       }
     }

@@ -69,6 +69,13 @@ export const processPropertyData = (req: Request): PropertyType => {
         ? [req.body.propertyDetails.rooms]
         : undefined
     },
+    createdBy: {
+      accountId: req.body.createdBy?.accountId && String(req.body.createdBy?.accountId),
+      accountType: req.body.createdBy?.accountType,
+      fullName: req.body.createdBy?.fullName && String(req.body.createdBy?.fullName),
+      phone: req.body.createdBy?.phone && String(req.body.createdBy?.phone),
+      email: req.body.createdBy?.email && String(req.body.createdBy?.email),
+    },
     expireTime: req.body.expireTime && new Date(req.body.expireTime)
   };
 };

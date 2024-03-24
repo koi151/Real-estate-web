@@ -46,6 +46,7 @@ const propertySchema = new mongoose.Schema(
     },
     postServices: {
       postFeePerDay: Number,
+      dayPost: Number,
       pushTimesLeft: Number,
       defaultPostFeePerDay: Number,
       discountPercentage: Number

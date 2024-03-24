@@ -4,6 +4,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import clientAccountsService from "../../../services/client/accounts.service";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/stores";
+import moment from "moment";
 
 const VNPayResult: React.FC = () => {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ const VNPayResult: React.FC = () => {
   const [depositAmount, setDepositAmount] = useState<number | null>(null);
   const [transactionCode, setTransactionCode] = useState<string>('');
   const [paymentMethod, setPaymentMethod] = useState<string>('')
+  const [formattedDate, setFormattedDate] = useState<string>('');
   
   const [transactionSucceed, setTransactionSucceed] = useState<boolean | undefined>(undefined)
 
@@ -23,16 +25,19 @@ const VNPayResult: React.FC = () => {
     updatedSearchParams.delete('vnp_TxnRef');
 
     let params: any = {}
-    console.log(updatedSearchParams.toString());
     for (const [key, value] of updatedSearchParams.entries()) {
       if (key !== 'vnp_BankCode') {
         params[key] = value;
       }
     }
 
-    setDepositAmount(parseInt(params.vnp_Amount as string) / 100);
+    setDepositAmount(parseInt(params.vnp_Amount as string) / 2500000);
     setTransactionCode(params.vnp_TransactionNo);
     setPaymentMethod(params.vnp_CardType);
+
+    const formattedDate = moment(params.vnp_PayDate, "YYYYMMDDHHmmss").format("DD/MM/YYYY HH:mm:ss");
+    setFormattedDate(formattedDate);
+
     
     if (params.vnp_TransactionStatus === '00') {
       setTransactionSucceed(true);
@@ -55,7 +60,7 @@ const VNPayResult: React.FC = () => {
         const response = await clientAccountsService.updateAccountBalance(accountId, depositAmount, deposit);
 
         if (response.code === 200) {
-          message.success(response.message, 3)
+          message.success(`You have deposited ${depositAmount}$ to your account!`, 3)
           
         } else {
           message.error("Error occurred, can not update account balance. Please contact admin", 3);
@@ -94,6 +99,7 @@ const VNPayResult: React.FC = () => {
                 <div>Transaction code: {transactionCode}</div>
                 <div>Payment method: {paymentMethod}</div>
                 <div>Deposit amount: {depositAmount} VND</div>
+                <div>Date purchased: {formattedDate}</div>
               </div>
             </>
           }          

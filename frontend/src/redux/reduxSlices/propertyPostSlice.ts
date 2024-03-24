@@ -5,17 +5,19 @@ import { PropertyType } from '../../../../backend/commonTypes';
 interface PropertyPostFull extends Omit<PropertyType, 'slug' | 'createdAt' | 'deleted'> {
   submitFirstPage: boolean;
   submitSecondPage: boolean;
-  allowNextStep: boolean;
+  allowStep_2: boolean;
+  allowStep_3: boolean;
   totalPayment: number;
 }
 
 const initialState: PropertyPostFull = {
   submitFirstPage: false,
   submitSecondPage: false,
-  allowNextStep: false,
+  allowStep_2: false,
+  allowStep_3: false,
   totalPayment: 0,
   title: '',
-  status: 'active',
+  status: undefined,
   postType: '',
   position: null,
   description: undefined,
@@ -49,8 +51,12 @@ export const propertyPostSlice = createSlice({
       state.submitSecondPage = action.payload;
     },
 
-    setAllowNextStep: (state, action: PayloadAction<boolean>) => {
-      state.allowNextStep = action.payload;
+    setAllowStep2: (state, action: PayloadAction<boolean>) => {
+      state.allowStep_2 = action.payload;
+    },
+
+    setAllowStep3: (state, action: PayloadAction<boolean>) => {
+      state.allowStep_3 = action.payload;
     },
     
     setTotalPayment: (state, action: PayloadAction<number>) => {
@@ -59,6 +65,6 @@ export const propertyPostSlice = createSlice({
   },
 });
 
-export const { setPost, setAllowNextStep, setSubmitFirstPage, setSubmitSecondPage } = propertyPostSlice.actions;
+export const { setPost, setAllowStep2, setAllowStep3, setSubmitFirstPage, setSubmitSecondPage } = propertyPostSlice.actions;
 
 export default propertyPostSlice.reducer;

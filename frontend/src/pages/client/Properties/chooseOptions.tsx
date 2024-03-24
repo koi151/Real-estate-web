@@ -14,7 +14,7 @@ import { FaAngleRight } from "react-icons/fa";
 import { capitalizeString } from "../../../helpers/standardizeData";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/stores";
-import { setPost } from "../../../redux/reduxSlices/propertyPostSlice";
+import { setAllowStep3, setPost } from "../../../redux/reduxSlices/propertyPostSlice";
 import { PostServices } from "../../../../../backend/commonTypes";
 
 interface PushingPostBoxOption {
@@ -43,24 +43,31 @@ const ChooseOptions: React.FC = () => {
   // Post info 
   const [postFeePerDay, setPostFeePerDay] = useState<number | null>(null);
   const [activePostType, setActivePostType] = useState<string>('');
-  const [dayExpireLeft, setDayExpireLeft] = useState<number | null>(null);
+  const [dayExpireLeft, setDayExpireLeft] = useState<number>(0);
   const [selectedPushingPostBox, setSelectedPushingPostBox] = useState<number | null>(null); 
   const [pushingPostInfo, setPushingPostInfo] = useState<PostServices>({
-    pushTimesLeft: null,
     defaultPostFeePerDay: null,
+    pushTimesLeft: null,
     discountPercentage: null,
   });
 
   // Redux
   const postInfo = useSelector((state: RootState) => state.propertyPost) 
 
+
   useEffect(() => {
     if (postInfo.submitSecondPage) { // check if submit requested or not
+
       dispatch(setPost({ 
         ...postInfo,
-        postServices: pushingPostInfo,
+        postType: activePostType,
+        postServices: {
+          ...pushingPostInfo,
+          dayPost: dayExpireLeft
+        },
         totalPayment: getTotalPayment()
       }));
+      dispatch(setAllowStep3(true));
     }
     
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -232,7 +239,6 @@ const ChooseOptions: React.FC = () => {
             <div className="options-wrapper"> 
               <Form 
                 layout="vertical" 
-                // onFinish={onFinishForm}
                 method="POST"
                 encType="multipart/form-data"
                 style={{ width: "75%", marginTop: '4rem'}}
@@ -258,7 +264,7 @@ const ChooseOptions: React.FC = () => {
                             defaultValue=""
                             className="options-wrapper__post-segmented"
                             options={postTypeOptions}
-                            onChange={(newVal: string) => setActivePostType(newVal)}
+                            onChange={(value: string) => setActivePostType(value)}
                           />
                         </Form.Item>
                       </Col>

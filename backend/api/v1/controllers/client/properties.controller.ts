@@ -4,9 +4,10 @@ import Property from "../../models/property.model";
 
 import { generateAreaRangeFilter, generateFilterInRange, generateRoomFilter  } from "../../../../helpers/generateFilters";
 import { getAreaSortingPipeline } from "../../../../helpers/generateSorting";
-import { FindCriteria } from "../../../../commonTypes";
+import { FindCriteria, PropertyType } from "../../../../commonTypes";
 import { searchHelper } from "../../../../helpers/search";
 import { paginationHelper } from "../../../../helpers/pagination";
+import { processImagesData, processPropertyData } from "../../../../helpers/processData";
 
 // [GET] /properties
 export const index = async (req: Request, res: Response) => {
@@ -142,25 +143,26 @@ export const detail = async (req: Request, res: Response) => {
 // [POST] /properties/create
 export const createPost = async (req: any, res: Response) => {
   try {
+    const property: PropertyType = processPropertyData(req);
+    const processedImages = processImagesData(req.body.images);
 
-    console.log("req.body:", req.body)
 
-    // const property: PropertyType = processPropertyData(req);
-    // const processedImages = processImagesData(req.body.images);
+    if (!property.position) {
+      const cntProperty = await Property.countDocuments();
+      property.position = cntProperty + 1;
+    }
 
-    // if (!property.position) {
-    //   const cntProperty = await Property.countDocuments();
-    //   property.position = cntProperty + 1;
-    // }
+    const propertyWithImages = processedImages 
+    ? { ...property, images: processedImages, status: 'pending' } 
+    : { ...property, status: 'pending' };
 
-    // const propertyWithImages = processedImages ? { ...property, images: processedImages } : property;
-    // const newProperty = new Property(propertyWithImages);
-    // await newProperty.save();
+    const newProperty = new Property(propertyWithImages);
+    await newProperty.save();
     
-    // res.status(200).json({
-    //   code: 200,
-    //   message: "Created new property successfully"
-    // })
+    res.status(200).json({
+      code: 200,
+      message: "Created new property successfully"
+    })
 
   } catch (error) {
     console.log('Error occurred while creating property:', error);
