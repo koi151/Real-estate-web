@@ -1,4 +1,5 @@
 import React from 'react';
+import { RouteObject } from "react-router-dom";
 
 import LayoutDefault from "../components/admin/Layouts/layoutDefault";
 
@@ -28,7 +29,11 @@ import RegisterAndLogin from "../pages/admin/RegisterAndLogin/adminRegisterLogin
 
 import PageNotFound from "../components/shared/PageNotFound/pageNotFound";
 import ProtectedRoute from "../components/shared/ProtectedRoute/protectedRoute";
-import { RouteObject } from "react-router-dom";
+
+import ClientAccounts from '../pages/admin/ClientAccount/accounts';
+import EditClientAccounts from '../pages/admin/ClientAccount/edit';
+import CreateClientAccounts from '../pages/admin/ClientAccount/create';
+import ClientAccountsDetail from '../pages/admin/ClientAccount/detail';
 
 // Updated routes:
 export const adminRoutes: RouteObject[] = [
@@ -106,6 +111,22 @@ export const adminRoutes: RouteObject[] = [
       {
         path: 'admin-accounts/edit/:id',
         element: <EditAdminAccounts />
+      },
+      {
+        path: 'client-accounts',
+        element: <ClientAccounts />
+      },
+      {
+        path: 'client-accounts/detail/:id',
+        element: <ClientAccountsDetail />
+      },
+      {
+        path: 'client-accounts/create',
+        element: <CreateClientAccounts />
+      },
+      {
+        path: 'client-accounts/edit/:id',
+        element: <EditClientAccounts />
       },
     ],
   },

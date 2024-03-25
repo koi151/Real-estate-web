@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Badge, Card, Col, Form, Input, Radio, Row, Spin, message } from "antd";
-import { useDispatch } from "react-redux";
 
-import adminAccountsService from "../../../services/admin/admin-accounts.service";
-
-import { AdminAccountType } from "../../../../../backend/commonTypes";
+import { ClientAccountType } from "../../../../../backend/commonTypes";
 import NoPermission from "../../../components/admin/NoPermission/noPermission";
 import UploadMultipleFile from "../../../components/admin/UploadMultipleFile/uploadMultipleFile";
-import clientAccountsService from "../../../services/client/accounts.service";
+import clientAccountsServiceAdminSide from "../../../services/admin/client-accounts.service";
 
 
 const ClientAccountsDetail: React.FC = () => {
@@ -19,7 +16,7 @@ const ClientAccountsDetail: React.FC = () => {
   const [accessAllowed, setAccessAllowed] = useState(true);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const [account, setAccount] = useState<AdminAccountType | undefined>(undefined);
+  const [account, setAccount] = useState<ClientAccountType | undefined>(undefined);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,7 +27,7 @@ const ClientAccountsDetail: React.FC = () => {
           return;
         }
 
-        const response = await clientAccountsService.getSingleAccount(id);
+        const response = await clientAccountsServiceAdminSide.getSingleAccount(id);
         setLoading(true)
 
         if(response?.code === 200 && response.account) {
@@ -46,7 +43,7 @@ const ClientAccountsDetail: React.FC = () => {
           message.error('Unauthorized - Please log in to access this feature.', 3);
           navigate('/admin/auth/login');
         } else {
-          message.error('Error occurred while fetching administrator account data', 2);
+          message.error('Error occurred while fetching client account data', 2);
           console.log('Error occurred:', err);
         }
 
@@ -70,12 +67,12 @@ const ClientAccountsDetail: React.FC = () => {
                 disabled
                 className="custom-form" 
               >
-                <Badge.Ribbon text={<Link to="/admin/accounts">Back</Link>} color="purple" className="custom-ribbon">
+                <Badge.Ribbon text={<Link to="/admin/client-accounts">Back</Link>} color="purple" className="custom-ribbon">
                   <Card 
-                    title="View administrator account" 
+                    title="View client account" 
                     className="custom-card" 
                     style={{marginTop: '2rem'}}
-                    extra={<Link to="/admin/accounts">Back</Link>}
+                    extra={<Link to="/admin/client-accounts">Back</Link>}
                   >
                     <Row gutter={16}>
                       <Col sm={24} md={24} lg={12} xl={12} xxl={12}>

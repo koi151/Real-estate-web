@@ -116,6 +116,10 @@ export interface AccountWalletType {
   balance: number,  
 }
 
+export interface SocialNetwork {
+  zaloLink: string
+}
+
 export interface ClientAccountType {
   _id?: string;
   fullName: string,
@@ -126,6 +130,7 @@ export interface ClientAccountType {
   avatar?: string,
   postList?: string[],
   favoritePosts? : string[],
+  social?: SocialNetwork, 
   wallet?: AccountWalletType,
   status?: ValidStatus,
   createdAt?: Date;

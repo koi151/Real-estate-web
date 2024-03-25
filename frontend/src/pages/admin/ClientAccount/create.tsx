@@ -1,62 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Select from "antd/es/select";
 import { Badge, Button, Card, Col, 
         Form, Input, Radio, Row, Spin, message } from "antd";
 
-import adminAccountsService from "../../../services/admin/admin-accounts.service";
-import AdminRolesService from "../../../services/admin/roles.service";
-
 import UploadMultipleFile from "../../../components/admin/UploadMultipleFile/uploadMultipleFile";
 import NoPermission from "../../../components/admin/NoPermission/noPermission";
 import * as standardizeData from '../../../helpers/standardizeData'
+import clientAccountsServiceAdminSide from "../../../services/admin/client-accounts.service";
 
-import { RoleTitleType } from "../../../../../backend/commonTypes";
 
 const CreateClientAccounts: React.FC = () => {
 
   const navigate = useNavigate();
 
-  const [accessAllowed, setAccessAllowed] = useState(false);
-
-  const [loading, setLoading] = useState(true);
-  const [roleTitles, setRoleTitles] = useState<any>([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await AdminRolesService.getRoleTitles();
-
-        if(response?.code === 200) {
-          setAccessAllowed(true);
-
-          const formattedTitles = response?.roleTitles.map((role: RoleTitleType) => (
-            { "value": role._id, "label": role.title }
-          )) 
-          setRoleTitles(formattedTitles);
-
-        } else {
-          setAccessAllowed(false);
-          message.error(response.message, 2);
-        }
-
-      } catch (err: any) {
-        if (err.response && err.response.status === 401) {
-          message.error('Unauthorized - Please log in to access this feature.', 3);
-          navigate('/admin/auth/login');
-        } else {
-          message.error('Error occurred while fetching administrator account data', 2);
-          console.log('Error occurred:', err);
-        }
-
-        setAccessAllowed(false);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [navigate])
+  const [accessAllowed, setAccessAllowed] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   /* eslint-disable no-template-curly-in-string */
   const validateMessages = {
@@ -69,10 +28,6 @@ const CreateClientAccounts: React.FC = () => {
       range: '${label} must be between ${min} and ${max}',
     },
   };
-
-  // Select 
-  const filterOption = (input: string, option?: { label: string; value: string }) =>
-  (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
 
   // Sample phone option
   const prefixSelector = (
@@ -89,7 +44,7 @@ const CreateClientAccounts: React.FC = () => {
     try {            
       const formData = standardizeData.objectToFormData(data);
 
-      const response = await adminAccountsService.createAccount(formData);
+      const response = await clientAccountsServiceAdminSide.createAccount(formData);
       
       if (response.code === 200) {
         message.success('Account created successfully!', 3);
@@ -103,7 +58,7 @@ const CreateClientAccounts: React.FC = () => {
         message.error('Unauthorized - Please log in to access this feature.', 3);
         navigate('/admin/auth/login');
       } else {
-        message.error('Error occurred while creating administrator account', 2);
+        message.error('Error occurred while creating client account', 2);
         console.log('Error occurred:', err);
       }
     }
@@ -123,12 +78,12 @@ const CreateClientAccounts: React.FC = () => {
                 className="custom-form" 
                 validateMessages={validateMessages}
               >
-                <Badge.Ribbon text={<Link to="/admin/property-categories">Back</Link>} color="purple" className="custom-ribbon">
+                <Badge.Ribbon text={<Link to="/admin/clint-accounts">Back</Link>} color="purple" className="custom-ribbon">
                   <Card 
-                    title="Create administrator account" 
+                    title="Create client account" 
                     className="custom-card" 
                     style={{marginTop: '2rem'}}
-                    extra={<Link to="/admin/accounts">Back</Link>}
+                    extra={<Link to="/admin/client-accounts">Back</Link>}
                   >
                     <Row gutter={16}>
                       <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
@@ -151,7 +106,7 @@ const CreateClientAccounts: React.FC = () => {
                           rules={[{ type: 'email', required: true }]}
                         >
                           <Input 
-                            type='email' id="email" 
+                            type='email'
                             placeholder="Please enter your email"
                           />
                         </Form.Item>
@@ -217,24 +172,9 @@ const CreateClientAccounts: React.FC = () => {
                           />
                         </Form.Item>
                       </Col>
-                      <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
-                        <Form.Item
-                          name="role_id"
-                          label="Administrator role:"
-                          required
-                        >
-                          <Select
-                            showSearch
-                            placeholder="Select administrator role of account"
-                            optionFilterProp="children"
-                            filterOption={filterOption}
-                            options={roleTitles}
-                          />
-                        </Form.Item>
-                      </Col>
                       
                       <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
-                        <Form.Item label="Account status:" name='status' initialValue={'active'}>
+                        <Form.Item label="Account status:" name='status'>
                           <Radio.Group>
                             <Radio value="active">Active</Radio>
                             <Radio value="inactive">Inactive</Radio>

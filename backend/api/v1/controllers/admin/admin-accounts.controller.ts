@@ -22,7 +22,6 @@ export const index = async (req: Request, res: Response) => {
     ).select('-password -token');
     
     const accountPromises = accounts.map(async (account) => {
-      console.log('acc check',account)
       const role = await Role.findOne(
         { 
           _id: account.role_id,
@@ -63,7 +62,7 @@ export const index = async (req: Request, res: Response) => {
   }
 }
 
-// [GET] /admin/admin-accounts/detail/:accountId/:accountType
+// [GET] /admin/admin-accounts/detail/:id
 export const detail = async (req: Request, res: Response) => {
   try {
     if (!res.locals.currentUser.permissions.includes('administrator-accounts_view')) {
@@ -324,7 +323,7 @@ export const singleDelete = async (req: Request, res: Response) => {
     }
 
   } catch (error) {
-    console.log('Error occurred while deleting role:', error);
+    console.log('Error occurred while deleting account:', error);
     return res.status(500).json({
       code: 500,
       message: 'Internal Server Error'

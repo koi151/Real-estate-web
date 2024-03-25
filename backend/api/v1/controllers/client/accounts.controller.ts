@@ -42,44 +42,15 @@ export const detail = async (req: Request, res: Response) => {
       });
     }
 
-    const accountType: string = req.params.accountType;
-    if (!accountType) {
-      return res.status(400).json({
-        code: 400,
-        message: 'No account type requested'
-      });
-    }
-
-    let account: any;
-    
-    if (accountType === 'admin') {
-      account = await AdminAccount.findOne(
-        { _id: id, deleted: false }
-      ).select('-password -token');
-
-    } else {
-      account = await ClientAccount.findOne(
-        { _id: id, deleted: false }
-      ).select('-password -token');
-    }
-
+    const account = await ClientAccount.findOne(
+      { _id: id, deleted: false }
+    ).select('-password -token');
+  
     if (!account) {
       return res.status(404).json({
         code: 404,
         message: "Account not found"
       });
-    }
-
-    if (accountType === 'admin') {
-      const role = await Role.findOne({ _id: account.role_id, deleted: false }).select('title');
-      if (role) {
-        account.roleTitle = role.title;
-      } else {
-        return res.status(404).json({
-          code: 404,
-          message: "Account role not found"
-        });
-      }
     }
 
     res.status(200).json({

@@ -1,5 +1,5 @@
 import { Request } from "express";
-import { AccountLogType, AdminAccountType, PropertyCategoryType, PropertyType, RolesType } from "../commonTypes";
+import { AccountLogType, AdminAccountType, ClientAccountType, PropertyCategoryType, PropertyType, RolesType } from "../commonTypes";
 import bcrypt from 'bcrypt';
 
 /*  formData replace undefined fields to '' value,
@@ -124,6 +124,33 @@ export const processAdminAccountData = async (req: Request): Promise<AdminAccoun
     phone: req.body.phone && String(req.body.phone),
     role_id: req.body.role_id && String(req.body.role_id),
     avatar: req.body.images && String(req.body.images)
+  };
+}
+
+// Client account
+export const processClientAccountData = async (req: Request): Promise<ClientAccountType> => {
+  req.body = processRequestBody(req.body);
+  
+  const hashedPassword = req.body.password 
+    && await bcrypt.hash(String(req.body.password), parseInt(process.env.SALT_ROUNDS));
+  
+  return {
+    fullName: req.body.fullName && String(req.body.fullName),
+    email: req.body.email && String(req.body.email),
+    password: hashedPassword,
+    status: req.body.status,
+    phone: req.body.phone && String(req.body.phone),
+    avatar: req.body.images && String(req.body.images),
+    social: {
+      zaloLink: req.body.social.zaloLink && String(req.body.social.zaloLink),
+    },
+    postList: Array.isArray(req.body.postList) ? req.body.postList : [req.body.postList],
+    favoritePosts: Array.isArray(req.body.favoritePosts) ? req.body.favoritePosts : [req.body.favoritePosts],
+    wallet: {
+      balance: req.body.wallet.balance && parseFloat(req.body.position),
+    },
+    createdAt: req.body.createdAt && new Date(req.body.createdAt),
+    updatedAt: req.body.updatedAt && new Date(req.body.updatedAt),
   };
 }
 

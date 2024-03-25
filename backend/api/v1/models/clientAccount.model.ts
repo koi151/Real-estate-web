@@ -17,7 +17,7 @@ const clientAccountSchema = new mongoose.Schema(
       enum: statusValues
     }, 
     social: {
-      zaloLink: [String],
+      zaloLink: String,
     },
     postList: [String],
     favoritePosts: [String],

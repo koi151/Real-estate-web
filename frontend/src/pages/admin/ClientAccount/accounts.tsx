@@ -8,8 +8,10 @@ import { ClientAccountType, AdminPermissions } from '../../../../../backend/comm
 import StatusButton from '../../../components/admin/StatusButton/statusButton';
 
 import NoPermission from '../../../components/admin/NoPermission/noPermission';
-import '../Properties/properties.scss';
 import clientAccountsServiceAdminSide from '../../../services/admin/client-accounts.service';
+
+import '../Properties/properties.scss';
+
 
 const ClientAccounts: React.FC = () => {
 

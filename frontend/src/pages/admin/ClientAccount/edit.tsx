@@ -4,14 +4,11 @@ import Select from "antd/es/select";
 import { Badge, Button, Card, Col, 
         Form, Input, Radio, Row, Spin, message } from "antd";
 
-import adminAccountsService from "../../../services/admin/admin-accounts.service";
-import AdminRolesService from "../../../services/admin/roles.service";
-
 import NoPermission from "../../../components/admin/NoPermission/noPermission";
 import UploadMultipleFile from "../../../components/admin/UploadMultipleFile/uploadMultipleFile";
-import { AdminAccountType, RoleTitleType } from "../../../../../backend/commonTypes";
+import { ClientAccountType } from "../../../../../backend/commonTypes";
 import * as standardizeData from '../../../helpers/standardizeData'
-import clientAccountsService from "../../../services/client/accounts.service";
+import clientAccountsServiceAdminSide from "../../../services/admin/client-accounts.service";
 
 
 const EditClientAccounts: React.FC = () => {
@@ -22,8 +19,7 @@ const EditClientAccounts: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [accessAllowed, setAccessAllowed] = useState<boolean>(true);
 
-  const [account, setAccount] = useState<AdminAccountType | undefined>(undefined);
-  const [roleTitles, setRoleTitles] = useState<any>([]);
+  const [account, setAccount] = useState<ClientAccountType | undefined>(undefined);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,7 +31,7 @@ const EditClientAccounts: React.FC = () => {
           return;
         }
         
-        const accountResponse = await clientAccountsService.getSingleAccount(id);
+        const accountResponse = await clientAccountsServiceAdminSide.getSingleAccount(id);
         setLoading(true);
 
         if(accountResponse?.code === 200 && accountResponse.account) {
@@ -43,20 +39,9 @@ const EditClientAccounts: React.FC = () => {
           setAccount(accountResponse.account);
         } else {
           setAccessAllowed(false);
-          message.error(accountResponse.message || 'Could not find administrator account information', 2);
+          message.error(accountResponse.message || 'Could not find client account information', 2);
         }
-  
-        // Fetch role titles
-        const roleTitlesResponse = await AdminRolesService.getRoleTitles();
-        if(roleTitlesResponse?.code === 200) {
-          const formattedTitles = roleTitlesResponse?.roleTitles.map((role: RoleTitleType) => (
-            { "value": role._id, "label": role.title }
-          ));
-          setRoleTitles(formattedTitles);
 
-        } else {
-          message.error(roleTitlesResponse.message || 'No roles found', 2);
-        }
           
       } catch (err: any) {
         if (err.response && err.response.status === 401) {
@@ -64,7 +49,7 @@ const EditClientAccounts: React.FC = () => {
           message.error('Unauthorized - Please log in to access this feature.', 3);
           navigate('/admin/auth/login');
         } else {
-          message.error('Error occurred while feaching administrator role', 2);
+          message.error('Error occurred while fetching client account data', 2);
           console.log('Error occurred:', err);
         }
       } finally { 
@@ -106,7 +91,7 @@ const EditClientAccounts: React.FC = () => {
   const onFinishForm = async (data: any) => {
     try {
       if (!id) {
-        console.error('Cannot get administrator account id');
+        console.error('Cannot get client account id');
         message.error('Error occurred', 3);
         return;
       }
@@ -114,7 +99,7 @@ const EditClientAccounts: React.FC = () => {
       const formData = standardizeData.objectToFormData(data);
       console.log("data:", data)
 
-      const response = await adminAccountsService.updateAccount(formData, id);
+      const response = await clientAccountsServiceAdminSide.updateAccount(formData, id);
       
       if (response.code === 200) {
         message.success('Account updated successfully!', 3);
@@ -128,7 +113,7 @@ const EditClientAccounts: React.FC = () => {
         message.error('Unauthorized - Please log in to access this feature.', 3);
         navigate('/admin/auth/login');
       } else {
-        message.error('Error occurred while updating administrator account', 2);
+        message.error('Error occurred while updating client account', 2);
         console.log('Error occurred:', err);
       }
     }
@@ -148,12 +133,12 @@ const EditClientAccounts: React.FC = () => {
                 className="custom-form" 
                 validateMessages={validateMessages}
               >
-                <Badge.Ribbon text={<Link to="/admin/accounts">Back</Link>} color="purple" className="custom-ribbon">
+                <Badge.Ribbon text={<Link to="/admin/client-accounts">Back</Link>} color="purple" className="custom-ribbon">
                   <Card 
-                    title="Edit administrator account" 
+                    title="Edit client account" 
                     className="custom-card" 
                     style={{marginTop: '2rem'}}
-                    extra={<Link to="/admin/accounts">Back</Link>}
+                    extra={<Link to="/admin/client-accounts">Back</Link>}
                   >
                     <Row gutter={16}>
                       <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
@@ -233,23 +218,6 @@ const EditClientAccounts: React.FC = () => {
                             placeholder="Please enter your phone"
                             addonBefore={prefixSelector} 
                             style={{ width: '100%' }} 
-                          />
-                        </Form.Item>
-                      </Col>
-
-                      <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
-                        <Form.Item
-                          name="role_id"
-                          label="Administrator role:"
-                          required
-                          initialValue={account?.role_id}
-                        >
-                          <Select
-                            showSearch
-                            placeholder="Select administrator role of account"
-                            optionFilterProp="children"
-                            filterOption={filterOption}
-                            options={roleTitles}
                           />
                         </Form.Item>
                       </Col>

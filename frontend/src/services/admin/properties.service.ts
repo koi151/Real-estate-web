@@ -71,7 +71,7 @@ class PropertiesServiceAdmin {
   }
 
   async getSingleProperty(id: string) {
-    const request = this.api.get(`/detail/${id}`,);
+    const request = this.api.get(`/detail/${id}`);
     return this.handleRequest(request);
   }
 
