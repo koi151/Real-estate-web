@@ -60,7 +60,7 @@ const Properties: React.FC = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await propertiesServiceClient.getProperties({ 
+        const response = await propertiesServiceClient.getApprovedProperties({ 
           ...(keyword && { keyword }), 
           ...(listingType && { listingType }), 
           ...(category && { category }), 

@@ -1,90 +1,87 @@
+import { Breadcrumb, Button, Checkbox, Col, Image, InputNumber, Popconfirm, Row, Skeleton, Space, Tag, Tooltip, message } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { CheckboxChangeEvent } from 'antd/es/checkbox';
-import { Link, useLocation } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { Breadcrumb, Button, Checkbox, Col, Image, InputNumber, Pagination, 
-         PaginationProps, Popconfirm, Row, Skeleton, Space, Tag,  Tooltip,  message } from 'antd';
+import CardItem from '../../../components/admin/CardItem/cardItem';
+import { Link, useNavigate } from 'react-router-dom';
+import { AiOutlineLineChart } from 'react-icons/ai';
+import { FaUsersCog } from "react-icons/fa";
 
-import * as standardizeData from '../../../helpers/standardizeData'
-import getPriceUnit from '../../../helpers/getPriceUnit';
-
-import propertiesService from '../../../services/admin/properties.service';
-
-import { PropertyType, PaginationObject, AdminPermissions } from '../../../../../backend/commonTypes';
-import ViewCount from '../../../components/shared/Counters/ViewCount/viewCount';
-import RoomCountTooltip from '../../../components/shared/Counters/RoomCounter/roomCount';
-import FilterBox from '../../../components/admin/FilterBox/filterBox';
-import StatusButton from '../../../components/admin/StatusButton/statusButton';
+import Statistic from '../../../components/admin/Statistic/statistic';
 import NoPermission from '../../../components/admin/NoPermission/noPermission';
+import dashboardService from '../../../services/admin/dashboard.service';
+import { DashboardStatistics, PropertyType, Statistics } from '../../../../../backend/commonTypes';
+import propertiesService from '../../../services/admin/properties.service';
+import getPriceUnit from '../../../helpers/getPriceUnit';
+import RoomCountTooltip from '../../../components/shared/Counters/RoomCounter/roomCount';
+import ViewCount from '../../../components/shared/Counters/ViewCount/viewCount';
+import StatusButton from '../../../components/admin/StatusButton/statusButton';
+import { listingTypeFormatted } from '../../../helpers/standardizeData';
 
-import { RootState } from '../../../redux/stores';
-import './properties.scss';
+import './dashboard.scss'
 
-
-const Properties: React.FC = () => {
+const DashBoard: React.FC = () => {
   const navigate = useNavigate();
-  const location = useLocation();
 
-  const filters = useSelector((state: RootState) => state.filters);
-
-  const [permissions, setPermissions] = useState<AdminPermissions | undefined>(undefined);
   const [accessAllowed, setAccessAllowed] = useState(true);
   const [loading, setLoading] = useState(true);
 
-  const [propertyList, setPropertyList] = useState<PropertyType[]>([]);
-  const [error, setError] = useState<string | null>(null); 
-  const [propertyCount, setPropertyCount] = useState<number>(0);
+  const [pendingPropertyList, setPendingPropertyList] = useState<PropertyType[]>([]);
 
-  const { listingType, keyword, status, category, priceRange, sorting,
-          direction, bedrooms, bathrooms, areaRange } = filters;
-
-  const [checkedList, setCheckedList] = useState<string[]>([]);
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const createInitialStatistics = (): Statistics => ({
+    total: 0,
+    active: 0,
+    inactive: 0
+  });
   
-  const [paginationObj, setPaginationObj] = useState<PaginationObject>({
-    currentPage: null,
-    limitItems: 4,
-    skip: null,
-    totalPage: null,
-  })
+  const [statistics, setStatistics] = useState<DashboardStatistics>({
+    adminAccounts: createInitialStatistics(),
+    clientAccounts: createInitialStatistics(),
+    properties: createInitialStatistics(),
+    categories: createInitialStatistics()
+  });
 
-  const onPageChange: PaginationProps['onChange'] = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
-
-  // fetch properties data
+  // fetch statistic data
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await propertiesService.getApprovedProperties({ 
-          ...(keyword && { keyword }), 
-          ...(listingType && { listingType }), 
-          ...(category && { category }), 
-          ...(direction && { direction }), 
-          ...(bedrooms && { bedrooms }),
-          ...(bathrooms && { bathrooms }), 
-          ...(priceRange && { priceRange }),
-          ...(areaRange && { areaRange }),
-          ...(sorting?.sortKey && { sortKey: sorting.sortKey }), 
-          ...(sorting?.sortValue && { sortValue: sorting.sortValue }), 
-          currentPage: currentPage,
-          pageSize: 4
-        });
+        const response = await dashboardService.getStatistics();
+
+        if (response.code === 200) {
+          setStatistics(response.statistics);
+        } else {
+          message.error('Error occurred, cannot fetch data', 3);
+        }
+
+      } catch (err: any) {
+        if ((err.response && err.response.status === 401) || err.message === 'Unauthorized') {
+          message.error('Unauthorized - Please log in to access this feature.', 3);
+          navigate('/admin/auth/login');
+        } else {
+          message.error('Error occurred while fetching properties data', 2);
+          console.log('Error occurred:', err);
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // fetch pending properties data
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await propertiesService.getPendingProperties();
   
         if(response?.code === 200) {
-          setPropertyList(response.properties);
-          setPaginationObj(response.paginationObject);
-          setPropertyCount(response.propertyCount);
-
-          if (response.permissions) {
-            setPermissions(response.permissions);
-          }
+          setPendingPropertyList(response.pendingProperties);
 
         } else {
           setAccessAllowed(false);
-          message.error(response.message, 4);
+          message.error('Error occurred while fetching pending properties', 4);
         }
   
       } catch (error: any) {
@@ -93,7 +90,6 @@ const Properties: React.FC = () => {
           navigate('/admin/auth/login');
         } else {
           message.error('Error occurred while fetching properties data', 2);
-          setError('No property found.');
           console.log('Error occurred:', error);
         }
       } finally {
@@ -103,121 +99,100 @@ const Properties: React.FC = () => {
     fetchData();
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [keyword, status, sorting, currentPage, listingType, priceRange, category]); 
-
-
-  // update url
-  useEffect(() => {
-    navigate(buildURL());
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status, listingType, keyword, sorting, priceRange])
-
-  const buildURL = () => {
-    const params: { [key: string]: string } = {};
-  
-    if (keyword) params['keyword'] = keyword;
-    if (listingType) params['listingType'] = listingType;
-    if (status) params['status'] = status;
-    if (sorting.sortKey && sorting.sortValue) {
-      params['sortKey'] = sorting.sortKey;
-      params['sortValue'] = sorting.sortValue;
-    }
-    
-    const [minPrice, maxPrice] = priceRange ?? [];
-    if (minPrice !== undefined && maxPrice !== undefined) {
-      params['minPrice'] = String(minPrice);
-      params['maxPrice'] = String(maxPrice);
-    }
-  
-    // Short-circuiting for performance
-    const queryString = Object.keys(params).length > 0 ? `?${new URLSearchParams(params)}` : '';
-    
-    return `${location.pathname}${queryString}`;
-  };
-
-  
-  const handleCheckboxChange = (id: string | undefined) => (e: CheckboxChangeEvent) => {
-    if (id === undefined) {
-      message.error('Error occurred', 3);
-      console.log('id parameter is undefined');
-      return;
-    }
-    if (e.target.checked) {
-      const position = document.querySelector(`.item-wrapper__upper-content--position input[data-id="${id}"]`) as HTMLInputElement;
-      setCheckedList([...checkedList, `${id}-${position.value}`]);
-    } else {
-      setCheckedList(checkedList.filter((itemId) => itemId !== id));
-    }
-  };
-
-  const onChangePosition = (id: string | undefined, position: number | null) => {
-    if (position === null || id === undefined){
-      message.error("Error occurred, can not change position of property");
-      console.log('id or value parameter is undefined')
-    }
-
-    const currentCheckBox = document.querySelector(`.item-wrapper__upper-content--checkbox span input[id="${id}"]`) as HTMLInputElement;
-    if (currentCheckBox?.checked) {
-      setCheckedList([...checkedList, `${id}-${position}`]);
-    }
-  }
+  }, []); 
 
   const renderTag = (value: string, colorMap: Record<string, string>) => (
     <Tag className="listing-type-tag" color={colorMap[value]}>
-      {standardizeData.listingTypeFormatted(value)}
+      {listingTypeFormatted(value)}
     </Tag>
   );
 
   // Delete item
-  const confirmDelete = async (id?: string) => {
-    if (!id) {
-      message.error('Error occurred, can not delete');
-      console.log('Can not get id')
-      return;
-    } 
-    const response = await propertiesService.deleteProperty(id);
+  // const confirmDelete = async (id?: string) => {
+  //   if (!id) {
+  //     message.error('Error occurred, can not delete');
+  //     console.log('Can not get id')
+  //     return;
+  //   } 
+  //   const response = await propertiesService.deleteProperty(id);
 
-    if (response?.code === 200) {
-      message.success(response.message, 3);
-      setPropertyList(prevPropertyList => prevPropertyList.filter(property => property._id !== id));
+  //   if (response?.code === 200) {
+  //     message.success(response.message, 3);
+  //     setPropertyList(prevPropertyList => prevPropertyList.filter(property => property._id !== id));
 
-    } else {
-      message.error('Error occurred, can not delete');
-    }
-  };
-  
+  //   } else {
+  //     message.error('Error occurred, can not delete');
+  //   }
+  // };
+
   return (
     <>
       {accessAllowed ? (
         <>
           <div className='title-wrapper'>
-            <h1 className="main-content-title">Property:</h1>
+            <h1 className="main-content-title">Welcome To Dashboard</h1>
             <Breadcrumb
               className='mt-1 mb-1'
               items={[
                 { title: <Link to="/admin">Admin</Link> },
-                { title: <Link to="/admin/properties">Properties</Link> },
+                { title: <Link to="/admin/dashboard">Dashboard</Link> },
               ]}
             />
           </div>
-    
-          <FilterBox 
-            createAllowed={permissions?.propertiesCreate} 
-            priceRangeFilter
-            categoryFilter
-            statusFilter
-            multipleChange
-          />
-    
-          {error ? (
-            <div>{error}</div>
-          ) : (
-            <>
+
+          <Row gutter={[20, 20]} className='mb-20'>
+            <Col xxl={6} xl={6} lg={6} md={12} sm={24} xs={24}>
+              <CardItem>
+                <Statistic
+                  title={'Admin accounts'} 
+                  icon={<FaUsersCog />} 
+                  value={`${statistics?.adminAccounts?.active} / ${statistics?.adminAccounts?.total}`} 
+                  label={'Active accounts'} color='blue'/>
+              </CardItem>
+            </Col>
+            <Col xxl={6} xl={6} lg={6} md={12} sm={24} xs={24}>
+              <CardItem>
+                <Statistic
+                  title={'Client accounts'} 
+                  icon={<FaUsersCog />} 
+                  value={`${statistics?.clientAccounts?.active} / ${statistics?.clientAccounts?.total}`} 
+                  label={'Active accounts'} color='purple'/>
+              </CardItem>
+            </Col>
+            <Col xxl={6} xl={6} lg={6} md={12} sm={24} xs={24}>
+              <CardItem>
+                <Statistic
+                  title={'Properties:'} 
+                  icon={<AiOutlineLineChart />} 
+                  value={`${statistics?.properties?.active} / ${statistics?.properties?.total}`} 
+                  label={'Active properties'} color='green'
+                />
+              </CardItem>
+            </Col>
+            <Col xxl={6} xl={6} lg={6} md={12} sm={24} xs={24}>
+              <CardItem>
+                <Statistic
+                  title={'Property categories:'} 
+                  icon={<AiOutlineLineChart />} 
+                  value={`${statistics?.categories?.active} / ${statistics?.categories?.total}`} 
+                  label={'Active categories'} color='yellow'
+                />
+              </CardItem>
+            </Col>
+          </Row>
+          <Row gutter={[20, 20]} style={{padding: "2rem"}}>
             <Skeleton loading={loading} active style={{ padding: '3.5rem' }}>
-              {propertyList?.length > 0 ? (
-                propertyList.map((property, index) => {
+              <div className='pending-post-box'>
+                <h3 className='pending-post-box--title'>Pending post list</h3>
+                <span className='pending-post-box--desc'>
+                  There are {pendingPropertyList.length} properties waiting to approve
+                </span>
+              </div>
+
+              {pendingPropertyList?.length > 0 ? (
+                pendingPropertyList.map((property, index) => {
                   return (
-                    <div className='item-wrapper' key={index} data-id={property._id}>  
+                    <div className='item-wrapper' key={index} data-id={property._id} style={{marginTop: "0rem"}}>  
                       <Row className='item-wrapper__custom-row'>
                         <div className='item-wrapper__upper-content' key={index}>
                             <Col
@@ -234,7 +209,6 @@ const Properties: React.FC = () => {
                                     min={0}
                                     className='item-wrapper__upper-content--position' 
                                     defaultValue={property.position} 
-                                    onChange={(value) => onChangePosition(property._id, value)}
                                     data-id={property._id}
                                   />
                                 </Tooltip>
@@ -242,7 +216,6 @@ const Properties: React.FC = () => {
                               }
                               
                               <Checkbox
-                                onChange={handleCheckboxChange(property._id)}
                                 className='item-wrapper__upper-content--checkbox'
                                 id={property._id}
                               ></Checkbox>
@@ -341,22 +314,18 @@ const Properties: React.FC = () => {
                               <Link to={`/admin/properties/detail/${property._id}`}> 
                                 <Button className='detail-btn'>Detail</Button> 
                               </Link>
-                              {permissions?.propertiesEdit && (
-                                <Link to={`/admin/properties/edit/${property._id}`}> 
-                                  <Button className='edit-btn'>Edit</Button> 
-                                </Link>
-                              )}
-                              {permissions?.propertiesDelete && (
-                                <Popconfirm
-                                  title="Delete the task"
-                                  description="Are you sure to delete this property?"
-                                  onConfirm={() => confirmDelete(property._id)}
-                                  okText="Yes"
-                                  cancelText="No"
-                                >
-                                  <Button type="primary" danger>Delete</Button> 
-                                </Popconfirm>
-                              )}
+                              <Link to={`/admin/properties/edit/${property._id}`}> 
+                                <Button className='edit-btn'>Edit</Button> 
+                              </Link>
+                              <Popconfirm
+                                title="Delete the task"
+                                description="Are you sure to delete this property?"
+                                // onConfirm={() => confirmDelete(property._id)}
+                                okText="Yes"
+                                cancelText="No"
+                              >
+                                <Button type="primary" danger>Delete</Button> 
+                              </Popconfirm>
                             </div>
                           </Col>
                         </div>
@@ -369,7 +338,7 @@ const Properties: React.FC = () => {
                               Created: {property.createdAt ? new Date(property.createdAt).toLocaleString() : 'No data'}
                             </div>
                             <div className='item-wrapper__lower-content--date-created'>
-                              Expire: {property.expireTime ? new Date(property.expireTime).toLocaleString() : 'No data'}
+                              Expire: {`${property.postServices?.dayPost ? property.postServices?.dayPost + ' day after post approved' : 'No data' }`}
                             </div>
                           </div>
                         </Col>
@@ -378,27 +347,16 @@ const Properties: React.FC = () => {
                   );
                 })
               ) : (
-                <>Loading...</>
+                <b>No post waiting for approve...</b>
               )}
             </Skeleton>
-            <Skeleton loading={loading} active style={{ padding: '3.5rem' }}></Skeleton>
-            <Skeleton loading={loading} active style={{ padding: '3.5rem' }}></Skeleton>
-            </>
-          )}
-          <Pagination
-            // showSizeChanger
-            showQuickJumper
-            pageSize={paginationObj?.limitItems || 4}
-            onChange={onPageChange}
-            defaultCurrent={paginationObj?.currentPage || 1}
-            total={propertyCount}
-          />
+          </Row>
         </>
       ) : (
         <NoPermission permissionType='view' />
       )}
     </>
   );
-};
+}
 
-export default Properties;
+export default DashBoard;

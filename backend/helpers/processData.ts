@@ -76,6 +76,12 @@ export const processPropertyData = (req: Request): PropertyType => {
       phone: req.body.createdBy?.phone && String(req.body.createdBy?.phone),
       email: req.body.createdBy?.email && String(req.body.createdBy?.email),
     },
+    postServices: {
+      dayPost: parseToValidNumber(req.body.postServices.dayPost),
+      pushTimesLeft: parseToValidNumber(req.body.postServices.pushTimesLeft),
+      defaultPostFeePerDay: parseToValidNumber(req.body.postServices.defaultPostFeePerDay),
+      discountPercentage: parseToValidNumber(req.body.postServices.discountPercentage)
+    },
     expireTime: req.body.expireTime && new Date(req.body.expireTime)
   };
 };

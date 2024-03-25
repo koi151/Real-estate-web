@@ -10,12 +10,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../redux/stores';
 import { setSubmitFirstPage, setSubmitSecondPage } from '../../../redux/reduxSlices/propertyPostSlice';
 
-import './createPropertyPost.scss'
 import { useNavigate } from 'react-router-dom';
 import clientAccountsService from '../../../services/client/accounts.service';
 import propertiesServiceClient from '../../../services/client/properties.service';
 import objectToFormData from '../../../helpers/standardizeData';
 import CreatePostResult from '../../../components/client/Result/createPostResult';
+import './createPropertyPost.scss'
 
 const CreatePropertyPost: React.FC = () => {
   const { token } = theme.useToken();
@@ -36,6 +36,10 @@ const CreatePropertyPost: React.FC = () => {
   const allowStep3 = useSelector((state: RootState) => state.propertyPost.allowStep_3);
   const currentUser = useSelector((state: RootState) => state.clientUser);
 
+  const setCurrentToZero = () => {
+    setCurrent(0);
+  };
+
   // create post steps
   const steps = [
     {
@@ -48,7 +52,8 @@ const CreatePropertyPost: React.FC = () => {
     },
     {
       title: 'Pending post',
-      content: <CreatePostResult />,
+      content: <CreatePostResult handleCurrentReset={setCurrentToZero} />
+      ,
     },
   ];
 
@@ -79,7 +84,6 @@ const CreatePropertyPost: React.FC = () => {
       if (!currentUser._id) 
         return message.error('Cannot get account id, please try to reload page again');
 
-      console.log('check: currentUser._id, postInfo.totalPayment:', currentUser._id, postInfo.totalPayment)
       const accUpdatedReponse = await clientAccountsService.updateAccountBalance(currentUser._id, postInfo.totalPayment, false);
       if (accUpdatedReponse.code === 200) {
         message.success(`Account has successfully paid ${postInfo.totalPayment}$ for the post`)
@@ -104,8 +108,6 @@ const CreatePropertyPost: React.FC = () => {
       }
     }
 
-    // console.log("postInfo.price:", postInfo.price)
-    // if (!postInfo.price) return; // waiting for data in Redux updated
 
     if ((allowStep3 || allowStep3 === undefined) && current === 1) {
       

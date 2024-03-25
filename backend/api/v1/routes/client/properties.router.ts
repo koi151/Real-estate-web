@@ -8,7 +8,6 @@ import * as uploadCloud from '../../../../middlewares/client/uploadCloud.middlew
 const upload = multer();
 const router: Router = Router();
 
-
 router.get('/', controller.index);
 
 router.get('/detail/:id', controller.detail);

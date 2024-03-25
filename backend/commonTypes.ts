@@ -1,5 +1,5 @@
 export type RoomType = "bedrooms" | "bathrooms" | "kitchens" | "livingRooms";
-export type ValidStatus = 'active' | 'inactive';
+export type ValidStatus = 'active' | 'inactive' | 'pending';
 export type ValidMultiChangeType = 'active' | "inactive" | "position" | "delete" 
 
 export const postTypeValues = ["standard", "premium", "exclusive"];
@@ -16,6 +16,7 @@ export interface Statistics {
 
 export interface DashboardStatistics {
   adminAccounts: Statistics;
+  clientAccounts: Statistics;
   properties: Statistics;
   categories: Statistics;
 }

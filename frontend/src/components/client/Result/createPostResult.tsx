@@ -1,28 +1,32 @@
-import { Button, Result } from "antd";
 import React from "react";
+import { Button, Result } from "antd";
 import { Link } from "react-router-dom";
 
-const CreatePostResult: React.FC = () => {
+interface CreatePostResultProps {
+  handleCurrentReset: () => void
+}
+
+const CreatePostResult: React.FC<CreatePostResultProps> = ({ handleCurrentReset }) => {
   return (
     <>
       <Result
+        style={{height: '60rem'}}
         status="success"
         title="Create post successful!"
-        subTitle='Post created successfully. Your post has been added to moderation queue, please wait for a moment'   
+        subTitle="Post created successfully. Your post has been added to moderation queue, please wait for a moment"
         extra={[
-          <Link to='/'>
-            <Button key="buy">View pending post</Button>,
+          <Link to="/" onClick={handleCurrentReset}>
+            <Button key="buy">View pending post</Button>
           </Link>,
-
-          <Link to='/properties'>
+          <Link to="/properties" onClick={handleCurrentReset}>
             <Button type="primary" key="console">
               Back to home
             </Button>
-          </Link>
+          </Link>,
         ]}
       />
     </>
-  )
-}
+  );
+};
 
 export default CreatePostResult;

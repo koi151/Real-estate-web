@@ -146,7 +146,6 @@ export const createPost = async (req: any, res: Response) => {
     const property: PropertyType = processPropertyData(req);
     const processedImages = processImagesData(req.body.images);
 
-
     if (!property.position) {
       const cntProperty = await Property.countDocuments();
       property.position = cntProperty + 1;

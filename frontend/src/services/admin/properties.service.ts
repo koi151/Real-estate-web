@@ -58,10 +58,15 @@ class PropertiesServiceAdmin {
     }
   }
 
-  async getProperties(options: GetPropertiesOptions) {
+  async getApprovedProperties(options: GetPropertiesOptions) {
     const request = this.api.get("/", { 
       params: options,
     });
+    return this.handleRequest(request);
+  }
+
+  async getPendingProperties() {
+    const request = this.api.get("/pending");
     return this.handleRequest(request);
   }
 

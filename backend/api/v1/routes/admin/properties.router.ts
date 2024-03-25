@@ -10,6 +10,7 @@ import * as uploadCloud from '../../../../middlewares/admin/uploadCloud.middlewa
 const upload = multer();
 
 router.get('/', controller.index);
+router.get('/pending', controller.pending);
 router.get('/detail/:propertyId', controller.detail)
 
 router.post(

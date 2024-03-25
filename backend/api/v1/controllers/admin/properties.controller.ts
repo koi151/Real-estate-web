@@ -138,6 +138,29 @@ export const index = async (req: Request, res: Response) => {
   }
 };
 
+// [GET] /properties/pending
+export const pending = async (req: Request, res: Response) => {
+  try {
+    const pendingProperties = await Property.find({
+      deleted: false,
+      status: 'pending'
+    })
+    
+    res.status(200).json({
+      code: 200,
+      message: 'Success',
+      pendingProperties: pendingProperties,
+    });
+
+  } catch (err) {
+    console.log('Error occurred while fetching pending properties data:', err);
+    return res.status(500).json({
+      code: 500,
+      message: 'Internal Server Error'
+    });
+  }
+};
+
 // [GET] /admin/properties/detail/:propertyId
 export const detail = async (req: Request, res: Response) => {
   try {

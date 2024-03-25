@@ -1,0 +1,18 @@
+@import '../../../App.scss';
+
+.pending-post-box {
+  display: flex;
+  flex-direction: column;
+  margin-top: 2rem;
+  margin-left: 1.5rem;
+
+  &--title {
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: $main-content-title;
+  }
+
+  &--desc {
+    color: rgba(0, 0, 0, 0.45);
+  }
+}

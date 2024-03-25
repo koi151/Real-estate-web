@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import AdminAccount from "../../models/adminAccount.model";
 import Property from "../../models/property.model";
 import Category from "../../models/propertyCategories.model";
+import ClientAccount from "../../models/clientAccount.model";
 
 interface Count {
   total: number;
@@ -11,6 +12,7 @@ interface Count {
 
 interface Statistics {
   adminAccounts: Count;
+  clientAccounts: Count;
   properties: Count;
   categories: Count;
 }
@@ -24,13 +26,14 @@ const countDocuments = async (model: any): Promise<Count> => {
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const [adminAccounts, properties, categories] = await Promise.all([
+    const [adminAccounts, clientAccounts, properties, categories] = await Promise.all([
       countDocuments(AdminAccount),
+      countDocuments(ClientAccount),
       countDocuments(Property),
       countDocuments(Category)
     ]);
 
-    const statistics: Statistics = { adminAccounts, properties, categories };
+    const statistics: Statistics = { adminAccounts, clientAccounts, properties, categories };
 
     return res.status(200).json({ 
       code: 200, 

@@ -2,7 +2,7 @@ import React from 'react';
 
 import LayoutDefault from "../components/admin/Layouts/layoutDefault";
 
-import DashBoard from "../pages/admin/Home/dashboard";
+import DashBoard from "../pages/admin/Dashboard/dashboard";
 
 import Properties from "../pages/admin/Properties/properties";
 import PropertyDetail from "../pages/admin/Properties/detail";

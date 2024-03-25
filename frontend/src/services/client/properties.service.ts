@@ -45,7 +45,7 @@ class PropertiesServiceClient {
     }
   }
 
-  async getProperties(options: GetPropertiesOptions) {
+  async getApprovedProperties(options: GetPropertiesOptions) {
     const request = this.api.get("/", { 
       params: options,
     });
