@@ -2,16 +2,17 @@ import { Request, Response } from "express";
 import bcrypt from 'bcrypt';
 
 import AdminAccount from "../../models/adminAccount.model";
-import { processAccountLogData } from "../../../../helpers/processData";
-import { AccountLogType, AdminAccountType } from "../../../../commonTypes";
+import { processAccountLoginData, processAccountRegisterData, processClientAccountData } from "../../../../helpers/processData";
+import { AccountLoginType, AdminAccountType, AccountRegisterType, ClientAccountType } from "../../../../commonTypes";
 import { decodeToken, generateToken } from "../../../../helpers/auth.methods";
 import Role from "../../models/roles.model";
 import { formattedPermissions } from "../../../../helpers/formatData";
+import ClientAccount from "../../models/clientAccount.model";
 
 // [POST] /admin/auth/login
 export const loginPost = async (req: Request, res: Response) => {
   try {
-    const userInfo: AccountLogType = await processAccountLogData(req);
+    const userInfo: AccountLoginType = await processAccountLoginData(req);
 
     const user: AdminAccountType = await AdminAccount.findOne({ 
       email: userInfo.email,
@@ -111,6 +112,52 @@ export const loginPost = async (req: Request, res: Response) => {
     });
   }
 };
+
+// [POST] /admin/auth/register
+export const registerPost = async (req: Request, res: Response) => {
+  try {
+    const registerInfo: AccountRegisterType = await processAccountRegisterData(req);
+
+    if (registerInfo.email) {
+      const userExisted = await AdminAccount.findOne({
+        email: req.body.email,
+      })
+
+      if (userExisted) {
+        return res.status(409).json({
+          code: 409,
+          message: "Email existed"
+        })
+      }
+
+      const account: ClientAccountType = await processClientAccountData(req); 
+
+      const newAccount = new ClientAccount(account);
+      await newAccount.save();
+      
+      return res.status(200).json({
+        code: 200,
+        message: "New account created successfully"
+      })
+      
+    } else {
+      return res.status(400).json({
+        code: 400,
+        message: "Email is empty"
+      })
+    }
+
+  } catch (err: any) {
+    console.log('Error occurred while registering account:', err);
+    return res.status(500).json({
+      code: 500,
+      message: 'Internal Server Error'
+    });
+  }
+}
+
+
+
 
 export const refreshToken = async (req: Request, res: Response) => {
 

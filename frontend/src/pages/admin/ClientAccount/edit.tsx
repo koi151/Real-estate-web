@@ -97,7 +97,6 @@ const EditClientAccounts: React.FC = () => {
       }
       
       const formData = standardizeData.objectToFormData(data);
-      console.log("data:", data)
 
       const response = await clientAccountsServiceAdminSide.updateAccount(formData, id);
       

@@ -9,6 +9,7 @@ type ClientAccountTypeLimited = Omit<
 const initialState: 
   Omit<ClientAccountTypeLimited, 'password' | 'token'> = 
   {
+    userName: '',
     avatar: '',
     createdAt: undefined,
     deleted: false,

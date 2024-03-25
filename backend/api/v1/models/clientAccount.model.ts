@@ -7,6 +7,7 @@ mongoose.plugin(slug);
 
 const clientAccountSchema = new mongoose.Schema(
   {
+    userName: String,
     fullName: String,
     password: String,
     email: String,

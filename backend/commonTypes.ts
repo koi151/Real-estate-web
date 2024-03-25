@@ -122,6 +122,7 @@ export interface SocialNetwork {
 
 export interface ClientAccountType {
   _id?: string;
+  userName: string,
   fullName: string,
   password: string,
   token?: string,
@@ -138,8 +139,14 @@ export interface ClientAccountType {
   deleted?: boolean;
 }
 
-// ACCOUNT
-export interface AccountLogType {
+// LOGIN & REGISTER
+export interface AccountLoginType {
+  email: string,
+  password: string,
+}
+
+export interface AccountRegisterType {
+  userName: string,
   email: string,
   password: string,
 }

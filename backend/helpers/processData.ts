@@ -1,5 +1,5 @@
 import { Request } from "express";
-import { AccountLogType, AdminAccountType, ClientAccountType, PropertyCategoryType, PropertyType, RolesType } from "../commonTypes";
+import { AccountLoginType, AccountRegisterType, AdminAccountType, ClientAccountType, PropertyCategoryType, PropertyType, RolesType } from "../commonTypes";
 import bcrypt from 'bcrypt';
 
 /*  formData replace undefined fields to '' value,
@@ -135,6 +135,7 @@ export const processClientAccountData = async (req: Request): Promise<ClientAcco
     && await bcrypt.hash(String(req.body.password), parseInt(process.env.SALT_ROUNDS));
   
   return {
+    userName: req.body.userName && String(req.body.userName),
     fullName: req.body.fullName && String(req.body.fullName),
     email: req.body.email && String(req.body.email),
     password: hashedPassword,
@@ -154,11 +155,18 @@ export const processClientAccountData = async (req: Request): Promise<ClientAcco
   };
 }
 
-
-// Login && register
-export const processAccountLogData = async (req: Request): Promise<AccountLogType> => {
-
+// Login data
+export const processAccountLoginData = async (req: Request): Promise<AccountLoginType> => {
   return {
+    email: req.body.email && String(req.body.email),
+    password: req.body.password && String(req.body.password),
+  };
+}
+
+// Register data
+export const processAccountRegisterData = async (req: Request): Promise<AccountRegisterType> => {
+  return {
+    userName: req.body.userName && String(req.body.userName),
     email: req.body.email && String(req.body.email),
     password: req.body.password && String(req.body.password),
   };

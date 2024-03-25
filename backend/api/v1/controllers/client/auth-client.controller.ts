@@ -2,15 +2,14 @@ import { Request, Response } from "express";
 import bcrypt from 'bcrypt';
 
 import ClientAccount from "../../models/clientAccount.model";
-import { processAccountLogData } from "../../../../helpers/processData";
-import { AccountLogType, ClientAccountType } from "../../../../commonTypes";
-import { generateRandomString } from "../../../../helpers/generateString";
+import { processAccountLoginData } from "../../../../helpers/processData";
+import { AccountLoginType, ClientAccountType } from "../../../../commonTypes";
 import { decodeToken, generateToken } from "../../../../helpers/auth.methods";
 
 // [POST] /auth/login
 export const loginPost = async (req: Request, res: Response) => {
   try {
-    const userInfo: AccountLogType = await processAccountLogData(req);
+    const userInfo: AccountLoginType = await processAccountLoginData(req);
 
     const user: ClientAccountType = await ClientAccount.findOne({ 
       email: userInfo.email,
