@@ -19,10 +19,10 @@ import AdminRoleDetail from "../pages/admin/Roles/detail";
 import CreateAdminRole from "../pages/admin/Roles/create";
 import EditAdminRole from "../pages/admin/Roles/edit";
 
-import AdminAccounts from "../pages/admin/Accounts/accounts";
-import AdminAccountsDetail from "../pages/admin/Accounts/detail";
-import CreateAdminAccounts from "../pages/admin/Accounts/create";
-import EditAdminAccounts from "../pages/admin/Accounts/edit";
+import AdminAccounts from "../pages/admin/AdminAccounts/accounts";
+import AdminAccountsDetail from "../pages/admin/AdminAccounts/detail";
+import CreateAdminAccounts from "../pages/admin/AdminAccounts/create";
+import EditAdminAccounts from "../pages/admin/AdminAccounts/edit";
 
 import RegisterAndLogin from "../pages/admin/RegisterAndLogin/adminRegisterLogin";
 
@@ -92,19 +92,19 @@ export const adminRoutes: RouteObject[] = [
         element: <AdminRoleDetail />
       },
       {
-        path: 'accounts',
+        path: 'admin-accounts',
         element: <AdminAccounts />
       },
       {
-        path: 'accounts/detail/:id',
+        path: 'admin-accounts/detail/:id',
         element: <AdminAccountsDetail />
       },
       {
-        path: 'accounts/create',
+        path: 'admin-accounts/create',
         element: <CreateAdminAccounts />
       },
       {
-        path: 'accounts/edit/:id',
+        path: 'admin-accounts/edit/:id',
         element: <EditAdminAccounts />
       },
     ],

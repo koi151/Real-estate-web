@@ -21,8 +21,8 @@ class AccountsServiceClient {
     }
   }
 
-  async getSingleAccount(id: string, accountType: string) {
-    const request = this.api.get(`detail/${id}/${accountType}`, accountType);
+  async getSingleAccount(id: string) {
+    const request = this.api.get(`detail/${id}`);
     return this.handleRequest(request);
   }
 

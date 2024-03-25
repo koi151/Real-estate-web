@@ -1,80 +1,62 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Select from "antd/es/select";
 import { Badge, Button, Card, Col, 
         Form, Input, Radio, Row, Spin, message } from "antd";
-import { useDispatch } from "react-redux";
 
-import adminAccountsService from "../../../services/admin/accounts.service";
+import adminAccountsService from "../../../services/admin/admin-accounts.service";
 import AdminRolesService from "../../../services/admin/roles.service";
 
-import NoPermission from "../../../components/admin/NoPermission/noPermission";
 import UploadMultipleFile from "../../../components/admin/UploadMultipleFile/uploadMultipleFile";
-import { AdminAccountType, RoleTitleType } from "../../../../../backend/commonTypes";
+import NoPermission from "../../../components/admin/NoPermission/noPermission";
 import * as standardizeData from '../../../helpers/standardizeData'
 
+import { RoleTitleType } from "../../../../../backend/commonTypes";
 
-const EditAdminAccounts: React.FC = () => {
-  
-  const { id } = useParams();
+const CreateClientAccounts: React.FC = () => {
+
   const navigate = useNavigate();
-  
-  const [loading, setLoading] = useState<boolean>(true);
-  const [accessAllowed, setAccessAllowed] = useState<boolean>(true);
 
-  const [account, setAccount] = useState<AdminAccountType | undefined>(undefined);
+  const [accessAllowed, setAccessAllowed] = useState(false);
+
+  const [loading, setLoading] = useState(true);
   const [roleTitles, setRoleTitles] = useState<any>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch account data
-        if (!id) {
-          message.error('Could not found account, redirect to previous page', 3);
-          navigate(-1);
-          return;
-        }
-        
-        const accountResponse = await adminAccountsService.getSingleAccount(id, 'admin');
-        setLoading(true);
+        const response = await AdminRolesService.getRoleTitles();
 
-        if(accountResponse?.code === 200 && accountResponse.account) {
+        if(response?.code === 200) {
           setAccessAllowed(true);
-          setAccount(accountResponse.account);
-        } else {
-          setAccessAllowed(false);
-          message.error(accountResponse.message || 'Could not find administrator account information', 2);
-        }
-  
-        // Fetch role titles
-        const roleTitlesResponse = await AdminRolesService.getRoleTitles();
-        if(roleTitlesResponse?.code === 200) {
-          const formattedTitles = roleTitlesResponse?.roleTitles.map((role: RoleTitleType) => (
+
+          const formattedTitles = response?.roleTitles.map((role: RoleTitleType) => (
             { "value": role._id, "label": role.title }
-          ));
+          )) 
           setRoleTitles(formattedTitles);
 
         } else {
-          message.error(roleTitlesResponse.message || 'No roles found', 2);
+          setAccessAllowed(false);
+          message.error(response.message, 2);
         }
-          
+
       } catch (err: any) {
         if (err.response && err.response.status === 401) {
-          setAccessAllowed(false);
           message.error('Unauthorized - Please log in to access this feature.', 3);
           navigate('/admin/auth/login');
         } else {
-          message.error('Error occurred while feaching administrator role', 2);
+          message.error('Error occurred while fetching administrator account data', 2);
           console.log('Error occurred:', err);
         }
-      } finally { 
+
+        setAccessAllowed(false);
+      } finally {
         setLoading(false);
       }
     };
-    
+
     fetchData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  }, [navigate])
 
   /* eslint-disable no-template-curly-in-string */
   const validateMessages = {
@@ -88,7 +70,11 @@ const EditAdminAccounts: React.FC = () => {
     },
   };
 
-  // Phone
+  // Select 
+  const filterOption = (input: string, option?: { label: string; value: string }) =>
+  (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
+
+  // Sample phone option
   const prefixSelector = (
     <Form.Item noStyle>
       <Select defaultValue="84" style={{ width: "7rem" }}>
@@ -99,25 +85,14 @@ const EditAdminAccounts: React.FC = () => {
     </Form.Item>
   );
 
-  // Select 
-  const filterOption = (input: string, option?: { label: string; value: string }) =>
-  (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
- 
   const onFinishForm = async (data: any) => {
-    try {
-      if (!id) {
-        console.error('Cannot get administrator account id');
-        message.error('Error occurred', 3);
-        return;
-      }
-      
+    try {            
       const formData = standardizeData.objectToFormData(data);
-      console.log("data:", data)
 
-      const response = await adminAccountsService.updateAccount(formData, id);
+      const response = await adminAccountsService.createAccount(formData);
       
       if (response.code === 200) {
-        message.success('Account updated successfully!', 3);
+        message.success('Account created successfully!', 3);
       } else {
         console.error(response.message);
         message.error('Error occurred', 3);
@@ -128,7 +103,7 @@ const EditAdminAccounts: React.FC = () => {
         message.error('Unauthorized - Please log in to access this feature.', 3);
         navigate('/admin/auth/login');
       } else {
-        message.error('Error occurred while updating administrator account', 2);
+        message.error('Error occurred while creating administrator account', 2);
         console.log('Error occurred:', err);
       }
     }
@@ -148,9 +123,9 @@ const EditAdminAccounts: React.FC = () => {
                 className="custom-form" 
                 validateMessages={validateMessages}
               >
-                <Badge.Ribbon text={<Link to="/admin/accounts">Back</Link>} color="purple" className="custom-ribbon">
+                <Badge.Ribbon text={<Link to="/admin/property-categories">Back</Link>} color="purple" className="custom-ribbon">
                   <Card 
-                    title="Edit administrator account" 
+                    title="Create administrator account" 
                     className="custom-card" 
                     style={{marginTop: '2rem'}}
                     extra={<Link to="/admin/accounts">Back</Link>}
@@ -158,10 +133,9 @@ const EditAdminAccounts: React.FC = () => {
                     <Row gutter={16}>
                       <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
                         <Form.Item 
-                          label='Full name:'
+                          label={<span>Full name <b className="required-txt">- required:</b></span>}
                           name='fullName'
                           rules={[{ required: true }]}
-                          initialValue={account?.fullName}
                         >
                           <Input 
                             type="text" required
@@ -175,7 +149,6 @@ const EditAdminAccounts: React.FC = () => {
                           label='Email:' 
                           name='email' 
                           rules={[{ type: 'email', required: true }]}
-                          initialValue={account?.email}
                         >
                           <Input 
                             type='email' id="email" 
@@ -186,9 +159,12 @@ const EditAdminAccounts: React.FC = () => {
                       <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
                         <Form.Item
                           name="password"
-                          label={<span>Password <b className="required-txt">- change if needed:</b></span>}
+                          label="Password:"
                           rules={[
-                            { message: 'Please input your password!' },
+                            {
+                              required: true,
+                              message: 'Please input your password!',
+                            },
                             {
                               min: 6, 
                               message: 'Password must be at least 6 characters long!',
@@ -198,17 +174,22 @@ const EditAdminAccounts: React.FC = () => {
                               message: 'Password must be at most 20 characters long!',
                             },
                           ]}
+                          hasFeedback
                         >
-                          <Input.Password placeholder="Change your password if needed"/>
+                          <Input.Password placeholder="Please enter your password"/>
                         </Form.Item>
                       </Col>
                       <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
                         <Form.Item
                           name="confirm"
-                          label="Confirm password:"
+                          label="Confirm Password:"
                           dependencies={['password']}
+                          hasFeedback
                           rules={[
-                            { message: 'Please confirm your password!'},
+                            {
+                              required: true,
+                              message: 'Please confirm your password!',
+                            },
                             ({ getFieldValue }) => ({
                               validator(_, value) {
                                 if (!value || getFieldValue('password') === value) {
@@ -227,7 +208,7 @@ const EditAdminAccounts: React.FC = () => {
                         <Form.Item
                           name="phone"
                           label="Phone number:"
-                          initialValue={account?.phone}
+                          rules={[{ message: 'Please input your phone number!' }]}
                         >
                           <Input 
                             placeholder="Please enter your phone"
@@ -236,13 +217,11 @@ const EditAdminAccounts: React.FC = () => {
                           />
                         </Form.Item>
                       </Col>
-
                       <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
                         <Form.Item
                           name="role_id"
                           label="Administrator role:"
                           required
-                          initialValue={account?.role_id}
                         >
                           <Select
                             showSearch
@@ -255,7 +234,7 @@ const EditAdminAccounts: React.FC = () => {
                       </Col>
                       
                       <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
-                        <Form.Item label="Account status:" name='status' initialValue={account?.status}>
+                        <Form.Item label="Account status:" name='status' initialValue={'active'}>
                           <Radio.Group>
                             <Radio value="active">Active</Radio>
                             <Radio value="inactive">Inactive</Radio>
@@ -264,15 +243,13 @@ const EditAdminAccounts: React.FC = () => {
                       </Col>
 
                       <Col span={24}>
-                        <UploadMultipleFile 
-                          uploadedImages={account?.avatar ? [account.avatar] : []} 
-                          singleImageMode={true} />
+                        <UploadMultipleFile singleImageMode={true} />
                       </Col>
                       
                       <Col span={24}>
                         <Form.Item>
                           <Button className='custom-btn-main' type="primary" htmlType="submit">
-                            Update
+                            Create
                           </Button>
                         </Form.Item>
                       </Col>
@@ -296,4 +273,4 @@ const EditAdminAccounts: React.FC = () => {
   )
 }
 
-export default EditAdminAccounts;
+export default CreateClientAccounts;

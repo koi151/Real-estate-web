@@ -3,7 +3,7 @@ import { Button, message } from 'antd';
 
 import propertiesService from '../../../services/admin/properties.service';
 import propertyCategoriesService from '../../../services/admin/property-categories.service';
-import adminAccountsService from '../../../services/admin/accounts.service';
+import adminAccountsService from '../../../services/admin/admin-accounts.service';
 
 import { ValidStatus } from '../../../../../backend/commonTypes';
 
@@ -55,7 +55,7 @@ const StatusButton: React.FC<StatusButtonProps> = ({ typeofChange, itemId, statu
         onClick={handleClickStatus}
         data-id={itemId}
       >
-        {currentStatus}
+        {currentStatus.charAt(0).toUpperCase() + currentStatus.slice(1)}
       </Button>
     </div>
   );

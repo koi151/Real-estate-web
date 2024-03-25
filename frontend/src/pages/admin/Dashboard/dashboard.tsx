@@ -108,22 +108,22 @@ const DashBoard: React.FC = () => {
   );
 
   // Delete item
-  // const confirmDelete = async (id?: string) => {
-  //   if (!id) {
-  //     message.error('Error occurred, can not delete');
-  //     console.log('Can not get id')
-  //     return;
-  //   } 
-  //   const response = await propertiesService.deleteProperty(id);
+  const confirmDelete = async (id?: string) => {
+    if (!id) {
+      message.error('Error occurred, can not delete');
+      console.log('Can not get id')
+      return;
+    } 
+    const response = await propertiesService.deleteProperty(id);
 
-  //   if (response?.code === 200) {
-  //     message.success(response.message, 3);
-  //     setPropertyList(prevPropertyList => prevPropertyList.filter(property => property._id !== id));
+    if (response?.code === 200) {
+      message.success(response.message, 3);
+      setPendingPropertyList(prevPropertyList => prevPropertyList.filter(property => property._id !== id));
 
-  //   } else {
-  //     message.error('Error occurred, can not delete');
-  //   }
-  // };
+    } else {
+      message.error('Error occurred, can not delete');
+    }
+  };
 
   return (
     <>
@@ -320,7 +320,7 @@ const DashBoard: React.FC = () => {
                               <Popconfirm
                                 title="Delete the task"
                                 description="Are you sure to delete this property?"
-                                // onConfirm={() => confirmDelete(property._id)}
+                                onConfirm={() => confirmDelete(property._id)}
                                 okText="Yes"
                                 cancelText="No"
                               >

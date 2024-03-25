@@ -4,7 +4,7 @@ import createApi from '../api.service';
 class AccountsServiceAdmin {
   private api: any; 
 
-  constructor(baseUrl = "http://localhost:3000/api/v1/admin/accounts") {
+  constructor(baseUrl = "http://localhost:3000/api/v1/admin/admin-accounts") {
     this.api = createApi(baseUrl);
   }
 
@@ -27,8 +27,8 @@ class AccountsServiceAdmin {
     return this.handleRequest(request);
   }
 
-  async getSingleAccount(id: string, accountType: string) {
-    const request = this.api.get(`detail/${id}/${accountType}`, accountType);
+  async getSingleAccount(id: string) {
+    const request = this.api.get(`detail/${id}`);
     return this.handleRequest(request);
   }
 

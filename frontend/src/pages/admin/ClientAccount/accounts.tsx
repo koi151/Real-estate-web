@@ -4,14 +4,14 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { FaPlus } from 'react-icons/fa';
 
-import { AdminAccountType, AdminPermissions } from '../../../../../backend/commonTypes';
+import { ClientAccountType, AdminPermissions } from '../../../../../backend/commonTypes';
 import StatusButton from '../../../components/admin/StatusButton/statusButton';
 
-import adminAccountsService from '../../../services/admin/accounts.service';
 import NoPermission from '../../../components/admin/NoPermission/noPermission';
 import '../Properties/properties.scss';
+import clientAccountsServiceAdminSide from '../../../services/admin/client-accounts.service';
 
-const AdminAccounts: React.FC = () => {
+const ClientAccounts: React.FC = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -21,7 +21,7 @@ const AdminAccounts: React.FC = () => {
   const [accessAllowed, setAccessAllowed] = useState(true);
   const [loading, setLoading] = useState(true);
 
-  const [accountList, setAccountList] = useState<AdminAccountType[]>([]);
+  const [accountList, setAccountList] = useState<ClientAccountType[]>([]);
   const [error, setError] = useState<string | null>(null); 
 
   // Searching and filtering
@@ -31,7 +31,7 @@ const AdminAccounts: React.FC = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await adminAccountsService.getAccounts();
+        const response = await clientAccountsServiceAdminSide.getAccounts();
 
         if(response?.code === 200) {
           setAccountList(response.accounts);
@@ -85,7 +85,7 @@ const AdminAccounts: React.FC = () => {
       console.log('Can not get id')
       return;
     } 
-    const response = await adminAccountsService.deleteAccount(id);
+    const response = await clientAccountsServiceAdminSide.deleteAccount(id);
 
     if (response?.code === 200) {
       message.success(response.message, 3);
@@ -101,12 +101,12 @@ const AdminAccounts: React.FC = () => {
       { accessAllowed ? (
         <>
           <div className='title-wrapper'>
-            <h1 className="main-content-title">Administrator accounts:</h1>
+            <h1 className="main-content-title">Client accounts:</h1>
             <Breadcrumb
               className='mt-1 mb-1'
               items={[
                 { title: <Link to="/admin">Admin</Link> },
-                { title: <Link to="/admin/accounts">Accounts</Link> },
+                { title: <Link to="/admin/client-accounts">Client accounts</Link> },
               ]}
             />
           </div>
@@ -163,9 +163,6 @@ const AdminAccounts: React.FC = () => {
                                   { account.fullName }
                                 </h3>
                                 <div className='mt-2'>
-                                  Role: <b style={{color: '#777'}}>{ account.roleTitle }</b>
-                                </div>
-                                <div className='mt-2'>
                                   Email: { account.email }
                                 </div>
                                 <div className='mt-1'>
@@ -195,11 +192,11 @@ const AdminAccounts: React.FC = () => {
                               xxl={2} xl={2} lg={2} md={2} sm={2}
                             >
                               <div className='button-wrapper'>
-                                <Link to={`/admin/accounts/detail/${account._id}`}> 
+                                <Link to={`/admin/client-accounts/detail/${account._id}`}> 
                                   <Button className='detail-btn'>Detail</Button> 
                                 </Link>
                                 {permissions?.administratorAccountsEdit && (
-                                  <Link to={`/admin/accounts/edit/${account._id}`}> 
+                                  <Link to={`/admin/client-accounts/edit/${account._id}`}> 
                                     <Button className='edit-btn'>Edit</Button> 
                                   </Link>
                                 )}
@@ -247,4 +244,4 @@ const AdminAccounts: React.FC = () => {
   );
 };
 
-export default AdminAccounts;
+export default ClientAccounts;

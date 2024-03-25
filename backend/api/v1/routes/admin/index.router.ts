@@ -4,8 +4,9 @@ import { systemConfig } from "../../../../configs/system";
 import { propertiesRoutes } from "./properties.router";
 import { propertyCategoriesRoutes } from "./property-categories.router";
 import { rolesRoutes } from "./roles.router";
-import { accountsRoutes } from "./accounts.router";
-import { authRoutes } from "./auth-admin.router";
+import { adminAccountRoutes } from "./admin-accounts.router";
+import { clientAccountRoutes } from "./client-accounts.router";
+import { authRoutes } from "./auth.router";
 import { authRequire } from "../../../../middlewares/admin/auth.middleware";
 import { dashboardRoutes } from "./dashboard.router";
 
@@ -38,9 +39,15 @@ const v1AdminRoutes = (app: Express): void => {
   );
 
   app.use(
-    `${version}/${ADMIN_PATH}/accounts`, 
+    `${version}/${ADMIN_PATH}/admin-accounts`, 
     authRequire,
-    accountsRoutes
+    adminAccountRoutes
+  );
+
+  app.use(
+    `${version}/${ADMIN_PATH}/client-accounts`, 
+    authRequire,
+    clientAccountRoutes
   );
 
   app.use(`${version}/${ADMIN_PATH}/auth`, authRoutes);

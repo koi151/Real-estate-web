@@ -4,7 +4,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import clientAccountsService from "../../../services/client/accounts.service";
 import { setClientUser } from "../../../redux/reduxSlices/clientUserSlice";
 import { Spin, message } from "antd";
-import adminAccountsService from "../../../services/admin/accounts.service";
+import adminAccountsService from "../../../services/admin/admin-accounts.service";
 import { setAdminUser } from "../../../redux/reduxSlices/adminUserSlice";
 
 interface UserResponse {
@@ -39,7 +39,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ userType, children }) =
       } catch (err: any) {
         if (err.response && err.response.status === 401) {
           message.error('Unauthorized - Please log in to access this feature.', 3);
-          navigate('/auth/login');
+          navigate(`${userType === 'admin' ? "admin/auth/login" : "/auth/login"}`);
         } else {
           console.error('Error occurred while fetching user data:', err);
         }

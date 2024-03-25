@@ -6,9 +6,8 @@ import Role from "../../models/roles.model";
 import { AdminAccountType } from "../../../../commonTypes";
 import { processAdminAccountData } from "../../../../helpers/processData";
 import { isValidStatus } from "../../../../helpers/dataTypeCheck";
-import ClientAccount from "../../models/clientAccount.model";
 
-// [GET] /admin/accounts
+// [GET] /admin/admin-accounts
 export const index = async (req: Request, res: Response) => {
   try {
     if (!res.locals.currentUser.permissions.includes('administrator-accounts_view')) {
@@ -64,7 +63,7 @@ export const index = async (req: Request, res: Response) => {
   }
 }
 
-// [GET] /admin/accounts/detail/:accountId/:accountType
+// [GET] /admin/admin-accounts/detail/:accountId/:accountType
 export const detail = async (req: Request, res: Response) => {
   try {
     if (!res.locals.currentUser.permissions.includes('administrator-accounts_view')) {
@@ -74,34 +73,17 @@ export const detail = async (req: Request, res: Response) => {
       });
     }
 
-    const id: string | undefined = req.params.accountId;
+    const id: string | undefined = req.params.id;
     if (!id) {
       return res.status(400).json({
         code: 400,
         message: 'Invalid account ID'
       });
     }
-
-    const accountType: string = req.params.accountType;
-    if (!accountType) {
-      return res.status(400).json({
-        code: 400,
-        message: 'No account type requested'
-      });
-    }
-
-    let account: any;
     
-    if (accountType === 'admin') {
-      account = await AdminAccount.findOne(
+    const account = await AdminAccount.findOne(
         { _id: id, deleted: false }
       ).select('-password -token');
-
-    } else {
-      account = await ClientAccount.findOne(
-        { _id: id, deleted: false }
-      ).select('-password -token');
-    }
 
     if (!account) {
       return res.status(404).json({
@@ -110,16 +92,14 @@ export const detail = async (req: Request, res: Response) => {
       });
     }
 
-    if (accountType === 'admin') {
-      const role = await Role.findOne({ _id: account.role_id, deleted: false }).select('title');
-      if (role) {
-        account.roleTitle = role.title;
-      } else {
-        return res.status(404).json({
-          code: 404,
-          message: "Account role not found"
-        });
-      }
+    const role = await Role.findOne({ _id: account.role_id, deleted: false }).select('title');
+    if (role) {
+      account['roleTitle'] = role.title;
+    } else {
+      return res.status(404).json({
+        code: 404,
+        message: "Account role not found"
+      });
     }
 
     res.status(200).json({
@@ -137,7 +117,7 @@ export const detail = async (req: Request, res: Response) => {
   }
 };
 
-// [GET] /admin/accounts/detail/local
+// [GET] /admin/admin-accounts/detail/local
 export const localDetail = async (req: Request, res: Response) => {
   try {
     const user: any | undefined = res.locals.currentUser;
@@ -164,7 +144,7 @@ export const localDetail = async (req: Request, res: Response) => {
   }
 }
 
-// [POST] /admin/accounts/create
+// [POST] /admin/admin-accounts/create
 export const createPost = async (req: Request, res: Response) => {
   try {   
     if (!res.locals.currentUser.permissions.includes('administrator-accounts_create')) {
@@ -212,7 +192,7 @@ export const createPost = async (req: Request, res: Response) => {
   }
 }
 
-// [PATCH] /admin/accounts/change-status/:status/:id
+// [PATCH] /admin/admin-accounts/change-status/:status/:id
 export const changeStatus = async (req: Request, res: Response) => {
   try {
     if (!res.locals.currentUser.permissions.includes('administrator-accounts_edit')) {
@@ -260,7 +240,7 @@ export const changeStatus = async (req: Request, res: Response) => {
   }
 } 
 
-// [PATCH] /admin/accounts/edit/:accountId
+// [PATCH] /admin/admin-accounts/edit/:accountId
 export const editPatch = async (req: Request, res: Response) => {
   try {    
     if (!res.locals.currentUser.permissions.includes('administrator-accounts_edit')) {
@@ -308,7 +288,7 @@ export const editPatch = async (req: Request, res: Response) => {
   }
 }
 
-// [DELETE] /admin/accounts/delete/:accountID
+// [DELETE] /admin/admin-accounts/delete/:accountID
 export const singleDelete = async (req: Request, res: Response) => {
   try {
     if (!res.locals.currentUser.permissions.includes('administrator-accounts_delete')) {

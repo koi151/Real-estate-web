@@ -88,7 +88,7 @@ const PropertyDetail: React.FC = () => {
           let accountResponse;
           const propertyRes = response.property;
           if (propertyRes.createdBy?.accountType) {
-            accountResponse = await clientAccountsService.getSingleAccount(propertyRes.createdBy.accountId, propertyRes.createdBy.accountType);
+            accountResponse = await clientAccountsService.getSingleAccount(propertyRes.createdBy.accountId);
 
             if (accountResponse.code === 200) {
               setUserPosted(accountResponse.account)

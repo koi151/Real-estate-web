@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Badge, Card, Col, Form, Input, Radio, Row, Spin, message } from "antd";
-import { useDispatch } from "react-redux";
 
-import adminAccountsService from "../../../services/admin/accounts.service";
+import adminAccountsService from "../../../services/admin/admin-accounts.service";
 
 import { AdminAccountType } from "../../../../../backend/commonTypes";
 import NoPermission from "../../../components/admin/NoPermission/noPermission";
@@ -29,7 +28,7 @@ const AdminAccountsDetail: React.FC = () => {
           return;
         }
 
-        const response = await adminAccountsService.getSingleAccount(id, 'admin');
+        const response = await adminAccountsService.getSingleAccount(id);
         setLoading(true)
 
         if(response?.code === 200 && response.account) {
@@ -69,12 +68,12 @@ const AdminAccountsDetail: React.FC = () => {
                 disabled
                 className="custom-form" 
               >
-                <Badge.Ribbon text={<Link to="/admin/accounts">Back</Link>} color="purple" className="custom-ribbon">
+                <Badge.Ribbon text={<Link to="/admin/admin-accounts">Back</Link>} color="purple" className="custom-ribbon">
                   <Card 
                     title="View administrator account" 
                     className="custom-card" 
                     style={{marginTop: '2rem'}}
-                    extra={<Link to="/admin/accounts">Back</Link>}
+                    extra={<Link to="/admin/admin-accounts">Back</Link>}
                   >
                     <Row gutter={16}>
                       <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
