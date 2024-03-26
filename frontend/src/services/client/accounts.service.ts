@@ -22,12 +22,12 @@ class AccountsServiceClient {
   }
 
   async getSingleAccount(id: string) {
-    const request = this.api.get(`detail/${id}`);
+    const request = this.api.get(`/detail/${id}`);
     return this.handleRequest(request);
   }
 
   async getSingleAccountLocal() {
-    const request = this.api.get(`/detail-local`);
+    const request = this.api.get(`/my-detail`);
     return this.handleRequest(request);
   }
 
@@ -38,6 +38,16 @@ class AccountsServiceClient {
   
   async updateAccountBalance(accountId: string, amount: number, deposit: boolean) {
     const request = this.api.patch(`/update-balance/${accountId}`, { amount, deposit });
+    return this.handleRequest(request);
+  }
+
+  async updateCurrentAccount(info: any) {
+    const config = {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    };
+    const request = this.api.patch(`/edit`, info, config);
     return this.handleRequest(request);
   }
 }

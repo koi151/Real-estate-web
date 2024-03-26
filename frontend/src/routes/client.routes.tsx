@@ -10,6 +10,7 @@ import CreatePropertyPost from '../pages/client/Properties/createPropertyPost';
 import DepositMethods from '../pages/client/Deposit/deposit';
 import DepositDetail from '../pages/client/Deposit/detail';
 import VNPayResult from '../pages/client/VNPay/vnPayResult';
+import EditClientAccounts from '../pages/client/Account/edit';
 
 export const clientRoutes: RouteObject[] = [
   {
@@ -19,6 +20,10 @@ export const clientRoutes: RouteObject[] = [
         <LayOutDefaultClient />
       </ProtectedRoute>,
     children: [
+      {
+        path: "accounts/my-detail/edit",
+        element: <EditClientAccounts />,
+      },
       {
         path: "properties",
         element: <Properties />,

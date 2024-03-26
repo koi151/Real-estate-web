@@ -1,7 +1,7 @@
 import { Select, message } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { resetAdminUserState } from "../../../redux/reduxSlices/adminUserSlice";
 
@@ -85,10 +85,10 @@ const AccountHeader: React.FC<AccountHeaderProps> = ({ userType, navigateTo }) =
                 options: [
                   { 
                     label: 
-                    <div className="d-flex justify-content-between align-items-center" style={{width: "100%"}}>
+                    <Link to={'/accounts/my-detail/edit'} className="custom-link-wrap">
                       <span>Personal info</span>
                       <FaRegUser className="custom-icon-nav" style={{fontSize: "1.3rem"}}/>
-                    </div>,
+                    </Link>,
                     value: 'personalInfo' 
                   },
                   { 

@@ -12,6 +12,7 @@ import { formattedPermissions } from "../../../../helpers/formatData";
 export const registerPost = async (req: Request, res: Response) => {
   try {
     const registerInfo: AccountRegisterType = await processAccountRegisterData(req);
+    registerInfo['status'] = 'pending';
 
     if (registerInfo.email) {
       const userExisted = await AdminAccount.findOne({
