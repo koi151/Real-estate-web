@@ -55,7 +55,6 @@ export const loginPost = async (req: Request, res: Response) => {
     const userInfo: AccountLoginType = await processAccountLoginData(req);
     console.log("userInfo:", userInfo)
 
-
     const user: ClientAccountType = await ClientAccount.findOne({ 
       email: userInfo.email,
       deleted: false

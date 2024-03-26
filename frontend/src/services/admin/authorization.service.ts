@@ -1,4 +1,4 @@
-import { AccountLoginType } from "../../../../backend/commonTypes";
+import { AccountLoginType, AccountRegisterType } from "../../../../backend/commonTypes";
 import createApi from '../api.service';
 
 class AdminAuthorizationService {
@@ -10,6 +10,10 @@ class AdminAuthorizationService {
 
   async submitLogin(data: AccountLoginType) {
     return (await this.api.post("/login", data)).data;
+  }
+
+  async submitRegister(data: AccountRegisterType) {
+    return (await this.api.post("/register", data)).data;
   }
 
   async logout() {

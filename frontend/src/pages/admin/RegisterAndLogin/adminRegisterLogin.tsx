@@ -2,10 +2,9 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Form, Col, Row, Input, Button, message } from "antd";
 import { useDispatch } from "react-redux";
-import adminAuthorizationService from "../../../services/admin/authorization.service";
-import './adminRegisterLogin.scss'
-import { setAdminUser } from "../../../redux/reduxSlices/adminUserSlice";
 
+import { setAdminUser } from "../../../redux/reduxSlices/adminUserSlice";
+import adminAuthorizationService from "../../../services/admin/authorization.service";
 
 interface AdminRegisterLoginProps {
   isRegisterPage: boolean;
@@ -18,15 +17,17 @@ const AdminRegisterLogin: React.FC<AdminRegisterLoginProps> = ({ isRegisterPage 
 
   const onFinishForm = async (data: any) => {
     try {
-      const response = await adminAuthorizationService.submitLogin(data);
-        switch (response.code) {
-          case 200:
 
+      if (!isRegisterPage) { // login
+        const response = await adminAuthorizationService.submitLogin(data);
+        switch (response.code) {
+          
+          case 200:
             if (response.user) {
               dispatch(setAdminUser(response.user))
             }
 
-            message.success(`${isRegisterPage ? "Register" : "Login"} successful. Welcome ${response.user.fullName} to administrator page !`);
+            message.success(`Login successful. Welcome ${response.user.fullName}!`);
             navigate('/admin/properties');
             break;
 
@@ -38,6 +39,29 @@ const AdminRegisterLogin: React.FC<AdminRegisterLoginProps> = ({ isRegisterPage 
           default:
             break;
         }
+      } else { // register
+        const response = await adminAuthorizationService.submitRegister(data);
+        switch (response.code) {
+          
+          case 200:
+            if (response.user) {
+              dispatch(setAdminUser(response.user))
+            }
+
+            message.success(`Register successful!. Login to continue`, 4);
+            navigate('/admin/properties');
+            break;
+
+          case 401:
+          case 403:
+            message.error(`${response.message}, please try again`, 3);
+            break;
+
+          default:
+            break;
+        }
+      }
+
 
     } catch (err) {
       console.log('Error occurred:', err);
@@ -49,15 +73,15 @@ const AdminRegisterLogin: React.FC<AdminRegisterLoginProps> = ({ isRegisterPage 
     <>
       <div className="darken-layer"></div>
       <Row className="box-wrapper">
-        <div className="box-sep">
-          <Col span={12} className="box-sep__left">
+        <div className='box-sep'>
+          <Col span={`${isRegisterPage ? 9 : 12}`} className='box-sep__left'>
           </Col>
-          <Col span={12} className="box-sep__right">
-            <strong className="box-sep__right--title">
+          <Col span={`${isRegisterPage ? 15 : 12}`} className='box-sep__right'>
+            <strong className={`box-sep__right--title ${isRegisterPage && 'mt-4'}`}>
               {isRegisterPage ? 'REGISTER' : 'LOGIN'}
             </strong>
             <span className="box-sep__right--welcome-text">
-              Welcome to Admin Page
+              Welcome to Administrator page
             </span>
 
             <Form
@@ -67,43 +91,124 @@ const AdminRegisterLogin: React.FC<AdminRegisterLoginProps> = ({ isRegisterPage 
               onFinish={onFinishForm}
             >
               <Row>
-                <Col span={24}>
-                  <Form.Item
-                    label='Email:'
-                    name='email'
-                    rules={[{ required: true, message: 'Please input the email!' }]}
-                  >
-                    <Input 
-                      required type="email" 
-                      id="email" 
-                      placeholder="Please enter your email"
-                    />
-                  </Form.Item> 
-                </Col>
-                <Col span={24}>
-                  <Form.Item
-                    name="password"
-                    label='Password:'
-                    required
-                    rules={[
-                      { message: 'Please input your password!' },
-                      {
-                        min: 6, 
-                        message: 'Password must be at least 6 characters long!',
-                      },
-                      {
-                        max: 20,
-                        message: 'Password must be at most 20 characters long!',
-                      },
-                    ]}
-                  >
-                    <Input.Password placeholder="Please enter your password"/>
-                  </Form.Item> 
-                </Col>
+                {isRegisterPage ? (
+                  <>
+                    <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                      <Form.Item
+                        label='User name:'
+                        name='userName'
+                        rules={[{ required: true, message: 'Please input your user name!' }]}
+                      >
+                        <Input 
+                          style={{width: "95%"}}
+                          required 
+                          placeholder="Please enter your user name"
+                        />
+                      </Form.Item> 
+                    </Col>
+                    <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                      <Form.Item
+                        label='Email:'
+                        name='registerEmail'
+                        rules={[{ required: true, message: 'Please input the email!' }]}
+                      >
+                        <Input 
+                          style={{width: "95%"}}
+                          required type="email" 
+                          id="email" 
+                          placeholder="Please enter your email"
+                        />
+                      </Form.Item> 
+                    </Col>
+                    <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
+                      <Form.Item
+                        name="registerPassword"
+                        label='Password:'
+                        required
+                        rules={[
+                          { message: 'Please input your password!' },
+                          {
+                            min: 6, 
+                            message: 'Password must be at least 6 characters long!',
+                          },
+                          {
+                            max: 20,
+                            message: 'Password must be at most 20 characters long!',
+                          },
+                        ]}
+                      >
+                        <Input.Password 
+                          placeholder="Please enter your password"
+                          style={{width: "95%"}}
+                        />
+                      </Form.Item> 
+                    </Col>
+                    <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
+                      <Form.Item
+                        label="Confirm password:"
+                        name='confirm'
+                        dependencies={['password']}
+                        rules={[
+                          { message: 'Please confirm your password!'},
+                          ({ getFieldValue }) => ({
+                            validator(_, value) {
+                              if (!value || getFieldValue('registerPassword') === value) {
+                                return Promise.resolve();
+                              }
+                              return Promise.reject(new Error('The new password that you entered do not match!'));
+                            },
+                          }),
+                        ]}
+                      >
+                        <Input.Password
+                          style={{width: "95%"}}
+                          placeholder="Confirm your password"
+                        />
+                      </Form.Item>
+                    </Col>
+                  </>
+                ) : (
+                  <>
+                    <Col span={24}>
+                      <Form.Item
+                        label='Email:'
+                        name='loginEmail'
+                        rules={[{ required: true, message: 'Please input the email!' }]}
+                      >
+                        <Input 
+                          required type="email" 
+                          id="email" 
+                          placeholder="Please enter your email"
+                        />
+                      </Form.Item> 
+                    </Col>
+                    <Col span={24}>
+                      <Form.Item
+                        name="loginPassword"
+                        label='Password:'
+                        required
+                        rules={[
+                          { message: 'Please input your password!' },
+                          {
+                            min: 6, 
+                            message: 'Password must be at least 6 characters long!',
+                          },
+                          {
+                            max: 20,
+                            message: 'Password must be at most 20 characters long!',
+                          },
+                        ]}
+                      >
+                        <Input.Password placeholder="Please enter your password"/>
+                      </Form.Item> 
+                    </Col>
+                  </>
+                )}
+
                 <Col span={24}>
                   <Form.Item className="text-center">
-                    <Button className='custom-btn-main' type="primary" htmlType="submit">
-                      {isRegisterPage ? 'Sign in' : 'Login'}
+                    <Button className={`custom-btn-main ${isRegisterPage && 'mt-4'}`} type="primary" htmlType="submit">
+                      {isRegisterPage ? 'Register now' : 'Login'}
                     </Button>
                   </Form.Item>
                 </Col>
@@ -126,7 +231,6 @@ const AdminRegisterLogin: React.FC<AdminRegisterLoginProps> = ({ isRegisterPage 
                 {isRegisterPage ? 'Login now' : 'Create now'}
               </Link>
             </div>
-
           </Col>
         </div>
       </Row>
