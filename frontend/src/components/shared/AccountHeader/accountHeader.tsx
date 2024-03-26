@@ -1,4 +1,4 @@
-import { message } from "antd";
+import { Select, message } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import React from "react";
 import { useNavigate } from "react-router-dom";
@@ -9,6 +9,9 @@ import './accountHeader.scss'
 import { resetClientUserState } from "../../../redux/reduxSlices/clientUserSlice";
 import adminAuthorizationService from "../../../services/admin/authorization.service";
 import clientAuthorizationService from "../../../services/client/authorization.service";
+import { MdAttachMoney, MdLockOutline, MdLogout } from "react-icons/md";
+import { FaRegUser } from "react-icons/fa";
+import { LuNewspaper } from "react-icons/lu";
 
 interface AccountHeaderProps {
   userType: 'admin' | 'client';
@@ -23,7 +26,7 @@ const AccountHeader: React.FC<AccountHeaderProps> = ({ userType, navigateTo }) =
     userType === 'admin' ? state.adminUser.avatar : state.clientUser.avatar
   );
 
-  const handleProfileClick = async () => {
+  const handleLogoutClick = async () => {
     try {
       if (userType === 'admin') {
         await adminAuthorizationService.logout();
@@ -43,16 +46,87 @@ const AccountHeader: React.FC<AccountHeaderProps> = ({ userType, navigateTo }) =
     }
   };
 
+  const handleChange = (value: string) => {
+    console.log(`selected ${value}`);
+  };
+
   return (
     <div className="navigation">
-      <div className="button" onClick={handleProfileClick}>
+
+      {/* <div className="button"> */}
         <img 
           className="avatar-header"
           src={avatarUrl ? avatarUrl : 'http://res.cloudinary.com/dd3xua0wu/image/upload/v1707278464/af49qenxpqoxdijei6s5.jpg'}
           alt='avatar-header'
         />
-        <div className="logout">LOGOUT</div>
-      </div>
+          <Select
+            className="logout"
+            defaultValue="lucy"
+            style={{ width: "50rem", marginRight: "4rem"}}
+            onChange={handleChange}
+            options={[
+              {
+                label: <span>Posts management</span>,
+                title: 'manager',
+                options: [
+                  { 
+                    label: 
+                    <div className="d-flex justify-content-between align-items-center" style={{width: "100%"}}>
+                      <span>Current posts</span>
+                      <LuNewspaper className="custom-icon-nav"/>
+                    </div>,
+                    value: 'currentPosts' 
+                  },
+                ],
+              },
+              {
+                label: <span>Account</span>,
+                title: 'manager',
+                options: [
+                  { 
+                    label: 
+                    <div className="d-flex justify-content-between align-items-center" style={{width: "100%"}}>
+                      <span>Personal info</span>
+                      <FaRegUser className="custom-icon-nav" style={{fontSize: "1.3rem"}}/>
+                    </div>,
+                    value: 'personalInfo' 
+                  },
+                  { 
+                    label: 
+                    <div className="d-flex justify-content-between align-items-center" style={{width: "100%"}}>
+                      <span>Deposit money</span>
+                      <MdAttachMoney className="custom-icon-nav" style={{fontSize: "1.5rem"}}/>
+                    </div>, 
+                    value: 'deposit' 
+                  },
+                  { 
+                    label: 
+                    <div className="d-flex justify-content-between align-items-center" style={{width: "100%"}}>
+                      <span>Change password</span>
+                      <MdLockOutline className="custom-icon-nav" style={{fontSize: "1.5rem"}}/>
+                    </div>, 
+                    value: 'changePassword' 
+                  },
+                ],
+              },
+              {
+                label: <span>Login</span>,
+                title: 'engineer',
+                options: [
+                  { label: 
+                    <div 
+                      onClick={handleLogoutClick}
+                      className="d-flex justify-content-between align-items-center" 
+                      style={{width: "100%"}}
+                    >
+                      <span>Logout</span>
+                      <MdLogout className="custom-icon-nav"/>
+                    </div>, value: 'Chloe' },
+                ],
+              },
+            ]}
+          />
+      {/* </div> */}
     </div>
   )
 }

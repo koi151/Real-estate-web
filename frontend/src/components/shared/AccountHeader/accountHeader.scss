@@ -9,9 +9,15 @@
   flex: 1;
 }
 
+.custom-icon-nav {
+  color: #666;
+}
+
 .avatar-header {
-  width: 40px;
-  height: auto;
+  position: absolute;
+  right: 18rem;
+  width: 4rem;
+  height: 4rem;
   border-radius: 50%;
   float: left;
 }
@@ -24,28 +30,26 @@
   right: -18px;
   bottom: -4px;
   overflow: hidden;
-  letter-spacing: 2.75px;
   opacity: 0;
   transition: opacity .4s;
   -webkit-transition: opacity .6s;
 }
 
-.button {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0 2rem;
-  color: white;
-  width: 7rem;
-  transition: width .5s;
-  -webkit-transition: width .5s;
-  overflow: hidden;
-  text-decoration: none;
+// .button {
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   padding: 0 2rem;
+//   color: white;
+//   width: 7rem;
+//   transition: width .5s;
+//   -webkit-transition: width .5s;
+//   overflow: hidden;
+//   text-decoration: none;
 
-  &:hover {
-    width: 200px;
-    .logout{
-      opacity: .9;
-    }
-  }
-}
+//   &:hover {
+//     width: 200px;
+//     .logout{
+//       opacity: .9;
+//     }
+// }
