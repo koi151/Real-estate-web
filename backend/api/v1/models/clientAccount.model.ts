@@ -1,10 +1,6 @@
 import mongoose from 'mongoose';
 import { statusValues } from '../../../commonTypes';
 
-const slug = require('mongoose-slug-updater');
-
-mongoose.plugin(slug);
-
 const clientAccountSchema = new mongoose.Schema(
   {
     userName: String,
@@ -27,11 +23,6 @@ const clientAccountSchema = new mongoose.Schema(
     },
     createdAt: Date,
     updatedAt: Date,
-    slug: {
-      type: String, 
-      slug: "title",
-      unique: true 
-    },
     deleted: {
       type: Boolean,
       default: false

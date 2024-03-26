@@ -2,14 +2,59 @@ import { Request, Response } from "express";
 import bcrypt from 'bcrypt';
 
 import ClientAccount from "../../models/clientAccount.model";
-import { processAccountLoginData } from "../../../../helpers/processData";
-import { AccountLoginType, ClientAccountType } from "../../../../commonTypes";
+import { processAccountLoginData, processAccountRegisterData, processClientAccountData } from "../../../../helpers/processData";
+import { AccountLoginType, AccountRegisterType, ClientAccountType } from "../../../../commonTypes";
 import { decodeToken, generateToken } from "../../../../helpers/auth.methods";
+
+// [POST] /auth/register
+export const registerPost = async (req: Request, res: Response) => {
+  try {
+    const registerInfo: AccountRegisterType = await processAccountRegisterData(req);
+
+    if (registerInfo.email) {
+      const userExisted = await ClientAccount.findOne({
+        email: registerInfo.email,
+      })
+
+      if (userExisted) {
+        return res.status(409).json({
+          code: 409,
+          message: "Email existed"
+        })
+      }
+
+      const newAccount = new ClientAccount(registerInfo);
+      await newAccount.save();
+      
+      return res.status(200).json({
+        code: 200,
+        message: "New account created successfully"
+      })
+      
+    } else {
+      return res.status(400).json({
+        code: 400,
+        message: "Email is empty"
+      })
+    }
+
+  } catch (err: any) {
+    console.log('Error occurred while registering account:', err);
+    return res.status(500).json({
+      code: 500,
+      message: 'Internal Server Error'
+    });
+  }
+}
 
 // [POST] /auth/login
 export const loginPost = async (req: Request, res: Response) => {
   try {
+    console.log('here')
+    console.log("req.body:", req.body)
     const userInfo: AccountLoginType = await processAccountLoginData(req);
+    console.log("userInfo:", userInfo)
+
 
     const user: ClientAccountType = await ClientAccount.findOne({ 
       email: userInfo.email,
@@ -17,6 +62,7 @@ export const loginPost = async (req: Request, res: Response) => {
     });
 
     if (!user || !bcrypt.compareSync(userInfo.password, user.password)) {
+      console.log('failed')
       return res.status(401).json({
         code: 401,
         message: "Incorrect email or password"
@@ -85,7 +131,6 @@ export const loginPost = async (req: Request, res: Response) => {
     });
   }
 };
-
 
 export const clientRefreshToken = async (req: Request, res: Response) => {
 

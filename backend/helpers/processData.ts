@@ -117,6 +117,7 @@ export const processAdminAccountData = async (req: Request): Promise<AdminAccoun
     && await bcrypt.hash(String(req.body.password), parseInt(process.env.SALT_ROUNDS));
   
   return {
+    userName: req.body.userName && String(req.body.userName),
     fullName: req.body.fullName && String(req.body.fullName),
     email: req.body.email && String(req.body.email),
     password: hashedPassword,
@@ -158,16 +159,19 @@ export const processClientAccountData = async (req: Request): Promise<ClientAcco
 // Login data
 export const processAccountLoginData = async (req: Request): Promise<AccountLoginType> => {
   return {
-    email: req.body.email && String(req.body.email),
-    password: req.body.password && String(req.body.password),
+    email: req.body.loginEmail && String(req.body.loginEmail),
+    password: req.body.loginPassword && String(req.body.loginPassword),
   };
 }
 
 // Register data
 export const processAccountRegisterData = async (req: Request): Promise<AccountRegisterType> => {
+  const hashedPassword = req.body.registerPassword 
+  && await bcrypt.hash(String(req.body.registerPassword ), parseInt(process.env.SALT_ROUNDS));
+  
   return {
     userName: req.body.userName && String(req.body.userName),
-    email: req.body.email && String(req.body.email),
-    password: req.body.password && String(req.body.password),
+    email: req.body.registerEmail && String(req.body.registerEmail),
+    password: hashedPassword
   };
 }

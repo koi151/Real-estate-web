@@ -28,7 +28,7 @@ const RegisterLogin: React.FC<RegisterLoginProps> = ({ isRegisterPage = false })
               dispatch(setClientUser(response.user))
             }
 
-            message.success(`Login successful. Welcome ${response.user.fullName}!`);
+            message.success(`Login successful. Welcome ${response.user.userName}!`);
             navigate('/properties');
             break;
 
@@ -49,7 +49,7 @@ const RegisterLogin: React.FC<RegisterLoginProps> = ({ isRegisterPage = false })
               dispatch(setClientUser(response.user))
             }
 
-            message.success(`Register successful. Welcome ${response.user.fullName}!`);
+            message.success(`Register successful!. Login to continue`, 4);
             navigate('/properties');
             break;
 
@@ -75,10 +75,10 @@ const RegisterLogin: React.FC<RegisterLoginProps> = ({ isRegisterPage = false })
       <div className="darken-layer"></div>
       <Row className="box-wrapper">
         <div className='box-sep'>
-          <Col span={`${isRegisterPage ? 10 : 12}`} className='box-sep__left'>
+          <Col span={`${isRegisterPage ? 9 : 12}`} className='box-sep__left'>
           </Col>
-          <Col span={`${isRegisterPage ? 24 : 12}`} className='box-sep__right'>
-            <strong className="box-sep__right--title">
+          <Col span={`${isRegisterPage ? 15 : 12}`} className='box-sep__right'>
+            <strong className={`box-sep__right--title ${isRegisterPage && 'mt-4'}`}>
               {isRegisterPage ? 'REGISTER' : 'LOGIN'}
             </strong>
             <span className="box-sep__right--welcome-text">
@@ -101,6 +101,7 @@ const RegisterLogin: React.FC<RegisterLoginProps> = ({ isRegisterPage = false })
                         rules={[{ required: true, message: 'Please input your user name!' }]}
                       >
                         <Input 
+                          style={{width: "95%"}}
                           required 
                           placeholder="Please enter your user name"
                         />
@@ -109,10 +110,11 @@ const RegisterLogin: React.FC<RegisterLoginProps> = ({ isRegisterPage = false })
                     <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
                       <Form.Item
                         label='Email:'
-                        name='email'
+                        name='registerEmail'
                         rules={[{ required: true, message: 'Please input the email!' }]}
                       >
                         <Input 
+                          style={{width: "95%"}}
                           required type="email" 
                           id="email" 
                           placeholder="Please enter your email"
@@ -121,7 +123,7 @@ const RegisterLogin: React.FC<RegisterLoginProps> = ({ isRegisterPage = false })
                     </Col>
                     <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
                       <Form.Item
-                        name="password"
+                        name="registerPassword"
                         label='Password:'
                         required
                         rules={[
@@ -136,19 +138,22 @@ const RegisterLogin: React.FC<RegisterLoginProps> = ({ isRegisterPage = false })
                           },
                         ]}
                       >
-                        <Input.Password placeholder="Please enter your password"/>
+                        <Input.Password 
+                          placeholder="Please enter your password"
+                          style={{width: "95%"}}
+                        />
                       </Form.Item> 
                     </Col>
                     <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
                       <Form.Item
-                        name="confirm"
                         label="Confirm password:"
+                        name='confirm'
                         dependencies={['password']}
                         rules={[
                           { message: 'Please confirm your password!'},
                           ({ getFieldValue }) => ({
                             validator(_, value) {
-                              if (!value || getFieldValue('password') === value) {
+                              if (!value || getFieldValue('registerPassword') === value) {
                                 return Promise.resolve();
                               }
                               return Promise.reject(new Error('The new password that you entered do not match!'));
@@ -156,7 +161,10 @@ const RegisterLogin: React.FC<RegisterLoginProps> = ({ isRegisterPage = false })
                           }),
                         ]}
                       >
-                        <Input.Password placeholder="Confirm your password"/>
+                        <Input.Password
+                          style={{width: "95%"}}
+                          placeholder="Confirm your password"
+                        />
                       </Form.Item>
                     </Col>
                   </>
@@ -165,7 +173,7 @@ const RegisterLogin: React.FC<RegisterLoginProps> = ({ isRegisterPage = false })
                     <Col span={24}>
                       <Form.Item
                         label='Email:'
-                        name='email'
+                        name='loginEmail'
                         rules={[{ required: true, message: 'Please input the email!' }]}
                       >
                         <Input 
@@ -177,7 +185,7 @@ const RegisterLogin: React.FC<RegisterLoginProps> = ({ isRegisterPage = false })
                     </Col>
                     <Col span={24}>
                       <Form.Item
-                        name="password"
+                        name="loginPassword"
                         label='Password:'
                         required
                         rules={[
@@ -200,8 +208,8 @@ const RegisterLogin: React.FC<RegisterLoginProps> = ({ isRegisterPage = false })
 
                 <Col span={24}>
                   <Form.Item className="text-center">
-                    <Button className={`custom-btn-main`} type="primary" htmlType="submit">
-                      {isRegisterPage ? 'Sign in' : 'Login'}
+                    <Button className={`custom-btn-main ${isRegisterPage && 'mt-4'}`} type="primary" htmlType="submit">
+                      {isRegisterPage ? 'Register now' : 'Login'}
                     </Button>
                   </Form.Item>
                 </Col>

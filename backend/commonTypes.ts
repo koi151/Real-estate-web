@@ -95,6 +95,7 @@ export interface PropertyCategoryType {
 // ADMIN ACCOUNT
 export interface AdminAccountType {
   _id?: string;
+  userName: string,
   fullName: string,
   password: string,
   token?: string,

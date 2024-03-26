@@ -48,7 +48,7 @@ const AccountHeader: React.FC<AccountHeaderProps> = ({ userType, navigateTo }) =
       <div className="button" onClick={handleProfileClick}>
         <img 
           className="avatar-header"
-          src={avatarUrl ? avatarUrl : ''}
+          src={avatarUrl ? avatarUrl : 'http://res.cloudinary.com/dd3xua0wu/image/upload/v1707278464/af49qenxpqoxdijei6s5.jpg'}
           alt='avatar-header'
         />
         <div className="logout">LOGOUT</div>

@@ -410,13 +410,16 @@ const PropertyDetail: React.FC = () => {
             <Col span={6}>
               <Card className='detail-wrap'>
                 <Space wrap size={16}>
-                  <Avatar size='large' icon={<UserOutlined />} src={<img src={userPosted?.avatar} alt="avatar" />} />
+                  <Avatar 
+                    size='large' icon={<UserOutlined />} 
+                    src={<img src={userPosted?.avatar ? userPosted?.avatar : "http://res.cloudinary.com/dd3xua0wu/image/upload/v1707278464/af49qenxpqoxdijei6s5.jpg"} alt="avatar" />} 
+                    />
                 </Space>
                 <div className="post-by-txt">
                   Posted by
                 </div>
                 <div className="detail-wrap__username">
-                  {userPosted?.fullName}
+                  {userPosted?.userName}
                 </div>
                 <div className="detail-wrap__other-post">
                   See more {userPosted?.postList?.length} other posts
