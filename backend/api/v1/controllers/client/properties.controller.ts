@@ -63,6 +63,7 @@ export const index = async (req: Request, res: Response) => {
     interface SortingQuery {
       [key: string]: 'asc' | 'desc';
     }  
+    
     const sortingQuery: SortingQuery = {};
 
     let properties = [];

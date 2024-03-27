@@ -20,6 +20,7 @@ import NoPermission from '../../../components/admin/NoPermission/noPermission';
 
 import { RootState } from '../../../redux/stores';
 import './properties.scss';
+import FilterBoxSlide from '../../../components/shared/FilterComponents/FilterBoxSlide/filterBoxSlide';
 
 
 const Properties: React.FC = () => {
@@ -103,14 +104,18 @@ const Properties: React.FC = () => {
     fetchData();
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [keyword, status, sorting, currentPage, listingType, priceRange, category]); 
+  }, 
+    [keyword, status, sorting, currentPage, listingType, bedrooms, bathrooms,
+    direction, priceRange, areaRange, category, navigate]
+  ); 
 
 
   // update url
   useEffect(() => {
     navigate(buildURL());
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status, listingType, keyword, sorting, priceRange])
+  }, [status, listingType, keyword, sorting, priceRange, areaRange,
+    category, bedrooms, direction, bathrooms])
 
   const buildURL = () => {
     const params: { [key: string]: string } = {};
@@ -118,16 +123,23 @@ const Properties: React.FC = () => {
     if (keyword) params['keyword'] = keyword;
     if (listingType) params['listingType'] = listingType;
     if (status) params['status'] = status;
+    if (category) params['category'] = category;
+    if (bedrooms) params['bedrooms'] = bedrooms;
+    if (bathrooms) params['bathrooms'] = bathrooms;
+    if(direction) params['direction'] = direction;
+
     if (sorting.sortKey && sorting.sortValue) {
       params['sortKey'] = sorting.sortKey;
       params['sortValue'] = sorting.sortValue;
     }
     
     const [minPrice, maxPrice] = priceRange ?? [];
-    if (minPrice !== undefined && maxPrice !== undefined) {
-      params['minPrice'] = String(minPrice);
-      params['maxPrice'] = String(maxPrice);
-    }
+    if (minPrice) params['minPrice'] = String(minPrice);
+    if (maxPrice) params['maxPrice'] = String(maxPrice); 
+
+    const [minArea, maxArea] = areaRange ?? [];
+    if (minArea) params['minArea'] = String(minArea);
+    if (maxArea) params['maxArea'] = String(maxArea);    
   
     // Short-circuiting for performance
     const queryString = Object.keys(params).length > 0 ? `?${new URLSearchParams(params)}` : '';
@@ -210,6 +222,8 @@ const Properties: React.FC = () => {
             statusFilter
             multipleChange
           />
+          
+          <FilterBoxSlide slickWidth='100%' slideShow={5} userType='admin'/>
     
           {error ? (
             <div>{error}</div>

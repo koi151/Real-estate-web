@@ -103,7 +103,7 @@ const Properties: React.FC = () => {
     fetchData();
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [keyword, status, sorting, currentPage, listingType, bedrooms, bathrooms,
+  }, [keyword, sorting, currentPage, listingType, bedrooms, bathrooms,
       direction, priceRange, areaRange, category, navigate]); 
 
   // update url
@@ -118,7 +118,6 @@ const Properties: React.FC = () => {
   
     if (keyword) params['keyword'] = keyword;
     if (listingType) params['listingType'] = listingType;
-    if (status) params['status'] = status;
     if (category) params['category'] = category;
     if (bedrooms) params['bedrooms'] = bedrooms;
     if (bathrooms) params['bathrooms'] = bathrooms;

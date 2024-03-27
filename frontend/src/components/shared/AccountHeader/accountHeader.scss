@@ -31,7 +31,12 @@
   float: left;
 }
 
+.avatar-header-custom {
+  right: 5rem;
+}
+
 .logout {
+  // margin-right: 4rem;
   font-size: 1.8rem;
   color: #000;
   font-weight: 700;
@@ -44,21 +49,7 @@
   -webkit-transition: opacity .6s;
 }
 
-// .button {
-//   display: flex;
-//   justify-content: center;
-//   align-items: center;
-//   padding: 0 2rem;
-//   color: white;
-//   width: 7rem;
-//   transition: width .5s;
-//   -webkit-transition: width .5s;
-//   overflow: hidden;
-//   text-decoration: none;
-
-//   &:hover {
-//     width: 200px;
-//     .logout{
-//       opacity: .9;
-//     }
-// }
+.admin-custom-select {
+  margin-right: 6rem;
+  width: 60rem;
+}

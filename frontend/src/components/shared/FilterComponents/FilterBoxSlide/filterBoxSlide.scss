@@ -6,8 +6,11 @@
   display: flex;
   align-items: center;
   z-index: 99;
-  background-color: #fff;
   padding: .5rem 3rem;
+
+  .client-bg {
+    background-color: #fff;
+  }
 
   .slick {
     width: 100%;

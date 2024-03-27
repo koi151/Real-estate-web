@@ -26,6 +26,10 @@ const AccountHeader: React.FC<AccountHeaderProps> = ({ userType, navigateTo }) =
     userType === 'admin' ? state.adminUser.avatar : state.clientUser.avatar
   );
 
+  const currentClientAccBalance = useSelector((state: any) =>
+    userType !== 'admin' && state.clientUser.wallet?.balance
+  );
+
   const handleLogoutClick = async () => {
     try {
       if (userType === 'admin') {
@@ -55,17 +59,60 @@ const AccountHeader: React.FC<AccountHeaderProps> = ({ userType, navigateTo }) =
 
       {/* <div className="button"> */}
         <img 
-          className="avatar-header"
+          className={`avatar-header ${userType === "admin" && 'avatar-header-custom'}`}
           src={avatarUrl ? avatarUrl : 'http://res.cloudinary.com/dd3xua0wu/image/upload/v1707278464/af49qenxpqoxdijei6s5.jpg'}
           alt='avatar-header'
         />
           <Select
             size="large"
-            className="logout"
+            className={`logout ${userType === 'admin' && 'mr-6'}`}
             defaultValue="lucy"
-            style={{ width: "50rem", marginRight: "4rem"}}
+            style={{ width: "65rem", marginRight: "4rem"}}
             onChange={handleChange}
             options={[
+              {
+                  label: <span>Account</span>,
+                  title: 'manager',
+                  options: [
+                    { 
+                      label: 
+                      <Link to={'/accounts/my-detail/edit'} className="custom-link-wrap">
+                        <span>Current balance</span>
+                        <span>
+                          {currentClientAccBalance 
+                            ? '$' + currentClientAccBalance.toFixed(0)
+                            : 'unlimited' 
+                          }</span>
+                      </Link>,
+                      value: 'currentBalance',
+                      disabled: true
+                    },
+                    { 
+                      label: 
+                      <Link to={'/accounts/my-detail/edit'} className="custom-link-wrap">
+                        <span>Personal info</span>
+                        <FaRegUser className="custom-icon-nav" style={{fontSize: "1.3rem"}}/>
+                      </Link>,
+                      value: 'personalInfo' 
+                    },
+                    { 
+                      label: 
+                      <Link to={'/deposit'} className="custom-link-wrap">
+                        <span>Deposit money</span>
+                        <MdAttachMoney className="custom-icon-nav" style={{fontSize: "1.6rem"}}/>
+                      </Link>, 
+                      value: 'deposit' 
+                    },
+                    { 
+                      label: 
+                      <div className="d-flex justify-content-between align-items-center" style={{width: "100%"}}>
+                        <span>Change password</span>
+                        <MdLockOutline className="custom-icon-nav" style={{fontSize: "1.5rem"}}/>
+                      </div>, 
+                      value: 'changePassword' 
+                    },
+                  ],
+                },
               {
                 label: <span>Posts management</span>,
                 title: 'manager',
@@ -77,36 +124,6 @@ const AccountHeader: React.FC<AccountHeaderProps> = ({ userType, navigateTo }) =
                       <LuNewspaper className="custom-icon-nav"/>
                     </Link>,
                     value: 'currentPosts' 
-                  },
-                ],
-              },
-              {
-                label: <span>Account</span>,
-                title: 'manager',
-                options: [
-                  { 
-                    label: 
-                    <Link to={'/accounts/my-detail/edit'} className="custom-link-wrap">
-                      <span>Personal info</span>
-                      <FaRegUser className="custom-icon-nav" style={{fontSize: "1.3rem"}}/>
-                    </Link>,
-                    value: 'personalInfo' 
-                  },
-                  { 
-                    label: 
-                    <Link to={'/deposit'} className="custom-link-wrap">
-                      <span>Deposit money</span>
-                      <MdAttachMoney className="custom-icon-nav" style={{fontSize: "1.5rem"}}/>
-                    </Link>, 
-                    value: 'deposit' 
-                  },
-                  { 
-                    label: 
-                    <div className="d-flex justify-content-between align-items-center" style={{width: "100%"}}>
-                      <span>Change password</span>
-                      <MdLockOutline className="custom-icon-nav" style={{fontSize: "1.5rem"}}/>
-                    </div>, 
-                    value: 'changePassword' 
                   },
                 ],
               },

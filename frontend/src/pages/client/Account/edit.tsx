@@ -9,8 +9,6 @@ import UploadMultipleFile from "../../../components/admin/UploadMultipleFile/upl
 import { ClientAccountType } from "../../../../../backend/commonTypes";
 import * as standardizeData from '../../../helpers/standardizeData'
 import clientAccountsService from "../../../services/client/accounts.service";
-import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
-
 
 const EditClientAccounts: React.FC = () => {
   
@@ -236,15 +234,6 @@ const EditClientAccounts: React.FC = () => {
                         </Form.Item>
                       </Col>
                       
-                      <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
-                        <Form.Item label="Account status:" name='status' initialValue={account?.status}>
-                          <Radio.Group>
-                            <Radio value="active">Active</Radio>
-                            <Radio value="inactive">Inactive</Radio>
-                          </Radio.Group>
-                        </Form.Item>
-                      </Col>
-
                       <Col span={24}>
                         <UploadMultipleFile 
                           uploadedImages={account?.avatar ? [account.avatar] : []} 

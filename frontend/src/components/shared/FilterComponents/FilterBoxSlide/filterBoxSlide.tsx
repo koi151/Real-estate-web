@@ -14,20 +14,23 @@ import RoomFilter from '../Rooms/roomFilter';
 interface FilterBoxSlideProps {
   slickWidth?: string
   userType: 'admin' | 'client',
+  slideShow?: number
 }
 
-const FilterBoxSlide: React.FC<FilterBoxSlideProps> = ({slickWidth = "100%", userType}) => {
+const FilterBoxSlide: React.FC<FilterBoxSlideProps> = ({slickWidth = "100%", userType, slideShow = 4}) => {
 
   useEffect(() => {
     $('.slick').slick({
       infinite: true,
-      slidesToShow: 4,
+      slidesToShow: slideShow,
       slidesToScroll: 1
     });
   }, []);
 
   return (
-    <div className='slick-wrapper' style={{ width: `${slickWidth}` }}>
+    <div 
+      className={`slick-wrapper ${userType === 'client' && 'client-bg'} ${userType === 'admin' && 'mt-4'}`} 
+      style={{ width: `${slickWidth}` }}>
       <div className="slick">
         <div className="text-center">
           <CategoryTree width='95%' text='Category' userType={userType} />
