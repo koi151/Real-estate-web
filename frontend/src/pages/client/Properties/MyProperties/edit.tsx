@@ -1,15 +1,14 @@
-import { Badge, Button, Card, Col, Form, Input, InputNumber, Radio, Row, Segmented, Select, Space, Spin, TreeSelect, message } from "antd";
+import { Badge, Button, Card, Col, Form, Input, InputNumber, Row, Segmented, Select, Space, Spin, TreeSelect, message } from "antd";
 import React, { useEffect, useState } from "react";
 import { Editor } from '@tinymce/tinymce-react';
 import { Link, useNavigate, useParams } from "react-router-dom";
-import dayjs, { Dayjs } from "dayjs";
+import { Dayjs } from "dayjs";
 
 import propertiesService from "../../../../services/admin/properties.service";
 import { PropertyType } from "../../../../../../backend/commonTypes";
 import * as standardizeData from '../../../../helpers/standardizeData'
 import GetAddress from "../../../../components/admin/getAddress/getAddress";
 import UploadMultipleFile from "../../../../components/admin/UploadMultipleFile/uploadMultipleFile";
-import ExpireTimePicker from "../../../../components/admin/ExpireTimePicker/expireTimePicker";
 import { directionOptions, documentOptions, furnitureOptions, listingTypeOptions } from "../../../../helpers/propertyOptions";
 import NoPermission from "../../../../components/admin/NoPermission/noPermission";
 import propertyCategoriesService from "../../../../services/admin/property-categories.service";
@@ -18,6 +17,7 @@ import { IoBedOutline } from "react-icons/io5";
 import { LuBath } from "react-icons/lu";
 import { FaRegBuilding } from "react-icons/fa";
 import { SlDirections } from "react-icons/sl";
+import propertiesServiceClient from "../../../../services/client/properties.service";
 
 const MyPropertyEdit: React.FC = () => {
   const { id } = useParams();
@@ -38,7 +38,6 @@ const MyPropertyEdit: React.FC = () => {
   const [categoryTree, setCategoryTree] = useState<DefaultOptionType[] | undefined>(undefined);  
 
   // data from child component
-  const [expireDateTime, setExpireDateTime] = useState<Dayjs | null>(null);
   const [imageUrlToRemove, setImageUrlToRemove] = useState<string[]>([]);
 
   useEffect(() => {
@@ -55,7 +54,7 @@ const MyPropertyEdit: React.FC = () => {
   
         // Fetch single property data if ID is provided
         if (id) {
-          const propertyResponse = await propertiesService.getSingleProperty(id);
+          const propertyResponse = await propertiesServiceClient.getSingleProperty(id);
           if (propertyResponse.code === 200 && propertyResponse.property) {            
             setProperty(propertyResponse.property);
             setPrice(propertyResponse.property.price);
@@ -73,7 +72,7 @@ const MyPropertyEdit: React.FC = () => {
       } catch (err: any) {
         if (err.response && err.response.status === 401) {
           message.error('Unauthorized - Please log in to access this feature.', 3);
-          navigate('/admin/auth/login');
+          navigate('/auth/login');
         } else {
           message.error('Error occurred while fetching data', 2);
           console.error('Error occurred:', err);
@@ -122,24 +121,9 @@ const MyPropertyEdit: React.FC = () => {
 
       const { bedrooms, bathrooms, kitchens, ...restData } = data;
 
-      let updatedExpireTime = null;
-      if (expireDateTime) {
-        updatedExpireTime = expireDateTime.toISOString();
-        
-      } else if (['day', 'week', 'month'].includes(data.expireTime)) {
-        const duration = data.expireTime === 'day' ? 1 : (data.expireTime === 'week' ? 7 : 30);
-        const expirationDate = dayjs().add(duration, 'day');
-        updatedExpireTime = expirationDate.toISOString();
-      };
-
-
-      if (data.expireTime === 'other' || !data.expireTime)
-        delete data.expireTime
-
       // Construct transformedData object
       const transformedData = {
         ...restData,
-        ...(updatedExpireTime && { expireTime: updatedExpireTime }),
         description: property?.description ? property?.description : editorContent,
         price: adjustedPrice,
         propertyDetails: {
@@ -151,7 +135,8 @@ const MyPropertyEdit: React.FC = () => {
       
       const formData = standardizeData.objectToFormData(transformedData);
       
-      const response = await propertiesService.updateProperty(formData, id);
+      console.log("data:", transformedData)
+      const response = await propertiesServiceClient.updateProperty(formData, id);
 
       if (response.code === 200) {
         message.success('Property updated successfully!', 3);
@@ -485,44 +470,23 @@ const MyPropertyEdit: React.FC = () => {
                       />
                     </Form.Item>
                   </Col>
-                  <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
-                    <Form.Item label="Post type:" name='postType' initialValue={property?.postType}>
-                      <Radio.Group>
-                        <Radio value="standard" className="label-light"> Standard </Radio>
-                        <Radio value="premium" className="label-light"> Premium </Radio>
-                        <Radio value="exclusive" className="label-light"> Exclusive </Radio>
-                      </Radio.Group>
-                    </Form.Item>
-                  </Col>
-                  <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
-                    <Form.Item label="Property status:" name='status' initialValue={property?.status}>
-                      <Radio.Group>
-                        <Radio value="active">Active</Radio>
-                        <Radio value="inactive">Inactive</Radio>
-                      </Radio.Group>
-                    </Form.Item>
-                  </Col>
+
+                  <div className="ml-2 mb-4">
+                    Expire time: <b>
+                    {property?.expireTime ?
+                      new Date(property.expireTime).toLocaleString('en-US', {
+                        hour: 'numeric',
+                        minute: 'numeric',
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric'
+                      }).replace(',', ' -') :
+                      'Not selected'}
+                    </b>
+                  </div>
 
                   <Col span={24}>
-                    <ExpireTimePicker 
-                      onExpireDateTimeChange={(value) => setExpireDateTime(value)} 
-                      expireTimeGiven={property?.expireTime}
-                    />
-                  </Col>
-
-                  <Col sm={24} md={24}  lg={12} xl={12} xxl={12}>
-                    <Form.Item label="Post position:" name='position' initialValue={property?.position}>
-                      <InputNumber 
-                        type="number"
-                        id="position" 
-                        min={0} 
-                        className="custom-number-input position-input"
-                        placeholder='Auto increase by default'
-                      />
-                    </Form.Item>
-                  </Col>
-                  <Col span={24}>
-                    <Form.Item>
+                    <Form.Item className="d-flex flex-end">
                       <Button className='custom-btn-main' type="primary" htmlType="submit">
                         Update
                       </Button>

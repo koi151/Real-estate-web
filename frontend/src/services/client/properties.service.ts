@@ -78,6 +78,16 @@ class PropertiesServiceClient {
     const request = this.api.post('/create', property, config);
     return this.handleRequest(request);
   }
+
+  async updateProperty(property: any, id: string) {
+    const config = {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    };
+    const request = this.api.patch(`/my-properties/edit/${id}`, property, config);
+    return this.handleRequest(request);
+  }
 }
 
 const propertiesServiceClient = new PropertiesServiceClient();

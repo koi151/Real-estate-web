@@ -36,3 +36,5 @@ const clientAccountSchema = new mongoose.Schema(
 const ClientAccount = mongoose.model("clientAccount", clientAccountSchema, "client-accounts");
 
 export default ClientAccount;
+
+

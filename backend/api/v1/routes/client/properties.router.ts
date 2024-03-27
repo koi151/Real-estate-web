@@ -13,7 +13,19 @@ router.get('/my-properties', controller.myProperty);
 router.get('/my-properties/detail/:id', controller.myPropertyDetail);
 router.get('/detail/:id', controller.detail);
 
-router.patch('/my-properties/edit/:id', controller.myPropertyDetailPatch);
+router.patch(
+  '/my-properties/edit/:id', 
+  upload.fields([{ name: 'images', maxCount: 8 }]),
+  // validate.createProperty,
+  uploadCloud.uploadFields,  
+  controller.myPropertyDetailPatch
+)
+
+// '/edit/:propertyId', 
+// upload.fields([{ name: 'images', maxCount: 8 }]),
+// // validate.createProperty,
+// uploadCloud.uploadFields,
+// controller.editPatch
 
 router.post(
   '/create',

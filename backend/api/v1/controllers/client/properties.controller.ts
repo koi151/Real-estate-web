@@ -355,7 +355,6 @@ export const createPost = async (req: any, res: Response) => {
 // [PATCH] /properties/my-properties/edit/:id
 export const myPropertyDetailPatch = async (req: Request, res: Response) => {
   try {  
-
     const postId: string | undefined = req.params.id;
     if (!postId) {
       return res.json({
@@ -382,7 +381,7 @@ export const myPropertyDetailPatch = async (req: Request, res: Response) => {
       propertyUpdated.position = cntProperty + 1;
     }
 
-    await Property.findOneAndUpdate(
+    await Property.updateOne(
       { _id: postId },
       { 
         $set: propertyUpdated,  // Update non-image fields
@@ -391,7 +390,7 @@ export const myPropertyDetailPatch = async (req: Request, res: Response) => {
     );
     
     // Remove specified images
-    await Property.findOneAndUpdate(
+    await Property.updateOne(
       { _id: postId },
       { $pull: { images: { $in: imagesToRemove }}} // Remove specified images
     );
