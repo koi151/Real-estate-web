@@ -2,9 +2,7 @@ import { Badge, Button, Card, Col, Form, Input, InputNumber, Row, Segmented, Sel
 import React, { useEffect, useState } from "react";
 import { Editor } from '@tinymce/tinymce-react';
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Dayjs } from "dayjs";
 
-import propertiesService from "../../../../services/admin/properties.service";
 import { PropertyType } from "../../../../../../backend/commonTypes";
 import * as standardizeData from '../../../../helpers/standardizeData'
 import GetAddress from "../../../../components/admin/getAddress/getAddress";
@@ -19,7 +17,7 @@ import { FaRegBuilding } from "react-icons/fa";
 import { SlDirections } from "react-icons/sl";
 import propertiesServiceClient from "../../../../services/client/properties.service";
 
-const MyPropertyEdit: React.FC = () => {
+const MyPropertyDetail: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -103,53 +101,6 @@ const MyPropertyEdit: React.FC = () => {
   }
   //
 
-  const onFinishForm = async (data: any) => {
-    try {
-      if (!id) {
-        console.error('Cannot get property id');
-        message.error('Error occurred', 3);
-        return;
-      }      
-
-      const rooms = ['bedrooms', 'bathrooms', 'kitchens']
-       .filter(room => data[room])
-       .map(room => `${room}-${data[room]}`);
-
-      // update actual price with price unit
-      const parsedPrice = parseFloat(data.price);
-      const adjustedPrice = !isNaN(parsedPrice) ? String(priceMultiplier * parsedPrice) : '';
-
-      const { bedrooms, bathrooms, kitchens, ...restData } = data;
-
-      // Construct transformedData object
-      const transformedData = {
-        ...restData,
-        description: property?.description ? property?.description : editorContent,
-        price: adjustedPrice,
-        propertyDetails: {
-          ...restData.propertyDetails,
-          rooms: rooms,
-        },
-        ...(imageUrlToRemove && { images_remove: imageUrlToRemove})
-      };
-      
-      const formData = standardizeData.objectToFormData(transformedData);
-      
-      console.log("data:", transformedData)
-      const response = await propertiesServiceClient.updateProperty(formData, id);
-
-      if (response.code === 200) {
-        message.success('Property updated successfully!', 3);
-      } else {
-        console.error(response.message);
-        message.error('Error occurred', 3);
-      }
-  
-    } catch (error) {
-      message.error("Error occurred while updating property.");
-    }
-  }
-
   return (
     <>
       {!loading ? (
@@ -158,10 +109,10 @@ const MyPropertyEdit: React.FC = () => {
           <div className="d-flex align-items-center justify-content-center"> 
             <Form 
               layout="vertical" 
-              onFinish={onFinishForm}
               method="POST"
               encType="multipart/form-data"
               style={{width: "80%"}}
+              disabled
               className="custom-form" 
             >
               <Badge.Ribbon text={<Link to="/admin/properties">Back</Link>} color="purple" className="custom-ribbon">
@@ -173,7 +124,6 @@ const MyPropertyEdit: React.FC = () => {
                     <Col span={24} className="mb-5">
                         <Form.Item 
                           label='Listing type:' 
-                          name='listingType' 
                           style={{height: "4.5rem"}}
                           initialValue={property?.listingType}
                         >
@@ -188,7 +138,6 @@ const MyPropertyEdit: React.FC = () => {
                     <Col span={24}>
                         <Form.Item 
                           label='Select parent category' 
-                          name={['propertyDetails', 'propertyCategory']}  
                           initialValue={property?.propertyDetails?.propertyCategory}
                         >
                           <TreeSelect
@@ -214,7 +163,6 @@ const MyPropertyEdit: React.FC = () => {
                   <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
                     <Form.Item 
                       label='Property length (m)' 
-                      name={['area', 'propertyLength']}
                       initialValue={property?.area?.propertyLength}
                     >
                       <InputNumber 
@@ -228,7 +176,6 @@ const MyPropertyEdit: React.FC = () => {
                   <Col sm={24} md={12} lg={8} xl={8} xxl={8}>
                     <Form.Item 
                       label='Property width (m)' 
-                      name={['area', 'propertyWidth']}
                       initialValue={property?.area?.propertyWidth}
                     >
                       <InputNumber 
@@ -259,7 +206,6 @@ const MyPropertyEdit: React.FC = () => {
                   <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
                     <Form.Item
                       label={`Property ${postType} price`} 
-                      name='price'
                       initialValue={property?.price && property.price >= 1000 ? property.price / 1000 : property?.price}
                     >
                       <InputNumber
@@ -301,7 +247,6 @@ const MyPropertyEdit: React.FC = () => {
                   <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
                     <Form.Item 
                       label={`Legal documents:`}                   
-                      name={['propertyDetails', 'legalDocuments']}  
                       initialValue={property?.propertyDetails?.legalDocuments}
                     >
                       <Select
@@ -315,7 +260,6 @@ const MyPropertyEdit: React.FC = () => {
                   <Col sm={24} md={12} lg={12} xl={12} xxl={12}>
                     <Form.Item 
                       label={`Furnitures:`} 
-                      name={['propertyDetails', 'furnitures']}  
                       initialValue={property?.propertyDetails?.furnitures}
                     >
                       <Select
@@ -333,7 +277,6 @@ const MyPropertyEdit: React.FC = () => {
                           <IoBedOutline />
                         </Space>
                       } 
-                      name='bedrooms'
                       initialValue={property?.propertyDetails?.rooms && standardizeData.getRoomCount(property?.propertyDetails?.rooms, 'bedrooms')}
                     >
                       <InputNumber 
@@ -351,7 +294,6 @@ const MyPropertyEdit: React.FC = () => {
                           <IoBedOutline />
                         </Space>
                       } 
-                      name='kitchens'
                       initialValue={property?.propertyDetails?.rooms && standardizeData.getRoomCount(property?.propertyDetails?.rooms, 'kitchens')}
                     >
                       <InputNumber 
@@ -369,7 +311,6 @@ const MyPropertyEdit: React.FC = () => {
                           <LuBath />
                         </Space>
                       }
-                      name='bathrooms'
                       initialValue={property?.propertyDetails?.rooms && standardizeData.getRoomCount(property?.propertyDetails?.rooms, 'bathrooms')}
                     >
                       <InputNumber 
@@ -387,7 +328,6 @@ const MyPropertyEdit: React.FC = () => {
                           <FaRegBuilding />
                         </Space>
                       }                  
-                      name={['propertyDetails', 'totalFloors']}
                       initialValue={property?.propertyDetails?.totalFloors}
                     >
                       <InputNumber 
@@ -405,7 +345,6 @@ const MyPropertyEdit: React.FC = () => {
                           <SlDirections />
                         </Space>
                       }      
-                      name={['propertyDetails', 'houseDirection']}
                       initialValue={property?.propertyDetails?.houseDirection}
                     >
                       <Select
@@ -423,7 +362,6 @@ const MyPropertyEdit: React.FC = () => {
                           <SlDirections />
                         </Space>
                       }                  
-                      name={['propertyDetails', 'balconyDirection']}
                       initialValue={property?.propertyDetails?.balconyDirection}
                     >
                       <Select
@@ -448,7 +386,6 @@ const MyPropertyEdit: React.FC = () => {
                   <Col span={24}>
                     <Form.Item 
                       label={<span>Post title <b className="required-txt">- required:</b></span>}
-                      name='title'
                       required
                       initialValue={property?.title}
                     >
@@ -485,14 +422,6 @@ const MyPropertyEdit: React.FC = () => {
                       'Not selected'}
                     </b>
                   </div>
-
-                  <Col span={24}>
-                    <Form.Item className="d-flex flex-end">
-                      <Button className='custom-btn-main' type="primary" htmlType="submit">
-                        Update
-                      </Button>
-                    </Form.Item>
-                  </Col>
                 </Row>
               </Card>
             </Form>
@@ -512,4 +441,4 @@ const MyPropertyEdit: React.FC = () => {
   )
 }
 
-export default MyPropertyEdit;
+export default MyPropertyDetail;

@@ -13,6 +13,7 @@ import VNPayResult from '../pages/client/VNPay/vnPayResult';
 import EditClientAccounts from '../pages/client/Account/edit';
 import MyProperty from '../pages/client/Properties/MyProperties/myProperties';
 import MyPropertyEdit from '../pages/client/Properties/MyProperties/edit';
+import MyPropertyDetail from '../pages/client/Properties/MyProperties/detail';
 
 export const clientRoutes: RouteObject[] = [
   {
@@ -33,6 +34,10 @@ export const clientRoutes: RouteObject[] = [
       {
         path: "properties/my-properties",
         element: <MyProperty />,
+      },
+      {
+        path: "properties/my-properties/detail/:id",
+        element: <MyPropertyDetail />,
       },
       {
         path: "properties/my-properties/edit/:id",
