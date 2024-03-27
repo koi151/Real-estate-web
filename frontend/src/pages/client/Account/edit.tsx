@@ -146,11 +146,12 @@ const EditClientAccounts: React.FC = () => {
                       </Col>
                       <Col sm={24} md={24} lg={12} xl={12} xxl={12}>
                         <Form.Item 
-                          label='Current balance:' 
-                          initialValue={account?.wallet?.balance}
+                          label='Current balance (USD):' 
                           >
-                            <InputNumber 
-                              disabled type="number" style={{width: "100%", color: "#000"}}
+                            <InputNumber
+                              defaultValue={account?.wallet?.balance.toFixed(2)} 
+                              disabled type="number" 
+                              style={{width: "100%", color: "#000"}}
                             />
                         </Form.Item>
                       </Col>

@@ -6,29 +6,29 @@ import { useSelector } from 'react-redux';
 import { Breadcrumb, Button, Checkbox, Col, Image, InputNumber, Pagination, 
          PaginationProps, Popconfirm, Row, Skeleton, Space, Tag,  Tooltip,  message } from 'antd';
 
-import * as standardizeData from '../../../helpers/standardizeData'
-import getPriceUnit from '../../../helpers/getPriceUnit';
+import * as standardizeData from '../../../../helpers/standardizeData'
+import getPriceUnit from '../../../../helpers/getPriceUnit';
 
-import propertiesService from '../../../services/admin/properties.service';
+import propertiesService from '../../../../services/admin/properties.service';
 
-import { PropertyType, PaginationObject, AdminPermissions } from '../../../../../backend/commonTypes';
-import ViewCount from '../../../components/shared/Counters/ViewCount/viewCount';
-import RoomCountTooltip from '../../../components/shared/Counters/RoomCounter/roomCount';
-import FilterBox from '../../../components/admin/FilterBox/filterBox';
-import StatusButton from '../../../components/admin/StatusButton/statusButton';
-import NoPermission from '../../../components/admin/NoPermission/noPermission';
+import { PropertyType, PaginationObject } from '../../../../../../backend/commonTypes';
+import ViewCount from '../../../../components/shared/Counters/ViewCount/viewCount';
+import RoomCountTooltip from '../../../../components/shared/Counters/RoomCounter/roomCount';
+import FilterBox from '../../../../components/admin/FilterBox/filterBox';
+import StatusButton from '../../../../components/admin/StatusButton/statusButton';
+import NoPermission from '../../../../components/admin/NoPermission/noPermission';
 
-import { RootState } from '../../../redux/stores';
-import './properties.scss';
+import { RootState } from '../../../../redux/stores';
+import '../properties.scss';
+import propertiesServiceClient from '../../../../services/client/properties.service';
 
 
-const Properties: React.FC = () => {
+const MyProperties: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
   const filters = useSelector((state: RootState) => state.filters);
 
-  const [permissions, setPermissions] = useState<AdminPermissions | undefined>(undefined);
   const [accessAllowed, setAccessAllowed] = useState(true);
   const [loading, setLoading] = useState(true);
 
@@ -58,7 +58,7 @@ const Properties: React.FC = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await propertiesService.getApprovedProperties({ 
+        const response = await propertiesServiceClient.getMyProperties({ 
           ...(keyword && { keyword }), 
           ...(listingType && { listingType }), 
           ...(category && { category }), 
@@ -74,13 +74,10 @@ const Properties: React.FC = () => {
         });
   
         if(response?.code === 200) {
+          setAccessAllowed(true);
           setPropertyList(response.properties);
           setPaginationObj(response.paginationObject);
           setPropertyCount(response.propertyCount);
-
-          if (response.permissions) {
-            setPermissions(response.permissions);
-          }
 
         } else {
           setAccessAllowed(false);
@@ -90,7 +87,7 @@ const Properties: React.FC = () => {
       } catch (error: any) {
         if ((error.response && error.response.status === 401) || error.message === 'Unauthorized') {
           message.error('Unauthorized - Please log in to access this feature.', 3);
-          navigate('/admin/auth/login');
+          navigate('/auth/login');
         } else {
           message.error('Error occurred while fetching properties data', 2);
           setError('No property found.');
@@ -191,20 +188,20 @@ const Properties: React.FC = () => {
       {accessAllowed ? (
         <>
           <div className='title-wrapper'>
-            <h1 className="main-content-title">Property:</h1>
+            <h1 className="main-content-title">All property posts:</h1>
             <Breadcrumb
               className='mt-1 mb-1'
               items={[
-                { title: <Link to="/admin">Admin</Link> },
-                { title: <Link to="/admin/properties">Properties</Link> },
+                { title: <Link to="/properties">Properties</Link> },
+                { title: <Link to="/properties/my-property">My property</Link> },
               ]}
             />
           </div>
     
-          <FilterBox
-            resetFilterLink='/admin/properties'
-            createPostLink='/admin/properties/create' 
-            createAllowed={permissions?.propertiesCreate} 
+          <FilterBox 
+            resetFilterLink='/properties/my-properties'
+            createPostLink='/properties/create'
+            createAllowed={accessAllowed} 
             priceRangeFilter
             categoryFilter
             statusFilter
@@ -340,18 +337,18 @@ const Properties: React.FC = () => {
                             xxl={2} xl={2} lg={2} md={2} sm={2}
                           >
                             <div className='button-wrapper'>
-                              <Link to={`/admin/properties/detail/${property._id}`}> 
+                              <Link to={`/properties/my-properties/detail/${property._id}`}> 
                                 <Button className='detail-btn'>Detail</Button> 
                               </Link>
-                              {permissions?.propertiesEdit && (
-                                <Link to={`/admin/properties/edit/${property._id}`}> 
+                              {accessAllowed && (
+                                <Link to={`/properties/my-properties/edit/${property._id}`}> 
                                   <Button className='edit-btn'>Edit</Button> 
                                 </Link>
                               )}
-                              {permissions?.propertiesDelete && (
+                              {accessAllowed && (
                                 <Popconfirm
                                   title="Delete the task"
-                                  description="Are you sure to delete this property?"
+                                  description="Are you sure to delete this post?"
                                   onConfirm={() => confirmDelete(property._id)}
                                   okText="Yes"
                                   cancelText="No"
@@ -403,4 +400,4 @@ const Properties: React.FC = () => {
   );
 };
 
-export default Properties;
+export default MyProperties;

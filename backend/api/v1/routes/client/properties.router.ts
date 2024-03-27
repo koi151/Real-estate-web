@@ -9,8 +9,11 @@ const upload = multer();
 const router: Router = Router();
 
 router.get('/', controller.index);
-
+router.get('/my-properties', controller.myProperty);
+router.get('/my-properties/detail/:id', controller.myPropertyDetail);
 router.get('/detail/:id', controller.detail);
+
+router.patch('/my-properties/edit/:id', controller.myPropertyDetailPatch);
 
 router.post(
   '/create',

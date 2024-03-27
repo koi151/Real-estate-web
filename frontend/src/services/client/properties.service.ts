@@ -52,8 +52,20 @@ class PropertiesServiceClient {
     return this.handleRequest(request);
   }
 
+  async getMyProperties(options: GetPropertiesOptions) {
+    const request = this.api.get("/my-properties", { 
+      params: options,
+    });
+    return this.handleRequest(request);
+  }
+
   async getSingleProperty(id: string) {
     const request = this.api.get(`/detail/${id}`);
+    return this.handleRequest(request);
+  }
+
+  async getMyPropertyDetail(id: string) {
+    const request = this.api.get(`/my-properties/detail/${id}`);
     return this.handleRequest(request);
   }
 

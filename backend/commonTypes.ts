@@ -241,6 +241,7 @@ interface PriceRange {
 export interface FindCriteria {
   deleted?: boolean;
   listingType?: string;
+  accountId?: string;
   price?: PriceRange;
   status?: string;
   propertyDetails?: PropertyDetailsFilter;

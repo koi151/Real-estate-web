@@ -91,15 +91,12 @@ export const vnPayReturn = async (req: Request, res: Response) => {
   try {
 
     let vnpParams = req.query as unknown as VNPayParams;
-    console.log("vnpParams:", vnpParams)
-    console.log("req.body:", req.body)
-
 
     const secureHash = vnpParams['vnp_SecureHash'];
     delete vnpParams['vnp_SecureHash'];
     delete vnpParams['vnp_SecureHashType'];
 
-    vnpParams = sortObject(vnpParams); // Assuming sortObject is defined elsewhere
+    vnpParams = sortObject(vnpParams);
 
     const tmnCode = process.env.VNP_TMNCODE;
     const secretKey = process.env.VNP_HASH_SECRET

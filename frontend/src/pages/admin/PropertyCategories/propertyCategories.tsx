@@ -178,7 +178,9 @@ const PropertyCategories: React.FC = () => {
               />
             </div>
 
-            <FilterBox 
+            <FilterBox
+              resetFilterLink='/admin/property-categories'
+              createPostLink='/admin/property-categories/create' 
               createAllowed={permissions?.propertyCategoriesCreate}
               statusFilter
             />

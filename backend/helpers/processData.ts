@@ -70,17 +70,17 @@ export const processPropertyData = (req: Request): PropertyType => {
         : undefined
     },
     createdBy: {
-      accountId: req.body.createdBy?.accountId && String(req.body.createdBy?.accountId),
-      accountType: req.body.createdBy?.accountType,
+      accountId: req.body.createdBy?.accountId && String(req.body.createdBy.accountId),
+      accountType: req.body.createdBy?.accountType && req.body.createdBy.accountType,
       fullName: req.body.createdBy?.fullName && String(req.body.createdBy?.fullName),
       phone: req.body.createdBy?.phone && String(req.body.createdBy?.phone),
       email: req.body.createdBy?.email && String(req.body.createdBy?.email),
     },
     postServices: {
-      dayPost: parseToValidNumber(req.body.postServices.dayPost),
-      pushTimesLeft: parseToValidNumber(req.body.postServices.pushTimesLeft),
-      defaultPostFeePerDay: parseToValidNumber(req.body.postServices.defaultPostFeePerDay),
-      discountPercentage: parseToValidNumber(req.body.postServices.discountPercentage)
+      dayPost: req.body.postServices?.dayPost && parseToValidNumber(req.body.postServices.dayPost),
+      pushTimesLeft: req.body.postServices?.pushTimesLeft && parseToValidNumber(req.body.postServices.pushTimesLeft),
+      defaultPostFeePerDay: req.body.postServices?.defaultPostFeePerDay && parseToValidNumber(req.body.postServices.defaultPostFeePerDay),
+      discountPercentage: req.body.postServices?.discountPercentage && parseToValidNumber(req.body.postServices.discountPercentage)
     },
     expireTime: req.body.expireTime && new Date(req.body.expireTime)
   };

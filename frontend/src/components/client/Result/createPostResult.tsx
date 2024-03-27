@@ -10,7 +10,7 @@ const CreatePostResult: React.FC<CreatePostResultProps> = ({ handleCurrentReset 
   return (
     <>
       <Result
-        style={{height: '60rem'}}
+        style={{lineHeight: '6rem'}}
         status="success"
         title="Create post successful!"
         subTitle="Post created successfully. Your post has been added to moderation queue, please wait for a moment"

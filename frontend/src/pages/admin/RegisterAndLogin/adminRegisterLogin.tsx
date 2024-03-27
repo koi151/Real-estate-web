@@ -17,7 +17,6 @@ const AdminRegisterLogin: React.FC<AdminRegisterLoginProps> = ({ isRegisterPage 
 
   const onFinishForm = async (data: any) => {
     try {
-
       if (!isRegisterPage) { // login
         const response = await adminAuthorizationService.submitLogin(data);
         switch (response.code) {

@@ -92,7 +92,7 @@ const VNPayResult: React.FC = () => {
           subTitle={
             <>
               <div style={{fontSize: '1.6rem'}}>
-                You have successfully deposited <b>{depositAmount} VND</b> to your account,
+                You have successfully deposited <b>${depositAmount}</b> to your account,
                 thank you for your purchase!
               </div>
               <div className="mt-3">

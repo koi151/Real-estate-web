@@ -3,7 +3,7 @@ import { Button, Col, Row, Segmented, Select, message } from 'antd';
 import { FaPlus } from "react-icons/fa6";
 import Search from 'antd/es/input/Search';
 import { IoFilter } from 'react-icons/io5';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../redux/stores';
 import { SegmentedValue } from 'antd/es/segmented';
@@ -26,6 +26,9 @@ interface FilterBoxProps {
   multipleChange?: boolean;
   priceRangeFilter?: boolean;
   categoryFilter?: boolean;
+
+  createPostLink: string,
+  resetFilterLink: string
 }
 
 const FilterBox: React.FC<FilterBoxProps> = ({
@@ -34,9 +37,10 @@ const FilterBox: React.FC<FilterBoxProps> = ({
   priceRangeFilter, 
   categoryFilter, 
   multipleChange,
+  createPostLink,
+  resetFilterLink
 }) => {
   const dispatch = useDispatch();
-  const location = useLocation();
   const navigate = useNavigate();
 
   // Redux state selectors
@@ -55,7 +59,7 @@ const FilterBox: React.FC<FilterBoxProps> = ({
 
   const handleResetFilters = () => {
     dispatch(resetFilters());
-    navigate('/admin/properties');
+    navigate(resetFilterLink);
   };
 
   const handleMultipleChange = async (type: ValidMultiChangeType) => {
@@ -91,7 +95,7 @@ const FilterBox: React.FC<FilterBoxProps> = ({
               Filters <IoFilter style={{ marginLeft: '.75rem' }} />
             </Button>
             {createAllowed && (
-              <Link to={`${location.pathname}/create`} className='custom-link'>
+              <Link to={createPostLink} className='custom-link'>
                 <Button className='add-new-button'>
                   Add new <FaPlus />
                 </Button>

@@ -60,6 +60,7 @@ const AccountHeader: React.FC<AccountHeaderProps> = ({ userType, navigateTo }) =
           alt='avatar-header'
         />
           <Select
+            size="large"
             className="logout"
             defaultValue="lucy"
             style={{ width: "50rem", marginRight: "4rem"}}
@@ -71,10 +72,10 @@ const AccountHeader: React.FC<AccountHeaderProps> = ({ userType, navigateTo }) =
                 options: [
                   { 
                     label: 
-                    <div className="d-flex justify-content-between align-items-center" style={{width: "100%"}}>
+                    <Link to={'/properties/my-properties'} className="custom-link-wrap">
                       <span>Current posts</span>
                       <LuNewspaper className="custom-icon-nav"/>
-                    </div>,
+                    </Link>,
                     value: 'currentPosts' 
                   },
                 ],
@@ -93,10 +94,10 @@ const AccountHeader: React.FC<AccountHeaderProps> = ({ userType, navigateTo }) =
                   },
                   { 
                     label: 
-                    <div className="d-flex justify-content-between align-items-center" style={{width: "100%"}}>
+                    <Link to={'/deposit'} className="custom-link-wrap">
                       <span>Deposit money</span>
                       <MdAttachMoney className="custom-icon-nav" style={{fontSize: "1.5rem"}}/>
-                    </div>, 
+                    </Link>, 
                     value: 'deposit' 
                   },
                   { 
