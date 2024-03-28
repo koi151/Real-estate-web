@@ -5,6 +5,7 @@ import clientAccountsService from "../../../services/client/accounts.service";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/stores";
 import moment from "moment";
+import orderService from "../../../services/client/order.service";
 
 const VNPayResult: React.FC = () => {
   const navigate = useNavigate();
@@ -66,6 +67,13 @@ const VNPayResult: React.FC = () => {
           message.error("Error occurred, can not update account balance. Please contact admin", 3);
           console.log(message.error);
         }
+        const searchString = new URLSearchParams(searchParams).toString();
+
+        await orderService.createVnPayBill(accountId, searchString)
+        if (response.code !== 200) {
+          message.error("Failed to create bill", 3);
+        }
+
 
       } catch (err: any) {
         if (err.response && err.response.status === 401) {

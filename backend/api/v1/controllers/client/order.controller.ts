@@ -3,6 +3,7 @@ import moment from "moment";
 import { sortObject } from "../../../../helpers/sortObj";
 import querystring from 'qs'
 import crypto from 'crypto'
+import PaymentBill from "../../models/paymentBills.model";
 
 type VNPayParams = {
   vnp_Version?: string;
@@ -85,6 +86,52 @@ export const createPaymentUrl = async (req: Request, res: Response) => {
     });
   }
 };
+
+// [POST] /deposit/vnpay/create-bill
+export const billPost = async (req: Request, res: Response) => {
+  try {
+    const pairs = req.body.info.split('&');
+
+    const result: any = {};
+
+    pairs.forEach((pair: any) => {
+      const [key, value] = pair.split('=');
+      result[key] = decodeURIComponent(value);
+    });
+
+    const newBill  = new PaymentBill({
+      userId: req.body.accountId,
+      amount: result.vnp_Amount,
+      orderInfo: result.vnp_OrderInfo,
+      bankCode: result.vnp_BankCode,
+      transactionNo: result.vnp_TransactionNo,
+      payDate: result.vnp_PayDate,
+      status: result.vnp_TransactionStatus === '00' ? 'succeed' : 'failed', 
+    })
+
+    await newBill.save();
+
+    if (newBill) {
+      res.status(200).json({
+        code: 200,
+        message: 'Bill created successful'
+      })
+    } else {
+      res.json({
+        code: 400,
+        message: 'Failed to create bill'
+      })
+    }
+
+  } catch (err) {
+    console.log('Error occurred in createPaymentUrl controller:', err);
+    return res.status(500).json({
+      code: 500,
+      message: 'Internal Server Error'
+    });
+  }
+};
+
 
 // [GET] /deposit/vnpay/create-payment-url
 export const vnPayReturn = async (req: Request, res: Response) => {

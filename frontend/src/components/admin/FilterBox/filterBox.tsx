@@ -26,7 +26,6 @@ interface FilterBoxProps {
   multipleChange?: boolean;
   priceRangeFilter?: boolean;
   categoryFilter?: boolean;
-
   createPostLink: string,
   resetFilterLink: string
 }
@@ -38,7 +37,7 @@ const FilterBox: React.FC<FilterBoxProps> = ({
   categoryFilter, 
   multipleChange,
   createPostLink,
-  resetFilterLink
+  resetFilterLink,
 }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -115,7 +114,12 @@ const FilterBox: React.FC<FilterBoxProps> = ({
         className={`listing-type ${isFilterDetailVisible ? '' : 'fade-out'}`}
       />
 
-      <div className={`filter-box__detail ${isFilterDetailVisible ? '' : 'fade-out'} ${listingType ? '' : 'mt-3'}`}>
+      <div 
+        className={`filter-box__detail 
+          ${isFilterDetailVisible ? '' : 'fade-out'} 
+          ${listingType ? '' : 'mt-3'} 
+        `}
+      >
         <Row className='custom-row d-flex align-items-center' style={{width: "100%"}}>
           {statusFilter && (
             <Col xxl={8} xl={8} lg={8}>

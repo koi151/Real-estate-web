@@ -262,3 +262,15 @@ export interface DepositOrderType {
   bankCode: string,
   language: string
 }
+
+// export interface VnpBillType {
+//   vnp_Amount: string,
+//   vnp_BankCode: string,
+//   vnp_BankTranNo: string,
+//   vnp_CardType?: 'ATM',
+//   vnp_OrderInfo: string,
+//   vnp_PayDate: string,
+//   vnp_ResponseCode: string,
+//   vnp_TransactionNo: string,
+//   vnp_TransactionStatus: string
+// }

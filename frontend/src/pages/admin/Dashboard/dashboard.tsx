@@ -17,6 +17,7 @@ import StatusButton from '../../../components/admin/StatusButton/statusButton';
 import { listingTypeFormatted } from '../../../helpers/standardizeData';
 
 import './dashboard.scss'
+import IncomeChart from '../../../components/admin/StatisticCharts/income';
 
 const DashBoard: React.FC = () => {
   const navigate = useNavigate();
@@ -180,6 +181,17 @@ const DashBoard: React.FC = () => {
               </CardItem>
             </Col>
           </Row>
+          <Row gutter={[20, 20]} style={{padding: "2rem"}}>
+            <Skeleton loading={loading} active style={{ padding: '3.5rem' }}>
+              <div className='properties-statistic-wrapper'>
+                <div className='properties-statistic-wrapper--title'>
+                  Statistics
+                </div>
+                <IncomeChart />
+              </div>
+            </Skeleton>
+          </Row>
+
           <Row gutter={[20, 20]} style={{padding: "2rem"}}>
             <Skeleton loading={loading} active style={{ padding: '3.5rem' }}>
               <div className='pending-post-box'>
