@@ -109,6 +109,12 @@ class PropertiesServiceAdmin {
     const request = this.api.delete(`/delete/${id}`);
     return this.handleRequest(request);
   }
+
+  async getPropertyStatistic() {
+    const request = this.api.get(`/statistics`);
+    return this.handleRequest(request);
+  }
+  
 }
 
 const propertiesService = new PropertiesServiceAdmin();

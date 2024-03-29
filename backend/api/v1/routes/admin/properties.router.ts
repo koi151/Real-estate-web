@@ -12,6 +12,7 @@ const upload = multer();
 router.get('/', controller.index);
 router.get('/pending', controller.pending);
 router.get('/detail/:propertyId', controller.detail)
+router.get('/statistics', controller.statistic)
 
 router.post(
   '/create',

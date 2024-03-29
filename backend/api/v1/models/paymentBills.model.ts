@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const PaymentBillSchema = new mongoose.Schema(
   {
-    userId: String,
+    accountId: String,
     amount: Number,
     orderInfo: String,
     bankCode: String,
@@ -13,6 +13,8 @@ const PaymentBillSchema = new mongoose.Schema(
       type: Boolean,
       default: false
     },
+  }, {
+    timestamps: true
   }
 );
 

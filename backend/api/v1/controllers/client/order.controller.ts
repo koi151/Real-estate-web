@@ -90,8 +90,14 @@ export const createPaymentUrl = async (req: Request, res: Response) => {
 // [POST] /deposit/vnpay/create-bill
 export const billPost = async (req: Request, res: Response) => {
   try {
-    const pairs = req.body.info.split('&');
+    const accountId: string | undefined = req.body.accountId;
 
+    if (!accountId) return res.json({
+      code: 400,
+      message: 'Cannot get account id'
+    })
+
+    const pairs = req.body.info.split('&');
     const result: any = {};
 
     pairs.forEach((pair: any) => {
@@ -99,9 +105,13 @@ export const billPost = async (req: Request, res: Response) => {
       result[key] = decodeURIComponent(value);
     });
 
+    const exchangeRates: number = parseFloat(process.env.VND_TO_USD_EXCHANGE_RATES);
+    const amountParsed: number = parseFloat(result.vnp_Amount);
+    const amountExchanged: number = amountParsed / (100 * exchangeRates);
+
     const newBill  = new PaymentBill({
-      userId: req.body.accountId,
-      amount: result.vnp_Amount,
+      accountId: req.body.accountId,
+      amount: amountExchanged,
       orderInfo: result.vnp_OrderInfo,
       bankCode: result.vnp_BankCode,
       transactionNo: result.vnp_TransactionNo,

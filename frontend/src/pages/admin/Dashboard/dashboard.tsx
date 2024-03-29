@@ -17,7 +17,7 @@ import StatusButton from '../../../components/admin/StatusButton/statusButton';
 import { listingTypeFormatted } from '../../../helpers/standardizeData';
 
 import './dashboard.scss'
-import IncomeChart from '../../../components/admin/StatisticCharts/income';
+import IncomeChart from '../../../components/admin/StatisticCharts/revenue';
 
 const DashBoard: React.FC = () => {
   const navigate = useNavigate();
