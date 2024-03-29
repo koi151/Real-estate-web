@@ -185,7 +185,7 @@ const DashBoard: React.FC = () => {
             <Skeleton loading={loading} active style={{ padding: '3.5rem' }}>
               <div className='properties-statistic-wrapper'>
                 <div className='properties-statistic-wrapper--title'>
-                  Statistics
+                  Revenue statistic
                 </div>
                 <IncomeChart />
               </div>

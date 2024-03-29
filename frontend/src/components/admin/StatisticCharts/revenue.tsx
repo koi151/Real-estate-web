@@ -33,7 +33,6 @@ const RevenueChart: React.FC = () => {
       try {
         const response = await propertiesService.getPropertyStatistic();
         if (response.code === 200) {
-          console.log("response:", response)
           setBillData(response.bills)
         } else {
           message.error(response.message, 3)
@@ -53,48 +52,52 @@ const RevenueChart: React.FC = () => {
     setColor(nextColor);
   };
 
-  useEffect(() => { // testing
-    console.log("billData:", billData)
-  }, [billData])
+  setTimeout(() => { // temporary fix MUI display err
+    const viewBox = document.querySelector('.properties-statistic-wrapper .MuiStack-root .css-172kpif-MuiResponsiveChart-container');
+    const check = viewBox?.querySelector('svg')
+
+    if (check) {
+      check.setAttribute('viewBox', "0 0 314 310");
+    }
+  }, 500)
+
 
   return (
     <>
       {billData ? (
-        <>
-          <Stack direction="column" spacing={2} alignItems="center" sx={{ width: '100%' }}>
-            <LineChart
-              dataset={billData}
-              xAxis={[{ scaleType: 'band', dataKey: 'createdAt' }]}
-              series={[
-                {
-                  dataKey: 'amount',
-                  label: 'Revenue',
-                  color,
-                },
-              ]}
-              {...chartsParams}
-            />
-            <ToggleButtonGroup
-              // orientation="vertical"
-              value={color}
-              exclusive
-              onChange={handleChange}
-            >
-              {Tableau10.map((value) => (
-                <ToggleButton key={value} value={value} sx={{ p: 1 }}>
-                  <div
-                    style={{
-                      width: 15,
-                      height: 15,
-                      backgroundColor: value,
-                      display: 'inline-block',
-                    }}
-                  />
-                </ToggleButton>
-              ))}
-            </ToggleButtonGroup>
-          </Stack>
-        </>
+        <Stack direction="column" spacing={2} alignItems="center" sx={{ width: '100%' }}>
+          <LineChart
+            dataset={billData}
+            xAxis={[{ scaleType: 'band', dataKey: 'createdAt' }]}
+            series={[
+              {
+                dataKey: 'amount',
+                label: 'Revenue',
+                color,
+              },
+            ]}
+            {...chartsParams}
+          />
+          <ToggleButtonGroup
+            // orientation="vertical"
+            value={color}
+            exclusive
+            onChange={handleChange}
+          >
+            {Tableau10.map((value) => (
+              <ToggleButton key={value} value={value} sx={{ p: 1 }}>
+                <div
+                  style={{
+                    width: 15,
+                    height: 15,
+                    backgroundColor: value,
+                    display: 'inline-block',
+                  }}
+                />
+              </ToggleButton>
+            ))}
+          </ToggleButtonGroup>
+        </Stack>
       ) : (
         <>Loading...</>
       )}

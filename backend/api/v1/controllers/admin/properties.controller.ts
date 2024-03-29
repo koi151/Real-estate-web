@@ -206,7 +206,9 @@ export const statistic = async (req: Request, res: Response) => {
     const bills = await PaymentBill.find({
       deleted: false,
       createdAt: { $gte: tenDaysAgo }
-    }).select('createdAt amount -_id');
+    }).select('createdAt amount -_id').sort({ createdAt: 1 }); // asc
+
+    console.log("bills:", bills)
 
     // re-format createdAt field from Date type to String type desired
     const dailySums = bills.reduce((acc, bill) => {
