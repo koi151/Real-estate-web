@@ -10,6 +10,7 @@ import { paginationHelper } from "../../../../helpers/pagination";
 import { processImagesData, processPropertyData } from "../../../../helpers/processData";
 import ClientAccount from "../../models/clientAccount.model";
 
+
 // [GET] /properties
 export const index = async (req: Request, res: Response) => {
   try {
@@ -26,9 +27,23 @@ export const index = async (req: Request, res: Response) => {
     const listingType = req.query.listingType?.toString() as string | undefined;
     const direction = req.query.direction?.toString() as string | undefined;
 
+    // In case of filtering favorite property posts -------------------
+    const favoritePostIds: any | undefined = res.locals.currentUserClient.favoritePosts;
+
+    if (req.query.favorited) {
+      if (!favoritePostIds) {
+        return res.json({
+          code: 400,
+          message: 'No favorited post found'
+        })
+      }
+    }
+    // -------------------------------------
+
     const find: FindCriteria = {
       deleted: false,
-      status: "active",
+      status: "active",    
+      ...((req.query.favorited) && { _id: { $in: favoritePostIds } }),
       ...(listingType && { listingType }),
       ...(direction && {  "propertyDetails.houseDirection": direction  }),
       ...(category && { "propertyDetails.propertyCategory": category }),
@@ -46,8 +61,10 @@ export const index = async (req: Request, res: Response) => {
       const orClause = { $or: [{ title: regex }, { slug: slugRegex }] };
       Object.assign(find, orClause);
     }
+
     // Pagination
     const countRecords = await Property.countDocuments(find);
+
     let paginationObject = paginationHelper(
       {
         currentPage: typeof req.query.currentPage === "string" ? parseInt(req.query.currentPage) : 1,
@@ -71,14 +88,15 @@ export const index = async (req: Request, res: Response) => {
 
     // Sorting by area is more complex than usual sort => split to specific case 
     if (req.query.sortKey === 'area') {
-      const areaSortingPipeline: any[] = getAreaSortingPipeline(req.query)
-
-      properties = await Property.aggregate([ // Advanced queries
+      const areaSortingPipeline: any[] = getAreaSortingPipeline(req.query) 
+      const advancedSortArray = [
         { $match: find },
         ...areaSortingPipeline,
         { $skip: paginationObject.skip || 0 },
         { $limit: paginationObject.limitItems || 0 },
-      ]);
+      ]
+
+      properties = await Property.aggregate(advancedSortArray)
 
     } else {
 
@@ -92,7 +110,7 @@ export const index = async (req: Request, res: Response) => {
         .limit(paginationObject.limitItems || 0)
     }
 
-    propertyCount = await Property.countDocuments(find);
+    propertyCount = await Property.countDocuments(find)
 
     res.status(200).json({
       code: 200,
@@ -109,7 +127,8 @@ export const index = async (req: Request, res: Response) => {
       message: 'Internal Server Error'
     });
   }
-};
+}
+
 
 // [GET] /properties/my-property
 export const myProperty = async (req: Request, res: Response) => {

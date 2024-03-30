@@ -14,6 +14,7 @@ import EditClientAccounts from '../pages/client/Account/edit';
 import MyProperty from '../pages/client/Properties/MyProperties/myProperties';
 import MyPropertyEdit from '../pages/client/Properties/MyProperties/edit';
 import MyPropertyDetail from '../pages/client/Properties/MyProperties/detail';
+import FavoritedProperties from '../pages/client/Properties/FavoritedProperties/favoritedProperties';
 
 export const clientRoutes: RouteObject[] = [
   {
@@ -46,6 +47,10 @@ export const clientRoutes: RouteObject[] = [
       {
         path: 'properties/create',
         element: <CreatePropertyPost />
+      },
+      {
+        path: '/properties/my-favorites',
+        element: <FavoritedProperties />
       },
       {
         path: 'properties/detail/:id',

@@ -10,7 +10,7 @@ import { resetClientUserState } from "../../../redux/reduxSlices/clientUserSlice
 import adminAuthorizationService from "../../../services/admin/authorization.service";
 import clientAuthorizationService from "../../../services/client/authorization.service";
 import { MdAttachMoney, MdLockOutline, MdLogout } from "react-icons/md";
-import { FaRegUser } from "react-icons/fa";
+import { FaRegHeart, FaRegUser } from "react-icons/fa";
 import { LuNewspaper } from "react-icons/lu";
 
 interface AccountHeaderProps {
@@ -124,6 +124,14 @@ const AccountHeader: React.FC<AccountHeaderProps> = ({ userType, navigateTo }) =
                       <LuNewspaper className="custom-icon-nav"/>
                     </Link>,
                     value: 'currentPosts' 
+                  },
+                  { 
+                    label: 
+                    <Link to={`${userType  === 'admin' ? 'admin/properties/my-favorites' : '/properties/my-favorites'}`} className="custom-link-wrap">
+                      <span>Favorited posts</span>
+                      <FaRegHeart className="custom-icon-nav"/>
+                    </Link>,
+                    value: 'favoritePosts' 
                   },
                 ],
               },

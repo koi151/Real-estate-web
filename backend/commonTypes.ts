@@ -228,6 +228,7 @@ export interface GetPropertiesOptions {
   params?: Record<string, any>;
   pageSize?: number;
   currentPage?: number;
+  favorited? : boolean;
 }
 
 
@@ -243,6 +244,7 @@ interface PriceRange {
 }
 
 export interface FindCriteria {
+  _id?: any,
   deleted?: boolean;
   listingType?: string;
   accountId?: string;
