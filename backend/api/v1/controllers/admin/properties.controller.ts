@@ -28,9 +28,23 @@ export const index = async (req: Request, res: Response) => {
     const listingType = req.query.listingType?.toString() as string | undefined;
     const direction = req.query.direction?.toString() as string | undefined;
 
+    // In case of filtering favorite property posts -------------------
+    const favoritePostIds: any | undefined = res.locals.currentUser.favoritePosts;
+
+    if (req.query.favorited) {
+      if (!favoritePostIds) {
+        return res.json({
+          code: 400,
+          message: 'No favorited post found'
+        })
+      }
+    }
+    // -------------------------------------
+
     const find: FindCriteria = {
       deleted: false,
       ...(status && { status }),
+      ...((req.query.favorited) && { _id: { $in: favoritePostIds } }),
       ...(listingType && { listingType }),
       ...(direction && {  "propertyDetails.houseDirection": direction  }),
       ...(category && { "propertyDetails.propertyCategory": category }),

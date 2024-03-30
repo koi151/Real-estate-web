@@ -34,6 +34,7 @@ import ClientAccounts from '../pages/admin/ClientAccount/accounts';
 import EditClientAccounts from '../pages/admin/ClientAccount/edit';
 import CreateClientAccounts from '../pages/admin/ClientAccount/create';
 import ClientAccountsDetail from '../pages/admin/ClientAccount/detail';
+import FavoritedProperties from '../pages/admin/Properties/FavoritedProperties/favoritedProperties';
 
 // Updated routes:
 export const adminRoutes: RouteObject[] = [
@@ -51,6 +52,10 @@ export const adminRoutes: RouteObject[] = [
       {
         path: "properties",
         element: <Properties />,
+      },
+      {
+        path: "properties/my-favorites",
+        element: <FavoritedProperties />,
       },
       {
         path: 'properties/detail/:id',

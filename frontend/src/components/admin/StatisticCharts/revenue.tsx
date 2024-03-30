@@ -65,7 +65,7 @@ const RevenueChart: React.FC = () => {
     )?.querySelector('svg');
   
     if (viewBox) { // temporary fix MUI display err
-      viewBox.setAttribute('viewBox', "0 0 765 310");
+      viewBox.setAttribute('viewBox', "0 0 765 320");
     }
   }, 500);
 

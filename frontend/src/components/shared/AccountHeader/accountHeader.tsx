@@ -119,7 +119,7 @@ const AccountHeader: React.FC<AccountHeaderProps> = ({ userType, navigateTo }) =
                 options: [
                   { 
                     label: 
-                    <Link to={`${userType  === 'admin' ? 'admin/properties/my-properties' : '/properties/my-properties'}`} className="custom-link-wrap">
+                    <Link to={`${userType  === 'admin' ? '/admin/properties/my-properties' : '/properties/my-properties'}`} className="custom-link-wrap">
                       <span>Current posts</span>
                       <LuNewspaper className="custom-icon-nav"/>
                     </Link>,
@@ -127,7 +127,7 @@ const AccountHeader: React.FC<AccountHeaderProps> = ({ userType, navigateTo }) =
                   },
                   { 
                     label: 
-                    <Link to={`${userType  === 'admin' ? 'admin/properties/my-favorites' : '/properties/my-favorites'}`} className="custom-link-wrap">
+                    <Link to={`${userType  === 'admin' ? '/admin/properties/my-favorites' : '/properties/my-favorites'}`} className="custom-link-wrap">
                       <span>Favorited posts</span>
                       <FaRegHeart className="custom-icon-nav"/>
                     </Link>,
