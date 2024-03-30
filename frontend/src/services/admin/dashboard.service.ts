@@ -1,3 +1,4 @@
+import { ValidStatisticTypes } from '../../../../backend/commonTypes';
 import createApi from '../api.service';
 
 class DashboardService {
@@ -25,6 +26,11 @@ class DashboardService {
     const request = this.api.get("/");
     return this.handleRequest(request);
   } 
+
+  async getRevenueStatistic(timeRange: String, type: ValidStatisticTypes ) {
+    const request = this.api.get(`/statistics/revenue`, { params: { timeRange, type } });
+    return this.handleRequest(request);
+  }
 }
 
 const dashboardService = new DashboardService();

@@ -77,17 +77,17 @@ const ChooseOptions: React.FC = () => {
     {
       label: (
         <PostType 
-          title="Default" 
+          title="Standard" 
           color='grey'
           height="18rem"
           pricePerDay={0.99}
-          active={activePostType === 'default'}
+          active={activePostType === 'standard'}
           minView={9}
           displaySelect alignCenter
         />
       ),
-      value: 'default',
-      active: activePostType === 'default',
+      value: 'standard',
+      active: activePostType === 'standard',
     },
     {
       label: (
@@ -122,7 +122,7 @@ const ChooseOptions: React.FC = () => {
   ];
 
   const postTypePricePerDay = (priceArray: number[]) => {
-    return activePostType === 'default' ? priceArray[0] 
+    return activePostType === 'standard' ? priceArray[0] 
           : activePostType === 'premium' ? priceArray[1]
           : activePostType === 'exclusive' ? priceArray[2]
           : 0
@@ -144,7 +144,7 @@ const ChooseOptions: React.FC = () => {
 
   const getPushingPostPrice = (postType: string): number[] =>{
     switch (postType) {
-      case 'default':
+      case 'standard':
         return [2.99, 5.99]
       case 'premium':
         return [4.99, 7.99]

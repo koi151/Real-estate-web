@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { startOfDay, subDays } from 'date-fns';
 
 import Property from "../../models/property.model";
 
@@ -11,7 +10,6 @@ import { FindCriteria, PropertyType, ValidMultiChangeType } from "../../../../co
 import { processImagesData, processPropertyData } from "../../../../helpers/processData";
 import { generateAreaRangeFilter, generateFilterInRange, generateRoomFilter  } from "../../../../helpers/generateFilters";
 import { getAreaSortingPipeline } from "../../../../helpers/generateSorting";
-import PaymentBill from "../../models/paymentBills.model";
 
 
 // [GET] /admin/properties
@@ -178,62 +176,6 @@ export const detail = async (req: Request, res: Response) => {
       res.status(400).json({
         code: 400,
         message: "Property not found"
-      })
-    }
-
-  } catch (error) {
-    console.log('Error occurred while fetching properties data:', error);
-    return res.status(500).json({
-      code: 500,
-      message: 'Internal Server Error'
-    });
-  }
-}
-
-// [GET] /admin/properties/statistic
-export const statistic = async (req: Request, res: Response) => {
-  try {
-    if (!res.locals.currentUser.permissions.includes('properties_view')) {
-      return res.json({
-        code: 403,
-        message: "Account does not have access rights"
-      })
-    }
-
-    // Calculate x days ago from the current date
-    const tenDaysAgo = subDays(startOfDay(new Date()), 10);
-
-    const bills = await PaymentBill.find({
-      deleted: false,
-      createdAt: { $gte: tenDaysAgo }
-    }).select('createdAt amount -_id').sort({ createdAt: 1 }); // asc
-
-    console.log("bills:", bills)
-
-    // re-format createdAt field from Date type to String type desired
-    const dailySums = bills.reduce((acc, bill) => {
-      const dateString = bill.createdAt.toLocaleDateString('en-US', { day: '2-digit', month: '2-digit' });
-      const existingSum = acc.find((item) => item.createdAt === dateString);
-    
-      if (existingSum) {
-        existingSum.amount += bill.amount;
-      } else {
-        acc.push({ createdAt: dateString, amount: bill.amount }); 
-      }
-    
-      return acc;
-    }, []); // initialize as an empty array for FE 
-    
-    if (bills) {
-      res.status(200).json({
-        code: 200,
-        message: "Success",
-        bills: dailySums
-      })
-    } else {
-      res.status(400).json({
-        code: 400,
-        message: "No bill found"
       })
     }
 

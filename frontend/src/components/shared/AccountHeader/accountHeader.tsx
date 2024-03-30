@@ -76,12 +76,12 @@ const AccountHeader: React.FC<AccountHeaderProps> = ({ userType, navigateTo }) =
                   options: [
                     { 
                       label: 
-                      <Link to={'/accounts/my-detail/edit'} className="custom-link-wrap">
+                      <Link to={`${userType  === 'admin' ? 'admin/accounts/my-detail/edit' : '/accounts/my-detail/edit'}`} className="custom-link-wrap">
                         <span>Current balance</span>
                         <span>
-                          {currentClientAccBalance 
-                            ? '$' + currentClientAccBalance.toFixed(0)
-                            : 'unlimited' 
+                          {userType === 'admin' 
+                            ? 'unlimited' 
+                            : '$' + currentClientAccBalance.toFixed(0)
                           }</span>
                       </Link>,
                       value: 'currentBalance',
@@ -89,7 +89,7 @@ const AccountHeader: React.FC<AccountHeaderProps> = ({ userType, navigateTo }) =
                     },
                     { 
                       label: 
-                      <Link to={'/accounts/my-detail/edit'} className="custom-link-wrap">
+                      <Link to={`${userType  === 'admin' ? 'admin/accounts/my-detail/edit' : '/accounts/my-detail/edit'}`} className="custom-link-wrap">
                         <span>Personal info</span>
                         <FaRegUser className="custom-icon-nav" style={{fontSize: "1.3rem"}}/>
                       </Link>,
@@ -97,7 +97,7 @@ const AccountHeader: React.FC<AccountHeaderProps> = ({ userType, navigateTo }) =
                     },
                     { 
                       label: 
-                      <Link to={'/deposit'} className="custom-link-wrap">
+                      <Link to={`${userType  === 'admin' ? 'admin/deposit' : '/deposit'}`}  className="custom-link-wrap">
                         <span>Deposit money</span>
                         <MdAttachMoney className="custom-icon-nav" style={{fontSize: "1.6rem"}}/>
                       </Link>, 
@@ -119,7 +119,7 @@ const AccountHeader: React.FC<AccountHeaderProps> = ({ userType, navigateTo }) =
                 options: [
                   { 
                     label: 
-                    <Link to={'/properties/my-properties'} className="custom-link-wrap">
+                    <Link to={`${userType  === 'admin' ? 'admin/properties/my-properties' : '/properties/my-properties'}`} className="custom-link-wrap">
                       <span>Current posts</span>
                       <LuNewspaper className="custom-icon-nav"/>
                     </Link>,

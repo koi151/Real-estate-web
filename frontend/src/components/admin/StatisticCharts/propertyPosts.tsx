@@ -26,7 +26,7 @@ const chartsParams = {
   height: 300,
 };
 
-const RevenueChart: React.FC = () => {
+const PropertyPosts: React.FC = () => {
   const [ color, setColor ] = React.useState('#4e79a7');
   const [ billData, setBillData ] = useState<any>(undefined);
   const [ isLoading, setIsLoading ] = useState<boolean>(false);
@@ -35,7 +35,7 @@ const RevenueChart: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await dashboardService.getRevenueStatistic(timeRevenueStatistic, 'revenue');
+        const response = await dashboardService.getRevenueStatistic(timeRevenueStatistic, 'posts');
         if (response.code === 200) {
           setBillData(response.data)
         } else {
@@ -85,7 +85,7 @@ const RevenueChart: React.FC = () => {
                   xAxis={[{ scaleType: 'band', dataKey: 'createdAt' }]}
                   series={[
                     {
-                      dataKey: 'amount',
+                      dataKey: 'count',
                       label: 'Revenue',
                       color,
                     },
@@ -120,7 +120,7 @@ const RevenueChart: React.FC = () => {
         </div>
         <div className='d-flex flex-column' style={{width: "20%"}}>
           <div className='properties-statistic-wrapper--title mt-4'>
-            Revenue statistics
+            Post statistics
           </div>
           <Select
             defaultValue='Past 2 weeks'
@@ -143,4 +143,4 @@ const RevenueChart: React.FC = () => {
   );
 }
 
-export default RevenueChart;
+export default PropertyPosts;

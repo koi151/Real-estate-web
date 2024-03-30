@@ -17,7 +17,8 @@ import StatusButton from '../../../components/admin/StatusButton/statusButton';
 import { listingTypeFormatted } from '../../../helpers/standardizeData';
 
 import './dashboard.scss'
-import IncomeChart from '../../../components/admin/StatisticCharts/revenue';
+import RevenueChart from '../../../components/admin/StatisticCharts/revenue';
+import PropertyPosts from '../../../components/admin/StatisticCharts/propertyPosts';
 
 const DashBoard: React.FC = () => {
   const navigate = useNavigate();
@@ -182,14 +183,10 @@ const DashBoard: React.FC = () => {
             </Col>
           </Row>
           <Row gutter={[20, 20]} style={{padding: "2rem"}}>
-            <Skeleton loading={loading} active style={{ padding: '3.5rem' }}>
-              <div className='properties-statistic-wrapper'>
-                <div className='properties-statistic-wrapper--title'>
-                  Revenue statistic
-                </div>
-                <IncomeChart />
-              </div>
-            </Skeleton>
+            <RevenueChart />
+          </Row>
+          <Row gutter={[20, 20]} style={{padding: "2rem"}}>
+            <PropertyPosts />
           </Row>
 
           <Row gutter={[20, 20]} style={{padding: "2rem"}}>

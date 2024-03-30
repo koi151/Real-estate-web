@@ -1,0 +1,22 @@
+@import '../../../App.scss';
+
+.MuiToggleButtonGroup-root {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.properties-statistic-wrapper {
+  width: 100%;
+  background: #fff;
+  border-radius: 1rem;
+  padding: 2.5rem 3.5rem;
+  display: flex;
+  justify-content: space-between;
+
+  &--title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: $main-content-title;
+  }
+}

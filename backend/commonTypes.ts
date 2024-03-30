@@ -1,5 +1,6 @@
 export type RoomType = "bedrooms" | "bathrooms" | "kitchens" | "livingRooms";
 export type ValidStatus = 'active' | 'inactive' | 'pending';
+export type ValidStatisticTypes = 'revenue' | 'posts'
 export type ValidMultiChangeType = 'active' | "inactive" | "position" | "delete" 
 
 export const postTypeValues = ["standard", "premium", "exclusive"];
@@ -150,6 +151,9 @@ export interface AccountRegisterType {
   userName: string,
   email: string,
   password: string,
+  wallet?: {
+    balance: number
+  }
 }
 
 // TREE

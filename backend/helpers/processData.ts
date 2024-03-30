@@ -172,6 +172,9 @@ export const processAccountRegisterData = async (req: Request): Promise<AccountR
   return {
     userName: req.body.userName && String(req.body.userName),
     email: req.body.registerEmail && String(req.body.registerEmail),
-    password: hashedPassword
+    password: hashedPassword,
+    wallet: {
+      balance: 0
+    }
   };
 }
