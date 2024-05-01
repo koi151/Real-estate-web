@@ -201,9 +201,11 @@ export const parentCategory = async (req: Request, res: Response) => {
   }
 }
 
-// [GET] /admin/property-category/category-tree
+// [GET] /admin/property-categories/category-tree
 export const categoryTree = async (req: Request, res: Response) => {
   try {
+    console.log('Exes')
+
     if (!res.locals.currentUser.permissions.includes('property-categories_view')) {
       return res.json({
         code: 403,

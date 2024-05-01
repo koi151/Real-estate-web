@@ -50,10 +50,7 @@ export const registerPost = async (req: Request, res: Response) => {
 // [POST] /auth/login
 export const loginPost = async (req: Request, res: Response) => {
   try {
-    console.log('here')
-    console.log("req.body:", req.body)
     const userInfo: AccountLoginType = await processAccountLoginData(req);
-    console.log("userInfo:", userInfo)
 
     const user: ClientAccountType = await ClientAccount.findOne({ 
       email: userInfo.email,
@@ -61,7 +58,6 @@ export const loginPost = async (req: Request, res: Response) => {
     });
 
     if (!user || !bcrypt.compareSync(userInfo.password, user.password)) {
-      console.log('failed')
       return res.status(401).json({
         code: 401,
         message: "Incorrect email or password"

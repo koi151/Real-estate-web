@@ -45,6 +45,10 @@ const FilterBox: React.FC<FilterBoxProps> = ({
   // Redux state selectors
   const { listingType, status } = useSelector((state: RootState) => state.filters);
 
+  const currentRole = useSelector((state: any) =>
+    state.adminUser.fullName ? 'admin' : 'client'
+  );
+
   const [ isFilterDetailVisible, setIsFilterDetailVisible ] = useState<boolean>(true);
 
   const handleStatusClick = (value: string) => {
@@ -189,7 +193,7 @@ const FilterBox: React.FC<FilterBoxProps> = ({
           {categoryFilter && (
             <Col xxl={8} xl={8} lg={8}>
               <CategoryTree 
-                userType='admin'
+                userType={currentRole}
                 label='Property category:' 
                 text='None by default'
                 width='80%'

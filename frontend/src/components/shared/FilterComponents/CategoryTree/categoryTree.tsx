@@ -38,8 +38,11 @@ const CategoryTree: React.FC<CategoryTreeProps> = ({
 
         // Fetch categories data
         let categoryResponse: any;
-        if (userType === 'admin')
+
+        if (userType === 'admin') {
+          console.log('isadmin')
           categoryResponse = await propertyCategoriesService.getCategoryTree();
+        }
         else 
           categoryResponse = await propertyCategoriesServiceClient.getCategoryTree();
       
