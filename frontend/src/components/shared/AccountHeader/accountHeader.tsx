@@ -81,7 +81,8 @@ const AccountHeader: React.FC<AccountHeaderProps> = ({ userType, navigateTo }) =
                         <span>
                           {userType === 'admin' 
                             ? 'unlimited' 
-                            : '$' + currentClientAccBalance.toFixed(0)
+                            : currentClientAccBalance &&
+                              '$' + currentClientAccBalance.toFixed(0)
                           }</span>
                       </Link>,
                       value: 'currentBalance',

@@ -53,15 +53,12 @@ export const registerPost = async (req: Request, res: Response) => {
 // [POST] /admin/auth/login
 export const loginPost = async (req: Request, res: Response) => {
   try {
-    console.log("req.body:", req.body)
     const userInfo: AccountLoginType = await processAccountLoginData(req);
 
     const user: AdminAccountType = await AdminAccount.findOne({ 
       email: userInfo.email,
       deleted: false
     });
-
-    console.log("userInfo.password, user.password:", userInfo.password, user.password)
 
     if (!user || !bcrypt.compareSync(userInfo.password, user.password)) {
       return res.status(401).json({
