@@ -14,36 +14,37 @@ import ClientAccount from "../../models/clientAccount.model";
 // [GET] /properties
 export const index = async (req: Request, res: Response) => {
   try {
-    const user: any | undefined = res.locals.currentUserClient;
+    console.log("[GET] /properties started")
+    console.log("req.query.favorited:", req.query.favorited)
 
-    if (!user) {
-      return res.json({
-        code: 404,
-        message: "User information not found"
-      })
-    }
+    // const user: any | undefined = res.locals.currentUserClient;
+
+    // if (!user) {
+    //   return res.json({
+    //     code: 404,
+    //     message: "User information not found"
+    //   })
+    // }
     const category = req.query.category?.toString() as string | undefined;
     const pageSize = req.query.pageSize ? parseInt(req.query.pageSize as string, 10) : null;
     const listingType = req.query.listingType?.toString() as string | undefined;
     const direction = req.query.direction?.toString() as string | undefined;
 
     // In case of filtering favorite property posts -------------------
-    const favoritePostIds: any | undefined = res.locals.currentUserClient.favoritePosts;
+    const favoritePostIds: any | undefined = res.locals.currentUserClient && res.locals.currentUserClient.favoritePosts;
 
-    if (req.query.favorited) {
-      if (!favoritePostIds) {
-        return res.json({
-          code: 400,
-          message: 'No favorited post found'
-        })
-      }
-    }
+    // if (!favoritePostIds) {
+    //   return res.json({
+    //     code: 400,
+    //     message: 'No favorited post found'
+    //   })
+    // }
     // -------------------------------------
 
     const find: FindCriteria = {
       deleted: false,
       status: "active",    
-      ...((req.query.favorited) && { _id: { $in: favoritePostIds } }),
+      ...(req.query.favorited && { _id: { $in: favoritePostIds } }),
       ...(listingType && { listingType }),
       ...(direction && {  "propertyDetails.houseDirection": direction  }),
       ...(category && { "propertyDetails.propertyCategory": category }),

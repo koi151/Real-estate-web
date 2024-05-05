@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import clientAccountsService from "../../../services/client/accounts.service";
 import { setClientUser } from "../../../redux/reduxSlices/clientUserSlice";
 import { Spin, message } from "antd";
@@ -19,6 +19,7 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ userType, children }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const dispatch = useDispatch();
@@ -26,6 +27,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ userType, children }) =
   useEffect(() => {
     const fetchUserData = async () => {
       try {
+        if (location.pathname === "/properties") {
+          setIsAuthenticated(true);
+          return;
+        }        
+
         const response: UserResponse = userType === 'admin' 
           ? await adminAccountsService.getSingleAccountLocal()
           : await clientAccountsService.getSingleAccountLocal()
@@ -36,6 +42,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ userType, children }) =
         } else {
           setIsAuthenticated(false);
         }
+
       } catch (err: any) {
         if (err.response && err.response.status === 401) {
           message.error('Unauthorized - Please log in to access this feature.', 3);
