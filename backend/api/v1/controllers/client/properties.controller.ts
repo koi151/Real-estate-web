@@ -14,9 +14,6 @@ import ClientAccount from "../../models/clientAccount.model";
 // [GET] /properties
 export const index = async (req: Request, res: Response) => {
   try {
-    console.log("[GET] /properties started")
-    console.log("req.query.favorited:", req.query.favorited)
-
     // const user: any | undefined = res.locals.currentUserClient;
 
     // if (!user) {

@@ -2,12 +2,13 @@ import React from 'react';
 import { Button, Layout, Menu, theme } from 'antd';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import HeaderLogo from '../../../assets/images/logo-dark.png'
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { setListingType } from '../../../redux/reduxSlices/filtersSlice';
 
 import './layoutDefault.scss'
 import AccountHeader from '../../shared/AccountHeader/accountHeader';
+import { RootState } from '../../../redux/stores';
 
 const { Header, Content, Footer } = Layout;
 
@@ -35,6 +36,14 @@ const LayOutDefaultClient: React.FC = () => {
   ];
 
   const matchedMenuKey = menuItems.find(item => location.pathname.includes(item.key))?.key;
+  const isLogged: Boolean = useSelector((state: RootState) =>
+    state.adminUser.fullName ? true : state.clientUser.fullName ? true : false
+  );
+
+  const adminCheck = useSelector((state: RootState) => state.adminUser.fullName)
+  const clientCheck = useSelector((state: RootState) => state.adminUser.fullName)
+
+  console.log('ad-cl:', adminCheck, clientCheck, isLogged)
 
   const {
     token: { colorBgContainer, borderRadiusLG },
