@@ -56,12 +56,6 @@ const SiderMenu: React.FC = () => {
         }
       ] 
     },
-    { 
-      key: 'authentication', 
-      label: 'Authentication', 
-      icon: <LockOutlined className="sider-icon" />, 
-      children: [] 
-    },
   ];
 
   const menuItems = items.map(item => ({

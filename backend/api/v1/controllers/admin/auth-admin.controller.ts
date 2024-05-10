@@ -61,7 +61,7 @@ export const loginPost = async (req: Request, res: Response) => {
     });
 
     if (!user || !bcrypt.compareSync(userInfo.password, user.password)) {
-      return res.status(401).json({
+      return res.json({
         code: 401,
         message: "Incorrect email or password"
       });

@@ -203,7 +203,7 @@ const Properties: React.FC = () => {
       {accessAllowed ? (
         <>
           <div className='title-wrapper'>
-            <h1 className="main-content-title">Property:</h1>
+            <h1 className="main-content-title">Properties:</h1>
             <Breadcrumb
               className='mt-1 mb-1'
               items={[
@@ -221,6 +221,7 @@ const Properties: React.FC = () => {
             categoryFilter
             statusFilter
             multipleChange
+            checkedList={checkedList}
           />
           
           <FilterBoxSlide slickWidth='100%' slideShow={5} userType='admin'/>

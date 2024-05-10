@@ -80,7 +80,7 @@ class PropertiesServiceAdmin {
     return this.handleRequest(request);
   }
 
-  async multiChangeProperties(ids: string[], type: ValidMultiChangeType) {
+  async multiChangeProperties(ids: string[] | undefined, type: ValidMultiChangeType) {
     const request = this.api.patch(`/multi-change`, { ids, type });
     return this.handleRequest(request);
   }

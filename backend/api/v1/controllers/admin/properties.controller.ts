@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 
 import Property from "../../models/property.model";
+import PropertyCategory from "../../models/propertyCategories.model";
 
 import { searchHelper } from "../../../../helpers/search";
 import { paginationHelper } from '../../../../helpers/pagination';
@@ -179,6 +180,14 @@ export const detail = async (req: Request, res: Response) => {
       { _id: id }, 
       { deleted: false }
     )
+
+    console.log("property:", property.propertyDetails.propertyCategory)
+    const category = await PropertyCategory.findOne({
+      _id: property.propertyDetails.propertyCategory
+    }).select('title');
+    
+    const categoryTitle = category?.title;
+    property.propertyDetails.propertyCategory = categoryTitle || 'Unknown'; 
 
     if (property) {
       res.status(200).json({
@@ -403,7 +412,11 @@ export const multiChange = async (req: Request, res: Response) => {
     switch(type) {
       case 'active':
       case 'inactive':
+        console.log('start multi')
+        console.log('type:', type)
         idOnlyList = idsAndPos.map(item => item.split('-')[0]);  
+
+        console.log('idOnlyList:', idOnlyList)
 
         await Property.updateMany(
           { _id: { $in: idOnlyList } }, 

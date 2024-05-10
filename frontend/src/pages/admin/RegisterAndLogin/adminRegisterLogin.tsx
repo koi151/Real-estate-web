@@ -20,17 +20,19 @@ const AdminRegisterLogin: React.FC<AdminRegisterLoginProps> = ({ isRegisterPage 
       if (!isRegisterPage) { // login
         const response = await adminAuthorizationService.submitLogin(data);
         switch (response.code) {
-          
           case 200:
             if (response.user) {
               dispatch(setAdminUser(response.user))
             }
 
-            message.success(`Login successful. Welcome ${response.user.fullName}!`);
-            navigate('/admin/properties');
+            message.success(`Login successful. Welcome ${response.user.fullName}!`, 8);
+            navigate('/admin/dashboard');
             break;
 
           case 401:
+            message.error(`${response.message}, please try again`, 3);
+            break;
+
           case 403:
             message.error(`${response.message}, please try again`, 3);
             break;
@@ -48,7 +50,7 @@ const AdminRegisterLogin: React.FC<AdminRegisterLoginProps> = ({ isRegisterPage 
             }
 
             message.success(`Register successful!. Login to continue`, 4);
-            navigate('/admin/properties');
+            navigate('/admin/auth/login');
             break;
 
           case 401:

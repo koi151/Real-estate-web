@@ -320,7 +320,9 @@ export const detail = async (req: Request, res: Response) => {
 // [POST] /properties/create
 export const createPost = async (req: any, res: Response) => {
   try {
-    const accountId: string | undefined = res.locals.currentUserClient._id?.toString();
+    const accountId: string | undefined = res.locals.currentUserClient 
+      ? res.locals.currentUserClient._id?.toString()
+      : undefined;
 
     if (!accountId) {
       return res.json({

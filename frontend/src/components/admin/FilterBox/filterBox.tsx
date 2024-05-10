@@ -25,6 +25,7 @@ interface FilterBoxProps {
   createAllowed?: boolean;
   multipleChange?: boolean;
   priceRangeFilter?: boolean;
+  checkedList?: string[] | undefined;
   categoryFilter?: boolean;
   createPostLink: string,
   resetFilterLink: string
@@ -38,6 +39,7 @@ const FilterBox: React.FC<FilterBoxProps> = ({
   multipleChange,
   createPostLink,
   resetFilterLink,
+  checkedList
 }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -66,8 +68,28 @@ const FilterBox: React.FC<FilterBoxProps> = ({
   };
 
   const handleMultipleChange = async (type: ValidMultiChangeType) => {
-    const response = await propertiesService.multiChangeProperties([], type);
+    const response = await propertiesService.multiChangeProperties(checkedList, type);
+
     if (response?.code === 200) {
+      const selectedBox = document.querySelectorAll('.item-wrapper__upper-content--status button');
+      const modifiedCheckList = (checkedList ?? []).map(item => item.split('-')[0]);
+
+
+      for (const boxElement of Array.from(selectedBox) as HTMLElement[]) {
+        const dataId = boxElement.getAttribute('data-id');
+        if (modifiedCheckList?.includes(dataId ?? '')) {
+          const text = boxElement.querySelector('span');
+
+          if (type === 'inactive') {
+            boxElement.style.backgroundColor = '#ff4d4f';
+            if (text) text.innerHTML = 'Inactive';
+          } else {
+            boxElement.style.backgroundColor = '#58c965';
+            if (text) text.innerHTML = 'Active';
+          }
+        }
+      }
+      
       message.success(response.message, 3);
     } else {
       message.error("Error occurred, can not do multiple updates", 3);
