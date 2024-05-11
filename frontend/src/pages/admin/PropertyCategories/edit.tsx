@@ -3,8 +3,6 @@ import { PropertyCategoryType } from "../../../../../backend/commonTypes";
 import { Badge, Button, Card, Col, Form, Input, InputNumber, Radio, Row, Spin, TreeSelect, message } from "antd";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Editor } from '@tinymce/tinymce-react';
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../redux/stores";
 
 import propertyCategoriesService from "../../../services/admin/property-categories.service";
 
@@ -102,7 +100,7 @@ const EditPropertyCategories: React.FC = () => {
       }
       const transformedData = {
         ...data,
-        description: category?.description ? category?.description : editorContent,
+        description: editorContent,
         ...(data.parent_id && {parent_id: data.parent_id.value}),
         ...(imageUrlToRemove && { images_remove: imageUrlToRemove})
       };

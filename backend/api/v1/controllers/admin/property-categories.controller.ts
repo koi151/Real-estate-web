@@ -303,22 +303,21 @@ export const editPatch = async (req: Request, res: Response) => {
     }
     const categoryUpdated: PropertyCategoryType = processCategoryData(req);
 
-    const images = processImagesData(req.body.images);
-    const imagesToRemove = processImagesData(req.body.images_remove)
-    
-    await PropertyCategory.findOneAndUpdate(
+    // const processedImages = processImagesData(req.body.images);
+    // const imagesToRemove = processImagesData(req.body.images_remove)
+
+    // console.log("imagesToRemove:", imagesToRemove)
+
+    await PropertyCategory.updateOne(
       { _id: id },
-      { 
-        $set: categoryUpdated,  // Update non-image fields
-        $push: { images: { $each: images }} // Push new images
-      }
+      { $set: categoryUpdated }
     );
     
-    // Remove specified images // push && pull together causes CONFLICT 
-    await PropertyCategory.findOneAndUpdate(
-      { _id: id },
-      { $pull: { images: { $in: imagesToRemove }}} // Remove specified images
-    );
+    // Remove specified images
+    // await PropertyCategory.findOneAndUpdate(
+    //   { _id: id },
+    //   { $pull: { images: { $in: imagesToRemove }}} // Remove specified images
+    // );
     
     res.status(200).json({
       code: 200,

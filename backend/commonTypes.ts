@@ -36,6 +36,7 @@ export interface PropertyDetails {
   houseDirection?: string;
   balconyDirection?: string;
   legalDocuments?: string[];
+  propertyCategoryTitle?: string;
   rooms?: string[];
   totalFloors?: number;
 }

@@ -181,13 +181,12 @@ export const detail = async (req: Request, res: Response) => {
       { deleted: false }
     )
 
-    console.log("property:", property.propertyDetails.propertyCategory)
     const category = await PropertyCategory.findOne({
       _id: property.propertyDetails.propertyCategory
     }).select('title');
     
     const categoryTitle = category?.title;
-    property.propertyDetails.propertyCategory = categoryTitle || 'Unknown'; 
+    property.propertyDetails["propertyCategoryTitle"] = categoryTitle || 'Unknown'; 
 
     if (property) {
       res.status(200).json({

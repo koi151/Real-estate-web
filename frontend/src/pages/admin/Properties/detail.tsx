@@ -90,7 +90,8 @@ const PropertyDetail: React.FC = () => {
               <Form 
                 layout="vertical" 
                 disabled
-                className="custom-form" 
+                className="custom-form"
+                style={{width: '75%'}} 
               >
                 <Badge.Ribbon text={<Link to="/admin/properties">Back</Link>} color="purple" className="custom-ribbon">
                   <Card 
@@ -114,7 +115,7 @@ const PropertyDetail: React.FC = () => {
                           </Form.Item>
                       </Col>
                       <Col sm={24}>
-                        <Form.Item label='Property type' name='propertyCategory' initialValue={property?.propertyDetails?.propertyCategory}>
+                        <Form.Item label='Property type' name='propertyCategory' initialValue={property?.propertyDetails?.propertyCategoryTitle}>
                           <Select
                             disabled
                             value={property?.propertyDetails?.propertyCategory}
