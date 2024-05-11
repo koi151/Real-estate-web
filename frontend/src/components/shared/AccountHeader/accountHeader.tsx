@@ -27,6 +27,10 @@ const AccountHeader: React.FC<AccountHeaderProps> = ({ userType, navigateTo }) =
     userType === 'admin' ? state.adminUser.avatar : state.clientUser.avatar
   );
 
+  const userName = useSelector((state: any) =>
+    userType === 'admin' ? state.adminUser.fullName : state.clientUser.userName
+  );
+
   const isLogged: Boolean = useSelector((state: RootState) =>
     state.adminUser.fullName ? true : state.clientUser.fullName ? true : false
   );
@@ -71,7 +75,7 @@ const AccountHeader: React.FC<AccountHeaderProps> = ({ userType, navigateTo }) =
           <Select
             size="large"
             className={`logout ${userType === 'admin' ? 'mr-6' : ''}`}
-            defaultValue="lucy"
+            defaultValue={userName}
             style={{ width: "65rem", marginRight: "4rem"}}
             onChange={handleChange}
             options={isLogged ? [

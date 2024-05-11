@@ -66,7 +66,8 @@ const AdminAccountsDetail: React.FC = () => {
               <Form 
                 layout="vertical" 
                 disabled
-                className="custom-form" 
+                className="custom-form"
+                style={{maxWidth: "75%"}} 
               >
                 <Badge.Ribbon text={<Link to="/admin/admin-accounts">Back</Link>} color="purple" className="custom-ribbon">
                   <Card 

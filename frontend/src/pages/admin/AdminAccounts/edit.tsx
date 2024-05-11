@@ -147,6 +147,7 @@ const EditAdminAccounts: React.FC = () => {
                 encType="multipart/form-data"
                 className="custom-form" 
                 validateMessages={validateMessages}
+                style={{maxWidth: "75%"}} 
               >
                 <Badge.Ribbon text={<Link to="/admin/admin-accounts">Back</Link>} color="purple" className="custom-ribbon">
                   <Card 

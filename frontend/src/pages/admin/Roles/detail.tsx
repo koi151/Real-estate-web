@@ -1,4 +1,4 @@
-import { Badge, Card, Col, Form, Input, Row, Spin, message } from "antd";
+import { Badge, Card, Col, Form, Input, Row, Select, Spin, message } from "antd";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import TextArea from "antd/es/input/TextArea";
@@ -7,6 +7,8 @@ import AdminRolesService from "../../../services/admin/roles.service";
 
 import { RolesType } from "../../../../../backend/commonTypes";
 import NoPermission from "../../../components/admin/NoPermission/noPermission";
+import { AiFillEye, AiOutlineDelete, AiOutlineEdit, AiOutlinePlusSquare } from "react-icons/ai";
+import { convertPermissionToLabels } from "../../../helpers/standardizeData";
 
 const AdminRoleDetail: React.FC = () => {
 
@@ -17,6 +19,7 @@ const AdminRoleDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   const [role, setRole] = useState<RolesType | undefined>(undefined);
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -31,6 +34,7 @@ const AdminRoleDetail: React.FC = () => {
         if(response?.code === 200 && response.role) {
           setRole(response.role);
           setAccessAllowed(true);
+          setSelectedItems(response.role.permissions.map(convertPermissionToLabels));
 
         } else {
           message.error(response.message, 2);
@@ -51,6 +55,20 @@ const AdminRoleDetail: React.FC = () => {
 
     fetchData();
   }, [id, navigate])
+
+  const roleOptions = ['Properties', 'Property categories', 'Administrator roles', 'Administrator accounts'].flatMap(label => ({
+    label,
+    options: ['view', 'create', 'edit', 'delete'].map(action => ({
+      value: `${label} ${action}`,
+      label: `${label} ${action}`,
+      icon: {
+        view: <AiFillEye />,
+        create: <AiOutlinePlusSquare />,
+        edit: <AiOutlineEdit />,
+        delete: <AiOutlineDelete />,
+      }[action],
+    })),
+  }));
 
   return (
     <>
@@ -86,6 +104,35 @@ const AdminRoleDetail: React.FC = () => {
                           name='description'  
                         >
                           <TextArea rows={5} placeholder="Enter role descripton here" disabled />
+                        </Form.Item>
+                      </Col>
+                      <Col span={24}>
+                        <Form.Item
+                          label={`Role permissions:`} 
+                          name='permissions'  
+                          initialValue={selectedItems}
+                        >
+                          <Select 
+                            mode="multiple" 
+                            allowClear 
+                            placeholder="Choose role permissions" 
+                            onChange={setSelectedItems} 
+                            style={{ width: '100%' }} 
+                          >
+                            {roleOptions.map(category => (
+                              <Select.OptGroup label={category.label} key={category.label}>
+                                {category.options.map(option => (
+                                  <Select.Option value={option.value} key={option.value}>
+                                    <div className="d-flex align-items-center">
+                                      {option.icon}
+                                      <div className="ml-1">{option.label}</div>
+                                    </div>
+                                  </Select.Option>
+                                ))}
+                              </Select.OptGroup>
+                            ))}
+                          </Select>
+
                         </Form.Item>
                       </Col>
                     </Row>
