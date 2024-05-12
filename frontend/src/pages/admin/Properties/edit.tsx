@@ -125,12 +125,14 @@ const EditProperty: React.FC = () => {
       let updatedExpireTime = null;
       if (expireDateTime) {
         updatedExpireTime = expireDateTime.toISOString();
+        console.log("updatedExpireTime:", updatedExpireTime)
         
-      } else if (['day', 'week', 'month'].includes(data.expireTime)) {
-        const duration = data.expireTime === 'day' ? 1 : (data.expireTime === 'week' ? 7 : 30);
-        const expirationDate = dayjs().add(duration, 'day');
-        updatedExpireTime = expirationDate.toISOString();
-      };
+      } 
+      // else if (['day', 'week', 'month'].includes(data.expireTime)) {
+      //   const duration = data.expireTime === 'day' ? 1 : (data.expireTime === 'week' ? 7 : 30);
+      //   const expirationDate = dayjs().add(duration, 'day');
+      //   updatedExpireTime = expirationDate.toISOString();
+      // };
 
 
       if (data.expireTime === 'other' || !data.expireTime)
