@@ -86,7 +86,7 @@ const PropertyPosts: React.FC = () => {
                   series={[
                     {
                       dataKey: 'count',
-                      label: 'Revenue',
+                      label: 'Post number',
                       color,
                     },
                   ]}

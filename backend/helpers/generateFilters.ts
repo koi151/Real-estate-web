@@ -28,7 +28,7 @@ export const generateFilterInRange = (query: any, filterType: string): object | 
   const range: number[] | undefined = (query as string[])?.map(Number);
 
   if (!range[1]) { // in case of GTE searching
-    return [{ [filterType]: { $gte: range[0] } }];
+    return { [filterType]: { $gte: range[0] } };
   }
 
   return range 

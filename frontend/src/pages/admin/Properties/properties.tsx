@@ -61,6 +61,7 @@ const Properties: React.FC = () => {
         setLoading(true);
         const response = await propertiesService.getApprovedProperties({ 
           ...(keyword && { keyword }), 
+          ...(status && { status }), 
           ...(listingType && { listingType }), 
           ...(category && { category }), 
           ...(direction && { direction }), 

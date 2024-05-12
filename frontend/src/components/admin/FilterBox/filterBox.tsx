@@ -54,6 +54,7 @@ const FilterBox: React.FC<FilterBoxProps> = ({
   const [ isFilterDetailVisible, setIsFilterDetailVisible ] = useState<boolean>(true);
 
   const handleStatusClick = (value: string) => {
+    console.log('status val:', value)
     dispatch(setStatus(value));
   };
 
