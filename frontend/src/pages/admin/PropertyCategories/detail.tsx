@@ -86,6 +86,7 @@ const PropertyCategoriesDetail: React.FC = () => {
                   <Form 
                     layout="vertical" 
                     className="custom-form" 
+                    style={{maxWidth: "70%"}}
                     disabled
                   >
                     <Badge.Ribbon text={<Link to="/admin/property-categories">Back</Link>} color="purple" className="custom-ribbon">

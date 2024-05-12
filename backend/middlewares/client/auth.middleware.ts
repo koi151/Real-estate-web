@@ -41,6 +41,7 @@ const authenticate = async (req: Request, res: Response, next: NextFunction) => 
     }
 
     res.locals.currentUserClient = user;
+    console.log("auth res.locals.currentUserClient:", res.locals.currentUserClient)
 
     return next();
 
@@ -59,11 +60,16 @@ export const authRequire = async (req: Request, res: Response, next: NextFunctio
 
 export const authRequireProperties = async (req: Request, res: Response, next: NextFunction) => {
   const pathsRequiringAuth = [
-    '/properties/my-properties',
-    '/properties/create'
+    '/my-properties',
+    '/create',
+    '/edit',
+    '/delete',
+    '/my-favorites',
   ];
 
-  const requiresAuth = pathsRequiringAuth.some(path => req.path.startsWith(path));
+  const requiresAuth = pathsRequiringAuth.includes(req.path);
+  console.log("req.path:", req.path)
+  console.log('require Auth:', requiresAuth)
 
   if (!requiresAuth) return next(); 
 

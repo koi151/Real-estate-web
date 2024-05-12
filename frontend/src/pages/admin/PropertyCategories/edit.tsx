@@ -149,6 +149,7 @@ const EditPropertyCategories: React.FC = () => {
                     method="POST"
                     encType="multipart/form-data"
                     className="custom-form" 
+                    style={{maxWidth: "70%"}}
                   >
                     <Badge.Ribbon text={<Link to="/admin/property-categories">Back</Link>} color="purple" className="custom-ribbon">
                       <Card 

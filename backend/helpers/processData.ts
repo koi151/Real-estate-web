@@ -69,13 +69,6 @@ export const processPropertyData = (req: Request): PropertyType => {
         ? [req.body.propertyDetails.rooms]
         : undefined
     },
-    createdBy: {
-      accountId: req.body.createdBy?.accountId && String(req.body.createdBy.accountId),
-      accountType: req.body.createdBy?.accountType && req.body.createdBy.accountType,
-      fullName: req.body.createdBy?.fullName && String(req.body.createdBy?.fullName),
-      phone: req.body.createdBy?.phone && String(req.body.createdBy?.phone),
-      email: req.body.createdBy?.email && String(req.body.createdBy?.email),
-    },
     postServices: {
       dayPost: req.body.postServices?.dayPost && parseToValidNumber(req.body.postServices.dayPost),
       pushTimesLeft: req.body.postServices?.pushTimesLeft && parseToValidNumber(req.body.postServices.pushTimesLeft),
@@ -144,12 +137,12 @@ export const processClientAccountData = async (req: Request): Promise<ClientAcco
     phone: req.body.phone && String(req.body.phone),
     avatar: req.body.images && String(req.body.images),
     social: {
-      zaloLink: req.body.social.zaloLink && String(req.body.social.zaloLink),
+      zaloLink: req.body.social?.zaloLink && String(req.body.social.zaloLink),
     },
     postList: Array.isArray(req.body.postList) ? req.body.postList : [req.body.postList],
     favoritePosts: Array.isArray(req.body.favoritePosts) ? req.body.favoritePosts : [req.body.favoritePosts],
     wallet: {
-      balance: req.body.wallet.balance && parseFloat(req.body.position),
+      balance: req.body.wallet?.balance && parseFloat(req.body.position),
     },
     createdAt: req.body.createdAt && new Date(req.body.createdAt),
     updatedAt: req.body.updatedAt && new Date(req.body.updatedAt),

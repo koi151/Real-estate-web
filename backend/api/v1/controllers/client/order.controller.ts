@@ -90,6 +90,8 @@ export const createPaymentUrl = async (req: Request, res: Response) => {
 // [POST] /deposit/vnpay/create-bill
 export const billPost = async (req: Request, res: Response) => {
   try {
+    console.log('Bill posting')
+    
     const accountId: string | undefined = req.body.accountId;
 
     if (!accountId) return res.json({
@@ -141,7 +143,6 @@ export const billPost = async (req: Request, res: Response) => {
     });
   }
 };
-
 
 // [GET] /deposit/vnpay/create-payment-url
 export const vnPayReturn = async (req: Request, res: Response) => {

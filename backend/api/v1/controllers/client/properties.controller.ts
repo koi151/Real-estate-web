@@ -131,11 +131,11 @@ export const index = async (req: Request, res: Response) => {
 // [GET] /properties/my-property
 export const myProperty = async (req: Request, res: Response) => {
   try {
-    const postList: string | undefined = res.locals.currentUserClient.postList;
+    const postList: string | undefined = res.locals.currentUserClient?.postList;
 
     if (!postList) {
       return res.json({
-        code: 404,
+        code: 200,
         message: "No post found"
       })
     }
@@ -320,7 +320,9 @@ export const detail = async (req: Request, res: Response) => {
 // [POST] /properties/create
 export const createPost = async (req: any, res: Response) => {
   try {
-    const accountId: string | undefined = res.locals.currentUserClient 
+    console.log("start creating")
+    console.log("res.locals.currentUserClient:", res.locals.currentUserClient)
+    const accountId: string | undefined = res.locals.currentUserClient
       ? res.locals.currentUserClient._id?.toString()
       : undefined;
 
@@ -343,13 +345,19 @@ export const createPost = async (req: any, res: Response) => {
     ? { ...property, images: processedImages, status: 'pending' } 
     : { ...property, status: 'pending' };
 
+    console.log("propertyWithImages:", propertyWithImages)
+
     const newProperty = new Property(propertyWithImages);
     await newProperty.save();
 
-    const updateResult = await ClientAccount.findOneAndUpdate(
+    console.log('created')
+
+    const updateResult = await ClientAccount.updateOne(
       { _id: accountId }, 
       { $addToSet: { postList: newProperty._id } } 
     );
+
+    console.log('addded to set')
     
     if (updateResult) {
       return res.status(200).json({

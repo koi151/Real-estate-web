@@ -25,7 +25,7 @@ const AdminRegisterLogin: React.FC<AdminRegisterLoginProps> = ({ isRegisterPage 
               dispatch(setAdminUser(response.user))
             }
 
-            message.success(`Login successful. Welcome ${response.user.fullName}!`, 8);
+            message.success(`Login successful. Welcome ${response.user.fullName}!`, 3);
             navigate('/admin/dashboard');
             break;
 

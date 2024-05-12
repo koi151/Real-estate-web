@@ -77,7 +77,6 @@ const CreatePropertyPost: React.FC = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allowStep2])
 
-
   // Process to step 3 when allowed
   useEffect(() => { 
     const updateAccount = async () => {
@@ -86,7 +85,7 @@ const CreatePropertyPost: React.FC = () => {
 
       const accUpdatedReponse = await clientAccountsService.updateAccountBalance(currentUser._id, postInfo.totalPayment, false);
       if (accUpdatedReponse.code === 200) {
-        message.success(`Account has successfully paid ${postInfo.totalPayment}$ for the post`)
+        message.success(`Account has successfully paid ${postInfo.totalPayment.toFixed(2)}$ for the post`)
 
         const filteredPostInfo = Object.fromEntries(
           Object.entries(postInfo)
@@ -100,7 +99,7 @@ const CreatePropertyPost: React.FC = () => {
         if (newPostResponse.code === 200) {
           message.success('Your post has been added to moderation queue!')
         } else {
-          message.error('Error occurred, can not add post to moderation queue')
+          message.error(newPostResponse.message, 4)
         }
       
       } else {

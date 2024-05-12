@@ -49,7 +49,6 @@ export const index = async (req: Request, res: Response) => {
   }
 }
 
-
 // [GET] /admin/client-accounts/detail/:id
 export const detail = async (req: Request, res: Response) => {
   try {

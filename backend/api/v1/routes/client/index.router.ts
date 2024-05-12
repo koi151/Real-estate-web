@@ -13,13 +13,15 @@ const v1ClientRoutes = (app: Express): void => {
 
   app.use(
     `${version}/properties`, 
-    authRequireProperties,
+    // authRequireProperties,
+    authRequire,
     propertiesRoutes
   );
 
   app.use(
     `${version}/property-categories`, 
-    authRequireProperties,
+    // authRequireProperties,
+    authRequire,
     propertyCategoriesRoutesClient
   );
 

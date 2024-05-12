@@ -411,7 +411,7 @@ const ChooseOptions: React.FC = () => {
                           </div>
                           {getTotalPayment() && (
                             <b className="block-four__right" style={{fontSize: "2.4rem", fontWeight: "700"}}>
-                              ${getTotalPayment()}
+                              ${getTotalPayment().toFixed(2)}
                             </b>
                           )}
                         </div>
