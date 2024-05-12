@@ -8,8 +8,8 @@ const authenticate = async (req: Request, res: Response, next: NextFunction) => 
     const { clientAccessToken } = req.cookies;
 
     if (!clientAccessToken) {
-      return res.status(400).json({
-        code: 400,
+      return res.status(401).json({
+        code: 401,
         message: 'No access token found.'
       });
     }
@@ -41,7 +41,6 @@ const authenticate = async (req: Request, res: Response, next: NextFunction) => 
     }
 
     res.locals.currentUserClient = user;
-    console.log("auth res.locals.currentUserClient:", res.locals.currentUserClient)
 
     return next();
 
@@ -58,20 +57,15 @@ export const authRequire = async (req: Request, res: Response, next: NextFunctio
   await authenticate(req, res, next);
 };
 
-export const authRequireProperties = async (req: Request, res: Response, next: NextFunction) => {
-  const pathsRequiringAuth = [
-    '/my-properties',
-    '/create',
-    '/edit',
-    '/delete',
-    '/my-favorites',
-  ];
+// export const authRequireProperties = async (req: Request, res: Response, next: NextFunction) => {
+//   const pathsRequiringAuth = [
+//     '/properties',
+//     '/properties'
+//   ];
 
-  const requiresAuth = pathsRequiringAuth.includes(req.path);
-  console.log("req.path:", req.path)
-  console.log('require Auth:', requiresAuth)
+//   const requiresAuth = pathsRequiringAuth.includes(req.path);
 
-  if (!requiresAuth) return next(); 
+//   if (!requiresAuth) return next(); 
 
-  await authenticate(req, res, next);
-};
+//   await authenticate(req, res, next);
+// };

@@ -223,7 +223,7 @@ const RegisterLogin: React.FC<RegisterLoginProps> = ({ isRegisterPage = false })
             </div>
             <div className="d-flex justify-content-center align-items-center">
               <div style={{fontSize: "1.4rem"}}>
-                {isRegisterPage ? 'Already have an account ? ' : 'New to admin page ? '}
+                {isRegisterPage ? 'Already have an account ? ' : 'Do not have account ? '}
               </div>
               <Link 
                 to={isRegisterPage ? `/auth/login` : `/auth/register`} 

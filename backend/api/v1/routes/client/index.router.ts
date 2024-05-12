@@ -2,7 +2,7 @@ import { Express } from "express";
 
 import { propertiesRoutes } from "./properties.router";
 import { thirdPartyRoutes } from "./third-party.router";
-import { authRequire, authRequireProperties } from "../../../../middlewares/client/auth.middleware";
+import { authRequire } from "../../../../middlewares/client/auth.middleware";
 import { authRoutesClient } from "./auth-client.router";
 import { propertyCategoriesRoutesClient } from "./property-categories.router";
 import { accountsRoutesClient } from "./accounts.router";
@@ -20,7 +20,6 @@ const v1ClientRoutes = (app: Express): void => {
 
   app.use(
     `${version}/property-categories`, 
-    // authRequireProperties,
     authRequire,
     propertyCategoriesRoutesClient
   );

@@ -14,14 +14,14 @@ import ClientAccount from "../../models/clientAccount.model";
 // [GET] /properties
 export const index = async (req: Request, res: Response) => {
   try {
-    // const user: any | undefined = res.locals.currentUserClient;
+    const user: any | undefined = res.locals.currentUserClient;
 
-    // if (!user) {
-    //   return res.json({
-    //     code: 404,
-    //     message: "User information not found"
-    //   })
-    // }
+    if (!user) {
+      return res.status(404).json({
+        code: 404,
+        message: "User information not found"
+      })
+    }
     const category = req.query.category?.toString() as string | undefined;
     const pageSize = req.query.pageSize ? parseInt(req.query.pageSize as string, 10) : null;
     const listingType = req.query.listingType?.toString() as string | undefined;
@@ -320,8 +320,6 @@ export const detail = async (req: Request, res: Response) => {
 // [POST] /properties/create
 export const createPost = async (req: any, res: Response) => {
   try {
-    console.log("start creating")
-    console.log("res.locals.currentUserClient:", res.locals.currentUserClient)
     const accountId: string | undefined = res.locals.currentUserClient
       ? res.locals.currentUserClient._id?.toString()
       : undefined;
@@ -345,19 +343,13 @@ export const createPost = async (req: any, res: Response) => {
     ? { ...property, images: processedImages, status: 'pending' } 
     : { ...property, status: 'pending' };
 
-    console.log("propertyWithImages:", propertyWithImages)
-
     const newProperty = new Property(propertyWithImages);
     await newProperty.save();
-
-    console.log('created')
 
     const updateResult = await ClientAccount.updateOne(
       { _id: accountId }, 
       { $addToSet: { postList: newProperty._id } } 
     );
-
-    console.log('addded to set')
     
     if (updateResult) {
       return res.status(200).json({

@@ -27,8 +27,7 @@ class PropertiesServiceAdmin {
       const response = await request;
       return response.data;
 
-    } catch (err: any) {
-      console.log('Error occurred in handleRequest:', err)
+    } catch (err: any) {      
       if (err.message === 'Access token not found') {
         throw new Error('Unauthorized')
 

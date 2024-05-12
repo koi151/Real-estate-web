@@ -14,9 +14,9 @@ class PropertiesServiceClient {
       return response.data;
 
     } catch (err: any) {
-      console.log('Error occurred in handleRequest:', err)
+      console.log("err message:", err.message)
       
-      if (err.message === 'Access token not found') {
+      if (err.message === 'Access token not found' || 'Request failed with status code 401') {
         throw new Error('Unauthorized')
 
       } else if (err.response && err.response.message === "Don't have permission") {

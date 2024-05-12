@@ -91,8 +91,6 @@ export const revenue = async (req: Request, res: Response) => {
       // Aggregate daily sums efficiently
       const dailySums = aggregateDailySums(dataSatisfied, unit);
 
-      console.group("dailySums:", dailySums)
-
       res.status(200).json({
         code: 200,
         message: "Success",

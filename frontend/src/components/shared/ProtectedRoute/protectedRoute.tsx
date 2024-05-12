@@ -46,7 +46,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ userType, children }) =
       } catch (err: any) {
         if (err.response && err.response.status === 401) {
           message.error('Unauthorized - Please log in to access this feature.', 3);
-          navigate(`${userType === 'admin' ? "admin/auth/login" : "/auth/login"}`);
+          navigate(`${userType === 'admin' ? "/admin/auth/login" : "/auth/login"}`);
         } else {
           console.error('Error occurred while fetching user data:', err);
         }
@@ -57,6 +57,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ userType, children }) =
     };
 
     fetchUserData();
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate, dispatch, userType]);
 
   // Render loading indicator
@@ -66,7 +68,13 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ userType, children }) =
     );
   }
 
-  return isAuthenticated ? children : <Navigate to="/auth/login" replace />;
+  return isAuthenticated 
+    ? children
+    : (userType === 'admin' ? (
+        <Navigate to="/admin/auth/login" replace />
+      ) : (
+        <Navigate to="/auth/login" replace />
+      ))
 };
 
 export default ProtectedRoute;
