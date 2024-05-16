@@ -24,11 +24,17 @@ const ExpireTimePicker: React.FC<ExpireTimePickerProps> = ({ onExpireDateTimeCha
 
   const handleChangeExpireOption = (e: RadioChangeEvent) => {
     const selectedValue= e.target.value;
+    
+    let newExpireTime;
     if (selectedValue !== 'month' && selectedValue !== 'other' ) { // day or week
-      onExpireDateTimeChange && onExpireDateTimeChange(dayjs().add(parseInt(selectedValue), 'days'));
+      newExpireTime = dayjs().add(parseInt(selectedValue), 'days');
+      onExpireDateTimeChange && onExpireDateTimeChange(newExpireTime);
     } else if (selectedValue === 'month') {
-      onExpireDateTimeChange && onExpireDateTimeChange(dayjs().add(1, 'month'));
-    } 
+      newExpireTime = dayjs().add(1, 'month');
+      onExpireDateTimeChange && onExpireDateTimeChange(newExpireTime);
+    }
+    
+    newExpireTime && setExpireDateTime(newExpireTime);
     
     const timePicker = document.querySelector('.time-picker');
     timePicker?.classList.toggle('d-none', e.target.value !== 'other');

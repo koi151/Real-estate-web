@@ -200,6 +200,13 @@ const EditPropertyCategories: React.FC = () => {
                                   tinycomments_mode: 'embedded', tinycomments_author: 'Author name', mergetags_list: [ { value: 'First.Name', title: 'First Name' }, { value: 'Email', title: 'Email' }, ], 
                                 }}
                               />
+                              {/* <textarea 
+                                id="description" 
+                                defaultValue={category?.description} 
+                                onChange={(event) => setEditorContent(event.target.value)}
+                                style={{width: "100%"}}
+                              >
+                              </textarea> */}
                             </Form.Item>
                           </Col>
                           <Col sm={24} md={24} lg={10}  xl={10} xxl={10}>

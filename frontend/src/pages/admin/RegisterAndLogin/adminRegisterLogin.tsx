@@ -64,9 +64,13 @@ const AdminRegisterLogin: React.FC<AdminRegisterLoginProps> = ({ isRegisterPage 
       }
 
 
-    } catch (err) {
-      console.log('Error occurred:', err);
-      message.error(`Error occurred, can not ${isRegisterPage ? "register" : "login"}`)
+    } catch (err: any) {
+      console.log('Error occurred:', err.response.status);
+      if (err.response.status === 429) {
+        message.error("Too many login request, please try again later!", 3)
+      } else {
+        message.error(`Error occurred, can not ${isRegisterPage ? "register" : "login"}`)
+      } 
     }
   }
 

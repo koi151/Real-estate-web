@@ -31,10 +31,6 @@ const AccountHeader: React.FC<AccountHeaderProps> = ({ userType, navigateTo }) =
     userType === 'admin' ? state.adminUser.fullName : state.clientUser.userName
   );
 
-  const isLogged: Boolean = useSelector((state: RootState) =>
-    state.adminUser.fullName ? true : state.clientUser.fullName ? true : false
-  );
-
   const currentClientAccBalance = useSelector((state: any) =>
     userType !== 'admin' && state.clientUser.wallet?.balance
   );
@@ -78,7 +74,7 @@ const AccountHeader: React.FC<AccountHeaderProps> = ({ userType, navigateTo }) =
             defaultValue={userName}
             style={{ width: "65rem", marginRight: "4rem"}}
             onChange={handleChange}
-            options={isLogged ? [
+            options={[
               {
                 label: <span>Account</span>,
                 title: 'manager',
@@ -170,15 +166,7 @@ const AccountHeader: React.FC<AccountHeaderProps> = ({ userType, navigateTo }) =
                   },
                 ],
               },
-            ] : [{
-              label: (
-                <Link to={`${userType === 'admin' ? '/admin/auth/login' : '/auth/login'}`} className="custom-link-wrap">
-                  <span>Login</span>
-                  <FaRegUser className="custom-icon-nav"/>
-                </Link>
-              ),
-              title: 'login',
-            }]}
+            ]}
           />
 
       {/* </div> */}

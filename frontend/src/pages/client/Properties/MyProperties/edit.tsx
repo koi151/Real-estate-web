@@ -2,9 +2,7 @@ import { Badge, Button, Card, Col, Form, Input, InputNumber, Row, Segmented, Sel
 import React, { useEffect, useState } from "react";
 import { Editor } from '@tinymce/tinymce-react';
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Dayjs } from "dayjs";
 
-import propertiesService from "../../../../services/admin/properties.service";
 import { PropertyType } from "../../../../../../backend/commonTypes";
 import * as standardizeData from '../../../../helpers/standardizeData'
 import GetAddress from "../../../../components/admin/getAddress/getAddress";
